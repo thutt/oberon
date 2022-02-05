@@ -1,0 +1,13 @@
+% Copyright (c) 2007 Logic Magicians Software
+% All Rights Reserved
+
+\newcommand{\lms}{Logic Magicians\xspace}
+\newcommand{\chap}[1] {\chapter{#1} \label{#1}}
+\newcommand{\todo}[1]{\marginpar{\textsf{\footnotesize{TODO: \xspace}\scriptsize{#1}}}}
+\newcommand{\note}[1]{} % Like a todo, but it need not be deleted.
+
+\newcommand{\skiptooddpage}{\ifodd \value{page} \else {\newpage\vspace*{\fill}\center{This page intentionally left blank}\vspace*{\fill}\newpage}\fi}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% End: 

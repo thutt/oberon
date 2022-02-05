@@ -1,0 +1,245 @@
+\chapter{Architecture}
+This chapter describes the various attributes of the \ac{CPU}, such as
+general purpose registers, control registers and the execution model.
+
+\section{Program Counter}
+
+Internally, the processor maintains a special register called the
+\ac{PC}.  The \ac{PC} holds the address in memory at which the
+processor is currently executing.  The \ac{PC} is not directly
+accessible to the user, but it can be indirectly changed with control
+flow instructions and traps (\xref{sect:CR1}, \xref{sect:CR5}).
+
+The \ac{PC} always references the instruction which is currently
+executing.
+
+\section{General Purpose Registers}
+
+The processor has 32 general purpose registers, named \asmreg{0}
+through \asmreg{31}.  The registers are four bytes in size. Each of
+the registers can be used in any instruction which has register
+operands, though several registers have special properties.  The
+registers with special properties are described in the following
+sections.
+
+\subsection{\asmreg{0}}
+
+\asmreg{0} always has the value zero; writes to this register are
+discarded.
+
+\subsection{\asmreg{29}}
+
+This register is used by software as the \ac{SFP}.  The \ac{SFP} is
+used to access local variables and procedure arguments.  Procedure
+arguments are accessed at positive offsets, while procedure-local
+variables are accessed at negative offsets.
+
+See \xrefinst{enter}, \xrefinst{leave}.
+
+\subsection{\asmreg{30}}
+
+This is the hardware \ac{SP}.
+
+See \xrefinst{push}, \xrefinst{pushf}, \xrefinst{pushd},
+\xrefinst{pop}, \xrefinst{popf} and \xrefinst{popd}.
+
+\subsection{\asmreg{31}}
+
+\asmreg{31} is the hardware \ac{LR}.  The \ac{LR} is assigned the
+\emph{return address} when executing certain types of jumps.  This
+register is used to implement a \emph{call} / \emph{return} semantic.
+
+See \xrefinst{jal}, \xrefinst{jral}.
+
+
+\section{Floating Point Registers}
+The processor has 32 floating point registers, named \fasmreg{0}
+through \fasmreg{31}.  Each of the regsiters can be used in any
+floating point instruction which has register operands.
+
+Each floating point register is an IEEE 754 double precision real value.
+
+\section{Control Registers}\label{sect:control-registers}
+
+The \ac{CPU} contains several \acp{CR} that allows one to alter how
+the \ac{CPU} functions, or provides information about events that have
+occurred internally.  \acp{CR} are four bytes in size.
+
+The control registers are read and written with special instructions,
+such as \xrefinst{lcr} and \xrefinst{scr}.
+
+
+\subsection{CR0: Hardware Fault Return Address}
+
+This \ac{CR} contains the address at which the most recent fault
+occurred.
+
+\begin{figure}[h]
+  \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0,31}          \\
+      \bitbox{32}{address of fault}
+    \end{bytefield}
+  \caption{\texttt{CR0} encoding}
+\end{figure}
+
+The value in this register is written by the hardware when a fault is
+raised.  See \xref{sect:CR1} for details on what causes a hardware
+fault to be raised.
+
+
+\subsection{CR1: Hardware Fault Handler Address}\label{sect:CR1}
+
+This register contains the address to which the \skl processor will
+transfer execution when an fault is raised.  The handler is
+responsible for saving and restoring any registers it uses.
+
+\begin{figure}[h]
+  \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0,31}          \\
+      \bitbox{32}{hardware fault handler address}
+    \end{bytefield}
+  \caption{\texttt{CR1} encoding}
+\end{figure}
+
+The code address that is put into this register must be four byte
+aligned.  \ac{CPU} behavior is undefined if the address does not refer
+to code or is not aligned to four bytes.
+
+\Figref{hwdexc} shows the different hardware faults that can
+occur.
+
+\begin{figure}[h]
+  \centering
+    \begin{tabularx}{\linewidth}{|l|X|}
+      \hline Cause & Description \\
+      \hline Illegal Write & An attempt was made to read from memory
+      that is outside the memory accessible to the \ac{CPU}. \\
+
+      \hline Illegal Read & An attempt was made to read from memory
+      that is outside the memory accessible to the \ac{CPU}. \\
+
+      \hline Misaligned Instruction & An attempt was made to execute
+      an instruction at an address that is not a multiple of four. \\
+
+      \hline Invalid Opcode & An attempt was made to execute an
+      instruction that is not supported by the \ac{CPU}. \\
+
+      \hline
+    \end{tabularx}
+  \caption{Hardware Faults}\label{fig:hwdexc}
+\end{figure}
+
+The \ac{CPU} will transfer control to the address in this register
+when a hardware fault is raised, and therefore it is important to
+initialize this register early in the boot process.
+
+
+\subsection{CR2: Fault Status}\label{CR:CR2}
+
+This \ac{CR} contains information describing the most recent fault
+that was raised. \Figref{cr2-encoding} shows the bitwise encoding of
+this register, and \figref{cr2-semantics} shows the semantics of the
+bit fields.
+
+\begin{figure}[h]
+  \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0,1,2,4,5,31}          \\
+      \bitbox{27}{reserved}
+      \bitbox{3}{T}
+      \bitbox{1}{I}
+      \bitbox{1}{C}
+    \end{bytefield}
+  \caption{\texttt{CR2} encoding}\label{fig:cr2-encoding}
+\end{figure}
+
+The contents of this register can be used to determine how a hardware
+fault should be handled.
+
+% Commented out because 'break' is not documented and not implemented.
+%For example, \xrefinst{break} can be
+%used to implement a breakpoint in a debugger.
+
+\begin{figure}[h]
+\begin{tabularx}{\linewidth}{|l|l|X|}
+\hline Field & Meaning & Semantic \\
+\hline C & Cause &
+\begin{tabular}{ll}
+ 0 & Fault caused by an external interrupt. \\
+ 1 & Fault caused by a trap internal to the \ac{CPU}. \\
+\end{tabular} \\
+
+\hline I & Interrupt Flag &
+\begin{tabular}{ll}
+   & Reserved \\
+%0 & Interrupts were disabled when fault occurred. \\
+%1 & Interrupts enabled when fault occurred. \\
+\end{tabular} \\
+
+\hline T & Trap Type\footnote{This field is undefined when an external trap occurs.} &
+
+\begin{tabular}{ll}
+  000 & undefined opcode \\
+  % break is not documented and not implemented.
+  %  001 & \texttt{break} instruction \\
+  001 & reserved \\
+  010 & bad instruction alignment \\
+  011 & out-of-bounds read \\
+  100 & out-of-bounds write \\
+  101 & divide by zero \\
+  110 & \emph{reserved} \\
+  111 & \emph{reserved} \\
+\end{tabular} \\
+\hline
+\end{tabularx}
+
+\caption{\texttt{CR2} semantics}\label{fig:cr2-semantics}
+\end{figure}
+
+\subsection{CR3: Reserved}
+
+\subsection{CR4: Reserved}
+
+\subsection{CR5: \emph{Software Trap} Handler Address}\label{sect:CR5}
+This \ac{CR} holds the address to which control will be transferred
+when a software trap occurs.
+
+
+\begin{figure}[h]
+  \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0,31}          \\
+      \bitbox{32}{software trap handler address}
+    \end{bytefield}
+  \caption{\texttt{CR5} encoding}\label{fig:cr5-encoding}
+\end{figure}
+
+When execution begins at the address contained in \texttt{CR5},
+\asmreg{1} contains the trap number that occurred, and \asmreg{31}
+contains the address of the instruction that trapped.  See
+\figref{cr5-r1-value} for possible values that can be in \asmreg{1}.
+
+\begin{figure}
+  \begin{tabularx}{\linewidth}{|l|X|}
+    \hline Value & Semantic \\
+    \hline 8 & Oberon \texttt{ASSERT} failed. \\
+    \hline 12 & Out-of-range value used with \texttt{SHORTINT},
+    \texttt{INTEGER}, or \texttt{SET}. See \xrefinst{traprange}. \\
+    \hline 13 & Out-of-bounds array index used.  See \xrefinst{traparray}.\\
+    \hline 14 & Compiler-generated Oberon \emph{type guard} failed. \\
+    \hline 15 & Explicit Oberon \emph{type guard} failed. \\
+    \hline 16 & Unhandled case in Oberon \texttt{CASE} statement. \\
+    \hline 17 & Oberon \texttt{HALT} function used. \\
+    \hline 18 & Unhandled case in Oberon \texttt{WITH} statement. \\
+    \hline 19 & \texttt{NIL} pointer used in Oberon \emph{type guard}.   See \xrefinst{trapnil}. \\
+    \hline 20 & \texttt{NIL} pointer dereference.  See \xrefinst{trapnil}.  \\
+
+    \hline 128 & \texttt{Files.ReadBytes} or \texttt{Files.WriteBytes}
+    buffer was smaller than specified number of bytes. \\ \hline
+  \end{tabularx}
+  \caption{CR5: Possible \asmreg{1} values}\label{fig:cr5-r1-value}
+\end{figure}
+
+The handler is responsible for saving and restoring any registers it uses.

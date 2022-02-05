@@ -1,0 +1,23 @@
+#!/bin/bash
+# Copyright (c) 2021, 2022 Logic Magicians Software
+#
+# Do not run.  Use 'source' to load into environment.
+SRC_DIR=$(dirname "${BASH_SOURCE[0]}");
+source $(readlink -f "${SRC_DIR}/functions");
+
+if [ -z "${1}" ] ; then
+    echo "${SRC_DIR}/setup <build-directory-path> [(alpha | release)]";
+    echo "";
+    echo "Build directory must not be in the source tree.";
+    echo "";
+    echo "";
+else
+    export SKL_DIR=$(readlink -f $(dirname ${BASH_SOURCE})/..);
+    export PATH=${SKL_DIR}/scripts:$PATH
+    export SKL_BUILD_DIR="${1}";
+    export SKL_OBJ_PATH="${SKL_DIR}/system";
+    export SKL_BUILD_OPTIONS="";
+
+    build-set-type "${2:-alpha}";
+    oberon-show-config;
+fi;

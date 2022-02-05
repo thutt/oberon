@@ -1,0 +1,18 @@
+\chap{Introduction}
+
+The virtual \ac{CPU} presented in this manual has been greatly
+influenced by the \mips and \natsemi architectures, and while it's not
+a clone of either, many ideas have been liberally borrowed.  It is a
+little-endian \ac{CPU} that is small enough for one person to
+understand fully.
+
+The \ac{CPU} has also been designed to support the implementation of a
+compiler and full runtime system for the Oberon-2 programming
+language.  As a result, there are special instructions which support
+code generation and runtime characteristics of that language.
+
+While many of the advanced features of the \mips architecture, such as
+caches and memory management, have been left out of this
+implementation, the design of this \ac{CPU} has been carefully
+undertaken so that the ambitious soul will be able to add them in
+without changing the semantics of the \ac{CPU}.

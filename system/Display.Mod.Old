@@ -1,0 +1,258 @@
+MODULE Display;
+	IMPORT SYSTEM, EW:=EMUwindow, ED:=EMUdata, Console;
+	
+	CONST (* drawing modes *)
+		replace* = EW.replace; paint* = EW.paint; invert* = EW.invert; (* must be SHORTINT *)
+		MaxPatternWidth = 32; MaxPatternHeight = 32;		
+
+	TYPE
+		ADDRESS = LONGINT;
+		
+		Frame* = POINTER TO FrameDesc;
+		FrameMsg* = RECORD END;
+		Font* = POINTER TO ARRAY OF SYSTEM.BYTE;
+
+		PatternArray = ARRAY MaxPatternWidth OF ARRAY MaxPatternHeight OF BOOLEAN;
+		Pattern* = POINTER TO ARRAY OF SYSTEM.BYTE; (* [0] = w, [1] = h, [2..LEN-1] = pattern data (bit 0 is leftmost on the display) *)
+		PatternList* = POINTER TO PatternListDesc;
+		PatternListDesc = RECORD
+			next : PatternList;
+			pat : Pattern;
+		END;
+
+		Handler* = PROCEDURE (f: Frame; VAR msg: FrameMsg);
+
+		RegionDesc* = RECORD
+			X*, Y*, W*, H*: INTEGER;
+		END;
+
+		FrameDesc* = RECORD (RegionDesc)
+			dsc*, next*: Frame;
+			handle*: Handler
+		END;
+
+	VAR
+		WorldWidth-, WorldHeight- : INTEGER; (* physical display size *)
+		Height-, Width- : INTEGER; (* current window size *)
+		Unit- : LONGINT; (*RasterUnit = Unit/36000 mm (dot pitch * 36000 <= Unit) *)
+		white-, black- : LONGINT;
+		PatternRoot : PatternList;
+		StandardPat : ARRAY 10 OF Pattern;
+		cross-, arrow-, ticks-, grey0-, grey1-, grey2-, downArrow-, hook-, star- : Pattern;
+	
+	PROCEDURE min(x, y : INTEGER) : INTEGER;
+	BEGIN IF x < y THEN RETURN x ELSE RETURN y; END;
+	END min;
+
+	PROCEDURE Intersect*(r0, r1 : RegionDesc; VAR r : RegionDesc);
+		VAR w0, w1, wr : EW.RegionDesc;
+	BEGIN
+		w0.x := r0.X; w0.y := r0.Y; w0.w := r0.W; w0.h := r0.H;
+		w1.x := r1.X; w1.y := r1.Y; w1.w := r1.W; w1.h := r1.H;
+		EW.Intersect(w0, w1, wr); r.X := wr.x; r.Y := wr.y; r.W := wr.w; r.H := wr.h
+	END Intersect;
+
+	PROCEDURE Dot*(col : LONGINT; X, Y : INTEGER; mode : SHORTINT);
+	BEGIN EW.Dot(col, X, Y, mode);
+	END Dot;
+
+	PROCEDURE ReplConst*(col: LONGINT; X, Y, W, H : INTEGER; mode: SHORTINT);
+	BEGIN EW.ReplConst(col, X, Y, W, H, mode);
+	END ReplConst;
+	
+	PROCEDURE CopyBlock*(SX, SY, W, H, DX, DY : INTEGER; mode : SHORTINT);
+	BEGIN EW.CopyBlock(SX, SY, W, H, DX, DY, mode);
+	END CopyBlock;
+
+	PROCEDURE Line*(col : LONGINT; X0, Y0, X1, Y1 : INTEGER; mode : SHORTINT); (* from from (X0, Y0) to [X1, Y1] *)
+	BEGIN EW.Line(col, X0, Y0, X1, Y1, mode);
+	END Line;
+
+	PROCEDURE MakeColor*(red, green, blue : INTEGER) : LONGINT; (* pre: (red, green, blue) IN {0..255} *)
+	BEGIN RETURN ED.RGB(red, green, blue);
+	END MakeColor;
+
+	PROCEDURE GetRGB*(col: LONGINT; VAR red, green, blue: INTEGER);
+	BEGIN ED.GetRGB(col, red, green, blue);
+	END GetRGB;
+	
+(* Allocates a new pattern with width w and height h. The i-th pattern
+	line from bottom (increasing y-value) corresponds to the image
+	entries i*lineLen .. (i+1)*lineLen-1, where lineLen = (w+31) DIV 32.
+	The set elements desribe the pixels from left to right (increasing
+	x-value). *)
+	PROCEDURE NewPattern* (image: ARRAY OF SET; w, h: INTEGER): Pattern;
+		VAR pl : PatternList; pat : Pattern; srcLen, dstLen, src, dst, i, j, nofWords : LONGINT; b1, b2 : SYSTEM.BYTE;
+	BEGIN
+		IF (w <= MaxPatternWidth) & (h <= MaxPatternHeight) THEN
+			srcLen := (w + 31) DIV 32 * SIZE(SET); dstLen := (w + 7) DIV 8;
+			NEW(pat, 2 * SIZE(SYSTEM.BYTE) + dstLen * h);
+			pat[0] := SHORT(w); pat[1] := SHORT(h);
+			src := SYSTEM.ADR(image); dst := SYSTEM.ADR(pat[2]);
+			i := 0; WHILE i < h DO SYSTEM.MOVE(src, dst, dstLen); INC(src, srcLen); INC(dst, dstLen); INC(i); END;
+			NEW(pl); pl.pat := pat;	pl.next := PatternRoot; PatternRoot := pl;
+			RETURN pat;
+		ELSE RETURN NIL;
+		END;
+	END NewPattern;
+
+  PROCEDURE GetPatternSize*(pat: Pattern; VAR w, h: INTEGER);
+	BEGIN w := SYSTEM.VAL(SHORTINT, pat[0]); h := SYSTEM.VAL(SHORTINT, pat[1]);
+	END GetPatternSize;
+
+  PROCEDURE ThisPattern* (n: INTEGER) : Pattern;
+	BEGIN IF n < LEN(StandardPat) THEN RETURN StandardPat[n]; ELSE RETURN NIL; END;
+	END ThisPattern;
+
+	PROCEDURE PutPatternC(col : LONGINT; VAR pat : PatternArray; w, h : LONGINT; X, Y : INTEGER; mode : SHORTINT);
+		VAR x, y, X0 : INTEGER; ch : CHAR;
+	BEGIN y := 0;
+		WHILE y < h DO x := 0; X0 := X;
+			WHILE x < w DO
+				IF pat[x, y] THEN EW.Dot(col, X0, Y, mode);
+				ELSE EW.Dot(black, X0, Y, mode);
+				END;
+				INC(x); INC(X0);
+			END;
+			INC(y); INC(Y);
+		END;
+	END PutPatternC;
+
+	PROCEDURE MakePatternArray(pat : Pattern; VAR pa : PatternArray);
+		VAR x, x0, y : SHORTINT; byte : SYSTEM.BYTE; w, w0, h0, bit : INTEGER; data : LONGINT;
+	BEGIN y := 0; data := SYSTEM.ADR(pat[2]);
+		GetPatternSize(pat, w0, h0);
+		WHILE h0 > 0 DO w := w0; x := 0; x0 := 0;
+			WHILE w > 0 DO
+				SYSTEM.GET(data, byte); bit := min(w, 8); DEC(w, bit); INC(x, SHORT(bit)); INC(data);
+				WHILE  bit > 0 DO
+					DEC(bit);
+					pa[x0 * 8 + bit, y] := bit IN SYSTEM.VAL(SET, byte);
+				END;
+					INC(x0);
+			END;
+			INC(y); DEC(h0);
+		END;
+	END MakePatternArray;
+
+	PROCEDURE CopyPattern*(col: LONGINT; pat: Pattern; X, Y : INTEGER; mode: SHORTINT);
+		VAR pa : PatternArray; w, h : INTEGER;
+	BEGIN MakePatternArray(pat, pa); GetPatternSize(pat, w, h); PutPatternC(col, pa, w, h, X, Y, mode);
+	END CopyPattern;
+
+	PROCEDURE ReplPattern*(col: LONGINT; pat: Pattern; X, Y, W, H : INTEGER; mode : SHORTINT);
+		VAR Xc, Xe, Ye, x, y, w, h : INTEGER; pa : PatternArray; color : ARRAY 2 OF LONGINT;
+	BEGIN MakePatternArray(pat, pa); color[0] := black; color[1] := col; Xe := X + W; Ye := Y + H; GetPatternSize(pat, w, h);
+		WHILE Y < Ye DO Xc := X; x := w;
+			IF y >= h THEN y := 0; END;
+			WHILE  Xc < Xe DO
+				IF x >= w THEN x := 0; END;
+				EW.Dot(color[SYSTEM.VAL(SHORTINT, pa[x, y])], Xc, Y, mode);
+				INC(x); INC(Xc);
+			END;
+			INC(y); INC(Y);
+		END;
+	END ReplPattern;
+	
+	PROCEDURE Circle*(col : LONGINT; X, Y, R : INTEGER; mode: SHORTINT);
+	BEGIN EW.Circle(col, X, Y, R, mode);
+	END Circle;
+	
+	PROCEDURE Ellipse*(col : LONGINT; X, Y, A, B : INTEGER; mode: SHORTINT);
+	BEGIN EW.Ellipse(col, X, Y, A, B, mode);
+	END Ellipse;
+
+  PROCEDURE InitStandardPat;
+    VAR image: ARRAY 4 OF SET;
+  BEGIN
+    image[0] := {};
+    StandardPat[0] := NewPattern(image, 32, 1);
+
+    image[3] := {0, 8, 16, 24}; image[2] := {}; image[1] := {4, 12, 20, 28}; image[0] := {};
+    StandardPat[1] := NewPattern(image, 32, 4);
+
+    image[1] := {0, 4, 8, 12, 16, 20, 24, 28}; image[0] := {2, 6, 10, 14, 18, 22, 26, 30};
+    StandardPat[2] := NewPattern(image, 32, 2);
+
+    image[1] := {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30}; image[0] := {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31};
+    StandardPat[3] := NewPattern(image, 32, 2);
+
+    image[1] := {1..3, 5..7, 9..11, 13..15, 17..19, 21..23, 25..27, 29..31}; image[0] := {0, 1, 3..5, 7..9, 11..13, 15..17, 19..21, 23..25, 27..29, 31};
+    StandardPat[4] := NewPattern(image, 32, 2);
+
+    image[0] := {0..31};
+    StandardPat[5] := NewPattern(image, 32, 1);
+
+    image[3] :={3, 7, 11, 15, 19, 23, 27, 31}; image[2] :={2, 6, 10, 14, 18, 22, 26, 30};
+		image[1] :={1, 5, 9, 13, 17, 21, 25, 29}; image[0] :={0, 4, 8, 12, 16, 20, 24, 28};
+    StandardPat[6] := NewPattern(image, 32, 4);
+
+    image[3] :={0, 4, 8, 12, 16, 20, 24, 28}; image[2] :={1, 5, 9, 13, 17, 21, 25, 29};
+		image[1] :={2, 6, 10, 14, 18, 22, 26, 30}; image[0] :={3, 7, 11, 15, 19, 23, 27, 31};
+    StandardPat[7] := NewPattern(image, 32, 4);
+
+    image[0] := {2, 6, 10, 14, 18, 22, 26, 30};
+    StandardPat[8] := NewPattern(image, 32, 1);
+
+    image[3] := {}; image[2] := {}; image[1] := {}; image[0] := {0..31};
+    StandardPat[9] := NewPattern(image, 32, 4)
+  END InitStandardPat;
+
+	PROCEDURE InitPatterns;
+		VAR pat : ARRAY 16 OF SET;
+	BEGIN
+		pat[10] := {}; pat[09] := {}; pat[08] := { 4, 5 }; pat[07] := { 4, 5 }; pat[06] := { 4, 5 };
+		pat[05] := { 0..9}; pat[04] := { 4, 5 }; pat[03] := { 4, 5 }; pat[02] := { 4, 5 }; pat[01] := {}; pat[00] := {};
+		cross := NewPattern(pat, 10, 11);
+
+		(* page 7-24 of the MS-Mouse reference book *)
+		pat[15] := { }; pat[14] := { 1 }; pat[13] := { 1..2 }; pat[12] := { 1..3 }; pat[11] := { 1..4 }; pat[10] := { 1..5 };
+		pat[09] := { 1..6 }; pat[08] := { 1..7 }; pat[07] := { 1..8 }; pat[06] := { 1..9 }; pat[05] := { 1..5 };
+		pat[04] := { 1, 5..6 }; pat[03] := { 5..6 }; pat[02] := { 6..7 }; pat[01] := { 6..7 }; pat[00] := { 7..8 };
+		arrow := NewPattern(pat, 10, 16);
+
+		pat[15] := { }; pat[14] := { }; pat[13] := { }; pat[12] := { }; pat[11] := { }; pat[10] := { };
+		pat[09] := { }; pat[08] := { }; pat[07] := { }; pat[06] := { }; pat[05] := { };
+		pat[04] := { }; pat[03] := { }; pat[02] := { }; pat[01] := { 0 }; pat[00] := { };
+		ticks := NewPattern(pat, 16, 16);
+
+		pat[03] := { 0, 4, 8, 12, 16, 20, 24, 28 }; pat[02] := { 0, 4, 8, 12, 16, 20, 24, 28 };
+		pat[01] := { 6, 10, 14, 18, 22, 26  }; pat[00] := { 6, 10, 14, 18, 22, 26  };
+		grey0 := NewPattern(pat, 32, 4);
+
+		pat[03] := { 1, 5, 9, 13, 17, 21, 25, 29 }; pat[02] := { 1, 5, 9, 13, 17, 21, 25, 29 };
+		pat[01] := { 0, 4, 8, 12, 16, 20, 24, 28 }; pat[00] := { 0, 4, 8, 12, 16, 20, 24, 28 };
+		grey1 := NewPattern(pat, 32, 4);
+
+		pat[01] := { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31 };
+		pat[00] := { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 };
+		grey2 := NewPattern(pat, 32, 2);
+		
+		pat[15] := { };  pat[14] := { 5..6 }; pat[13] := { 5..6 }; pat[12] := { 5..6 }; pat[11] := { 5..6 };
+		pat[10] := { 5..6 }; pat[09] := { 5..6 }; pat[08] := { 1..10 }; pat[07] := { 2..9 }; pat[06] := { 2..9 };
+		pat[05] := { 3..8 }; pat[04] := { 3..8 }; pat[03] := { 4..7 }; pat[02] := { 4..7 }; pat[01] := { 5, 6 }; pat[00] := { };
+		downArrow := NewPattern(pat, 12, 16);
+		
+		pat[0] := {0..8}; pat[1] := {0..7}; pat[2] := {0..6}; pat[3] := {0..5};
+		pat[4] := {0..4}; pat[5] := {0..3}; pat[6] := {0..2}; pat[7] := {0, 1}; pat[8] := {0};
+		hook := NewPattern(pat, 9, 9);
+	
+		pat[14] := { 7 }; pat[13] := { 7 }; pat[12] := { 2, 7, 12 }; pat[11] := { 3, 7, 11 }; pat[10] := { 4, 7, 10 };
+		pat[09] := { 5, 7, 9 }; pat[08] := { 6, 7, 8 }; pat[07] := { 0..6, 8..14 }; pat[06] := { 6, 7, 8 }; pat[05] := { 5, 7, 9 };
+		pat[04] := { 4, 7, 10 }; pat[03] := { 3, 7, 11 }; pat[02] := { 2, 7, 12 }; pat[01] := { 7 }; pat[00] := { 7 };
+		star := NewPattern(pat, 15, 15);
+	END InitPatterns;
+	
+	PROCEDURE Init;
+	BEGIN
+		PatternRoot := NIL;
+		InitPatterns;
+		InitStandardPat;
+		Unit := 10000;
+		black := MakeColor(0, 0, 0); white := MakeColor(255, 255, 255);
+		EW.GetDeviceInfo(WorldWidth, WorldHeight);
+		EW.GetWindowInfo(Width, Height);
+	END Init;
+	
+BEGIN Init;
+END Display.

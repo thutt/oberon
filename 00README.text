@@ -1,0 +1,168 @@
+This repository contains a command-line based Oberon system.  The
+compiler produces code for a virtual CPU, and there is an interpreter
+that executes the instructions of the virtual CPU.  It is a work in
+progress.
+
+At the time of this writing, it's not suitable for running the Oberon
+system, notably because there is no way to have any input other than
+files.  It's also probably not yet quite fast enough to run the Oberon
+System at a reasonable resolution.
+
+Usage:
+
+  o Prerequisites
+
+    To build the software and documentation, you will need the
+    following items:
+
+    + The disassembler and loader / interpreter need Gnu G++.
+
+    + The documentation requires a modern LaTeX installation, with a
+      few extra packages.
+
+      On Ubuntu and Raspbian the following should be sufficient:
+
+          sudo apt install            \
+            texlive-latex-base        \
+            texlive-latex-extra       \
+            texlive-science
+
+
+  o Configure shell environment.
+
+    There is a set of shell commands that allow easy invocation of
+    different parts of the system.  They are written for Bash.
+
+    To configure the current shell environment:
+
+    cd <place where the software was cloned>
+    source ./scripts/setup <location for build output> [(alpha | release)]
+
+    + The first argument is the root directory of the directory where
+       the build process will place all build artifacts.
+
+       The build output must not be put into the source tree.
+
+    + The optional second argument declares the type of build that
+      should be produced.
+
+      If not specified, 'alpha' is used.
+
+      An 'alpha' build has all runtime checking turned on, and allows
+      all capabilities such as tracing the program execution on an
+      instruction level.
+
+      A 'release' build disables runtime checking and features that
+      probably are not useful for non-developers.
+
+      A 'release' build runs appreciably faster than an 'alpha' build.
+
+    Example:
+
+      source ./scripts/setup /tmp/skl release
+
+      source scripts/setup  /tmp/skl release
+      SKL_DIR          : '/data/skl/skl-o2'
+      SKL_BUILD_TYPE   : 'release'
+      SKL_BUILD_OPTIONS: ''
+      SKL_BUILD_DIR    : '/tmp/skl'
+      SKL_OBJ_PATH     : '/data/skl/skl-o2/system'
+
+      SKL_DIR is used by the shell functions, and is the root of the
+      source tree.
+
+      SKL_BUILD_TYPE is the type of build that will be produced.
+
+      SKL_BUILD_OPTIONS shows the build options that are turned on.
+      These options are enabled and disabled with:
+
+        build-option-enable <option>
+        build-option-disable <option>
+
+      To see the valid options:
+
+         echo ${SKL_BUILD_OPTIONS_VALID[*]}
+
+      The current options are:
+
+         profile: Enable gprof profiling
+                  (see skl-gprof function in ${SKL_DIR}/scripts/functions)
+         trace  : Enable instruction-level tracing.
+
+
+   o Show current environment configuration
+
+     oberon-show-config
+
+     This prints out the environment configuration; the same as
+     printed after loading 'setup'.
+
+
+   o Build everything:
+
+     cd ${SKL_DIR}
+     skl-build [-j <number of processors>]
+
+     This will build the 'disassembler', 'loader' / 'interpreter' and
+     virtual CPU reference.
+
+     + Read the virtual CPU reference:
+
+       xpdf ${SKL_BUILD_DIR}/${SKL_BUILD_TYPE}/doc/skl/skl.pdf
+
+     + Disassemble a module:
+
+       disasm ${SKL_DIR}/system/Kernel.Obj
+
+     + Run the command line Oberon:
+
+       skl-oberon <Module>.<Command>
+
+
+   o Run the compiler
+
+     The shell command 'skl-skl-oc' will invoke the compiler on one
+     or more modules.
+
+     Example:
+
+       cd ${SKL_DIR}/system
+
+       skl-skl-oc SKLModules.Mod Files.Mod Texts.Mod
+       LMSO SKL Compiler  TWH 2020.11.16
+       SKLModules.Mod compiling  Modules   30332 bytes code       44 bytes data  (mem 4003K/3105K)
+       Files.Mod compiling  Files   14984 bytes code        0 bytes data  (mem 3582K/3045K)
+       Texts.Mod compiling  Texts   43736 bytes code       44 bytes data  (mem 3935K/3121K)
+
+
+   o Execute a sample module:
+
+     As stated, the 'skl-oberon' function loads the Oberon system and
+     executes the Oberon Command provided on the command line.
+
+     This sample will compile a module that prints prime numbers under
+     10,000, and then executes its main exported function.
+
+        cd ${SKL_DIR}/system
+        skl-skl-oc Prime.Mod
+        skl-oberon Prime.Execute
+
+     Other 'test' modules that can be quickly examined begin with
+     'CT', if interested.
+
+
+   o If your program terminates due to a programming error (assert
+     failure, halt, NIL deref, type guard failure, etc.),
+     ${SKL_DIR}/system/.DiagnosticOutput will contain a stack
+     backtrace.
+
+
+   o More formal documentation on the system implementation and usage
+     will be forthcoming.
+
+   o Notes on code formatting
+
+     The code formatting is presently inconsistent because this is a
+     compendium of projects that go back at least 25 years; this will
+     be remedied in time.  A set of coding guidelines will be
+     produced.

@@ -1,0 +1,145 @@
+\chap{Runtime Environment}
+When powered-on, all instruction execution, data reads and data writes
+takes place within the memory allocated to the \ac{CPU}.  This memory
+is known as \ac{CPU} memory.  The memory is split into two parts for
+the Oberon runtime system: the stack, and the heap.  The heap is where
+all code and data is placed, while the stack holds data for the
+activation frames for all open procedures.
+
+The \skl address space is a full 32 bits, but the Oberon system
+reserves the top two bits of an address for use by the \ac{GC}.  This
+reservation results in the maximal memory layout shown in
+\figref{accessible-memory}, though in practice the accessible memory
+will be smaller than shown here due to host OS limitations.
+
+\begin{figure}[h]
+  \centering
+    \begin{bytefield}{32}
+      \memsection{FFFFFFFFH}{40000000H}{3}{-- inaccessible --} \\
+      \memsection{3FFFFFFFH}{00000000H}{3}{-- accessible --}
+    \end{bytefield}
+  \caption{Accessible Memory Layout}\label{fig:accessible-memory}
+\end{figure}
+
+The accessible memory is divided into the \emph{stack} and
+\emph{heap}, based on runtime options provided when the Oberon
+environment is started.  The default memory configuration on Linux
+is shown in \figref{linux-default-memory}.
+
+
+\begin{figure}
+  \centering
+    \begin{bytefield}{32}
+      \memsection{FFFFFFFFH}{08000000H}{3}{-- inaccessible --} \\
+      \memsection{07FFFFFFH}{04200000H}{3}{heap} \\
+      \memsection{041FFFFFH}{04000000H}{3}{stack} \\
+      \memsection{03FFFFFFH}{00000000H}{3}{-- inaccessible --}
+    \end{bytefield}
+  \caption{Default Memory Layout}\label{fig:linux-default-memory}
+\end{figure}
+
+
+\section{Procedure Arguments}
+
+The Oberon compiler generates code that pushes procedure arguments on
+the stack from left-to-right.  That is, a procedure's arguments are
+pushed onto the stack in the order in which they were declared in source.
+
+\section{Procedure Stack Layout}
+
+\Figref{example-stack-layout} provides an example of how the stack
+appears with several open procedures on it.  Note that because the
+stack grows down, procedure arguments are accessed at positive offsets
+from the \ac{SFP}, while local variables are accessed at negative
+offsets.
+
+\newlength{\stkSFP}
+\settowidth{\stkSFP}{~R29~}
+\newcommand{\stkadr}[1]{#1{\hspace{\stkSFP}{}~}}
+\newcommand{\stkrel}[2]{#1}
+\newcommand{\sfpadr}[1]{#1~R29}
+\newcommand{\stkchev}[1]{\small{\lchevron#1\rchevron}}
+
+\begin{figure}
+  \centering
+  \begin{bytefield}{32}
+      \memsection{\stkadr{41FFFC8H}}{\stkadr{41FFFCBH}}{2}{\stkchev{argument}} \\
+      \begin{rightwordgroup}
+        {Frame of \texttt{CTNest.Global}}
+        \memsection{\sfpadr{41FFFCCH}}{\stkadr{41FFFCFH}}{2}{41FFFD8H} \\
+        \memsection{\stkadr{41FFFD0H}}{\stkadr{41FFFD3H}}{2}{\small{\texttt{CTNest.Test}}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}
+        {Argument of \texttt{CTNest.Global}}
+        \memsection{\stkadr{41FFFD4H}}{\stkadr{41FFFD7H}}{2}{\stkchev{R29 + 8}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}
+        {Frame of \texttt{CTNest.Test}}
+        \memsection{\sfpadr{41FFFD8H}}{\stkadr{41FFFDBH}}{2}{41FFFF4H} \\
+        \memsection{\stkadr{41FFFDCH}}{\stkadr{41FFFDFH}}{2}{\small{\texttt{Modules.Init}}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}
+        {Local variables of \texttt{Modules.Init}}
+        \memsection{\stkadr{41FFFE0H}}{\stkadr{41FFFE3H}}{2}{\stkchev{R29 - 14H}} \\
+        \memsection{\stkadr{41FFFE4H}}{\stkadr{41FFFE7H}}{2}{\stkchev{R29 - 10H}} \\
+        \memsection{\stkadr{41FFFE8H}}{\stkadr{41FFFEBH}}{2}{\stkchev{R29 - 0CH}} \\
+        \memsection{\stkadr{41FFFECH}}{\stkadr{41FFFECH}}{2}{\stkchev{R29 - 8H}} \\
+        \memsection{\stkadr{41FFFF0H}}{\stkadr{41FFFF3H}}{2}{\stkchev{R29 - 1H}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}
+        {Frame of \texttt{Modules.Init}}
+        \memsection{\sfpadr{41FFFF4H}}{\stkadr{41FFFF7H}}{2}{41FFFFCH} \\
+        \memsection{\stkadr{41FFFF8H}}{\stkadr{41FFFFBH}}{2}{\small{\texttt{Modules.Modules}}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}
+        {Frame of \texttt{Modules} initialization}
+      \memsection{\sfpadr{41FFFFCH}}{\stkadr{41FFFFFH}}{2}{4200010H} \\
+      \memsection{\stkadr{4200000H}}{\stkadr{4200003H}}{2}{\small{\texttt{Kernel.BootstrapModuleInit}}}
+      \end{rightwordgroup} \\
+      \memsection{\stkadr{4200004H}}{\stkadr{420000BH}}{3}{} \\
+      \memsection{\stkadr{420000CH}}{\stkadr{420000FH}}{2}{\stkchev{top~of~stack}}
+    \end{bytefield}
+  \caption{Example Stack Layout}\label{fig:example-stack-layout}
+\end{figure}
+
+\section{Nested Procedure Stack}
+The stack layout for the activation of a nested procedure is similar
+to a non-nested procedure.  The only difference being that a nested
+procedure also has a \emph{dyanmic link} to the enclosing procedure's
+stack frame.  This allows the compiler to generate code to access
+local variables from the parent's scope.
+~Figref{example-stack-dynamic-link-layout} provides sample stack
+layout for this scenario.
+
+\begin{figure}[h]
+  \centering
+  \begin{bytefield}{32}
+      \begin{rightwordgroup}
+        {Local variables}
+        \memsection{\stkadr{41FFF74H}}{\stkadr{41FFF77H}}{2}{\stkchev{R29 - 10H}} \\
+        \memsection{\stkadr{41FFF78H}}{\stkadr{41FFF7BH}}{2}{\stkchev{R29 - 0CH}} \\
+        \memsection{\stkadr{41FFF7CH}}{\stkadr{41FFF7FH}}{2}{\stkchev{R29 - 8H}} \\
+        \memsection{\stkadr{41FFF80H}}{\stkadr{41FFF83H}}{2}{\stkchev{R29 - 4H}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}
+        {Frame with dynamic link}
+        \memsection{\sfpadr{41FFF84H}}{\stkadr{41FFF87H}}{2}{41FFFA0H} \\
+        \memsection{\stkadr{41FFF88H}}{\stkadr{41FFF8BH}}{2}{return address} \\
+        \memsection{\stkadr{41FFF8CH}}{\stkadr{41FFF8FH}}{2}{41FFFA0H}
+      \end{rightwordgroup} \\
+      \memsection{\stkadr{41FFF90H}}{\stkadr{41FFF93H}}{2}{\stkchev{argument}} \\
+      \begin{rightwordgroup}
+        {Local variables}
+        \memsection{\stkadr{41FFF94H}}{\stkadr{41FFF93H}}{2}{\stkchev{R29 - 10H}} \\
+        \memsection{\stkadr{41FFF98H}}{\stkadr{41FFF9BH}}{2}{\stkchev{R29 - 0CH}} \\
+        \memsection{\stkadr{41FFF9CH}}{\stkadr{41FFF9FH}}{2}{\stkchev{R29 - 8H}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}
+        {Frame with dynamic link}
+        \memsection{\sfpadr{41FFFA0H}}{\stkadr{41FFFA3H}}{2}{41FFFB8H} \\
+        \memsection{\stkadr{41FFFA4H}}{\stkadr{41FFFA7H}}{2}{return address} \\
+        \memsection{\stkadr{41FFFA8H}}{\stkadr{41FFFABH}}{2}{41FFFB8H}
+      \end{rightwordgroup}
+    \end{bytefield}
+  \caption{Example Stack Dynamic Link Layout}\label{fig:example-stack-dynamic-link-layout}
+\end{figure}

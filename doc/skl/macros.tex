@@ -1,0 +1,934 @@
+\newcommand{\mips}{MIPS\xspace}
+\newcommand{\natsemi}{NS32000\xspace}
+\newcommand{\skl}{\texttt{SKL}\xspace}
+
+\makeatletter
+\newcommand*{\bdiv}{% bdiv analog of bmod
+  \nonscript\mskip-\medmuskip\mkern5mu%
+  \mathbin{\operator@font div}\penalty900\mkern5mu%
+  \nonscript\mskip-\medmuskip
+}
+\makeatother
+
+
+\newcommand{\abs}[1]{\textrm{abs(}#1\textrm{)}}
+\newcommand{\constant}{\textrm{C}\xspace}
+\newcommand{\becomes}{\ensuremath{\leftarrow}}
+\newcommand{\implies}{\Rightarrow}
+\newlength{\veelen}
+\settowidth{\veelen}{\ensuremath{\vee}}
+\newcommand{\xor}{\makebox[\width]{\ensuremath{\vee\hspace{-\veelen}}\rule[-.5pt]{\veelen}{.5pt}}}
+\newcommand{\asmreg}[1]{\texttt{R#1}\xspace}
+\newcommand{\fasmreg}[1]{\texttt{F#1}\xspace}
+\newcommand{\instreg}[1]{\ensuremath{\textrm{r}_{#1}}\xspace}
+\newcommand{\regbank}[1]{#1}
+\newcommand{\creg}[1]{\ensuremath{\textrm{CR}_{#1}}}
+\newcommand{\sr}[1]{\instreg{#1}}
+\newcommand{\fr}[1]{\regbank{#1}}
+\newcommand{\dr}{\instreg{d}}
+\newcommand{\const}{constant\xspace}
+\newcommand{\pc}{\textrm{PC}\xspace}
+\newcommand{\eip}{\textrm{EIP}\xspace}
+\newcommand{\neip}{\textrm{next }\eip\xspace}
+\newcommand{\xref}[1]{\S\ref{#1}}
+\newcommand{\Figref}[1]{Figure~\ref{fig:#1}\xspace}
+\newcommand{\figref}[1]{figure~\ref{fig:#1}\xspace}
+\newcommand{\xrefinst}[1]{\texttt{#1}\xspace(\xref{inst:#1})\xspace}
+\newenvironment{instruction}[1]{
+  \section{\texttt{#1}}
+  \index{\texttt{#1}}
+  \vspace{-\baselineskip}\rule{\textwidth}{.5pt}
+}{}
+
+
+\newenvironment{xnote}{
+  \begin{center}
+    \begin{tabular}{|p{0.9\textwidth}|}
+    \hline\\
+    }
+    {
+    \\\\\hline
+    \end{tabular}
+    \end{center}
+    }
+% Instruction class encodings.
+\newcommand{\gregtypeclass}{0}    % General Register class
+   \newcommand{\aaddopc}{0}
+   \newcommand{\asubopc}{1}
+   \newcommand{\amulopc}{2}
+   \newcommand{\adivopc}{3}
+   \newcommand{\amodopc}{4}
+   \newcommand{\acmpopc}{5}
+   \newcommand{\aabsopc}{6}
+
+\newcommand{\rtypeclass}{1}     % Integer Register Instructions
+   \newcommand{\randopc}{0}
+   \newcommand{\rashopc}{1}
+   \newcommand{\rbitsetopc}{2}
+   \newcommand{\rcmpsopc}{3}
+   \newcommand{\rlshopc}{4}
+   \newcommand{\rnoropc}{5}
+   \newcommand{\roropc}{6}
+   \newcommand{\rrotropc}{7}
+   \newcommand{\rxoropc}{8}
+
+\newcommand{\exttypeclass}{2}   % Sign extension.
+  \newcommand{\extb}{0}         % Sign extend byte.
+  \newcommand{\exth}{1}         % Sign extend halfword.
+
+\newcommand{\crtypeclass}{3}
+  \newcommand{\crlcr}{0}
+  \newcommand{\crscr}{1}
+
+\newcommand{\sregtypeclass}{4}  % System Register
+  \newcommand{\sregdiopc}{0}    % This instruction is not implemented.
+  \newcommand{\sregeiopc}{1}    % This instruction is not implemented.
+  \newcommand{\sreglccopc}{2}
+
+\newcommand{\mtypeclass}{5}     % These instructions are not implemented.
+  \newcommand{\mbreakopc}{0}
+  \newcommand{\mwaitopc}{1}
+  \newcommand{\meretopc}{2}
+  \newcommand{\mvmsvcopc}{3}
+
+\newcommand{\jraltypeclass}{6}
+
+\newcommand{\jumptypeclass}{7}
+   \newcommand{\jjeqopc}{0}
+   \newcommand{\jjneopc}{1}
+   \newcommand{\jjltopc}{2}
+   \newcommand{\jjgeopc}{3}
+   \newcommand{\jjleopc}{4}
+   \newcommand{\jjgtopc}{5}
+   \newcommand{\jjltuopc}{6}
+   \newcommand{\jjgeuopc}{7}
+   \newcommand{\jjleuopc}{8}
+   \newcommand{\jjgtuopc}{9}
+   \newcommand{\jopc}{10}
+   \newcommand{\jalopc}{11}
+
+\newcommand{\regmemtypeclass}{8}
+   \newcommand{\lbopc}{0}
+   \newcommand{\lbuopc}{1}
+   \newcommand{\ldopc}{2}
+   \newcommand{\ldiopc}{3}
+   \newcommand{\lfopc}{4}
+   \newcommand{\lfiopc}{5}
+   \newcommand{\lhopc}{6}
+   \newcommand{\lhuopc}{7}
+   \newcommand{\lwopc}{8}
+   \newcommand{\lwiopc}{9}
+   \newcommand{\sbopc}{10}
+   \newcommand{\sdopc}{11}
+   \newcommand{\sfopc}{12}
+   \newcommand{\shopc}{13}
+   \newcommand{\swopc}{14}
+   \newcommand{\laopc}{15}
+
+\newcommand{\bttypeclass}{9}     % Bit Test
+   \newcommand{\btrropc}{0}       % bt   %r0, %r1, %rd
+   \newcommand{\btcropc}{1}       % bt   C, %r1, %rd
+   \newcommand{\btmopc}{2}        % btm  %r0, (%r1), %rd
+   \newcommand{\btmiopc}{3}       % btmi C, (%r1), %rd
+   \newcommand{\btmcopc}{4}       % btmc %r0, (%r1), %rd
+   \newcommand{\btmciopc}{5}      % btmci C, (%r1), %rd
+   \newcommand{\btmsopc}{6}       % btms %r0, (%r1), %rd
+   \newcommand{\btmsiopc}{7}      % btmsi C, (%r1), %rd
+
+\newcommand{\stktypeclass}{10}     % Stack
+   \newcommand{\enteropc}{0}
+   \newcommand{\leaveopc}{1}
+   \newcommand{\pushopc}{2}
+   \newcommand{\pushfopc}{3}
+   \newcommand{\pushdopc}{4}
+   \newcommand{\popopc}{5}
+   \newcommand{\popfopc}{6}
+   \newcommand{\popdopc}{7}
+
+\newcommand{\ctypeclass}{11}    % Conditional set class
+   \newcommand{\seqopc}{0}
+   \newcommand{\sgeopc}{1}
+   \newcommand{\sgeuopc}{2}
+   \newcommand{\sgtopc}{3}
+   \newcommand{\sgtuopc}{4}
+   \newcommand{\sleopc}{5}
+   \newcommand{\sleuopc}{6}
+   \newcommand{\sltopc}{7}
+   \newcommand{\sltuopc}{8}
+   \newcommand{\sneopc}{9}
+
+\newcommand{\systraptypeclass}{12} % Systrap instruction class
+\newcommand{\trapnilopc}{0}        % trap if input is NIL
+
+\newenvironment{InstructionInfo}[1]%
+{\begin{list}{}{\renewcommand{\makelabel}[1]{\textsf{##1:}\hfil}%
+      \settowidth{\labelwidth}{\textsf{#1:}}%
+      \setlength{\leftmargin}{\labelwidth+\labelsep}}}%
+{\end{list}}
+
+
+\newsavebox{\stktypebox}
+\newcommand{\stkbox}[2]{
+  \begin{lrbox}{\stktypebox}
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31}          \\
+    \bitbox{6}{\stktypeclass}
+    \bitbox{5}{#2}
+    \bitbox{16}{0}
+    \bitbox{5}{#1}
+  \end{bytefield}
+  \end{lrbox}
+}
+
+
+% \popstkstype{mne}{opc}{semantics}{description}
+\newcommand{\popstktype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \stkbox{#2}{\dr} \usebox{\stktypebox}
+  \item[Semantics]   #3
+  \item[Syntax] \begin{alltt} #1  \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+
+% \pushstkstype{mne}{opc}{semantics}{description}
+\newcommand{\pushstktype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \stkbox{#2}{\sr{0}} \usebox{\stktypebox}
+  \item[Semantics]   #3
+  \item[Syntax] \begin{alltt} #1  \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+
+\newsavebox{\stkframetypebox}
+\newcommand{\stkframebox}[2]{
+  \begin{lrbox}{\stkframetypebox}
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31}          \\
+    \bitbox{6}{\stktypeclass}
+    \bitbox{5}{\dr}
+    \bitbox{16}{#2}
+    \bitbox{5}{#1}
+  \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\stkframetype}[5]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \stkframebox{#3}{#2} \usebox{\stkframetypebox}
+  \item[Semantics]   #4
+  \item[Syntax] \begin{alltt} #1 \dr, \texttt{words} \end{alltt}
+  \end{InstructionInfo}
+
+  #5
+}
+
+
+\newsavebox{\bttypebox}
+\newcommand{\btbox}[2]{
+  \begin{lrbox}{\bttypebox}
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31}          \\
+    \bitbox{6}{\bttypeclass}
+    \bitbox{5}{\dr}
+    \bitbox{5}{#1}
+    \bitbox{5}{\sr{1}}
+    \bitbox{6}{0}
+    \bitbox{5}{#2}
+  \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\btrrtype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \btbox{\sr{0}}{#2} \usebox{\bttypebox}
+  \item[Semantics]   #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{1}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+\newcommand{\btcrtype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \btbox{C}{#2} \usebox{\bttypebox}
+  \item[Semantics]   #3
+  \item[Syntax] \begin{alltt} #1 \textrm{C}, \sr{1}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+% Integer Register Instructions
+% \rtype{mnemonic}{opcode}{mathematical description}{semantics}
+\newsavebox{\rtypebox}
+\newcommand{\rbox}[1]{
+  \begin{lrbox}{\rtypebox}
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31}          \\
+    \bitbox{6}{\rtypeclass}
+    \bitbox{5}{\dr}
+    \bitbox{5}{\sr{0}}
+    \bitbox{5}{\sr{1}}
+    \bitbox{6}{0}
+    \bitbox{5}{#1}
+  \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\rtype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \rbox{#2}\usebox{\rtypebox}
+  \item[Semantics]   #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{1}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+% \gregbox{mne}{sr0 bank}{sr1 bank}{dr bank}
+\newsavebox{\gregtypebox}
+\newcommand{\gregbox}[4]{
+  \begin{lrbox}{\gregtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31}          \\
+      \bitbox{6}{\gregtypeclass}
+      \bitbox{5}{\dr}
+      \bitbox{5}{\sr{0}}
+      \bitbox{5}{\sr{1}}
+      \bitbox{1}{\regbank{#4}}
+      \bitbox{1}{\regbank{#3}}
+      \bitbox{1}{\regbank{#2}}
+      \bitbox{3}{0}
+      \bitbox{5}{#1}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+% Arithmetic Instructions
+% \gregtype{mnemonic}{opcode}{mathematical description}{semantics}
+%
+\newcommand{\gregtype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \gregbox{#2}{b}{b}{b} \usebox{\gregtypebox}
+  \item[Semantics] #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{1}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+% \absbox{abs-opc}
+% abs instruction (which has special requirements on the output register)
+\newcommand{\absbox}[1]{
+  \begin{lrbox}{\gregtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31}          \\
+      \bitbox{6}{\gregtypeclass}
+      \bitbox{5}{0}
+      \bitbox{5}{\sr{0}}
+      \bitbox{5}{\sr{1}}
+      \bitbox{1}{0}
+      \bitbox{1}{\regbank{0}}
+      \bitbox{1}{\regbank{1}}
+      \bitbox{3}{0}
+      \bitbox{5}{#1}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\abstype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \absbox{#2} \usebox{\gregtypebox}
+  \item[Semantics] #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{1}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+
+% \cmpbox{cmp-opc}
+% cmp instruction (which has special requirements on the output register)
+\newcommand{\cmpbox}[1]{
+  \begin{lrbox}{\gregtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31}          \\
+      \bitbox{6}{\gregtypeclass}
+      \bitbox{5}{0}
+      \bitbox{5}{\sr{0}}
+      \bitbox{5}{\sr{1}}
+      \bitbox{1}{0}
+      \bitbox{1}{\regbank{0}}
+      \bitbox{1}{\regbank{1}}
+      \bitbox{3}{0}
+      \bitbox{5}{#1}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\cmptype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \cmpbox{#2} \usebox{\gregtypebox}
+  \item[Semantics] #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{1}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+
+% Conditional Set Instructions
+\newsavebox{\ctypebox}
+\newcommand{\cbox}[1]{
+  \begin{lrbox}{\ctypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31}          \\
+      \bitbox{6}{\ctypeclass}
+      \bitbox{5}{\dr}
+      \bitbox{5}{\sr{0}}
+      \bitbox{11}{0}
+      \bitbox{5}{#1}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+% \ctype{mnemonic}{opcode}{semantics}
+\newcommand{\ctype}[3]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \cbox{#2}\usebox{\ctypebox}
+  \item[Semantics]   #3
+    \\
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  Sets \dr to the expression in the semantics section using the
+  \xrefinst{cmp} result in \sr{0}.
+}
+
+
+% System Trap Instructions
+% \trapbox{25..21}{15..08}{07..00}
+\newsavebox{\traptypebox}
+\newcommand{\trapbox}[3]{
+  \begin{lrbox}{\traptypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31}          \\
+      \bitbox{6}{\systraptypeclass}
+      \bitbox{5}{#1}
+      \bitbox{5}{\sr{0}}
+      \bitbox{8}{#2}
+      \bitbox{8}{#3}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+%% TODO: trapnil does not have a second argument.  Need special
+%% macro for trapnil.
+% \traptype{mnemonic}{trapcode}{opcode}{semantics}{description}
+\newcommand{\systraptype}[5]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \trapbox{\sr{1}}{#2}{#3}\usebox{\traptypebox}
+  \item[Semantics]   #4
+  \item[Syntax] \begin{alltt} #1 \sr{0}, #3 \end{alltt}
+  \end{InstructionInfo}
+
+  #5
+}
+
+
+\newcommand{\niltraptype}[5]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \trapbox{0}{#2}{#3}\usebox{\traptypebox}
+  \item[Semantics]   #4
+  \item[Syntax] \begin{alltt} #1 \sr{0} \end{alltt}
+  \end{InstructionInfo}
+
+  #5
+}
+
+
+\newcommand{\rangetraptype}[5]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \trapbox{0}{#2}{#3}\usebox{\traptypebox}
+  \item[Semantics]   #4
+  \item[Syntax] \begin{alltt} #1 \sr{0}, #3 \end{alltt}
+  \end{InstructionInfo}
+
+  #5
+}
+
+% Sign and Zero extend Instructions
+% \exttype{mnemonic}{opcode-extension}{description}
+\newsavebox{\exttypebox}
+\newcommand{\extbox}[1]{
+  \begin{lrbox}{\exttypebox}
+  \begin{bytefield}{32}
+  \bitheader[endianness=big]{0-31}          \\
+  \bitbox{6}{\exttypeclass}
+  \bitbox{5}{\dr}
+  \bitbox{5}{\sr{0}}
+  \bitbox{11}{0}
+  \bitbox{5}{#1}
+  \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\exttype}[4]{       % {math-expression}{opcode}{semantics}{description}
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \extbox{#2}\usebox{\exttypebox}
+  \item[Semantics]   #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+
+% Load Register Instructions
+%
+\newsavebox{\regmemtypebox}
+\newcommand{\regmembox}[1]{
+  \begin{lrbox}{\regmemtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{6}{\regmemtypeclass}
+        \bitbox{5}{\dr}
+        \bitbox{5}{\sr{base}}
+        \bitbox{5}{\sr{index}}
+        \bitbox{3}{0}
+        \bitbox{2}{S}
+        \bitbox{1}{0}
+        \bitbox{5}{#1}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{signed offset}
+      \end{leftwordgroup}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+% \regmemtype{mnemonic}{opcode}{semantics}{description}
+%
+\newcommand{\regmemtype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \regmembox{#2}\usebox{\regmemtypebox}
+  \item[Semantics]
+      #3
+
+  \item[Syntax]
+    \begin{alltt} #1 \sr{base}, \sr{index}, S, offset,  \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+
+  Refer to \xref{sect:register-memory}.
+}
+
+
+% \laregmemtype{mnemonic}{opcode}{description}
+%
+%  Slight variation of \regmemtype, because 'la' does not access
+%  memory.
+%
+\newcommand{\laregmemtype}[3]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \regmembox{#2}\usebox{\regmemtypebox}
+  \item[Semantics]
+    \begin{math}
+      \begin{array}{lcl}
+        \dr & \becomes & \textrm{\sr{base}} + (\textrm{\sr{index}}
+                         \times 2^\texttt{S}) + \texttt{signed offset} \\
+      \end{array}
+    \end{math}
+
+  \item[Syntax]
+    \begin{alltt} #1 \sr{base}, \sr{index}, S, offset,  \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #3
+
+  Refer to \xref{sect:register-memory}.
+}
+
+
+% Load Register Immediate Instructions
+% \regmemimmtype{mnemonic}{opcode}{description}
+
+\newcommand{\regmemimmbox}[1]{
+  \begin{lrbox}{\regmemtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{6}{\regmemtypeclass}
+        \bitbox{5}{\dr}
+        \bitbox{5}{\sr{base}}
+        \bitbox{11}{0}
+        \bitbox{5}{#1}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{constant}
+      \end{leftwordgroup}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\regmemimmtype}[3]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \regmemimmbox{#2}\usebox{\regmemtypebox}
+  \item[Semantics] $\dr \becomes \texttt{\sr{base}} + \texttt{constant}$
+  \item[Syntax] \begin{alltt} #1 \texttt{constant}(\sr{base}), \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #3
+}
+
+\newsavebox{\regmemimmfloattypebox}
+\newcommand{\regmemimmfloatbox}[1]{
+  \begin{lrbox}{\regmemimmfloattypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{6}{\regmemtypeclass}
+        \bitbox{5}{\dr}
+        \bitbox{5}{0}
+        \bitbox{11}{0}
+        \bitbox{5}{#1}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{constant}
+      \end{leftwordgroup}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\regmemimmfloattype}[3]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \regmemimmfloatbox{#2}\usebox{\regmemimmfloattypebox}
+  \item[Semantics] $\dr \becomes \texttt{constant}$
+  \item[Syntax] \begin{alltt} #1 \texttt{constant}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #3
+}
+
+
+\newsavebox{\regmemimmdoubletypebox}
+\newcommand{\regmemimmdoublebox}[1]{
+  \begin{lrbox}{\regmemimmdoubletypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{6}{\regmemtypeclass}
+        \bitbox{5}{\dr}
+        \bitbox{5}{0}
+        \bitbox{11}{0}
+        \bitbox{5}{#1}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{lo}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{hi}
+      \end{leftwordgroup}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\regmemimmdoubletype}[3]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \regmemimmdoublebox{#2}\usebox{\regmemimmdoubletypebox}
+  \item[Semantics]
+    \begin{math}
+      \begin{array}{lcl}
+        {\dr}_{63..32} & \becomes & \texttt{hi} \\
+        {\dr}_{31..0} & \becomes & \texttt{lo} \\
+      \end{array}
+      \end{math}
+  \item[Syntax] \begin{alltt} #1 \texttt{constant}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #3
+}
+
+
+% Store Register Instructions
+% \sregmemtype{mnemonic}{opcode}{semantics}{description}
+
+\newcommand{\sregmemtype}[4]{
+  \begin{lrbox}{\regmemtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{6}{\regmemtypeclass}
+        \bitbox{5}{\sr{0}}
+        \bitbox{5}{\sr{base}}
+        \bitbox{5}{\sr{index}}
+        \bitbox{3}{0}
+        \bitbox{2}{S}
+        \bitbox{1}{0}
+        \bitbox{5}{#2}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{signed offset}
+      \end{leftwordgroup}
+    \end{bytefield}
+  \end{lrbox}
+
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \usebox{\regmemtypebox}
+  \item[Semantics] #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{base}, \sr{index}, S, offset\end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+
+% Control register instructions (load from control register)
+% \lcrtype{mnemonic}{description}
+\newsavebox{\lcrtypebox}
+\newcommand{\lcrbox}{
+  \begin{lrbox}{\lcrtypebox}
+  \begin{bytefield}{32}
+  \bitheader[endianness=big]{0-31}          \\
+  \bitbox{6}{\crtypeclass}
+  \bitbox{5}{\dr}
+  \bitbox{5}{\acs{CR}}
+  \bitbox{11}{0}
+  \bitbox{5}{\crlcr} \\
+  \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\lcrtype}[2]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \lcrbox\usebox{\lcrtypebox}
+  \item[Semantics]   $\dr \becomes \textrm{\acs{CR}}$
+  \item[Syntax] \begin{alltt} #1 \acs{CR}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #2
+}
+
+% Control register instructions (store to control register)
+% \scrtype{mnemonic}{description}
+\newsavebox{\scrtypebox}
+\newcommand{\scrbox}{
+  \begin{lrbox}{\scrtypebox}
+  \begin{bytefield}{32}
+  \bitheader[endianness=big]{0-31}          \\
+  \bitbox{6}{\crtypeclass}
+  \bitbox{5}{\acs{CR}}
+  \bitbox{5}{\sr{0}}
+  \bitbox{11}{0}
+  \bitbox{5}{\crscr}
+  \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\scrtype}[2]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \scrbox\usebox{\scrtypebox}
+  \item[Semantics]   $\textrm{\acs{CR}} \becomes \sr{0}$
+  \item[Syntax] \begin{alltt} #1 \dr, \acs{CR} \end{alltt}
+  \end{InstructionInfo}
+
+  #2
+}
+
+
+% Unconditional Jump to register & link instructions
+% \jraltype{description}
+\newsavebox{\jraltypebox}
+\newcommand{\jralbox}{
+  \begin{lrbox}{\jraltypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31}          \\
+      \bitbox{6}{\jraltypeclass}
+      \bitbox{5}{\dr}
+      \bitbox{5}{\sr{0}}
+      \bitbox{16}{0}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\jraltype}[1]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \jralbox\usebox{\jraltypebox}
+  \item[Semantics]
+    \begin{math}
+      \begin{array}{lcl}
+        \dr & \becomes & \pc + 4 \\
+        \pc & \becomes & \sr{0} \\
+      \end{array}
+    \end{math}
+  \item[Syntax] \begin{alltt} jral \sr{0}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #1
+}
+
+
+% Jump Instructions
+% \jumptype{20..16}{4..0}
+%          {reg}{opcode}   first arg always 0? Remove!
+\newsavebox{\jumptypebox}
+\newcommand{\jumpbox}[2]{
+  \begin{lrbox}{\jumptypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{6}{\jumptypeclass}
+        \bitbox{5}{0}
+        \bitbox{5}{#1}
+        \bitbox{11}{0}
+        \bitbox{5}{#2}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{unsigned relative address}
+      \end{leftwordgroup}
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\jjumptype}[5]{    % Unconditional jump.
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \jumpbox{#3}{#4}\usebox{\jumptypebox}
+  \item[Semantics]
+    $\pc \becomes \pc + 8 + \texttt{address}$
+
+  \item[Syntax] \begin{alltt} #1 address \end{alltt}
+  \end{InstructionInfo}
+
+  #5
+}
+
+
+\newcommand{\jaljumptype}[5]{    % Unconditional jump.
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \jumpbox{#3}{#4}\usebox{\jumptypebox}
+  \item[Semantics]
+    \begin{math}
+      \begin{array}{lcl}
+          \pc & \becomes & \pc + 8 + \texttt{address} \\
+          \sr{31} & \becomes & \pc + 8 \\
+      \end{array}
+    \end{math}
+  \item[Syntax] \begin{alltt} #1 address \end{alltt}
+  \end{InstructionInfo}
+
+  #5
+}
+
+
+% Conditional jumps.
+% #1 { mnemonic }
+% #3 { opcode }
+% #4 { Description }
+% #5 { condition (math) }
+\newcommand{\jumptype}[4]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \jumpbox{\sr{0}}{#2}\usebox{\jumptypebox}
+  \item[Semantics]
+    \begin{math}
+      \pc \becomes \left\lbrace
+      \begin{array}{rcl}
+        \neg (#4) & \implies & \pc + 8  \\
+        (#4)      & \implies & \pc + 8 + \texttt{address}  \\
+      \end{array}
+      \right.
+    \end{math}
+
+    The value contained in \sr{0} must be of the same format as
+    produced by \xrefinst{cmp}.
+
+  \item[Syntax] \begin{alltt} #1 address \end{alltt}
+  \end{InstructionInfo}
+
+  #3
+}
+
+% Miscellanous Instructions
+\newsavebox{\mtypebox}
+\newcommand{\miscbox}[3]{
+  \begin{lrbox}{\mtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \bitbox{6}{\mtypeclass}
+      \bitbox{5}{0}
+      \bitbox{5}{#2}
+      \bitbox{5}{#3}
+      \bitbox{6}{0}
+      \bitbox{5}{#1} \\
+    \end{bytefield}
+  \end{lrbox}
+}
+
+% \mtype{mnemonic}{opcode}{20..16}{15..11}{semantics}{description}{asm operands}
+\newcommand{\mtype}[7]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \miscbox{#2}{#3}{#4}\usebox{\mtypebox}
+  \item[Semantics] #5
+  \item[Syntax] \begin{alltt} #1 #7 \end{alltt}
+  \end{InstructionInfo}
+
+#6
+}
+
+% Special store to register Instructions
+% \sregtype{mnemonic}{opcode}{semantics}{description}{assembly-operands}
+\newsavebox{\sregtypebox}
+\newcommand{\sregbox}[1]{
+  \begin{lrbox}{\sregtypebox}
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \bitbox{6}{\sregtypeclass}
+      \bitbox{5}{\instreg{d}}
+      \bitbox{16}{0}
+      \bitbox{5}{#1} \\
+    \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\sregtype}[5]{
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \sregbox{#2}\usebox{\sregtypebox}
+  \item[Semantics] #3
+  \item[Syntax] \begin{alltt} #1 \dr, #5\end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+
+% From bytefield.dtx documentation.
+%
+\newcommand{\memsection}[4]{%
+  % define the height of the memsection
+  \bytefieldsetup{bitheight=#3\baselineskip}%
+  \bitbox[]{10}{%
+    \texttt{#1}%      print end address
+    \\
+    %   do some spacing
+    \vspace{#3\baselineskip}
+    \vspace{-2\baselineskip}
+    \vspace{-#3pt}
+    \texttt{#2}%      print start address
+  }%
+  \bitbox{16}{#4}%    print box with caption
+}
+
+\newcommand{\lchevron}{\ensuremath{\ll}}
+\newcommand{\rchevron}{\ensuremath{\gg}}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "cpu"
+%%% End:

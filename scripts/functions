@@ -1,0 +1,287 @@
+#!/bin/bash
+# Copyright (c) 2021, 2022 Logic Magician Software
+#
+# Do not run.  Use 'source' to load into environment.
+set -o pipefail;
+# Ubuntu bash completion appears to fail if 'unset' enabled.
+# set -o nounset;
+
+declare -a SKL_BUILD_TYPE_VALID=(
+    alpha                       # Developer.
+    beta                        # For users, but with debugging.
+    release                     # All debugging turned off.
+);
+
+declare -a SKL_BUILD_OPTIONS_VALID=(
+    profile                     # Compiler profiling codegen
+    trace                       # Enable '--trace'
+);
+
+
+function build-option-validate ()
+{
+    local opt="${1}";
+    local v;
+    for v in  ${SKL_BUILD_OPTIONS_VALID[*]}; do
+        if [ "${opt}" = "${v}" ] ; then
+            return 0;
+        fi;
+    done;
+    return 1;
+}
+export -f build-option-validate;
+
+
+function trim ()
+{
+    # Remove leading and trailing whitespace.
+    local trimv="${1}";
+    trimv="${trimv#"${trimv%%[![:space:]]*}"}";
+    trimv="${trimv%"${trimv##*[![:space:]]}"}";
+    echo "${trimv}";
+}
+export -f trim;
+
+
+function build-option-remove ()
+{
+    local opt="${1}";
+    export SKL_BUILD_OPTIONS="$(trim "${SKL_BUILD_OPTIONS//${opt}}")";
+}
+export -f build-option-remove;
+
+
+function build-option-add ()
+{
+    local opt="${1}";
+    local boa;
+    # The options in ${SKL_BUILD_OPTIONS} must always be sorted.
+    # If they are not sorted, the build output directory computed by
+    # the SKL interpreter build process and skl-oberon-path() will
+    # diverge.
+    boa=$((local v;
+           for v in "${SKL_BUILD_OPTIONS}" "${opt}"; do
+               echo ${v};
+           done)|sort|tr '\n' ' ');
+    export SKL_BUILD_OPTIONS="$(trim "${boa}")";
+}
+export -f build-option-add;
+
+
+function build-option-enable ()
+{
+    local opt="${1}";
+
+    if build-option-validate "${opt}"; then
+        build-option-remove "${opt}";
+        build-option-add "${opt}";
+        echo "SKL_BUILD_OPTIONS: ${SKL_BUILD_OPTIONS}";
+    else
+        echo "**** Invalid build option '${opt}'";
+    fi;
+}
+export -f build-option-enable;
+
+
+function build-option-disable ()
+{
+    local opt="${1}";
+
+    if build-option-validate "${opt}"; then
+        build-option-remove "${opt}";
+        echo "SKL_BUILD_OPTIONS: ${SKL_BUILD_OPTIONS}";
+    else
+        echo "**** Invalid build option '${opt}'";
+    fi;
+}
+export -f build-option-disable;
+
+
+function build-set-type ()
+{
+    local type="${1}";
+    local v;
+    for v in  ${SKL_BUILD_TYPE_VALID[*]}; do
+        if [ "${type}" = "${v}" ] ; then
+            export SKL_BUILD_TYPE="${type}";
+            return 0;
+        fi;
+    done;
+    echo "Invalid build type: '${type}'";
+    return 1;
+}
+export -f build-set-type;
+
+
+function debug-enable ()
+{
+    set -v -x;                  # Enable tracing of these shell functions.
+}
+export -f debug-enable;
+
+
+function debug-disable ()
+{
+    set +v +x;                  # Disable tracing of these shell functions.
+}
+export -f debug-disable;
+
+
+function remove-diagnostics ()
+{
+    local path="${SKL_DIR:?SKL_DIR not set.}/system/.DiagnosticOutput";
+    if [ -e "${path}" ] ; then
+        rm -f ${path};
+    fi;
+}
+export -f remove-diagnostics;
+
+
+function skl-oberon-path ()
+{
+    # This pathname construction must match the pathname construction
+    # in the SKL interpreter build process.
+
+    local obd="${SKL_BUILD_DIR}";
+    local obt="/${SKL_BUILD_TYPE}";
+    local obo;
+    local oberon_path;
+    if [ ! -z ${SKL_BUILD_OPTIONS:-''} ] ; then
+	obo="${SKL_BUILD_OPTIONS:+/}${SKL_BUILD_OPTIONS/ //}";
+    else
+	obo="";
+    fi;
+    oberon_path="${obd}${obt}${obo}/loader/oberon";
+    echo "${oberon_path}";
+}
+export -f skl-oberon-path;
+
+function skl-oberon
+{
+    local heap_size=${LMS_OBERON_HEAP_SIZE:-64}; # Match interpreter default.
+    local stack_size=${LMS_OBERON_STACK_SIZE:-2}
+
+    if [ ! -z "${SKL_DIR:?SKL_DIR not set.}" ] ; then
+        local op=$(skl-oberon-path);
+
+        if [ -f "${op}" ] ; then
+            local res;
+
+            pushd "${SKL_DIR:?SKL_DIR not set.}/system";
+            # Before every run, remove .DiagnosticsOuput.
+            # It is removed because it is configured to be appended.
+            # In most cases, append is not desired.
+            remove-diagnostics;
+            export LMS_OBERON_HEAP_SIZE="${heap_size}";
+            export LMS_OBERON_STACK_SIZE="${stack_size}";
+            "${op}" "${@}";
+            res=$?;
+            if [ ${res} != 0 ] ; then
+                echo "Oberon interpreter returned: ${res}";
+            fi;
+            popd >/dev/null;
+            return ${res};
+        else
+            echo "'${op}' does not exist.";
+            false;
+        fi;
+    else
+        echo "SKL_DIR is not set";
+        false;
+    fi;
+    return $?;
+}
+export -f skl-oberon
+
+
+function skl-skl-oc ()
+{
+    # SKL-based compiler, targeting SKL.
+    skl-oberon -- "SKL.Compile ${@}";
+}
+export -f skl-skl-oc;
+
+
+function disasm () # oberon disassembler invocation
+{
+    # This pathname construction must match the pathname construction
+    # in the disassembler build process.
+
+    local obd="${SKL_BUILD_DIR}";
+    local obt="${SKL_BUILD_TYPE}";
+    local obo;
+
+    if [ ! -z ${SKL_BUILD_OPTIONS:-''} ] ; then
+	obo="${SKL_BUILD_OPTIONS:+/}${SKL_BUILD_OPTIONS/ //}";
+    else
+	obo="";
+    fi;
+    local disasm_path="${obd}/${obt}${obo}/disasm/disasm";
+    "${disasm_path}" "${@}";
+}
+export -f disasm;
+
+
+function oberon-show-config ()
+{
+    echo "SKL_DIR          : '${SKL_DIR:?SKL_DIR not set.}'";
+    echo "SKL_BUILD_TYPE   : '${SKL_BUILD_TYPE}'";
+    echo "SKL_BUILD_OPTIONS: '${SKL_BUILD_OPTIONS}'";
+    echo "SKL_BUILD_DIR    : '${SKL_BUILD_DIR}'";
+    echo "SKL_OBJ_PATH     : '${SKL_OBJ_PATH}'";
+}
+export -f oberon-show-config;
+
+
+function skl-gprof ()
+{
+    local gmon="${SKL_DIR:?SKL_DIR not set.}/system/gmon.out";
+    if [ -f "${gmon}" ] ; then
+        gprof $(skl-oberon-path) "${gmon}";
+    else
+        echo "'${gmon}' does not exist.";
+        echo "";
+        echo "Enable 'profile', rebuild everything and then re-run test.";
+        echo "";
+        echo "   build-option-enable  profile"
+        echo "";
+    fi;
+}
+export -f skl-gprof;
+
+
+function skl-build-all-interpreters ()
+{
+    (                                                   \
+        cd ${SKL_DIR:?SKL_DIR not set.}/loader/skl;     \
+        for bt in ${SKL_BUILD_TYPE_VALID[*]}; do        \
+            echo "*** Building:  '${bt}'";              \
+            export SKL_BUILD_TYPE=${bt};                \
+            if ! make -j 20; then                       \
+                echo "**** Build failed: ${bt}";        \
+                return 1;                               \
+            fi;                                         \
+        done;                                           \
+    )
+}
+export -f skl-build-all-interpreters;
+
+
+function skl-build ()
+{
+    local architecture="$(uname -m)";
+    local arch;
+
+    case "${architecture}" in
+        aarch64)
+            arch="Arm64";
+            ;;
+
+        x86_64)
+            arch="Intel-x86-64";
+            ;;
+    esac;
+
+    (cd ${SKL_DIR:?SKL_DIR not set.};           \
+     make SKL_ARCHITECTURE="${arch}" "${@}";)
+}

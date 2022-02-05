@@ -1,0 +1,16 @@
+-- Check if conditional branch instructions are documented to be PC-relative.
+
+-- Make a 'jr' macro which is 'jral reg, r0'.
+
+-- Mathematial documentation for 'rot' and 'roti' is probably wrong.
+   There is no check if the shift is < 0.
+
+-- Have a 'do it yourself' document.  One suggestion would be to add
+   the hardware, system software and test programs necessary to raise
+   an exception when a read / write is performed that wraps around memory.
+
+   (Need a new exception type in CR2.  Need a new trap type which states that
+    it's a read / write beyond memory.  The system software would have
+    to determine the size of the access to print an appropriate
+    message to the console.  The test programs would have to read & write.
+    Instruction fetch would have to be updated to catch this condition too)

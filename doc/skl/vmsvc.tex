@@ -1,0 +1,472 @@
+\chap{VMSVC Reference}\label{chap:vmsvc}
+
+The \texttt{vmsvc} instruction provides the ability for the virtual
+\ac{CPU}, the software running on it and the interpreter to cooperate
+in a manner that allows for host OS services (such as console or file
+IO) to be performed.
+
+As described in \xrefinst{vmsvc}, the instruction takes the address of
+a \emph{descriptor} that is known to the interpreter.  The interpreter
+examines the \emph{service id} field to determine what service to
+provide.  Furthermore, employing Oberon's \emph{type extension} allows
+the \texttt{Kernel} module and the interpreter to be closely coupled,
+and allows different VM services to be implemented; the interpreter
+will have one part of the implementation (interfacing with the host
+OS), and an Oberon module will contain another part (executing the
+\texttt{vmsvc} instruction).
+
+This following sections provide an overview of the services provided.
+
+\section{Bootstrap}
+
+This service is used during bootstrapping of the Oberon system.  It
+allows the bootstrap loader execute a single module's initialization
+code and then return back to the loader.
+
+This service uses the base \texttt{Kernel.VMSVCServiceDesc} type.
+
+\section{Trace}
+
+Certain build types of this software allow all instructions to be
+traced when the Oberon system is started.  Because this comes at a
+significant performance cost, it's also possible to control tracing
+via \texttt{Kernel.VMSVCTracing} using this service call.
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{enable}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{Kernel.VMServiceTraceDesc}}\label{fig:vmsvc-tracedesc}
+\end{figure}
+
+\section{EarlySysTrap}
+
+If a software trap occurs before the Oberon system is fully booted,
+the virtual \ac{CPU} will still jump to the address in \creg{5},
+regardless its initialization state.  The bootstrapping system must
+not raise system traps, and therefore does not provide a formal
+handler for them.  If they occur before the system is \emph{ready},
+this service will terminate the bootstrapping process.
+\figref{vmsvc-systrap}, shows the descriptor layout for this early
+system trap system.
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{ip}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{8}
+      \bitbox{32}{\ac{SFP}}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{12}
+      \bitbox{32}{trap id}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{Kernel.VMServiceSysTrapDesc}}\label{fig:vmsvc-systrap}
+\end{figure}
+
+
+\section{DebugLog}
+To facilitate console output from Oberon during bootstrapping, this
+debugging service was created.  Once the \texttt{Console} module is
+loaded and initialized, it can be used to write to the console.  The
+descriptor for this service is shown in \figref{vmsvc-debug}.
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{operation}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{data}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{adr}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{Kernel.VMServiceTraceDesc}}\label{fig:vmsvc-debug}
+\end{figure}
+
+
+\section{Terminate}
+
+This service terminates the Oberon system; it allows an exit code to
+be returned to the parent process.
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{rc}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{Kernel.VMServiceTraceDesc}}\label{fig:vmsvc-terminate}
+\end{figure}
+
+
+\section{Time}
+
+Timekeeping is a necessary component of Oberon.  To request time
+information from the host OS, the descriptor shown in
+\figref{vmsvc-time} is used.
+
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{op}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{time}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{HostOS.SVCTime}}\label{fig:vmsvc-time}
+\end{figure}
+
+
+\section{Directory}
+
+The \texttt{FileDir} module implements several directory operations:
+\emph{open}, \emph{close} and \emph{read}.  To open and close, the
+descriptor is \figref{vmsvc-dir}, and to read it's
+\figref{vmsvc-readdir}.
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{op}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{8}
+      \bitbox{32}{path}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{12}
+      \bitbox{32}{handle}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{FileDir.SVCOpenCloseDirDesc}}\label{fig:vmsvc-dir}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{op}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{8}
+      \bitbox{32}{handle}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{12}
+      \bitbox{32}{done}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{16}
+      \bitbox{32}{name}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{FileDir.SVCReadDirDesc}}\label{fig:vmsvc-readdir}
+\end{figure}
+
+
+
+
+\section{File}
+
+The implemented system supports the following rudimentary file operations.
+
+\begin{itemize}
+\item{Open}
+
+  This service allows files to be opened and managed from within the
+  Oberon system.
+
+  \begin{figure}[H]
+    \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{32}{service id}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{op}
+      \end{leftwordgroup} \\
+
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{flags}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{12}
+        \bitbox{32}{mode}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{16}
+        \bitbox{32}{pathname}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{20}
+        \bitbox{32}{fp}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \caption{\texttt{FileDir.SVCFileOpenDesc}}\label{fig:vmsvc-openfile}
+  \end{figure}
+
+\item{Close}
+
+  Resources no longer used by Oberon are automatically garbage
+  collected.  But, the host OS must still be notified when a resource
+  is no longer needed.  Consequently, an open file can be closed by
+  using this service.
+
+  \begin{figure}[H]
+    \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{32}{service id}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{op}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{fp}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \caption{\texttt{FileDir.SVCFileCloseDesc}}\label{fig:vmsvc-closefile}
+  \end{figure}
+
+\item{Read / Write}
+
+  Data can be read from, and written to, an open file by using this
+  service descriptor.
+
+  \begin{figure}[H]
+    \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{32}{service id}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{op}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{fp}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{12}
+        \bitbox{32}{bytes}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{16}
+        \bitbox{32}{buffer}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{20}
+        \bitbox{32}{result}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \caption{\texttt{FileDir.SVCFileReadWriteDesc}}\label{fig:vmsvc-readfile}
+  \end{figure}
+
+
+\item{Remove}
+
+  A file can be removed from the host OS' file system using this
+  service descriptor.
+
+  \begin{figure}[H]
+    \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{32}{service id}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{op}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{pathname}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{12}
+        \bitbox{32}{result}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \caption{\texttt{FileDir.SVCFileUnlinkDesc}}\label{fig:vmsvc-unlink}
+  \end{figure}
+
+\item{Rename}
+
+  A host OS file can be renamed using this service descriptor.
+
+  \begin{figure}[H]
+    \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{32}{service id}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{op}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{old}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{12}
+        \bitbox{32}{new}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{16}
+        \bitbox{32}{result}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \caption{\texttt{FileDir.SVCFileRenameDesc}}\label{fig:vmsvc-rename}
+  \end{figure}
+
+
+\item{Seek}
+
+  The current read / write position within an open host OS file can be
+  changed using this service descriptor.
+
+  \begin{figure}[H]
+    \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{32}{service id}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{op}
+      \end{leftwordgroup} \\
+
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{fp}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{12}
+        \bitbox{32}{pos}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{16}
+        \bitbox{32}{mode}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{20}
+        \bitbox{32}{newpos}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \caption{\texttt{FileDir.SVCFileSeekDesc}}\label{fig:vmsvc-seek}
+  \end{figure}
+
+
+\item{Make Temporary}
+
+  A temporary host OS file can be created using this service descriptor.
+
+  \begin{figure}[H]
+    \centering
+    \begin{bytefield}{32}
+      \bitheader[endianness=big]{0-31} \\
+      \begin{leftwordgroup}{0}
+        \bitbox{32}{service id}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{4}
+        \bitbox{32}{op}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{8}
+        \bitbox{32}{template}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{12}
+        \bitbox{32}{fd}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \caption{\texttt{FileDir.SVCMkstempDesc}}\label{fig:vmsvc-mkstemp}
+  \end{figure}
+\end{itemize}
+
+
+\section{FillMemory}
+
+This service  speeds filling memory with a constant value.
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{adr}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{8}
+      \bitbox{32}{size}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{12}
+      \bitbox{32}{val}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{Kernel.VMServiceFillMemoryDesc}}\label{fig:vmsvc-fillmemory}
+\end{figure}
+
+
+\section{EarlyHwdTrap}
+
+If a hardware fault occurs before the Oberon system is fully booted,
+the virtual \ac{CPU} will still jump to the address in \creg{1},
+regardless its initialization state.  The bootstrapping system must
+not raise hardware fault, and therefore does not provide a formal
+handler for them.  If they occur before the system is \emph{ready},
+this service will terminate the bootstrapping process.
+\Figref{vmsvc-hwdtrap}, shows the descriptor layout for this early
+system trap system.
+
+\begin{figure}[H]
+  \centering
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31} \\
+    \begin{leftwordgroup}{0}
+      \bitbox{32}{service id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{4}
+      \bitbox{32}{ip}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{8}
+      \bitbox{32}{\ac{SFP}}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{12}
+      \bitbox{32}{trap id}
+    \end{leftwordgroup} \\
+    \begin{leftwordgroup}{16}
+      \bitbox{32}{cr2}
+    \end{leftwordgroup} \\
+  \end{bytefield}
+  \caption{\texttt{Kernel.VMServiceHwdTrapDesc}}\label{fig:vmsvc-hwdtrap}
+\end{figure}
+
+
+% \section{Environment} Not implemented; not documented.
+

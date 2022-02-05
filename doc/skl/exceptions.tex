@@ -1,0 +1,56 @@
+\chap{Exceptions}
+
+\deliberate error
+% This file is not used in the documentation.  Fault / Trap
+% information needs to be rewritten when implemented.
+
+
+exceptions are reaised and the CPU begins executing code at the
+address stored in the exception control register.  If the value is
+zero, then the CPU will halt, and only a reset can bring it back.
+
+\section{Sequence of Events on Exception}
+
+When an exception occurs, the following events happen atomically:
+
+\begin{itemize}
+\item \emph{Exception Cause} is put into \emph{Cause Register}.
+\item \emph{Interrupt} State is put into \emph{Cause Register}.
+\item \texttt{PC} is placed into \texttt{cr0}.
+\item State in \texttt{cr2} is updated.
+\item \texttt{cr1} is loaded into the \texttt{PC}.
+\item Processor resumes execution at \texttt{PC}.
+\item interrupts are disabled
+\end{itemize}
+
+\section{Sequence of Events on \texttt{ERET}}
+
+\begin{itemize}
+\item PC is loaded with \texttt{cr0}
+\item Interrupts are set to the value contained in the \emph{Cause Register}.
+\item Processor resumes execution at \texttt{PC}.
+\end{itemize}
+
+
+\section{Faults}
+
+Faults are generated inside the \skl processor for actions such as
+\emph{undefined instructions}.
+
+Traps occur before the instruction is executed.  The return eip is the
+instruction which caused the fault.
+
+\subsection{Misaligned Memory Access}
+\subsection{Misaligned Instruction Fetch}
+\subsection{Breakpoint}
+\subsection{Undefined Opcode}
+\subsection{Divide by Zero}
+
+\section{Interrupts}
+
+Interrupts are generated external to the \skl processor and are
+reported to the \skl processor via the interrupt pin.
+
+Interrupts occur after an instruction is retired.  The return eip is
+the next instruction.
+

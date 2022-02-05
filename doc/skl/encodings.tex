@@ -1,0 +1,335 @@
+\chap{Instruction Encodings}
+
+The processor has a small set of ways in which an instruction can be
+encoded, which greatly contributes to the simplicity of the
+architecture.  Several of the encodings have been borrowed from the
+\mips architecture.
+
+The following sections show the different classes of instructions and
+their generic encodings.
+
+Instructions must be aligned on a four byte boundary.
+
+Bits 31\dots26 specify the instruction class, while bits 4\dots0
+generally holds the instruction opcode.
+
+%%%%%%
+\section{Branching}
+
+\begin{figure}[h!]
+  \centering
+    \jumpbox{\asmreg{0}}{opc}\usebox{\jumptypebox}
+    \caption{Branch Instruction Format}
+    \label{fig:branching-format}
+\end{figure}
+
+The instructions in this class, shown in \figref{branching-format}
+allow control transfer, and are usually used in conjunction with
+conditional expressions.
+
+
+%%%%%%
+\section{Bit Test}
+The \emph{bit test} instructions facilitate easily determining the
+value of a single bit in a register or word of memory.  There are two
+encodings, one that operates with two input registers, and one that
+uses an immediate value.
+
+\begin{figure}[h]
+  \centering
+  \btbox{\sr{0}}{0} \usebox{\bttypebox}
+  \caption{Register Bit Test Instruction Format}
+  \label{fig:bit-test-format}
+\end{figure}
+
+Both formats result in the value of the tested bit being written into
+the destination register.  The format of the two register instruction
+is shown in \figref{bit-test-format}, while the format of the
+immediate-register instruction is shown in
+\figref{bit-test-immediate-format}.
+
+\begin{figure}[h]
+  \centering
+  \btbox{C}{1} \usebox{\bttypebox}
+  \caption{Immediate Bit Test Instruction Format}
+  \label{fig:bit-test-immediate-format}
+\end{figure}
+
+%%%%%%
+\section{Conditional Set}
+
+Conditional set instructions are used to turn the result of a
+comparison into a boolean value.  They are encoded as shown in
+\figref{conditional-set-format}.
+
+\begin{figure}[h!]
+  \centering
+\cbox{opc}\usebox{\ctypebox}
+    \caption{Conditional Set Instruction Format}
+    \label{fig:conditional-set-format}
+\end{figure}
+
+%%%%%%
+\section{Control Register}
+
+\acp{CR} can be read and written.  There is one instruction encoding
+for each.
+
+\begin{itemize}
+\item Read \ac{CR}
+
+  \begin{figure}[H]
+    \centering
+    \lcrbox\usebox{\lcrtypebox}     % Load register from CR
+    \caption{Store Control Register Instruction Format}
+    \label{fig:store-control-register-format}
+  \end{figure}
+
+\item Write \ac{CR}
+
+  \begin{figure}[h!]
+    \centering
+      \scrbox\usebox{\scrtypebox}     % Store to CR from register
+      \caption{Load Control Register Instruction Format}
+      \label{fig:load-control-register-format}
+  \end{figure}
+\end{itemize}
+
+
+
+
+%%%%%%
+\section{General Register}
+
+These instructions allow freely mixing the two different types of
+arithmetic registers.  \Figref{general-register-format} shows the
+encoding of instructions of this class, and \figref{register-bank}
+shows the meanings of the \emph{register bank (b)} fields.
+
+\begin{figure}[h!]
+  \centering
+    \gregbox{opc}{b}{b}{b}\usebox{\gregtypebox}
+    \caption{General Register Instruction Format}
+    \label{fig:general-register-format}
+\end{figure}
+
+The operation occurs using the larger of the two specified input
+register types.  The smaller register value is converted to the larger
+value, the operation is evaluated, and then the value is appropriately
+converted and stored into the specified destination register.
+
+\begin{figure}[h!]
+  \centering
+    \begin{tabular}{r|l}
+      Encoding & Interpretation \\
+      \hline 0 & four byte integer register. \\
+      1 & eight byte IEEE 754 \emph{double} register. \\
+    \end{tabular}
+    \caption{Register Bank Specification}
+    \label{fig:register-bank}
+\end{figure}
+
+
+%%%%%%
+\section{Integer Register}
+
+\Figref{integer-register-format} show the encoding of instructions
+that operate upon integer registers. This class of instructions
+performs an operation with two integer registers and writes the result
+to the destination register.
+
+\begin{figure}[h!]
+  \centering
+  \rbox{opc}\usebox{\rtypebox}
+  \caption{Integer Register Instruction Format}
+  \label{fig:integer-register-format}
+\end{figure}
+
+
+%%%%%%
+\section{Jump Register and Link}
+
+This instruction is used for control transfer instructions that jump
+to the address in the source register and write a \emph{return
+  address} into the destination register.  The encoding format is
+shown in \figref{jump-register-and-link-format}.
+
+\begin{figure}[h!]
+  \centering
+\jralbox\usebox{\jraltypebox}
+    \caption{Jump Register and Link Instruction Format}
+    \label{fig:jump-register-and-link-format}
+\end{figure}
+
+
+%%%%%%
+\section{Miscellaneous}
+
+\begin{figure}[h]
+  \centering
+\miscbox{opc}{0}{0}\usebox{\mtypebox}
+    \caption{Miscellaneous Instruction Format}
+    \label{fig:misc-format}
+\end{figure}
+
+The miscellaneous instruction encoding is used by instructions that do
+not fit into any other instruction class.  The encoding is shown in
+\figref{misc-format}.
+
+
+%%%%%%
+\section{Register Immediate}
+
+
+This class of instructions allows immediate data to be loaded into a
+register.  There are three types of immediates that can be loaded:
+
+\begin{itemize}
+\item four byte integer
+  \begin{figure}[h!]
+    \centering
+      \regmemimmbox{9}\usebox{\regmemtypebox}
+      \caption{Register Immediate Instruction Format}
+  \end{figure}
+
+\item four byte single precision real
+
+  \begin{figure}[h!]
+    \centering
+      \regmemimmfloatbox{5}\usebox{\regmemimmfloattypebox}
+      \caption{Four Byte Single Precision Real Immediate Format}
+      \label{fig:four-byte-float-format}
+  \end{figure}
+
+\item eight byte double precision real
+  \begin{figure}[h!]
+    \centering
+      \regmemimmdoublebox{3}\usebox{\regmemimmdoubletypebox}
+      \caption{Eight Byte Double Precision Real Immediate Format}
+      \label{fig:eight-byte-float-format}
+  \end{figure}
+\end{itemize}
+
+%%%%%%
+\section{Register Memory}\label{sect:register-memory}.
+
+This class of instructions facilitates moving data to and from system
+memory into \acp{GPR}.  The encoding is shown in
+\figref{register-memory-format}.
+
+\begin{figure}[H]
+  \centering
+    \regmembox{opc}\usebox{\regmemtypebox}
+    \caption{Register Memory Instruction Format}
+    \label{fig:register-memory-format}
+\end{figure}
+
+The semantics of the \texttt{S} field, a multiplicative scaling factor
+applied to the index register, are shown in
+\figref{register-memory-scale}.
+
+\begin{figure}[H]
+  \centering
+  \begin{tabular}{l|l}
+    S &  Scale Factor\\
+    \hline
+    0 & 1 \\
+    1 & 2 \\
+    2 & 4 \\
+    3 & 8
+  \end{tabular}
+  \caption{Multiplicative Scaling of Index Register}
+  \label{fig:register-memory-scale}
+\end{figure}
+
+The address on which the instruction operates is computed as shown
+ in \figref{register-memory-address}.
+
+\begin{figure}[H]
+  \centering
+    \begin{math}
+      \begin{array}{lcl}
+        \textrm{address} & \becomes & \sr{base} + \sr{index} \times 2^{\texttt{S}} + \textrm{signed offset} \\
+      \end{array}
+    \end{math}
+  \caption{Effective Address Computation}\label{fig:register-memory-address}
+\end{figure}
+
+
+%%%%%%
+\section{Sign Extension}
+
+The sign extension instruction class, shown in
+\figref{sign-extend-format}, either copies bit 7 to bits ${8..31}$ or
+copies bit 15 to bits ${16..31}$.  The encoding for this instruction
+class is shown in \figref{sign-extend-format}.
+
+\begin{figure}[H]
+  \centering
+    \extbox{opc}\usebox{\exttypebox}
+    \caption{Sign Extension Instruction Format}
+    \label{fig:sign-extend-format}
+\end{figure}
+
+%%%%%%
+\section{Stack Operations}
+
+\begin{figure}[h!]
+  \centering
+    \stkbox{opc}{\sr{0}}\usebox{\stktypebox}
+    \caption{Stack Instruction Format}
+    \label{fig:stack-format}
+\end{figure}
+
+The stack instructions allow \texttt{push} operations to move register
+constents onto the stack, and \emph{pop} operations to move stack
+contents into registers.  The encoding is shown in
+\figref{stack-format}.
+
+
+%%%%%%
+\section{System Register}
+
+The special system registers allow programs to access internal
+\ac{CPU} state.  For example, the number of cycles that the \ac{CPU}
+has executed since power-on.  System registers may be read, but cannot
+be written.  The instruction format is show in \figref{sysreg-format}.
+
+
+\begin{figure}[H]
+  \centering
+  \sregbox{opc}\usebox{\sregtypebox}
+    \caption{System Register Instruction Format}
+    \label{fig:sysreg-format}
+\end{figure}
+
+%%%%%%
+\section{System Trap}
+
+The system trap instructions provide support for Oberon-specific
+runtime features, as follows:
+
+\begin{itemize}
+\item \texttt{NIL} Pointer Dereference Checking
+
+  \begin{figure}[H]
+    \centering
+    \trapbox{0}{20}{0}\usebox{\traptypebox}
+    \caption{\texttt{trapnil} Trap Instruction Format}
+  \end{figure}
+
+\item Integer Range Checking
+  \begin{figure}[H]
+    \centering
+    \trapbox{0}{12}{C}\usebox{\traptypebox}
+    \caption{\texttt{traprange} Instruction Format}
+  \end{figure}
+
+
+\item Array Index Bounds Checking
+  \begin{figure}[H]
+    \centering
+    \trapbox{\sr{1}}{13}{0}\usebox{\traptypebox}
+    \caption{\texttt{traparray} Instruction Format}
+  \end{figure}
+\end{itemize}

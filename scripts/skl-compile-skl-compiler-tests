@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Copyright (c) 2021, 2022 Logic Magicians Software
+#
+# Compile OS using x86-based SKL-targeting compiler.
+#
+# This produces the basic Oberon operating, and SKL testing modules,
+# system for SKL.
+set -o errexit;
+set -o pipefail;
+set -o nounset;
+source ${SKL_DIR}/scripts/files.def
+source ${SKL_DIR}/scripts/functions
+
+cd ${SKL_DIR}/system;
+skl-skl-oc                                      \
+    ${!COMPILER_TESTS[@]};

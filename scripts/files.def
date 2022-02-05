@@ -1,0 +1,145 @@
+#!/bin/bash
+# Copyright (c) 2021, 2022 Logic Magicians Software
+#
+# Source file file.
+#
+#
+
+# The base Oberon operating system.
+declare -a OS;
+OS=(SKLKernel.Mod                               \
+    SKLHostOS.Mod                               \
+    Reals.Mod                                   \
+    SKLConsole.Mod                              \
+    SKLEnvironment.Mod                          \
+    SKLFileDir.Mod                              \
+    Files.Mod                                   \
+    DebugIO.Mod                                 \
+    SKLModuleInspector.Mod                      \
+    SKLTrap.Mod                                 \
+    CommandLine.Mod                             \
+    SKLModules.Mod                              \
+    Types.Mod                                   \
+    Objects.Mod                                 \
+    Input.Mod                                   \
+    Display.Mod                                 \
+    DisplayFrame.Mod                            \
+    Fonts.Mod                                   \
+    Texts.Mod                                   \
+    Viewers.Mod                                 \
+    Oberon.Mod                                  \
+    MenuViewers.Mod                             \
+    TextFrames.Mod                              \
+    s3.System.Mod                               \
+    KernelTD.Mod);
+
+
+# The SKL compiler.
+declare -a SKL;
+SKL=(SKLERR.Mod                                 \
+     SKLCMDIO.Mod                               \
+     SKLMD.Mod                                  \
+     SKLOS.Mod                                  \
+     SKLST.Mod                                  \
+     SKLIE.Mod                                  \
+     SKLT.Mod                                   \
+     SKLTB.Mod                                  \
+     SKLDN.Mod                                  \
+     SKLDS.Mod                                  \
+     SKLCGL.Mod                                 \
+     SKLCGH.Mod                                 \
+     SKLTH.Mod                                  \
+     SKLTT.Mod                                  \
+     SKLPU.Mod                                  \
+     SKLTU.Mod                                  \
+     SKLSTP.Mod                                 \
+     SKLE.Mod                                   \
+     SKLSP.Mod                                  \
+     SKL.Mod);
+
+# The compiler called O3
+
+declare -a O3;
+O3=(O3Errors.Mod                                \
+    O3Config.Mod                                \
+    O3MachineDep.Mod                            \
+    O3Scanner.Mod                               \
+    O3Symtab.Mod                                \
+    O3Fingerprint.Mod                           \
+    O3SymFile.Mod                               \
+    O3TreeNode.Mod                              \
+    O3TreeHelper.Mod                            \
+    O3Semantics.Mod                             \
+    O3ConstExpression.Mod                       \
+    O3TypeAllocate.Mod                          \
+    O3StdProc.Mod                               \
+    O3Expression.Mod                            \
+    O3Parser.Mod                                \
+    O3.Mod                                      \
+    O3IOCommand.Mod                             \
+    O3FileIO.Mod                                \
+    O3GSAOpcode.Mod                             \
+    O3GSAData.Mod                               \
+    O3GSANames.Mod                              \
+    O3GSADump.Mod                               \
+    O3GSACanon.Mod                              \
+    O3GSADeadCode.Mod                           \
+    O3GSAValueNumber.Mod                        \
+    O3GSAConstPropagate.Mod                     \
+    O3GSAAliasAnalysis.Mod                      \
+    O3GSACopyPropagate.Mod                      \
+    O3GSASimpleSchedule.Mod                     \
+    O3GSAImprove.Mod                            \
+    O3MGSA.Mod                                  \
+    O3Mi386.Mod                                 \
+    O3MTreeDumper.Mod);
+
+
+
+
+# The tests for the SKL compiler code generator.
+#
+# The key is the name of the test module.
+#
+# The value of each element in the dictionary contains attributes about the test:
+#
+#   o 'pass' means the test succeeds to 'pass'. Mutually exclusive with 'fail'.
+#
+#   o 'fail' means the test fails to 'pass'.  Mutually exclusive with 'pass'.
+#
+#   o 'manual' means the test is only run manually (due to long runtimes).
+#
+declare -A COMPILER_TESTS;
+COMPILER_TESTS=(                                \
+    [CTArrayTrap.Mod]="pass"                    \
+    [CTAssertTrap.Mod]="fail"                   \
+    [CTBitsetRangeFail.Mod]="fail"              \
+    [CTConditionCode.Mod]="pass"                \
+    [CTDivZero.Mod]="fail"                      \
+    [CTDumpHeap.Mod]="pass,manual"              \
+    [CTDynArrLength.Mod]="fail"                 \
+    [CTEmpty.Mod]="pass,manual"                 \
+    [CTEnvironment.Mod]="pass"                  \
+    [CTExclude.Mod]="pass"                      \
+    [CTFileIO.Mod]="pass"                       \
+    [CTGC.Mod]="pass,manual"                    \
+    [CTImport.Mod]="pass"                       \
+    [CTIncDec.Mod]="pass"                       \
+    [CTInstructionCount.Mod]="pass"             \
+    [CTInvalidOpcode.Mod]="fail"                \
+    [CTNest.Mod]="pass"                         \
+    [CTOOBRead.Mod]="fail"                      \
+    [CTOOBWrite.Mod]="fail"                     \
+    [CTOpenArray.Mod]="pass"                    \
+    [CTProcedure.Mod]="pass"                    \
+    [CTRange.Mod]="fail"                        \
+    [CTReal.Mod]="pass"                         \
+    [CTReturn.Mod]="pass"                       \
+    [CTRotate.Mod]="pass"                       \
+    [CTSET.Mod]="pass"                          \
+    [CTSetCtor.Mod]="pass"                      \
+    [CTString.Mod]="pass"                       \
+    [CTTDCodeGen.Mod]="pass"                    \
+    [CTTrapNil.Mod]="fail"                      \
+    [CTTypeDesc.Mod]="pass,manual"              \
+);

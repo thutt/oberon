@@ -1,0 +1,27 @@
+#!/bin/bash
+# Copyright (c) 2022 Logic Magicians Software
+#
+set -o errexit;
+set -o nounset;
+set -o pipefail;
+
+declare -a warnings=(                           \
+    "E129"                                      \
+    "E201"                                      \
+    "E202"                                      \
+    "E203"                                      \
+    "E221"                                      \
+    "E251"                                      \
+);
+
+
+function main()
+{
+    local ignore=${warnings[*]};
+
+    /usr/bin/flake8                             \
+        --ignore ${ignore// /,}                 \
+        "${@}";
+}
+
+main "${@}";

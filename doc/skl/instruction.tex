@@ -1,0 +1,1402 @@
+\chap{Instruction Reference}
+
+The SKL instruction set is heavily influenced by the \mips and
+\natsemi architectures, but also has instructions to specifically
+supoprt Oberon and its runtime system.  All aspects of instruction
+encoding and semantics are covered in this chapter.
+
+
+\begin{instruction}{abs}
+  \abstype{abs}{\aaddopc}
+           {$\dr \becomes |\sr{1}|$}
+           {Sets \dr to $|\sr{1}|$.}
+\end{instruction}
+
+
+\begin{instruction}{add}
+\gregtype{add}{\aaddopc}{$\dr \becomes \sr{0} + \sr{1}$}{Adds \sr{0} and
+\sr{1}, and places the result into \dr.}
+\end{instruction}
+
+
+\begin{instruction}{and}
+  \rtype{and}{\randopc}{$\dr \becomes \sr{0} \wedge \sr{1}$}{Performs
+    a bitwise and of \sr{0} and\sr{1}, and places the result into
+    \dr.}
+\end{instruction}
+
+
+\begin{instruction}{ash}
+  \rtype{ash}{\rashopc}
+     {
+       \begin{math}
+         \begin{array}{rcl}
+           \sr{1} \geq 0 & \implies & \textrm{shift} \becomes \sr{1} \bmod 32        \\
+              &          & \dr \becomes \sr{0} \times 2^\textrm{shift}   \\
+           \sr{1} <    0 & \implies & \textrm{shift} \becomes \abs{\sr{1}} \bmod 32  \\
+                         &          & \dr \becomes \sr{0} \bdiv {2^\textrm{shift}} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Arithmetically shifts \sr{0} the number of bits specified by
+       \sr{1} and stores the result in \dr.  When \sr{1} is postive,
+       \sr{0} is left shifted, and when \sr{1} is negative, \sr{0} is
+       right shifted.
+
+       The right shift treats \sr{0} as a signed value.  All bits
+       shifted into the uppermost bit will have the same value as the
+       uppermost bit before the shift is executed.
+
+       With each bit shifted left, the vacated bit zero will set
+       to zero.
+     }
+\end{instruction}
+
+
+\begin{instruction}{bitset}
+  \rtype{bitset}{\rbitsetopc}
+     {
+       \begin{math}
+         \begin{array}{rcl}
+           \sr{0} \leq \sr{1} & \implies & \textrm{lo} \becomes \abs{\sr{0}} \bmod 32        \\
+                              &          & \textrm{hi} \becomes \abs{\sr{1}} \bmod 32        \\
+                              &          & \dr \becomes (2^{\textrm{hi} - \textrm{lo} + 1} - 1) \times 2^\textrm{lo} \\
+           \sr{0} >    \sr{1} & \implies & \textrm{Software trap 12}
+         \end{array}
+       \end{math}
+     }
+     {
+       Sets bits \sr{0} through, and including, bit \sr{1} in \dr.
+       If \sr{1} is less than \sr{0}, then software fault 12 is
+       raised.  See \figref{cr5-r1-value}.
+     }
+\end{instruction}
+
+
+\begin{instruction}{bt}
+  \btrrtype{bt}{\btrropc}
+     {
+       $\dr \becomes ({\sr{1}} \bdiv {2^{\textrm{\sr{0}} \bmod 32}}) \wedge 1$
+     }
+     {
+       Sets \dr to the bit in \sr{1} specified by \sr{0}.  Only the low
+       five bits of \sr{0} are used.
+     }
+\end{instruction}
+
+
+\begin{instruction}{bti}
+  \btcrtype{bti}
+     {\btcropc}
+     {
+       $\dr \becomes ({\sr{1}} \bdiv {2^{\textrm{C}}}) \wedge 1$
+     }
+     {
+       Tests if the bit specified by the immediate, \emph{C}, is set
+       in \sr{1}, and sets \dr to the state of the bit.
+     }
+\end{instruction}
+
+
+\begin{instruction}{btm}
+  \btrrtype{btm}
+     {\btmopc}
+     {
+       $\dr \becomes {(\texttt{MEMORY[\sr{1}]}} \bdiv {2^{\sr{0} \bmod 32}}) \wedge  1$
+     }
+     {
+       Tests if the bit specified by \sr{0} is set in the memory
+       referenced by \sr{1} and sets \dr to the state of the bit.  Only
+       the low five bits of \sr{0} are used.
+     }
+\end{instruction}
+
+
+\begin{instruction}{btmi}
+  \btcrtype{btmi}{\btmiopc}
+    {
+      $\dr \becomes {(\texttt{MEMORY[\sr{1}]}} \bdiv {2^{\textrm{C}}}) \wedge  1$
+    }
+    {
+      Tests if the bit specified by the immediate, \emph{C}, is set in
+      the memory referenced by \sr{1} and sets \dr to the state of the
+      bit.
+    }
+\end{instruction}
+
+
+\begin{instruction}{btmc}
+  \btrrtype{btmc}{\btmcopc}
+    {$\dr \becomes {(\texttt{MEMORY[\sr{1}]}} \bdiv {2^{\sr{0} \bmod 32}}) \wedge  1$
+
+     $\texttt{MEMORY[\sr{1}]} \becomes \texttt{MEMORY[\sr{1}]} \wedge \neg {2^{\textrm{\sr{0}}}}$}
+    {
+      Tests if the bit specified by \sr{0} is set in the memory
+      referenced by \sr{1}, sets \dr to the state of the bit and
+      clears the bit in memory.  Only the low five bits of \sr{0}
+      are used.
+    }
+\end{instruction}
+
+
+\begin{instruction}{btmci}
+  \btcrtype{btmci}{\btmciopc}
+    {$\dr \becomes {(\texttt{MEMORY[\sr{1}]}} \bdiv {2^{\textrm{C}}}) \wedge  1$
+
+     $\texttt{MEMORY[\sr{1}]} \becomes \texttt{MEMORY[\sr{1}]} \wedge \neg {2^{\textrm{C}}}$}
+    {Tests if the bit specified by \texttt{C} is set in the memory
+      referenced by \sr{1}, sets \dr to the state of the bit and
+      clears the bit in memory.}
+\end{instruction}
+
+
+%%%%
+\begin{instruction}{btms}
+  \btrrtype{btms}{\btmsopc}
+    {$\dr \becomes {(\texttt{MEMORY[\sr{1}]}} \bdiv {2^{\sr{0} \bmod 32}}) \wedge  1$
+
+     $\texttt{MEMORY[\sr{1}]} \becomes \texttt{MEMORY[\sr{1}]} \vee {2^{\textrm{\sr{0}}}}$}
+    {Tests if the bit specified by \sr{0} is set in the memory
+      referenced by \sr{1}, sets \dr to the state of the bit and
+      sets the bit in memory.  Only the low five bits of \sr{0}
+      are used.}
+\end{instruction}
+
+
+\begin{instruction}{btmsi}
+  \btcrtype{btmsi}{\btmsiopc}
+    {$\dr \becomes {(\texttt{MEMORY[\sr{1}]}} \bdiv {2^{\textrm{C}}}) \wedge  1$
+
+     $\texttt{MEMORY[\sr{1}]} \becomes \texttt{MEMORY[\sr{1}]} \vee {2^{\textrm{C}}}$}
+    {Tests if the bit specified by \texttt{C} is set in the memory
+      referenced by \sr{1}, sets \dr to the state of the bit and
+      sets the bit in memory.}
+\end{instruction}
+
+
+%%%%
+%
+% This instruction is not documented because it is not implemented.
+%
+%% \begin{instruction}{break}\label{inst:break}
+%%   \todo{Should each instruction in this class get a special encoding,
+%%     or should they be decoded in an ad hoc manner?}
+%%   \mtype{break}{\mbreakopc}{0}{0}{Breakpoint.}{}
+%% \end{instruction}
+
+\begin{instruction}{cmp}\label{inst:cmp}
+  \cmptype{cmp}{\acmpopc}
+  {
+    \begin{math}
+      \dr \becomes \left\lbrace\begin{array}{lll}
+      \textrm{bit}_0 & \textrm{\acs{ZF}} & \sr{0} - \sr{1} = 0 \\
+      \textrm{bit}_1 & \textrm{\acs{SF}} & \sr{0} - \sr{1} < 0 \\
+      \textrm{bit}_2 & \textrm{\acs{CF}} & \sr{0} < \sr{1} \\
+      \textrm{bit}_3 & \textrm{\acs{OF}} &
+      (\sr{0} \bdiv 2^{31} \neq \sr{1} \bdiv 2^{31}) \wedge \\
+      & & (\sr{0} \bdiv 2^{31} \neq (\sr{0} - \sr{1}) \bdiv 2^{31}) \\
+      \textrm{bit}_{31..4} & & \textrm{reserved} \\
+      \end{array}
+      \right.
+    \end{math}
+  }
+  {
+    Subtracts \sr{1} from \sr{0}, and sets \dr as shown
+  }
+
+\end{instruction}
+
+
+\begin{instruction}{cmps}
+  \rtype{cmps}
+     {\rcmpsopc}
+     {
+       $\dr \becomes \textrm{See \xrefinst{cmp}}$
+     }
+     {
+       Compares the two \acs{ASCIIZ} strings in the memory referenced
+       by \sr{0} and \sr{1}.  The bytes of the string are compared
+       one-by-one, and \dr is set to the result of the first non-equal
+       comparison, or the final comparison between two \texttt{0X} bytes.
+       The bits in \dr are formatted the same as for the \xrefinst{cmp}
+       instruction.  The flags in \dr can be interpreted as if a comparison
+       with \emph{0} had been performed, with the meaning as follows:
+
+       \begin{tabularx}{\linewidth}{ll}
+         $\dr < 0$ & $\textrm{String}_{\sr{0}}$ less than $\textrm{String}_{\sr{1}}$ \\
+         $\dr = 0$ & $\textrm{String}_{\sr{0}}$ equal to $\textrm{String}_{\sr{1}}$ \\
+         $\dr > 0$ & $\textrm{String}_{\sr{0}}$ greater than $\textrm{String}_{\sr{1}}$ \\
+       \end{tabularx}
+     }
+\end{instruction}
+
+
+
+
+%%%%
+%
+% This instruction is not documented because it is not implemented.
+%
+%% \begin{instruction}{di}
+%%     \sregtype{di}{\sregdiopc}{Unknown}{Disable Interrupts.}
+
+%%     \todo{What happens to interrupts which are pending when this
+%%       instruction executes?  Does it take affect immediately or after
+%%       one more instruction?}
+%% \end{instruction}
+
+
+\begin{instruction}{div}\label{inst:div}
+  \gregtype{div}{\adivopc}
+    {$\dr \becomes \sr{0} \bdiv \sr{1}$}
+    {Computes \sr{0} divided by \sr{1} and stores the result in \dr.
+
+    A \emph{divide by zero} fault is raised if \sr{1} is zero.
+
+    For integers, the \texttt{div} and \xrefinst{mod} instructions
+    are related as follows:
+
+    \begin{math}
+      \begin{array}{lcl}
+        x \bmod y & \equiv  & x - y \lfloor {x \bdiv y} \rfloor \\
+        y > 0 & \rightarrow & 0 \leq x \bmod y < y \\
+        y = 0 & \rightarrow & undefined \\
+        y < 0 & \rightarrow & y < x \bmod y \leq 0 \\
+      \end{array}
+    \end{math}}
+\end{instruction}
+
+
+%%%%
+%
+% This instruction is not documented because it is not implemented.
+%
+%% \begin{instruction}{ei}
+%%     \sregtype{ei}{\sregeiopc}{Unknown}{Enable Interrupts.}
+
+%%   \todo{When is the next interrupt delivered?  Immediately after
+%%     \texttt{ei}?}
+%% \end{instruction}
+
+\begin{instruction}{enter}\label{inst:enter}
+  \stkframetype{enter}{words}{\enteropc}
+  {
+    \begin{math}
+      \begin{array}{lcl}
+                                  \sr{30} & \becomes &  \sr{30} - 4 \\
+        \texttt{MEMORY[\textrm{\sr{30}}]} & \becomes &  \sr{31} \\
+                                  \sr{30} & \becomes &  \sr{30} - 4 \\
+        \texttt{MEMORY[\textrm{\sr{30}}]} & \becomes &  \dr \\
+                                      \dr & \becomes &  \sr{30} \\
+                                  \sr{30} & \becomes &  \sr{30} - \textrm{words} \times 4 \\
+      \end{array}
+    \end{math}
+  }
+  {
+    Creates a local stack frame upon procedure entry.
+
+    The return address, in \sr{31}, and \dr are saved on the stack,
+    and then the \ac{SP} is decreased by \texttt{words} four byte
+    words to accommodate local procedure variables.
+
+    Procedure arguments are accessed at positive offsets from \dr, and
+    local variables are accessed at negative offsets.
+
+    The second argument, \texttt{words}, is a 16 bit unsigned
+    integer. In practice, \dr is \sr{29}.
+  }
+\end{instruction}
+
+
+
+%%%%
+%
+% This instruction is not documented because it is not implemented.
+%
+%% \begin{instruction}{eret}\label{inst:eret}
+%%   \todo{This reenables interrupts. Interrupts will be disabled when
+%%     the fault is raised.}
+%%   \mtype{eret}{\meretopc}{0}{0}{Return from interrupt.}{}
+
+%%   \todo{Describe that the \emph{source register 0} field must be zero,
+%%   becuase causes CR0 to be read for the return address.}
+%% \end{instruction}
+
+\begin{instruction}{j}
+  \jjumptype{j}{0}{0}{\jopc}
+     {
+
+       This instruction performs an unconditional jump to
+       \texttt{address}.
+
+       The value of \texttt{address}, which is a four byte unsigned
+       integer, must be aligned to four bytes.
+     }
+\end{instruction}
+
+\begin{instruction}{jal}\label{inst:jal}
+  \jaljumptype{jal}{31}{0}{\jalopc}
+     {
+       This instruction unconditionally jumps to \texttt{address} and
+       sets the \ac{LR} to the address of the next instruction.
+
+       A \emph{call} / \emph{return} semantic can be created with this
+       instruction and \xrefinst{jral}.
+     }
+\end{instruction}
+
+
+\begin{instruction}{jeq}
+  \jumptype
+     {jeq}
+     {\jjeqopc}
+     {
+       Jumps to the specified address if the comparison result in \sr{0}
+       indicates equality, otherwise continues at the next
+       instruction.
+     }
+     {
+       \sr{0}.ZF = 1
+     }
+\end{instruction}
+
+
+\begin{instruction}{jge}
+  \jumptype
+     {jge}
+     {\jjgeopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were signed numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{greater or equal} to \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.SF = \sr{0}.OF}
+\end{instruction}
+
+\begin{instruction}{jgeu}
+  \jumptype
+     {jgeu}
+     {\jjgeuopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were unsigned numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{greater or equal} to \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.CF = 0}
+\end{instruction}
+
+\begin{instruction}{jgt}
+  \jumptype
+     {jgt}
+     {\jjgtopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were signed numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{greater than} \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.ZF = 0 \wedge \sr{0}.SF = \sr{0}.OF}
+\end{instruction}
+
+\begin{instruction}{jgtu}
+  \jumptype
+     {jgtu}
+     {\jjgtuopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were unsigned numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{greater than} \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.CF = 0 \wedge \sr{0}.ZF = 0}
+\end{instruction}
+
+\begin{instruction}{jle}
+  \jumptype
+     {jle}
+     {\jjleopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were signed numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{less or equal to} \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.ZF = 1 \vee \sr{0}.SF \neq \sr{0}.OF}
+\end{instruction}
+
+\begin{instruction}{jleu}
+  \jumptype
+     {jleu}
+     {\jjleuopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were unsigned numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{less or equal to} \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.CF = 1 \vee \sr{0}.ZF = 1}
+\end{instruction}
+
+\begin{instruction}{jlt}
+  \jumptype
+     {jlt}
+     {\jjltopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were signed numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{less than} \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.SF \neq \sr{0}.OF}
+\end{instruction}
+
+\begin{instruction}{jltu}
+  \jumptype
+     {jltu}
+     {\jjltuopc}
+     {This instruction treats the \xrefinst{cmp} result as if both
+       inputs were unsigned numbers, and will consequently jump to the
+       specified address if the result in \sr{0} indicates that
+       comparison's \sr{0} was \emph{less than} \sr{1}.
+       Otherwise continues at the next instruction.}
+     {\sr{0}.CF = 1}
+\end{instruction}
+
+\begin{instruction}{jne}
+  \jumptype
+     {jne}
+     {\jjneopc}
+     {Jumps to the specified address if the comparison result in \sr{0}
+       indicates the compared values were \emph{not equal}, otherwise continues
+       at the next instruction.}
+     {\sr{0}.ZF = 0}
+\end{instruction}
+
+
+\begin{instruction}{jral}\label{inst:jral}
+  \jraltype
+      {Unconditionally jumps to contents of \sr{0} and saves the
+        return address in \dr.
+
+        The address contained in \sr{0} must be aligned to a word
+        boundary or a \emph{misaligned instruction} fault will
+        occur at the address of this instruction.}
+\end{instruction}
+
+
+\begin{instruction}{la}
+  \laregmemtype{la}
+     {\laopc}
+     {
+       This instructions computes a value using \sr{base}, \sr{index},
+       \texttt{S} and \texttt{signed offset} then stores the
+       result in \dr.
+     }
+\end{instruction}
+
+
+\begin{instruction}{lb}
+  \regmemtype{lb}
+     {\lbopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr}_{[7..0]} & \becomes & \texttt{MEMORY}[\sr{base} +
+            (\sr{index} \times 2^{\texttt{S}}) + \texttt{signed offset}] \\
+           {\dr}_{[31..8]} & \becomes & {\dr}_{[7]} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Loads and sign extends a byte from memory into a 32-bit
+       register.  To sign extend, bit seven of the original data
+       is copied to bits ${8..31}$ of the destination register.
+     }
+\end{instruction}
+
+\begin{instruction}{lbu}
+  \regmemtype{lbu}
+     {\lbuopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr}_{[7..0]} & \becomes & \texttt{MEMORY}[\sr{base} +
+            (\sr{index} \times 2^{\texttt{S}}) + \texttt{signed offset}] \\
+           {\dr}_{[31..8]} & \becomes & 0 \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Loads and zero extends a byte from memory into a 32-bit
+       register.  To zero extend, zero is copied to bits ${8..31}$
+       of the destination register.
+     }
+\end{instruction}
+
+
+\begin{instruction}{lcc}
+  \sregtype{lcc}
+     {\sreglccopc}
+     {$\dr \becomes \textrm{Fetch Instruction Count}$}
+     {Loads the internal count of the number of instructions fetched
+       since power-on into \dr.}{\dr}
+\end{instruction}
+
+
+\begin{instruction}{lcr}\label{inst:lcr}
+  \lcrtype{lcr}
+     {
+       Loads the specifiied control register into \dr.
+     }
+\end{instruction}
+
+
+\begin{instruction}{ld}
+  \regmemtype{ld}
+     {\ldopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr} & \becomes & \texttt{MEMORY}[\sr{base} + (\sr{index} \times 2^{\texttt{S}}) + \texttt{signed offset}] \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Loads an eight byte double precision real value
+       into the destination register from the memory
+       address specified.
+     }
+\end{instruction}
+
+
+\begin{instruction}{ldi}
+  \regmemimmdoubletype{ldi}
+     {\ldiopc}
+     {
+
+       Loads a double precision real value into the destination
+       register from data fields in the instruction.
+
+     }
+\end{instruction}
+
+
+\begin{instruction}{leave}\label{inst:leave}
+  \stkframetype{leave}{words}{\leaveopc}
+     {
+% Rd is not set until end
+       \begin{math}
+         \begin{array}{lcl}
+           \sr{\lchevron{internal}\rchevron}     & \becomes & \texttt{MEMORY[\textrm{\dr}]} \\
+           \sr{31} & \becomes & \texttt{MEMORY[\textrm{\dr} + 4]} \\
+           \dr     & \becomes & \sr{\lchevron{internal}\rchevron} \\
+           \sr{30} & \becomes & \dr + (2 + \textrm{words}) \times 4 \\
+         \end{array}
+       \end{math}
+     }
+     {This instruction desconstructs the local stack frame created
+       by \texttt{enter} by:
+
+       \begin{itemize}
+       \item Restoring \sr{29}.
+       \item Restoring \dr from the stack.
+       \item Restoring \sr{31} from the stack.
+       \item Removing  \texttt{words} procedure arguments provided by the caller from the stack.
+       \end{itemize}
+     }
+\end{instruction}
+
+\begin{instruction}{lf}
+  \regmemtype{lf}
+     {\lfopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr} & \becomes & \texttt{MEMORY}[\sr{base} + (\sr{index} \times 2^{\texttt{S}}) + \texttt{signed offset}] \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Loads a four byte single precision real value
+       into the destination register from the memory
+       address specified.
+     }
+\end{instruction}
+
+
+\begin{instruction}{lfi}
+  \regmemimmfloattype{lfi}
+     {\lfiopc}
+     {
+       Loads a single precision real value into the
+       destination register from data field in the instruction.
+     }
+\end{instruction}
+
+
+\begin{instruction}{lh}
+  \regmemtype{lh}
+     {\lhopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr}_{[15..0]} & \becomes & \texttt{MEMORY}[\sr{base} +
+            (\sr{index} \times 2^{\texttt{S}}) + \texttt{signed offset}] \\
+           {\dr}_{[31..16]} & \becomes & {\dr}_{[15]} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Loads and sign extends a 16 bit signed halfword from memory
+       into a 32 bit register.  To sign extend, bit 15 of
+       the original data is copied to bits ${16..31}$ of the
+       destination register.
+     }
+\end{instruction}
+
+\begin{instruction}{lhu}
+  \regmemtype{lhu}
+     {\lhuopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr}_{[15..0]} & \becomes & \texttt{MEMORY}[\sr{base} +
+            (\sr{index} \times 2^{\texttt{S}}) + \texttt{signed offset}] \\
+           {\dr}_{[31..16]} & \becomes & 0 \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Loads and zero extends a 16-bit halfword from memory into a
+       32-bit register.  To zero extend, zero is copied to bits
+       ${16..31}$ of the destination register.
+     }
+% gungla
+\end{instruction}
+
+
+\begin{instruction}{lsh}
+\rtype{lsh}
+   {\rlshopc}
+   {
+     \begin{math}
+       \begin{array}{rcl}
+         \sr{1} \geq 0 & \implies & shift \becomes \sr{1} \bmod 32  \\
+                       &          & \dr \becomes \sr{0} \times 2^{shift}  \\
+         \sr{1} <    0 & \implies & shift \becomes \abs{\sr{1}} \bmod 32        \\
+                       &          & \dr \becomes {\sr{0}} \bdiv {2^{shift} }\\
+       \end{array}
+     \end{math}
+   }
+   {
+     Logically shifts \sr{0} the number of bits specified by \sr{1}
+     and stores the result in \dr.
+
+     When \sr{1} is negative, a right shift is used, and when \sr{1}
+     is positive, a left shift is used.
+
+     The right shift treats \sr{0} as an unsigned value, and so all
+     bits shifted into the upper bit will be zero.  All bits shifted
+     in at bit zero will have the value zero.
+   }
+\end{instruction}
+
+
+\begin{instruction}{lw}
+  \regmemtype{lw}
+     {\lwopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr} & \becomes & \texttt{MEMORY}[\sr{base} +
+            (\sr{index} \times 2^{\texttt{S}}) + \texttt{signed offset}] \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Loads 32-bit word from memory into a 32-bit register.
+     }
+\end{instruction}
+
+
+\begin{instruction}{lwi}
+  \regmemimmtype{lwi}
+     {\lwiopc}
+     {
+       This instruction loads the value of \sr{base} plus the
+       immediate value specified in the instruction into \dr.
+     }
+\end{instruction}
+
+\begin{instruction}{mod}\label{inst:mod}
+  \gregtype{mod}
+     {\amodopc}
+     {$\dr \becomes \sr{0} \bmod \sr{1}$}
+     {
+       \todo{Implement real mod, or document that it's not implemented.}
+       Computes the remainder of \sr{0} divided by \sr{1} and stores
+       the result in \dr.
+
+       A \emph{divide by zero} fault is raised if \sr{1} is zero.
+
+       For integer operands, the \xrefinst{div} and \texttt{mod}
+       instruction are related as follows:
+
+       \begin{math}
+         \begin{array}{lcl}
+           x \bmod y & \equiv  & x - y \lfloor {x \bdiv y} \rfloor \\
+           y > 0 & \rightarrow & 0 \leq x \bmod y < y \\
+           y = 0 & \rightarrow & undefined \\
+           y < 0 & \rightarrow & y < x \bmod y \leq 0 \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+\begin{instruction}{mul}
+  \gregtype{mul}{\amulopc}{$\dr \becomes \sr{0} \times \sr{1}$}{Multiplies
+    \sr{0} by \sr{1} and stores the result in \dr.}
+\end{instruction}
+
+\begin{instruction}{nor}
+  \rtype{nor}{\rnoropc}{$\dr \becomes \neg (\sr{0} \vee
+    \sr{1})$}{Performs a bitwise \texttt{nor} of two registers and
+    places the result in the destination register.}
+
+  \begin{xnote}
+    A bitwise \texttt{not} can be implemented using \texttt{nor} with
+    the following:
+
+\begin{verbatim}
+  nor   R1, R0, R2
+\end{verbatim}
+
+This instruction sets \texttt{R2} to the bitwise \texttt{not} of
+\texttt{R1}.
+  \end{xnote}
+
+\end{instruction}
+
+
+\begin{instruction}{or}
+  \rtype{or}
+     {\roropc}
+     {$\dr \becomes \sr{0} \vee \sr{1}$}
+     {
+       Performs a bitwise \texttt{or} of two registers and then
+       places the result in the destination register.
+     }
+\end{instruction}
+
+
+\begin{instruction}{pop}\label{inst:pop}
+  \popstktype{pop}
+     {\popopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \texttt{MEMORY[\textrm{\sr{30}}]} \\
+           \sr{30} & \becomes & \sr{30} + 4 \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Pops a four byte integer value from the stack into \dr, then
+       increments \asmreg{30} by four bytes.
+     }
+\end{instruction}
+
+\begin{instruction}{popf}\label{inst:popf}
+  \popstktype{popf}
+     {\popfopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \texttt{MEMORY[\textrm{\sr{30}}]} \\
+           \sr{30} & \becomes & \sr{30} + 4 \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Pops a four byte single precision real value from the stack
+       into \dr, then increments \asmreg{30} by four bytes.
+     }
+\end{instruction}
+
+\begin{instruction}{popd}\label{inst:popd}
+  \popstktype{popd}
+     {\popdopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr}_{31..00} & \becomes & \texttt{MEMORY[\textrm{\sr{30}}]} \\
+           {\dr}_{63..32} & \becomes & \texttt{MEMORY[\textrm{\sr{30}} + 4]} \\
+           \sr{30}       & \becomes & \sr{30} + 8 \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Pops an eight byte double precision  value from the stack
+       into \dr, then increments \asmreg{30} by eight bytes.
+     }
+\end{instruction}
+
+\begin{instruction}{push}\label{inst:push}
+  \pushstktype{push}
+     {\pushopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \sr{30}                           & \becomes & \sr{30} - 4 \\
+           \texttt{MEMORY[\textrm{\sr{30}}]} & \becomes & {\sr{0}} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Decrements \asmreg{30} by four, then pushes the four byte integer
+       value in \sr{0} onto the stack.
+     }
+\end{instruction}
+
+\begin{instruction}{pushf}\label{inst:pushf}
+  \pushstktype{pushf}
+     {\pushfopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \sr{30}                           & \becomes & \sr{30} - 4 \\
+           \texttt{MEMORY[\textrm{\sr{30}}]} & \becomes & {\sr{0}} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Decrements \asmreg{30} by four, then pushes the four byte single
+       precision real value in \sr{0} onto the stack.
+     }
+\end{instruction}
+
+\begin{instruction}{pushd}\label{inst:pushd}
+  \pushstktype{pushd}
+     {\pushdopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \sr{30}                           & \becomes & \sr{30} - 8 \\
+           \texttt{MEMORY[\textrm{\sr{30}} - 4]} & \becomes & {\sr{0}}_{31..00} \\
+           \texttt{MEMORY[\textrm{\sr{30}}]} & \becomes & {\sr{0}}_{63..32} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Decrements \asmreg{30} by eight, then pushes the eight byte double
+       precision real value in \sr{0} onto the stack.
+     }
+\end{instruction}
+
+
+\begin{instruction}{rot}
+  \rtype{rot}
+     {\rrotropc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \sr{1} >= 0 & \implies & \begin{array}{lcl}
+             \textrm{shift} & \becomes & \sr{1} \bmod 32 \\
+             \textrm{lo} & \becomes & {\sr{0}} \bdiv {2^{32 - \textrm{shift}}} \\
+             \textrm{hi} & \becomes & \sr{0} \times 2^{\textrm{shift}} \\
+             \dr & \becomes & \textrm{hi}\vee \textrm{lo} \\
+           \end{array} \\
+           & & \\
+           \sr{1} < 0 & \implies & \begin{array}{lcl}
+             \textrm{shift} & \becomes & \abs{\sr{1}} \bmod 32 \\
+             \textrm{lo} & \becomes & \sr{0} \times 2^{\textrm{shift}} \\
+             \textrm{hi} & \becomes & {\sr{0}} \bdiv {2^{32 - \textrm{shift}}} \\
+             \dr & \becomes & \textrm{hi}\vee \textrm{lo} \\
+           \end{array}
+         \end{array}
+       \end{math}
+     }
+     {
+       This considers \sr{0} as an unsigned integer and rotates it by
+       the number of bits specified in \sr{1} and stores the result in
+       \dr.
+
+       When \sr{1} is positive, a left shift is used, and when \sr{1}
+       is negative, a right shift is used.
+
+       When shifting left, bits shifted out of the highest bit appear
+       in the lowest bit, When shifting right, bits shifted out of the
+       lowest bit appear in the highest bit.
+     }
+\end{instruction}
+
+
+\begin{instruction}{sb}
+  \sregmemtype{sb}
+     {\sbopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \texttt{MEMORY[\textrm{\sr{base}} + \(\textrm{\sr{index}}
+               \times 2^\texttt{S}\) +  \textrm{signed offset}]}
+           & \becomes & {\sr{0}}_{7..0}
+         \end{array}
+       \end{math}
+     }
+     {
+       This instruction stores the low-order byte
+       of \sr{0} to the address specified in the instruction.
+     }
+\end{instruction}
+
+
+\begin{instruction}{scr}\label{inst:scr}
+  \scrtype{scr}
+    {
+      Stores \sr{0} into \acs{CR}.  The affects of the control
+      register change will take place at the beginning of the next
+      instruction.
+    }
+\end{instruction}
+
+
+\begin{instruction}{sd}
+  \sregmemtype{sd}
+     {\sdopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \texttt{MEMORY[\textrm{\sr{base}} + \(\textrm{\sr{index}}
+               \times 2^\texttt{S}\) +  \textrm{signed offset}]}
+           & \becomes & {\sr{0}}_{31..00} \\
+           \texttt{MEMORY[\textrm{\sr{base}} + \(\textrm{\sr{index}}
+               \times 2^\texttt{S}\) +  \textrm{signed offset} + 4]}
+           & \becomes & {\sr{0}}_{63..32} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Stores the eight byte double precision real value in
+       \sr{0} to the address specified in the instruction.
+     }
+\end{instruction}
+
+
+\begin{instruction}{seb}
+  \exttype{seb}
+     {\extb}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr}_{07..00} & \becomes & {\sr{0}}_{07..00} \\
+           {\dr}_{31..08} & \becomes & {\sr{0}}_{07} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Sign-extends the low-order byte in \sr{0} to a word
+       and assigns the result to \dr.  Bits eight through 31
+       will each contain a copy of bit seven from \sr{0}.
+     }
+\end{instruction}
+
+
+\begin{instruction}{seh}
+  \exttype{seh}
+     {\exth}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           {\dr}_{15..00} & \becomes & {\sr{0}}_{15..00} \\
+           {\dr}_{31..16} & \becomes & {\sr{0}}_{15} \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Sign-extends the low-order half-word in \sr{0} to a word and
+       assigns the result to \dr.  Bits 16 through 31 will each
+       contain a copy of bit 15 from \sr{0}.
+     }
+\end{instruction}
+
+
+\begin{instruction}{seq}
+  \ctype{seq}
+     {\seqopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}\texttt{.ZF} = 1 \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+\begin{instruction}{sf}
+  \sregmemtype{sf}
+     {\sfopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \texttt{MEMORY[\textrm{\sr{base}} + \(\textrm{\sr{index}}
+               \times 2^\texttt{S}\) +  \textrm{signed offset}]}
+           & \becomes & {\sr{0}}
+         \end{array}
+       \end{math}
+     }
+     {
+       Stores the four byte single precision real value
+       in \sr{0} into the address specified in the instruction.
+     }
+\end{instruction}
+
+
+\begin{instruction}{sge}
+  \ctype{sge}
+     {\sgeopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.SF = \sr{0}.OF \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+\begin{instruction}{sgeu}
+  \ctype{sgeu}
+     {\sgeuopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.CF = 0 \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+\begin{instruction}{sgt}
+  \ctype{sgt}
+     {\sgtopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.ZF = 0 \wedge \sr{0}.SF = \sr{0}.OF \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+\begin{instruction}{sgtu}
+  \ctype{sgtu}
+     {\sgtuopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.CF = 0 \wedge \sr{0}.ZF = 0 \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+\begin{instruction}{sh}
+  \sregmemtype{sh}
+     {\shopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \texttt{MEMORY[\textrm{\sr{base}} + \(\textrm{\sr{index}}
+               \times 2^\texttt{S}\) +  \textrm{signed offset}]}
+           & \becomes & {\sr{0}}_{15..00}
+         \end{array}
+       \end{math}
+     }
+     {
+       Stores the low-order 16 bits of \sr{0} to the address
+       specified in the instruction.
+     }
+\end{instruction}
+
+
+\begin{instruction}{sle}
+  \ctype{sle}
+     {\sleopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.ZF = 1 \vee \sr{0}.SF \neq \sr{0}.OF \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+\begin{instruction}{sleu}
+  \ctype{sleu}
+     {\sleuopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.CF = 1 \vee \sr{0}.ZF = 1 \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+\begin{instruction}{slt}
+  \ctype{slt}
+     {\sltopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.SF \neq \sr{0}.OF \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+\begin{instruction}{sltu}
+  \ctype{sltu}
+     {\sltuopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.CF = 1 \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+\begin{instruction}{sne}
+  \ctype{sne}
+     {\sneopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sr{0}.ZF = 0 \\
+         \end{array}
+       \end{math}
+     }
+\end{instruction}
+
+
+
+\begin{instruction}{sub}
+  \gregtype{sub}{\asubopc}{$\dr \becomes \sr{0} - \sr{1}$}{Subtracts
+    \sr{1} from \sr{0} and stores the result in \dr.}
+\end{instruction}
+
+
+\begin{instruction}{sw}
+  \sregmemtype{sw}
+     {\swopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \texttt{MEMORY[\textrm{\sr{base}} + \(\textrm{\sr{index}}
+               \times 2^\texttt{S}\) +  \textrm{signed offset}]}
+           & \becomes & {\sr{0}}
+         \end{array}
+       \end{math}
+     }
+     {
+       Stores the word in \sr{0} to the address specified in the instruction.
+     }
+\end{instruction}
+
+
+\begin{instruction}{traparray}\label{inst:traparray}
+\systraptype{traparray}
+     {13}
+     {0}
+     { % semantics
+       \begin{math}
+         \begin{array}{lcl}
+           \neg (\sr{0} >= 0 \wedge \sr{0} <= \sr{1}) & \implies &
+           \left\lbrace
+           \begin{array}{lcl}
+             \asmreg{1} & = & 13 \\
+             \asmreg{31} & = & \pc \\
+             \pc & = & \creg{5} \\
+           \end{array}
+           \right. \\
+
+           (\sr{0} >= 0 \wedge \sr{0} <= \sr{1}) & \implies & \pc = \pc + 4 \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Tests that the value in \sr{0} is non-negative, and less than
+       or equal to the array bound in \sr{1}.  If the value is within
+       the specified range, execution continues with the next
+       instruction.  If not within the specified range, software trap
+       13 is raised (\xref{sect:CR5}).
+     }
+\end{instruction}
+
+
+\begin{instruction}{trapnil}\label{inst:trapnil}
+\niltraptype{trapnil}
+     {C}
+     {0}
+     { % semantics
+       \begin{math}
+         \begin{array}{lcl}
+           C & \in & \lbrace 19, 20 \rbrace \\
+           \sr{0} = \textrm{NIL} & \implies &
+           \left\lbrace
+           \begin{array}{lcl}
+             \asmreg{1} & = & C \\
+             \asmreg{31} & = & \pc \\
+             \pc & = & \creg{5} \\
+           \end{array}
+           \right. \\
+           \sr{0} \neq \textrm{NIL} & \implies & \pc = \pc + 4 \\
+         \end{array}
+       \end{math}
+     }
+     {
+       Checks that the pointer value in \sr{0} is not \texttt{NIL}.
+       If it is \texttt{NIL}, software trap 20 (\xref{sect:CR5}) is
+       raised.  If it is not \texttt{NIL}, execution continues at the
+       next instruction.
+     }
+     % 20 must match SKLKernel.Mod HaltPointerCheck.
+\end{instruction}
+
+
+\begin{instruction}{traprange}\label{inst:traprange}
+\rangetraptype{traprange}
+     {12}
+     {\textrm{C}}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           C = 1 & \implies &
+           \begin{array}{lcl}
+             (\sr{0} \in \lbrace 0, 1 \rbrace) & \implies & \pc = \pc + 4 \\
+             (\sr{0} \notin \lbrace 0, 1 \rbrace) & \implies &
+             \left\lbrace
+             \begin{array}{lcl}
+               \asmreg{1} & = & 12 \\
+               \asmreg{31} & = & \pc \\
+               \pc & = & \creg{5} \\
+             \end{array}
+             \right. \\
+           \end{array} \\
+
+           & & \\
+
+           C = 4 & \implies &
+           \begin{array}{lcl}
+             (-2^7 + 1 <= \sr{0} <= 2^7) & \implies & \pc = \pc + 4 \\
+             \neg (-2^7 + 1 <= \sr{0} <= 2^7) & \implies &
+             \left\lbrace
+             \begin{array}{lcl}
+               \asmreg{1} & = & 12 \\
+               \asmreg{31} & = & \pc \\
+               \pc & = & \creg{5} \\
+             \end{array}
+             \right. \\
+           \end{array} \\
+
+           & & \\
+
+           C = 5 & \implies &
+           \begin{array}{lcl}
+             (-2^{15} + 1 <= \sr{0} <= 2^{15}) & \implies & \pc = \pc + 4 \\
+             \neg (-2^{15} + 1 <= \sr{0} <= 2^{15}) & \implies &
+             \left\lbrace
+             \begin{array}{lcl}
+               \asmreg{1} & = & 12 \\
+               \asmreg{31} & = & \pc \\
+               \pc & = & \creg{5} \\
+             \end{array}
+             \right. \\
+           \end{array} \\
+
+           & & \\
+
+           C = 6 & \implies & \pc = \pc + 4 \\
+
+           & & \\
+
+           C = 9 & \implies &
+           \begin{array}{lcl}
+             (\sr{0} \in \lbrace 0, 31 \rbrace) & \implies & \pc = \pc + 4 \\
+             (\sr{0} \notin \lbrace 0, 31 \rbrace) & \implies &
+             \left\lbrace
+             \begin{array}{lcl}
+               \asmreg{1} & = & 12 \\
+               \asmreg{31} & = & \pc \\
+               \pc & = & \creg{5} \\
+             \end{array}
+             \right. \\
+           \end{array} \\
+
+         \end{array}
+       \end{math}
+     }
+     {
+       Checks that the value in \sr{0} is within the allowable range
+       of the type specified by \textrm{C}.  If the value is out of
+       the range, software trap 12 (\xref{sect:CR5}) is raised.  If
+       the value is within the allowed range, execution continues with
+       the next instruction.
+
+       \Figref{traprange-type} shows the Oberon type encoded by
+       \emph{C}.
+
+       \begin{figure}[H]
+         \centering
+           \begin{tabular}{l|l}
+             1 & \texttt{BOOLEAN} \\
+             4 & \texttt{SHORTINT} \\
+             5 & \texttt{INTEGER} \\
+             6 & \texttt{LONGINT} \\
+             9 & \texttt{SET} \\
+           \end{tabular}
+         \caption{\texttt{traprange} type encoding}\label{fig:traprange-type}
+       \end{figure}
+     }
+\end{instruction}
+
+\begin{instruction}{vmsvc}\label{inst:vmsvc}
+\mtype{vmsvc}
+     {\mvmsvcopc}
+     {\sr{0}}
+     {0}
+     {Host OS services executed}
+     {
+       This instruction provides an escape from the virtual machine
+       that facilitates interaction with the host OS.  The input
+       register \sr{0} must hold the address of a descriptor in Oberon
+       memory that describes the service that should be executed.  The
+       structure of the descriptor is defined by the \texttt{Kernel}
+       module, and is shown in \figref{vmsvc-descriptor}.
+
+       \begin{figure}[h]
+         \centering
+           \begin{bytefield}{32}
+             \bitheader[endianness=big]{0-31}          \\
+             \bitbox{32}{service id}
+           \end{bytefield}
+         \caption{Base \texttt{vmsvc} descriptor}\label{fig:vmsvc-descriptor}
+       \end{figure}
+
+       The \emph{service id} field indicates the service that is to be
+       provided.
+
+       See \xref{chap:vmsvc} for support VM Services.
+     }
+     {\sr{0}}
+\end{instruction}
+
+
+\begin{instruction}{xor}
+  \rtype{xor}{\rxoropc}{$\dr \becomes \sr{0} \xor \sr{1}$}
+  {Performs a bitwise \emph{exclusive or} of \sr{0} and \sr{1} and
+   stores the result in \dr.}
+\end{instruction}
