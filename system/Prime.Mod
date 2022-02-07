@@ -3,14 +3,14 @@ MODULE Prime; (* Print prime numbers below 'N' *)
 IMPORT Console;
 
 CONST
-  N = 10000;
+  N = 100000;
 
 VAR
   prime : ARRAY N OF BOOLEAN;
 
 PROCEDURE Init;
   VAR
-    i : INTEGER;
+    i : LONGINT;
 BEGIN
   i := 0;
   WHILE i < N DO
@@ -21,7 +21,7 @@ END Init;
 
 PROCEDURE SetSeive;
   VAR 
-    i,m : INTEGER;
+    i,m : LONGINT;
 BEGIN
   i := 2;
   WHILE i < N DIV 2 DO
@@ -36,7 +36,7 @@ END SetSeive;
 
 PROCEDURE ShowPrimes;
   VAR
-    i, j : INTEGER;
+    i, j : LONGINT;
 BEGIN
   i := 1;
   j := 1;
