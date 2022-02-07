@@ -1,7 +1,8 @@
 MODULE DebugIO;
-  IMPORT Kernel, Reals, Files;
+  IMPORT Kernel, Reals, Files, Console;
 
   CONST
+    ScreenOutput = TRUE;        (* FALSE --> .DiagnosticOutput file. *)
     Filename = '.DiagnosticOutput';
     maxD = 9;
 
@@ -10,29 +11,36 @@ MODULE DebugIO;
     r : Files.Rider;
 
   PROCEDURE Close*;
-  BEGIN Files.Register(f);
+  BEGIN
+    IF ~ScreenOutput THEN
+      Files.Register(f);
+    END;
   END Close;
 
   PROCEDURE Create;
-  BEGIN f := Files.New(Filename); 
-    Files.Set(r, f, 0); Files.WriteString(r, 'Oberon Diagnostic Output File'); 
-    Files.Write(r, 0AX);
+  BEGIN
+    IF ~ScreenOutput THEN
+      f := Files.New(Filename);
+      Files.Set(r, f, 0); Files.WriteString(r, 'Oberon Diagnostic Output File');
+      Files.Write(r, 0AX);
+    END;
   END Create;
 
   PROCEDURE Open*;
-  BEGIN f := Files.Old(Filename); Files.Set(r, f, Files.Length(f));
+  BEGIN
+    IF ~ScreenOutput THEN
+      f := Files.Old(Filename);
+      Files.Set(r, f, Files.Length(f));
+    END;
   END Open;
 
-  PROCEDURE Header*(mod : Kernel.Module; f : ARRAY OF CHAR);
-  BEGIN
-    IF mod # NIL THEN Files.WriteString(r, mod.name^);
-    ELSE Files.WriteString(r, '(no module)');
-    END;
-    Files.Write(r, '.'); Files.WriteString(r, f); Files.WriteString(r, ': ');
-  END Header;
-
   PROCEDURE LCh(ch : CHAR); (* local character output; subverts frequent file opening and closing *)
-  BEGIN Files.Write(r, ch);
+  BEGIN
+    IF ScreenOutput THEN
+      Console.Ch(ch);
+    ELSE
+      Files.Write(r, ch);
+    END;
   END LCh;
 
   PROCEDURE Ch*(ch : CHAR);
@@ -40,33 +48,46 @@ MODULE DebugIO;
   END Ch;
 
   PROCEDURE LStr(s : ARRAY OF CHAR);
-  BEGIN Files.WriteString(r, s);
+  BEGIN
+    IF ScreenOutput THEN
+      Console.Str(s);
+    ELSE
+      Files.WriteString(r, s);
+    END;
   END LStr;
-  
+
   PROCEDURE Str*(s : ARRAY OF CHAR);
   BEGIN LStr(s);
   END Str;
-  
+
   PROCEDURE Bool*(b : BOOLEAN);
   BEGIN
-    IF b THEN Files.WriteString(r, "TRUE");
-    ELSE Files.WriteString(r, "FALSE");
+    IF b THEN LStr("TRUE");
+    ELSE LStr("FALSE");
     END;
   END Bool;
-  
+
   PROCEDURE Hex*(x : LONGINT);
     VAR  i: LONGINT; y: LONGINT; a: ARRAY 10 OF CHAR;
   BEGIN
     i := 0;
     REPEAT
       y := x MOD 10H;
-      IF y < 10 THEN a[i] := CHR(y + 30H) ELSE a[i] := CHR(y + 37H) END;
-      x := x DIV 10H; INC(i)
+      IF y < 10 THEN
+        a[i] := CHR(y + 30H);
+      ELSE
+        a[i] := CHR(y + 37H);
+      END;
+      x := x DIV 10H;
+      INC(i);
     UNTIL i = 8;
     a[i] := 0X;
-    REPEAT DEC(i); Ch(a[i]); UNTIL i = 0;
+    REPEAT
+      DEC(i);
+      LCh(a[i]);
+    UNTIL i = 0;
   END Hex;
-  
+
   PROCEDURE LInt(x, n : LONGINT);
     VAR i: INTEGER; x0: LONGINT; a: ARRAY 11 OF CHAR;
   BEGIN i := 0;
@@ -81,11 +102,11 @@ MODULE DebugIO;
     IF x < 0 THEN LCh("-") END;
     REPEAT DEC(i); LCh(a[i]) UNTIL i = 0;
   END LInt;
-  
+
   PROCEDURE Int*(x, n : LONGINT);
   BEGIN LInt(x, n);
   END Int;
-  
+
   PROCEDURE Set*(s : SET);
     VAR i, j: INTEGER; notfirst: BOOLEAN;
   BEGIN
@@ -130,7 +151,7 @@ MODULE DebugIO;
       LCh(CHR(e DIV 10 + 30H)); LCh(CHR(e MOD 10 + 30H));
     END;
   END Real;
-  
+
   PROCEDURE LReal*(x : LONGREAL; n : INTEGER);
     CONST maxD = 16;
     VAR e: INTEGER; x0: LONGREAL; d: ARRAY maxD OF CHAR;
@@ -155,14 +176,22 @@ MODULE DebugIO;
       LCh(CHR(e DIV 100 + 30H)); e := e MOD 100; LCh(CHR(e DIV 10 + 30H)); LCh(CHR(e MOD 10 + 30H));
     END;
   END LReal;
-  
+
   PROCEDURE Ln*;
-  BEGIN Files.Write(r, 0AX);
+  BEGIN LCh(0AX);
   END Ln;
+
+  PROCEDURE Header*(mod : Kernel.Module; f : ARRAY OF CHAR);
+  BEGIN
+    IF mod # NIL THEN LStr(mod.name^);
+    ELSE LStr('(no module)');
+    END;
+    LCh('.'); Str(f); Str(': ');
+  END Header;
 
   PROCEDURE Init;
   BEGIN Create;
   END Init;
-  
+
 BEGIN Init;
 END DebugIO.
