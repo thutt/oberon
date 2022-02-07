@@ -204,15 +204,13 @@ namespace objio
     static void
     read_symbol_info(symbol_info_desc_t *&info, int n_symbols)
     {
-        int i = 0;
-        int fprint, adr, count;
-        symbol_info_desc_t *ndata;
-        unsigned char tag;
-        unsigned char *name;
+      	int fprint, adr, count;
+      	symbol_info_desc_t *ndata;
+      	unsigned char tag;
+      	unsigned char *name;
 
         count = 0;
-        while (count < n_symbols)
-        {
+        while (count < n_symbols) {
             read_char(tag);
             ndata = new symbol_info_desc_t(tag);
             ndata->next = info; info = ndata;
@@ -233,7 +231,7 @@ namespace objio
             case e_arrtd:  read_string(name); read_num(fprint);                             break;
             default:
                 fprintf(stderr, "unknown value '%#x' -- number of symbols %#x of %#x\n" ,
-                        i, count, n_symbols);
+                        tag, count, n_symbols);
                 exit(-1);
             }
             ndata->name = name;
