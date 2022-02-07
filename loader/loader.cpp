@@ -24,9 +24,9 @@ static struct option long_options[] = {
     { "verbose",           no_argument,       NULL, 256 },
     { "instruction-count", no_argument,       NULL, 257 },
     { "dump-heap",         no_argument,       NULL, 258 },
-    { "watchpoint",        required_argument, NULL, 259 },
+    // 259 unused.
     { "diagnostic",        no_argument,       NULL, 260 },
-    // 261 unused
+    // 261 unused.
     { "trace",             no_argument,       NULL, 262 },
     { NULL, 0, 0, 0 }
 };
@@ -158,16 +158,8 @@ main(int argc, char *argv[])
             config::option_set(config::opt_dump_heap);
             break;
 
-        case 259: {
-            /* --watchpoint <heap-address>:<bytes>
-             *
-             *   --watchpoint 425c200H:20H
-             *
-             * Trailing 'H' is required.
-             */
-            assert(false);
+        case 259:
             break;
-        }
 
         case 260:
             config::option_set(config::opt_diagnostic);
@@ -227,6 +219,7 @@ main(int argc, char *argv[])
             if (config::options & config::opt_instruction_count) {
                 dialog::print("Instruction Count: %u\n", skl::cpu._instruction_count);
             }
+            return_value = config::exit_data.rc;
         }
     } else {
         dialog::fatal("%s: failure making %d Mb heap\n", argv[0], heap_size_in_megabytes);
