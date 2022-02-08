@@ -3,8 +3,7 @@ targeting a virtual CPU.
 
 The self-hosting compiler is written in Oberon, and works within the
 rest of the native Oberon runtime system.  The interpreter for the
-virtual CPU is written in C, but is compiled as C++ for the
-stronger-than-C type system.
+virtual CPU is written in simple C++.
 
 The repository does not support the full Oberon operating environment
 at this point in time, but doing so remains a project goal.
