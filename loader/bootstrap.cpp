@@ -42,18 +42,18 @@ namespace bootstrap
         skl::initialize_stack();
         lookup_kernel_bootstrap_symbols(m);
 
-        skl::write_integer_register(skl::cpu, 1,
+        skl::write_integer_register(&skl::cpu, 1,
                                     heap::heap_address(heap::oberon_heap));
-        skl::write_integer_register(skl::cpu, 2,
+        skl::write_integer_register(&skl::cpu, 2,
                                     heap::oberon_heap_size_in_bytes +
                                     heap::oberon_stack_size_in_bytes);
-        skl::write_integer_register(skl::cpu, 3,
+        skl::write_integer_register(&skl::cpu, 3,
                                     heap::heap_address(heap::oberon_stack));
-        skl::write_integer_register(skl::cpu, 4,
+        skl::write_integer_register(&skl::cpu, 4,
                                     heap::oberon_stack_size_in_bytes);
-        skl::write_integer_register(skl::cpu, 5,
-                                  O3::module_list);
-        skl::write_integer_register(skl::cpu, 6,
+        skl::write_integer_register(&skl::cpu, 5,
+                                    O3::module_list);
+        skl::write_integer_register(&skl::cpu, 6,
                                     cmdline);
 
         kernintf::init_module(m);
@@ -65,7 +65,7 @@ namespace bootstrap
         /* The Modules module requires the head of the module list to
          * be in the R1 so that the module list can be maintained.
          */
-        skl::write_integer_register(skl::cpu, 1, O3::module_list);
+        skl::write_integer_register(&skl::cpu, 1, O3::module_list);
         kernintf::init_module(m);
     }
 
@@ -144,7 +144,7 @@ namespace bootstrap
 
         assert(O3::n_inited == O3::n_loaded - 1);
         assert(strcmp(O3::module_name(loaded_module), "Modules") == 0);
-        initialize_modules(loaded_module);
+        initialize_modules(loaded_module); /* Start executing Modules. */
 
         return 0;
     }

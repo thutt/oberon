@@ -10,17 +10,18 @@
 #include "skl_int_reg.h"
 
 namespace skl {
-        typedef enum opc_t {
+    typedef enum opc_t {
 #define OPC(_t) OPC_##_t,
 #include "skl_int_reg_opc.h"
 #undef OPC
-            N_OPCODES
-        } opc_t;
-        static const char *mne[N_OPCODES] = {
+        N_OPCODES
+    } opc_t;
+    static const char *mne[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_int_reg_opc.h"
 #undef OPC
-        };
+    };
+
     typedef md::uint32 (*int_opc_fn_t)(md::uint32 l, md::uint32 r);
 
 #define OPC(_t) static md::uint32 oper_##_t(md::uint32 l, md::uint32 r);
@@ -32,6 +33,41 @@ namespace skl {
 #include "skl_int_reg_opc.h"
 #undef OPC
     };
+
+
+    struct skl_int_reg_t : skl::instruction_t {
+        const unsigned   Rd;
+        const unsigned   R0;
+        const unsigned   R1;
+        int_opc_fn_t     operation;
+
+        skl_int_reg_t(cpu_t       *cpu_,
+                      md::uint32   inst_,
+                      const char **mne_,
+                      int_opc_fn_t operation_) :
+            skl::instruction_t(cpu_, inst_, mne_),
+            Rd(field(inst_, 25, 21)),
+            R0(field(inst_, 20, 16)),
+            R1(field(inst_, 15, 11)),
+            operation(operation_)
+        {
+        }
+
+
+        virtual void interpret(void)
+        {
+            md::uint32       v;
+            const md::uint32 l = read_integer_register(cpu, R0);
+            const md::uint32 r = read_integer_register(cpu, R1);
+
+            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
+
+            v = operation(l, r);
+            write_integer_register(cpu, Rd, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
 
     static md::uint32
     oper_AND(md::uint32 l, md::uint32 r)
@@ -105,7 +141,7 @@ namespace skl {
             v = create_flags(zf, sf, cf, of);
         } else {
             v = create_flags(0, 0, 0, 0);
-            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
+            hardware_trap(&cpu, CR2_OUT_OF_BOUNDS_READ);
         }
         dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
         return v;
@@ -134,7 +170,7 @@ namespace skl {
             v = ((1UL << (r - l + 1UL)) - 1UL) << l;
         } else {
             v = ~0;
-            software_trap(cpu, 12);
+            software_trap(&cpu, 12);
         }
         dialog::trace("[%xH, %xH]    value: %xH]\n", l, r, v);
         return v;
@@ -208,25 +244,12 @@ namespace skl {
     }
 
 
-    void
-    op_int_reg(cpu_t &cpu, md::uint32 inst)
+    skl::instruction_t *
+    op_int_reg(cpu_t *cpu, md::uint32 inst)
     {
-        O3::decode_pc_t  decoded_pc;
-        const unsigned   Rd  = field(inst, 25, 21);
-        const unsigned   R0  = field(inst, 20, 16);
-        const unsigned   R1  = field(inst, 15, 11);
-        const opc_t      opc = static_cast<opc_t>(field(inst, 4, 0));
-        const md::uint32 l   = read_integer_register(cpu, R0);
-        const md::uint32 r   = read_integer_register(cpu, R1);
-        md::uint32       v;
+        const opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
-        dialog::trace("%s: %s  R%u, R%u, R%u",
-                      decoded_pc, mne[opc], R0, R1, Rd);
         assert(opc >= 0 && opc < N_OPCODES);
-        v = operation[opc](l, r);
-        write_integer_register(cpu, Rd, v);
-
-        O3::decode_pc(cpu.pc, decoded_pc);
-        increment_pc(cpu, 1);
+        return new skl_int_reg_t(cpu, inst, mne, operation[opc]);
     }
 }

@@ -1,11 +1,12 @@
-/* Copyright (c) 2021 Logic Magicians Software */
+/* Copyright (c) 2021, 2022 Logic Magicians Software */
 #if !defined(_SKL_COND_H)
 #define _SKL_COND_H
 
 #include "md.h"
+#include "skl_instruction.h"
 #include "skl.h"
 
 namespace skl {
-    void op_conditional_set(cpu_t &cpu, md::uint32 inst);
+    skl::instruction_t *op_conditional_set(cpu_t *cpu, md::uint32 inst);
 }
 #endif

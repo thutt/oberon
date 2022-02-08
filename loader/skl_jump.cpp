@@ -1,4 +1,4 @@
-/* Copyright (c) 2021 Logic Magicians Software */
+/* Copyright (c) 2021, 2022 Logic Magicians Software */
 #include <assert.h>
 #include "dialog.h"
 #include "o3.h"
@@ -6,90 +6,123 @@
 #include "skl_jump.h"
 
 namespace skl {
-    static void
-    op_jal(cpu_t &cpu, md::uint32 inst, const char *mne)
-    {
-        UNUSED unsigned Rd          = field(inst, 25, 21);
-        md::uint32      addr        = skl::read(cpu.pc + 4, false, sizeof(md::uint32));
-        md::uint32      return_addr = cpu.pc + 2 * sizeof(md::uint32);
-        O3::decode_pc_t decoded_pc;
-        O3::decode_pc_t decoded_ra;
-        O3::decode_pc_t decoded_new;
-
-        assert(Rd == RETADR);
-        O3::decode_pc(cpu.pc, decoded_pc);
-        O3::decode_pc(return_addr, decoded_ra);
-        O3::decode_pc(addr, decoded_new);
-        dialog::trace("%s: %s  %xH", decoded_pc, mne, addr);
-        dialog::trace("[pc := %s, retpc := %s]\n", decoded_new, decoded_ra);
-        write_integer_register(cpu, RETADR, return_addr);
-        cpu.pc = addr;
-    }
-
-
-    static void
-    op_conditional_jump(cpu_t      &cpu,
-                        unsigned    rel,
-                        md::uint32  inst,
-                        const char *mne)
-    {
-        unsigned    R0        = field(inst, 20, 16);
-        md::uint32  flags     = read_integer_register(cpu, R0);
-        md::uint32  addr      = skl::read(cpu.pc + 4, false, sizeof(md::uint32));
-        md::uint32  dest_addr = cpu.pc + 2 * sizeof(md::uint32) + addr;
-        bool        result    = relation[rel](flags);
-        O3::decode_pc_t decoded_pc;
-        O3::decode_pc_t decoded_da;
-
-        O3::decode_pc(cpu.pc, decoded_pc);
-        O3::decode_pc(dest_addr, decoded_da);
-        dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, R0, addr);
-        dialog::trace("[%xH, %s]  ZSCO: %u%u%u%u [taken: %u]\n",
-                      flags, decoded_da,
-                      flag(flags, ZF),
-                      flag(flags, SF),
-                      flag(flags, CF),
-                      flag(flags, OF),
-                      result);
-
-        if (result) {
-            cpu.pc = dest_addr;
-        } else {
-            increment_pc(cpu, 2);
-        }
-    }
-
-
-    static void
-    op_j(cpu_t &cpu, md::uint32 inst, const char *mne)
-    {
-        md::uint32  addr      = skl::read(cpu.pc + 4, false, sizeof(md::uint32));
-        md::uint32  dest_addr = cpu.pc + 2 * sizeof(md::uint32) + addr;
-        O3::decode_pc_t decoded_pc;
-        O3::decode_pc_t decoded_da;
-
-        O3::decode_pc(cpu.pc, decoded_pc);
-        O3::decode_pc(dest_addr, decoded_da);
-        dialog::trace("%s: %s  %xH", decoded_pc, mne, addr);
-        dialog::trace("[%s]\n", decoded_da);
-        cpu.pc = dest_addr;
-    }
-
-
-    void
-    op_jump(cpu_t &cpu, md::uint32 inst)
-    {
-        typedef enum opc_t {
+    typedef enum opc_t {
 #define OPC(_t) OPC_##_t,
 #include "skl_jump_opc.h"
 #undef OPC
-            N_OPCODES
-        } opc_t;
-        static const char *mne[N_OPCODES] = {
+        N_OPCODES
+    } opc_t;
+
+    static const char *mne[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_jump_opc.h"
 #undef OPC
-        };
+    };
+
+
+    struct skl_jal_t : skl::instruction_t {
+        unsigned        Rd;
+        md::uint32      addr;
+        md::uint32      return_addr;
+        O3::decode_pc_t decoded_ra;
+        O3::decode_pc_t decoded_new;
+
+        skl_jal_t(cpu_t       *cpu_,
+                  md::uint32   inst_,
+                  const char **mne_) :
+            skl::instruction_t(cpu_,
+                               inst_,
+                               mne_)
+        {
+            Rd          = field(inst, 25, 21);
+            addr        = skl::read(pc + 4, false, sizeof(md::uint32));
+            return_addr = pc + 2 * sizeof(md::uint32);
+            assert(Rd == RETADR);
+            O3::decode_pc(return_addr, decoded_ra);
+            O3::decode_pc(addr, decoded_new);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %xH", decoded_pc, mne, addr);
+            dialog::trace("[pc := %s, retpc := %s]\n", decoded_new, decoded_ra);
+            write_integer_register(cpu, RETADR, return_addr);
+            cpu->pc = addr;
+        }
+    };
+
+    struct skl_conditional_jump_t : skl::instruction_t {
+        unsigned        rel;
+        unsigned        R0;
+        md::uint32      flags;
+        md::uint32      addr;
+        md::uint32      dest_addr;
+        O3::decode_pc_t decoded_da;
+        bool            compare_result;
+        skl_conditional_jump_t(cpu_t       *cpu_,
+                               unsigned     rel_,
+                               md::uint32   inst_,
+                               const char **mne_) :
+            skl::instruction_t(cpu_, inst_, mne_),
+            rel(rel_),
+            R0(field(inst, 20, 16)),
+            flags(0),
+            addr(skl::read(pc + 4, false, sizeof(md::uint32))),
+            dest_addr(pc + 2 * sizeof(md::uint32) + addr)
+        {
+            O3::decode_pc(dest_addr, decoded_da);
+        }
+
+        virtual void interpret(void)
+        {
+            flags          = read_integer_register(cpu, R0);
+            compare_result = relation[rel](flags);
+            dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, R0, addr);
+            dialog::trace("[%xH, %s]  ZSCO: %u%u%u%u [taken: %u]\n",
+                          flags, decoded_da,
+                          flag(flags, ZF),
+                          flag(flags, SF),
+                          flag(flags, CF),
+                          flag(flags, OF),
+                          compare_result);
+            if (compare_result) {
+                cpu->pc = dest_addr;
+            } else {
+                increment_pc(cpu, 2);
+            }
+        }
+    };
+
+
+    struct skl_jump_t : skl::instruction_t {
+        md::uint32      addr;
+        md::uint32      dest_addr;
+        O3::decode_pc_t decoded_da;
+
+        skl_jump_t(cpu_t       *cpu_,
+                   md::uint32   inst_,
+                   const char **mne_) :
+            skl::instruction_t(cpu_, inst_, mne_),
+            addr(skl::read(pc + 4, false, sizeof(md::uint32))),
+            dest_addr(pc + 2 * sizeof(md::uint32) + addr)
+        {
+            O3::decode_pc(dest_addr, decoded_da);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %xH", decoded_pc, mne, addr);
+            dialog::trace("[%s]\n", decoded_da);
+            cpu->pc = dest_addr;
+        }
+    };
+
+
+    skl::instruction_t *
+    op_jump(cpu_t *cpu, md::uint32 inst)
+    {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
         switch (opc) {
@@ -103,20 +136,17 @@ namespace skl {
         case OPC_JGEU:
         case OPC_JLEU:
         case OPC_JGTU:
-            op_conditional_jump(cpu, opc, inst, mne[opc]);
-            break;
+            return new skl_conditional_jump_t(cpu, opc, inst, mne);
 
         case OPC_J:
-            op_j(cpu, inst, mne[opc]);
-            break;
+            return new skl_jump_t(cpu, inst, mne);
 
         case OPC_JAL:
-            op_jal(cpu, inst, mne[opc]);
-            break;
+            return new skl_jal_t(cpu, inst, mne);
 
         default:
-            dialog::not_implemented("%s: inst: %xH %s",
-                                    __func__, inst, mne[opc]);
+            dialog::not_implemented("%s: inst: %xH opcode: %xH",
+                                    __func__, inst, opc);
         }
     }
 }

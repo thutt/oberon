@@ -55,12 +55,6 @@ namespace skl
         RB_DOUBLE
     } register_bank_t;
 
-    typedef struct watchpoint_t {
-        bool       active;
-        md::uint32 address;
-        unsigned   n_bytes;
-    } watchpoint_t;
-
     typedef struct cpu_t {
         md::uint32   pc;
         md::uint32   _instruction_count;
@@ -69,7 +63,6 @@ namespace skl
         double       _F[32];                   // 32 IEEE 754 double registers.
 
         md::uint32   ea;                       // Computed effective address.
-        watchpoint_t wp;                       // Watchpoint
 
         /* exception_raised:
          *
@@ -112,26 +105,26 @@ namespace skl
 
     register_bank_t compute_using(register_bank_t R0, register_bank_t R1);
 
-    void execute(cpu_t &cpu, md::uint32 addr);
+    void execute(cpu_t *cpu, md::uint32 addr);
 
     void write(md::uint32 addr, md::uint32 val, unsigned size);
 
-    md::uint32 register_as_integer(cpu_t           &cpu,
+    md::uint32 register_as_integer(cpu_t           *cpu,
                                    unsigned         regno,
                                    register_bank_t  bank);
 
-    double register_as_double(cpu_t           &cpu,
+    double register_as_double(cpu_t           *cpu,
                               unsigned         regno,
                               register_bank_t  bank);
 
-    void software_trap(cpu_t &cpu, unsigned trap);
-    void hardware_trap(cpu_t &cpu, control_register_2_t trap);
+    void software_trap(cpu_t *cpu, unsigned trap);
+    void hardware_trap(cpu_t *cpu, control_register_2_t trap);
 
-    void dump_cpu__(cpu_t &cpu);
+    void dump_cpu__(cpu_t *cpu);
     static inline void
-    dump_cpu(cpu_t &cpu)
+    dump_cpu(cpu_t *cpu)
     {
-        if (skl_trace) {
+        if (UNLIKELY(skl_trace)) {
             dump_cpu__(cpu);
         }
     }
@@ -176,76 +169,67 @@ namespace skl
     }
 
     static inline void
-    increment_pc(cpu_t &cpu, unsigned n_words)
+    increment_pc(cpu_t *cpu, unsigned n_words)
     {
-        cpu.pc += increment_words(n_words);
-    }
-
-
-    static inline void
-    set_pc(md::uint32 pc)
-    {
-        cpu.pc = pc;
+        cpu->pc += increment_words(n_words);
     }
 
 
     static inline md::uint32
-    get_pc(cpu_t &cpu)
+    get_pc(cpu_t *cpu)
     {
-        return cpu.pc;
+        return cpu->pc;
     }
 
 
     static inline md::uint32
-    read_integer_register(cpu_t &cpu, unsigned regno)
+    read_integer_register(cpu_t *cpu, unsigned regno)
     {
-        assert(regno < sizeof(cpu._R) / sizeof(cpu._R[0]));
-        return cpu._R[regno];
+        assert(regno < sizeof(cpu->_R) / sizeof(cpu->_R[0]));
+        assert(regno != 0 || cpu->_R[regno] == 0);
+        return cpu->_R[regno];
     }
 
 
     static inline void
-    write_integer_register(cpu_t &cpu, unsigned regno, md::uint32 value)
+    write_integer_register(cpu_t *cpu, unsigned regno, md::uint32 value)
     {
-        assert(regno < sizeof(cpu._R) / sizeof(cpu._R[0]));
-        assert(cpu._R[0] == 0);
-        if (regno != 0) {
-            cpu._R[regno] = value;
-        }
+        assert(regno < sizeof(cpu->_R) / sizeof(cpu->_R[0]));
+        cpu->_R[regno] = value;
     }
 
 
     static inline void
-    write_real_register(cpu_t &cpu, unsigned regno, double value)
+    write_real_register(cpu_t *cpu, unsigned regno, double value)
     {
-        assert(regno < sizeof(cpu._F) / sizeof(cpu._F[0]));
-        cpu._F[regno] = value;
+        assert(regno < sizeof(cpu->_F) / sizeof(cpu->_F[0]));
+        cpu->_F[regno] = value;
     }
 
 
     static inline double
-    read_real_register(cpu_t &cpu, unsigned regno)
+    read_real_register(cpu_t *cpu, unsigned regno)
     {
-        assert(regno < sizeof(cpu._F) / sizeof(cpu._F[0]));
-        return cpu._F[regno];
+        assert(regno < sizeof(cpu->_F) / sizeof(cpu->_F[0]));
+        return cpu->_F[regno];
     }
 
 
     static inline void
-    write_control_register(cpu_t               &cpu,
+    write_control_register(cpu_t               *cpu,
                            control_registers_t  regno,
                            md::uint32           value)
     {
-        assert(regno < sizeof(cpu._CR) / sizeof(cpu._CR[0]));
-        cpu._CR[regno] = value;
+        assert(regno < sizeof(cpu->_CR) / sizeof(cpu->_CR[0]));
+        cpu->_CR[regno] = value;
     }
 
 
     static inline md::uint32
-    read_control_register(cpu_t &cpu, control_registers_t regno)
+    read_control_register(cpu_t *cpu, control_registers_t regno)
     {
-        assert(regno < sizeof(cpu._CR) / sizeof(cpu._CR[0]));
-        return cpu._CR[regno];
+        assert(regno < sizeof(cpu->_CR) / sizeof(cpu->_CR[0]));
+        return cpu->_CR[regno];
     }
 
     static inline bool
@@ -299,38 +283,15 @@ namespace skl
     }
 
 
-    static inline bool
-    watchpoint_intersect(const watchpoint_t &wp, md::uint32 ea)
-    {
-        return (skl_alpha && skl_trace &&
-                wp.active && ((ea >= wp.address) &&
-                              (ea < (wp.address + wp.n_bytes))));
-    }
-
-
-    void watchpoint__(effective_address_kind_t  kind,
-                      const watchpoint_t       &wp,
-                      md::uint32                ea);
     static inline void
-    watchpoint(effective_address_kind_t  kind,
-               const watchpoint_t       &wp,
-               md::uint32                ea)
-    {
-        if (watchpoint_intersect(cpu.wp, cpu.ea)) {
-            watchpoint__(kind, cpu.wp, cpu.ea);
-        }
-    }
-
-
-    static inline void
-    compute_effective_address(cpu_t                    &cpu,
+    compute_effective_address(cpu_t                    *cpu,
                               md::uint32                base,
                               md::uint32                index,
                               md::uint32                scale,
                               md::int32                 offset)
     {
         assert(scale == 1 || scale == 2 || scale == 4 || scale == 8);
-        cpu.ea = base + (index * scale) + offset;
+        cpu->ea = base + (index * scale) + offset;
     }
 
 
@@ -386,7 +347,7 @@ namespace skl
                 return read_4(addr, sign_extend);
             }
         } else {
-            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
+            hardware_trap(&cpu, CR2_OUT_OF_BOUNDS_READ);
             return ~0;          // Value ignored, because CPU does not return.
         }
     }

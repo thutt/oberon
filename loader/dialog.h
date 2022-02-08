@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020-2021 Logic Magicians Software */
+/* Copyright (c) 2000, 2020-2022 Logic Magicians Software */
 #if !defined(_DIALOG_H)
 #define _DIALOG_H
 
@@ -7,14 +7,14 @@
 
 namespace dialog
 {
-    void fatal(const char *fmt, ...);
+    void NORETURN fatal(const char *fmt, ...);
     void warning(const char *fmt, ...);
     void progress(const char *fmt, ...);
     void print(const char *fmt, ...);
     void diagnostic(const char *fmt, ...);
-    void not_implemented(const char *fmt, ...);
-    void not_reachable(const char *fmt, ...);
-    void internal_error(const char *fmt, ...);
+    void NORETURN not_implemented(const char *fmt, ...);
+    void NORETURN not_reachable(const char *fmt, ...);
+    void NORETURN internal_error(const char *fmt, ...);
 
     void trace__(const char *fmt, va_list args); /* Trace instructions. */
     void cpu__(const char *fmt, va_list args); /* State of CPU. */

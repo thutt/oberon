@@ -10,6 +10,7 @@
 #include "skl_cond.h"
 #include "skl_ctrl_reg.h"
 #include "skl_gen_reg.h"
+#include "skl_instruction.h"
 #include "skl_int_reg.h"
 #include "skl_jral.h"
 #include "skl_jump.h"
@@ -49,7 +50,7 @@ namespace skl {
 
 
     static void
-    dump_cpu_stack(cpu_t &cpu)
+    dump_cpu_stack(cpu_t *cpu)
     {
         const unsigned  default_stack_words = 32;
         unsigned        i;
@@ -98,33 +99,33 @@ namespace skl {
     }
 
     static void
-    dump_control_registers(cpu_t &cpu)
+    dump_control_registers(cpu_t *cpu)
     {
         if (false) {
-            dialog::cpu("CR0: %8.8xH [exception address]\n", cpu._CR[0]);
-            dialog::cpu("CR1: %8.8xH [hardware exception handler]\n", cpu._CR[1]);
-            dialog::cpu("CR2: %8.8xH [exception status]\n", cpu._CR[2]);
-            dialog::cpu("CR5: %8.8xH [Software exception handler]\n", cpu._CR[5]);
+            dialog::cpu("CR0: %8.8xH [exception address]\n", cpu->_CR[0]);
+            dialog::cpu("CR1: %8.8xH [hardware exception handler]\n", cpu->_CR[1]);
+            dialog::cpu("CR2: %8.8xH [exception status]\n", cpu->_CR[2]);
+            dialog::cpu("CR5: %8.8xH [Software exception handler]\n", cpu->_CR[5]);
             dialog::cpu("\n");
         }
     }
 
 
     void
-    dump_cpu__(cpu_t &cpu)
+    dump_cpu__(cpu_t *cpu)
     {
         bool            dump_float_registers = true;
         unsigned        i;
         O3::decode_pc_t decoded_pc;
 
         if (config::options & config::opt_trace_cpu) {
-            O3::decode_pc(cpu.pc, decoded_pc);
-            dialog::cpu("pc : %s  (%xH)\n", decoded_pc, cpu.pc);
+            O3::decode_pc(cpu->pc, decoded_pc);
+            dialog::cpu("pc : %s  (%xH)\n", decoded_pc, cpu->pc);
             dump_control_registers(cpu);
 
             i = 0;
-            while (i < sizeof(cpu._R) / sizeof(cpu._R[0])) {
-                dialog::cpu("R%-2u: %8.8xH", i, cpu._R[i]);
+            while (i < sizeof(cpu->_R) / sizeof(cpu->_R[0])) {
+                dialog::cpu("R%-2u: %8.8xH", i, cpu->_R[i]);
                 ++i;
                 if ((i % 4) == 0) {
                     dialog::cpu("\n");
@@ -136,8 +137,8 @@ namespace skl {
             if (dump_float_registers) {
                 dialog::cpu("\n");
                 i = 0;
-                while (i < sizeof(cpu._F) / sizeof(cpu._F[0])) {
-                    dialog::cpu("F%-2u: %e", i, cpu._F[i]);
+                while (i < sizeof(cpu->_F) / sizeof(cpu->_F[0])) {
+                    dialog::cpu("F%-2u: %e", i, cpu->_F[i]);
                     ++i;
                     if ((i % 3) == 0) {
                         dialog::cpu("\n");
@@ -153,26 +154,26 @@ namespace skl {
 
 
     void
-    software_trap(cpu_t &cpu, unsigned trap)
+    software_trap(cpu_t *cpu, unsigned trap)
     {
         write_integer_register(cpu, 1, trap);     // Trap code.
-        write_integer_register(cpu, 31, cpu.pc);  // Return address.
-        cpu.pc = read_control_register(cpu, CR5); // Kernel.SysTrap
-        cpu.exception_raised = true;
+        write_integer_register(cpu, 31, cpu->pc);  // Return address.
+        cpu->pc = read_control_register(cpu, CR5); // Kernel.SysTrap
+        cpu->exception_raised = true;
     }
 
 
     void
-    hardware_trap(cpu_t &cpu, control_register_2_t trap)
+    hardware_trap(cpu_t *cpu, control_register_2_t trap)
     {
         md::uint32 cr2;
-        write_control_register(cpu, CR0, cpu.pc); // Exception address.
+        write_control_register(cpu, CR0, cpu->pc); // Exception address.
         cr2 = (trap |
                0    | // Interrupt enable setting (not supported).
                1);    // Processor, not external.
         write_control_register(cpu, CR2, cr2);
-        cpu.pc = read_control_register(cpu, CR1); // Kernel.HardwareTrap
-        cpu.exception_raised = true;
+        cpu->pc = read_control_register(cpu, CR1); // Kernel.HardwareTrap
+        cpu->exception_raised = true;
     }
 
 
@@ -211,7 +212,7 @@ namespace skl {
                                        __func__, size);
             }
         } else {
-            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
+            hardware_trap(&cpu, CR2_OUT_OF_BOUNDS_WRITE);
         }
     }
 
@@ -224,87 +225,112 @@ namespace skl {
         if (LIKELY(aligned(cpu.pc, sizeof(md::uint32)))) {
             inst = skl::read(cpu.pc, false, sizeof(md::uint32));
         } else {
-            hardware_trap(cpu, CR2_BAD_ALIGNMENT);
+            hardware_trap(&cpu, CR2_BAD_ALIGNMENT);
         }
         return inst;
     }
 
+    static skl::instruction_t *
+    fetch_and_cache_instruction(skl::cpu_t *cpu)
+    {
+        md::uint32          inst;
+        opcode_class_t      cls;
+        skl::instruction_t *cinst = NULL;
+
+        dump_cpu(cpu);
+        cpu->exception_raised = false;
+        inst = skl::fetch_instruction();
+        cls  = classof(inst);
+
+        switch (cls) {
+        case OC_GEN_REG:
+            cinst = op_gen_reg(cpu, inst);
+            break;
+
+        case OC_INT_REG:
+            cinst = op_int_reg(cpu, inst);
+            break;
+
+        case OC_SIGN_EXT:
+            dialog::not_implemented("%s: OC_SIGN_EXT", __func__);
+            break;
+
+        case OC_CTL_REG:
+            cinst = op_ctrl_reg(cpu, inst);
+            break;
+
+        case OC_SYS_REG:
+            cinst = op_sys_reg(cpu, inst);
+            break;
+
+        case OC_MISC:
+            cinst = op_misc(cpu, inst);
+            break;
+
+        case OC_JRAL:
+            cinst = op_jral(cpu, inst);
+            break;
+
+        case OC_JUMP:
+            cinst = op_jump(cpu, inst);
+            break;
+
+        case OC_REG_MEM:
+            cinst = op_reg_mem(cpu, inst);
+            break;
+
+        case OC_BIT_TEST:
+            cinst = op_bit_test(cpu, inst);
+            break;
+
+        case OC_STACK:
+            cinst = op_stack(cpu, inst);
+            break;
+
+        case OC_CONDITIONAL_SET:
+            cinst = op_conditional_set(cpu, inst);
+            break;
+
+        case OC_SYSTRAP:
+            cinst = op_systrap(cpu, inst);
+            break;
+
+        default: {
+            hardware_trap(cpu, CR2_INVALID_OPCODE);
+            break;
+        }
+        }
+        if (cinst != NULL) {
+            skl::cache_instruction(cinst);
+            return cinst;
+        }
+        return NULL;
+    }
+
+
+    static skl::instruction_t *
+    fetch_cached_instruction(skl::cpu_t *cpu)
+    {
+        skl::instruction_t *cinst = skl::lookup_instruction(cpu->pc);
+        return cinst;
+    }
+
 
     void
-    execute(cpu_t &cpu, md::uint32 addr)
+    execute(cpu_t *cpu, md::uint32 addr)
     {
-        md::uint32    inst;
-
-        cpu.pc = addr;
+        cpu->pc = addr;
 
         while (1) {
-            opcode_class_t cls;
+            skl::instruction_t *cinst = fetch_cached_instruction(cpu);
 
-            cpu._instruction_count++;
-            dump_cpu(cpu);
-            cpu.exception_raised = false;
-            inst = skl::fetch_instruction();
-            cls  = classof(inst);
-
-            switch (cls) {
-            case OC_GEN_REG:
-                op_gen_reg(cpu, inst);
-                break;
-
-            case OC_INT_REG:
-                op_int_reg(cpu, inst);
-                break;
-
-            case OC_SIGN_EXT:
-                dialog::not_implemented("%s: OC_SIGN_EXT", __func__);
-                break;
-
-            case OC_CTL_REG:
-                op_ctrl_reg(cpu, inst);
-                break;
-
-            case OC_SYS_REG:
-                op_sys_reg(cpu, inst);
-                break;
-
-            case OC_MISC:
-                op_misc(cpu, inst);
-                break;
-
-            case OC_JRAL:
-                op_jral(cpu, inst);
-                break;
-
-            case OC_JUMP:
-                op_jump(cpu, inst);
-                break;
-
-            case OC_REG_MEM:
-                op_reg_mem(cpu, inst);
-                break;
-
-            case OC_BIT_TEST:
-                op_bit_test(cpu, inst);
-                break;
-
-            case OC_STACK:
-                op_stack(cpu, inst);
-                break;
-
-            case OC_CONDITIONAL_SET:
-                op_conditional_set(cpu, inst);
-                break;
-
-
-            case OC_SYSTRAP:
-                op_systrap(cpu, inst);
-                break;
-
-            default: {
-                hardware_trap(cpu, CR2_INVALID_OPCODE);
-                break;
+            write_integer_register(cpu, 0, 0); // Reset R0 to zero.
+            cpu->_instruction_count++;
+            if (cinst == NULL) {
+                cinst = fetch_and_cache_instruction(cpu);
             }
-            }
+            assert(cinst != NULL);
+            cinst->interpret();
         }
     }
 
@@ -319,8 +345,9 @@ namespace skl {
         return RB_INTEGER;
     }
 
+
     md::uint32
-    register_as_integer(cpu_t           &cpu,
+    register_as_integer(cpu_t           *cpu,
                         unsigned         regno,
                         register_bank_t  bank)
     {
@@ -328,12 +355,12 @@ namespace skl {
             return read_integer_register(cpu, regno);
         } else {
             assert(bank == RB_DOUBLE);
-            return cpu._F[regno];
+            return cpu->_F[regno];
         }
     }
 
     double
-    register_as_double(cpu_t           &cpu,
+    register_as_double(cpu_t           *cpu,
                        unsigned         regno,
                        register_bank_t  bank)
     {
@@ -341,7 +368,7 @@ namespace skl {
             return read_integer_register(cpu, regno);
         } else {
             assert(bank == RB_DOUBLE);
-            return cpu._F[regno];
+            return cpu->_F[regno];
         }
     }
 
@@ -374,26 +401,7 @@ namespace skl {
          * the stack dumping logic can terminate easily in
          * skl::dump_cpu_stack().
          */
-        write_integer_register(cpu, SP, stack_top);
-        write_integer_register(cpu, SFP, stack_top);
-        /* XXX Write stack control registers, too. */
-    }
-
-
-    void watchpoint__(effective_address_kind_t  kind,
-                      const watchpoint_t       &wp,
-                      md::uint32                ea)
-    {
-        static char const * const kind_name[N_EA_KIND] = {
-            "LOAD   ",
-            "STORE  ",
-            "COMPUTE"
-        };
-        O3::decode_pc_t decoded_pc;
-
-        O3::decode_pc(cpu.pc, decoded_pc);
-        dialog::print("\n%s: WP[%s] '%s': [%8.8xH..%8.8xH): %8.8xH\n",
-                      __func__, kind_name[kind], decoded_pc,
-                      wp.address, wp.address + wp.n_bytes, ea);
+        write_integer_register(&skl::cpu, SP, stack_top);
+        write_integer_register(&skl::cpu, SFP, stack_top);
     }
 }

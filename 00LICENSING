@@ -450,6 +450,8 @@ The files contained here are provided under the corresponding software license.
   loader/skl_gen_reg.cpp
   loader/skl_gen_reg.h
   loader/skl_gen_reg_opc.h
+  loader/skl_instruction.cpp
+  loader/skl_instruction.h
   loader/skl_int_reg.cpp
   loader/skl_int_reg.h
   loader/skl_int_reg_opc.h

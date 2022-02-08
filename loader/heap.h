@@ -166,6 +166,24 @@ namespace heap
         return result;
     }
 
+
+    /* Given an Oberon address, return the ordinal index from the
+     * beginning of the Oberon heap.
+     *
+     * Used by instruction cache system.
+     */
+    static inline unsigned
+    heap_offset(md::uint32 addr)
+    {
+        unsigned offset = 0;
+        assert((addr & (sizeof(md::uint32) - 1)) == 0); /* 4-byte aligned. */
+        assert(oberon_address_ok(addr, sizeof(md::uint32)));
+        offset = heap_to_host(addr) - allocated_heap;
+        /* Index must not be bigger than number of words in heap. */
+        assert(offset < (total_heap_size_in_bytes / sizeof(md::uint32)));
+        return offset;
+    }
+
     static inline void
     write_word(md::uint32 addr, md::uint32 value)
     {

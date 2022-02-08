@@ -17,6 +17,7 @@
 #include "heap.h"
 #include "kernintf.h"
 #include "skl.h"
+#include "skl_instruction.h"
 
 static struct option long_options[] = {
     { "help",              no_argument,       NULL, 'h' },
@@ -73,6 +74,11 @@ create_heap(md::uint32 heap_mb, md::uint32 stack_mb)
     if (heap::make_heap(heap_mb, stack_mb)) {
         skl::initialize_memory(heap::host_to_heap(heap::oberon_heap),
                                heap::total_heap_size_in_bytes);
+
+        if (!skl::allocate_instruction_cache(heap_mb, stack_mb)) {
+            heap::release_heap(heap_mb, stack_mb);
+            return false;
+        }
         return true;
     }
     return false;
@@ -215,6 +221,7 @@ main(int argc, char *argv[])
         } else {
             /* All exit paths should come through here. */
             heap::release_heap(heap_size_in_megabytes, stack_size_in_megabytes);
+            skl::release_instruction_cache();
             delete [] cmdline;
             if (config::options & config::opt_instruction_count) {
                 dialog::print("Instruction Count: %u\n", skl::cpu._instruction_count);

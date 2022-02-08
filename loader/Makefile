@@ -23,6 +23,7 @@ SOURCE :=					\
 		skl_ctrl_reg.cpp		\
 		skl_flags.cpp			\
 		skl_gen_reg.cpp			\
+		skl_instruction.cpp		\
 		skl_int_reg.cpp			\
 		skl_jral.cpp			\
 		skl_jump.cpp			\

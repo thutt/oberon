@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2021 Logic Magicians Software */
+/* Copyright (c) 2000, 2021, 2022 Logic Magicians Software */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +31,7 @@ namespace kernintf
          * on the stack noticeable for these functions, since it will
          * never be used.
          */
-        skl::write_integer_register(skl::cpu, skl::RETADR, 0xdeadbeef);
+        skl::write_integer_register(&skl::cpu, skl::RETADR, 0xdeadbeef);
 
         /* Set R28 to the module initialization function, and invoke
          * SKLKernel.BootstrapModuleInit.  That function will invoke
@@ -40,10 +40,10 @@ namespace kernintf
          * 'Bootstrap' operation will return control to the bootstrap
          * system.
          */
-        skl::write_integer_register(skl::cpu, 28, init_fn);
+        skl::write_integer_register(&skl::cpu, 28, init_fn);
 
         if (setjmp(config::module_init_jmpbuf) == 0) {
-            skl::execute(skl::cpu, O3::bootstrap_symbol[0].adr);
+            skl::execute(&skl::cpu, O3::bootstrap_symbol[0].adr);
         } else {
             /* longjmp() has returned here.
              * Return to caller to continue bootstrapping.
