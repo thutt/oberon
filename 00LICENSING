@@ -89,6 +89,7 @@ The files contained here are provided under the corresponding software license.
   system/Reals.Obj
   system/Reals.Sym
   system/Rectangles.Mod
+  system/SKLModuleInspector.Mod
   system/SKLModules.Mod
   system/SKLTrap.Mod
   system/Script.Mod
