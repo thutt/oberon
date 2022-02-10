@@ -89,6 +89,7 @@ The files contained here are provided under the corresponding software license.
   system/Reals.Obj
   system/Reals.Sym
   system/Rectangles.Mod
+  system/SKLModuleInspector.Mod
   system/SKLModules.Mod
   system/SKLTrap.Mod
   system/Script.Mod
@@ -365,49 +366,70 @@ The files contained here are provided under the corresponding software license.
   system/Prime.Mod
   system/Prime.Obj
   system/Prime.Sym
+  system/SKL.Mod
   system/SKL.Obj
   system/SKL.Sym
+  system/SKLCGH.Mod
   system/SKLCGH.Obj
   system/SKLCGH.Sym
+  system/SKLCGL.Mod
   system/SKLCGL.Obj
   system/SKLCGL.Sym
+  system/SKLCMDIO.Mod
   system/SKLCMDIO.Obj
   system/SKLCMDIO.Sym
   system/SKLConsole.Mod
+  system/SKLDN.Mod
   system/SKLDN.Obj
   system/SKLDN.Sym
+  system/SKLDS.Mod
   system/SKLDS.Obj
   system/SKLDS.Sym
+  system/SKLE.Mod
   system/SKLE.Obj
   system/SKLE.Sym
+  system/SKLERR.Mod
   system/SKLERR.Obj
   system/SKLERR.Sym
   system/SKLFileDir.Mod
   system/SKLHostOS.Mod
+  system/SKLIE.Mod
   system/SKLIE.Obj
   system/SKLIE.Sym
   system/SKLKernel.Debug.Mod
   system/SKLKernel.Mod
+  system/SKLMD.Mod
   system/SKLMD.Obj
   system/SKLMD.Sym
+  system/SKLOS.Mod
   system/SKLOS.Obj
   system/SKLOS.Sym
+  system/SKLPU.Mod
   system/SKLPU.Obj
   system/SKLPU.Sym
+  system/SKLSP.Mod
   system/SKLSP.Obj
   system/SKLSP.Sym
+  system/SKLST.Mod
   system/SKLST.Obj
   system/SKLST.Sym
+  system/SKLSTP.Mod
   system/SKLSTP.Obj
   system/SKLSTP.Sym
+  system/SKLSTT.Mod
+  system/SKLT.Mod
   system/SKLT.Obj
   system/SKLT.Sym
+  system/SKLTB.Mod
   system/SKLTB.Obj
   system/SKLTB.Sym
+  system/SKLTH.Mod
   system/SKLTH.Obj
   system/SKLTH.Sym
+  system/SKLTT.Mod
   system/SKLTT.Obj
   system/SKLTT.Sym
+  system/SKLTU.Mod
   system/SKLTU.Obj
   system/SKLTU.Sym
 
