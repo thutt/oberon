@@ -597,10 +597,17 @@ IMPORT
 
   (* inv: func.type.form = ST.procedure: the result type must not be void *)
   PROCEDURE  NewFuncCallNode*(func : Design; args : Arg) : FuncCall;
-    VAR n : FuncCall;
+    VAR
+      n : FuncCall;
+      typ : ST.Type;
   BEGIN
     NEW(n);
-    InitExprNode(n, Nexpr, Ecall, func.type(ST.Procedure).result);
+    IF func.type IS ST.Procedure THEN
+      typ := func.type(ST.Procedure).result;
+    ELSE
+      typ := ST.inttyp; (* If tree is not a Procedure due to other errors. *)
+    END;
+    InitExprNode(n, Nexpr, Ecall, typ);
     n.func := func;
     n.args := args;
     HintsExpr(n);

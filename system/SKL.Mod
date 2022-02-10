@@ -16,7 +16,7 @@ MODULE SKL;
     Kernel;
   
   CONST
-    SignOnMessage = "LMSO SKL Compiler  TWH 2020.11.16";
+    SignOnMessage = "LMSO SKL Compiler  TWH 2022.02.09";
 
   VAR
     source : OPM.SourceInfo;
