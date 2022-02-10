@@ -298,6 +298,7 @@ The files contained here are provided under the corresponding software license.
   system/CTInvalidOpcode.Mod
   system/CTInvalidOpcode.Obj
   system/CTInvalidOpcode.Sym
+  system/CTMissingMethod.Mod
   system/CTNest.Mod
   system/CTNest.Obj
   system/CTNest.Sym

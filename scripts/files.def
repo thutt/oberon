@@ -127,6 +127,7 @@ COMPILER_TESTS=(                                \
     [CTIncDec.Mod]="pass"                       \
     [CTInstructionCount.Mod]="pass"             \
     [CTInvalidOpcode.Mod]="fail"                \
+    [CTMissingMethod.Mod]="fail"                \
     [CTNest.Mod]="pass"                         \
     [CTOOBRead.Mod]="fail"                      \
     [CTOOBWrite.Mod]="fail"                     \
