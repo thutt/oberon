@@ -167,7 +167,7 @@ function skl-oberon
         if [ -f "${op}" ] ; then
             local res;
 
-            pushd "${SKL_DIR:?SKL_DIR not set.}/system";
+            pushd "${SKL_DIR:?SKL_DIR not set.}/system" >/dev/null;
             # Before every run, remove .DiagnosticsOuput.
             # It is removed because it is configured to be appended.
             # In most cases, append is not desired.
@@ -225,6 +225,7 @@ export -f disasm;
 function oberon-show-config ()
 {
     echo "SKL_DIR          : '${SKL_DIR:?SKL_DIR not set.}'";
+    echo "SKL_ARCHITECTURE : '${SKL_ARCHITECTURE}'";
     echo "SKL_BUILD_TYPE   : '${SKL_BUILD_TYPE}'";
     echo "SKL_BUILD_OPTIONS: '${SKL_BUILD_OPTIONS}'";
     echo "SKL_BUILD_DIR    : '${SKL_BUILD_DIR}'";

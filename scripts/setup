@@ -2,22 +2,88 @@
 # Copyright (c) 2021, 2022 Logic Magicians Software
 #
 # Do not run.  Use 'source' to load into environment.
+#
+#
+#
 SRC_DIR=$(dirname "${BASH_SOURCE[0]}");
 source $(readlink -f "${SRC_DIR}/functions");
 
-if [ -z "${1}" ] ; then
-    echo "${SRC_DIR}/setup <build-directory-path> [(alpha | release)]";
-    echo "";
-    echo "Build directory must not be in the source tree.";
-    echo "";
-    echo "";
-else
-    export SKL_DIR=$(readlink -f $(dirname ${BASH_SOURCE})/..);
-    export PATH=${SKL_DIR}/scripts:$PATH
-    export SKL_BUILD_DIR="${1}";
-    export SKL_OBJ_PATH="${SKL_DIR}/system";
-    export SKL_BUILD_OPTIONS="";
 
-    build-set-type "${2:-alpha}";
-    oberon-show-config;
-fi;
+function main()
+{
+    local OPTION;
+    local architecture="Intel-x86-64";
+    local build="alpha";
+    local bod="";
+
+    export SKL_DIR=$(readlink -f $(dirname ${BASH_SOURCE})/..);
+
+    case ${PATH} in
+        *${SKL_DIR}*)
+            # PATH has already been updated.  Do nothing.
+            ;;
+        *)
+            export PATH=${SKL_DIR}/scripts:$PATH;
+            ;;
+    esac;
+
+    OPTIND=1;
+    OPTERR=1;
+    while getopts :a:b:o: OPTION; do
+        case "${OPTION}" in
+            a)                  # Architecture.
+                case "${OPTARG}" in
+                    Intel-x86-64 | Arm64)
+                        architecture="${OPTARG}";
+                        ;;
+
+                    *)
+                        echo "Invalid architecture '${OPTARG}' ignored.";
+                        ;;
+                esac;
+                ;;
+
+            b)                  # Build type.
+                case "${OPTARG}" in
+                    alpha | beta | release)
+                        build="${OPTARG}";
+                        ;;
+
+                    *)
+                        echo "Invalid build type '${OPTARG}' ignored.";
+                        ;;
+                esac;
+                ;;
+
+            o)                  # Build output directory.
+                bod="${OPTARG}";
+                ;;
+
+
+            :)
+                echo "Option '${OPTARG}' requires an argument.";
+                break;
+                ;;
+
+            *)
+                echo "Unknown option '${OPTARG}'";
+                break;
+                ;;
+        esac;
+    done;
+
+    if [ -z "${bod}" ] ; then
+        echo "Build output directory (-o) has not been set.";
+    else
+        export SKL_BUILD_DIR="${bod}";
+        export SKL_OBJ_PATH="${SKL_DIR}/system";
+        export SKL_BUILD_OPTIONS="";
+        export SKL_ARCHITECTURE="${architecture}";
+
+        build-set-type "${build}";
+        oberon-show-config;
+    fi;
+}
+
+
+main "${@}";

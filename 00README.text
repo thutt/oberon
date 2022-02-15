@@ -36,17 +36,19 @@ Usage:
     To configure the current shell environment:
 
     cd <place where the software was cloned>
-    source ./scripts/setup <location for build output> [(alpha | release)]
+    source ./scripts/setup \
+       -a (Intel-x86-64 | Arm64) \
+       -b (alpha | beta | release) \
+       -o <location for build output>
 
-    + The first argument is the root directory of the directory where
-       the build process will place all build artifacts.
+    + The '-a' option specifies the target architecture.
 
-       The build output must not be put into the source tree.
+      If not specified, the default value of 'Intel-x86-64' will be
+      used.
 
-    + The optional second argument declares the type of build that
-      should be produced.
+    + The '-b' option specifies the build type.
 
-      If not specified, 'alpha' is used.
+      If not specified, the default value of 'alpha' will be used.
 
       An 'alpha' build has all runtime checking turned on, and allows
       all capabilities such as tracing the program execution on an
@@ -57,16 +59,22 @@ Usage:
 
       A 'release' build runs appreciably faster than an 'alpha' build.
 
+      A 'beta' build has performance between 'alpha' and 'release'.
+
     Example:
 
-      source ./scripts/setup /tmp/skl release
+      source ./scripts/setup \
+        -a Intel-x86-64 \
+        -b release \
+        -o release
 
-      source scripts/setup  /tmp/skl release
-      SKL_DIR          : '/data/skl/skl-o2'
+
+      SKL_DIR          : '/nas/homes/thutt/skl/skl-o2'
+      SKL_ARCHITECTURE : 'Intel-x86-64'
       SKL_BUILD_TYPE   : 'release'
       SKL_BUILD_OPTIONS: ''
-      SKL_BUILD_DIR    : '/tmp/skl'
-      SKL_OBJ_PATH     : '/data/skl/skl-o2/system'
+      SKL_BUILD_DIR    : '/tmp/skl/skl-o2'
+      SKL_OBJ_PATH     : '/nas/homes/thutt/skl/skl-o2/system'
 
       SKL_DIR is used by the shell functions, and is the root of the
       source tree.
@@ -152,20 +160,13 @@ Usage:
 
 
    o If your program terminates due to a programming error (assert
-     failure, halt, NIL deref, type guard failure, etc.), the stack
-     trace will be printed to the console.  If you prefer it to be
-     written to ${SKL_DIR}/system/.DiagnosticOutput, 'ScreenOutput' to
-     FALSE in ${SKL_DIR}/system/DebugIO.Mod, and recompile* with:
-
-       cd ${SKL_DIR}/system
-       skl-skl-oc DebugIO.Mod
-
-     * After building everything, as described above.
+     failure, halt, NIL deref, type guard failure, etc.),
+     ${SKL_DIR}/system/.DiagnosticOutput will contain a stack
+     backtrace.
 
 
    o More formal documentation on the system implementation and usage
      will be forthcoming.
-
 
    o Notes on code formatting
 
