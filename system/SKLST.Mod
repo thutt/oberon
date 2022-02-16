@@ -396,9 +396,16 @@ IMPORT
     
   PROCEDURE InitBasicType(t : Type; f : SHORTINT);
   BEGIN
-    t.form := f; t.mno := 0; t.flags := {}; t.ref := OPM.nofTypeMax;
-    t.sysflag := OPM.DefaultSysFlag; t.size := OPM.UndefSize; t.pos := 0;
-    t.idfp := OPM.DefaultFP; t.pvfp := OPM.DefaultFP; t.pbfp := OPM.DefaultFP;
+    t.form := f;
+    t.mno := 0;
+    t.flags := {};
+    t.ref := OPM.nofTypeMax;
+    t.sysflag := OPM.DefaultSysFlag;
+    t.size := OPM.UndefSize;
+    t.pos := 0;
+    t.idfp := OPM.DefaultFP;
+    t.pvfp := OPM.DefaultFP;
+    t.pbfp := OPM.DefaultFP;
     t.sym := NIL;
   END InitBasicType;
 
@@ -656,8 +663,12 @@ IMPORT
 
   PROCEDURE InitProcedureSym(s : SymbolProc; k : SHORTINT);
   BEGIN
-    InitBasicSymbol(s, k); s.parsize := OPM.UndefSize; s.type := NewProcedureType();
-    s.varsize := OPM.UndefSize; s.methno := OPM.UndefTDAdr; s.scope := NIL;
+    InitBasicSymbol(s, k);
+    s.parsize := OPM.UndefSize;
+    s.type := NewProcedureType();
+    s.varsize := OPM.UndefSize;
+    s.methno := OPM.UndefTDAdr;
+    s.scope := NIL;
   END InitProcedureSym;
 
   PROCEDURE NewProcedureSym*() : SymbolProc;
@@ -669,6 +680,14 @@ IMPORT
     VAR s : SymbolCodeProc;
   BEGIN NEW(s); InitProcedureSym(s, cproc); s.code := NewConstExt(); RETURN s;
   END NewCodeProcSym;
+
+  PROCEDURE NewTypeBoundProcSym*() : SymbolProc;
+    VAR s : SymbolProc;
+  BEGIN
+    NEW(s);
+    InitProcedureSym(s, tproc);
+    RETURN s;
+  END NewTypeBoundProcSym;
 
   (*** Initialization Helpers ***)
   PROCEDURE EnterTyp(name : OPS.Name; form : SHORTINT; size :INTEGER; VAR res : Type);
@@ -737,7 +756,8 @@ IMPORT
 
   (* InsertImport: attempts to insert 'sym' into 'scope'
     If 'sym' is not found in scope, it is inserted.
-    If 'sym' already exists in 'scope' then it is not inserted and the original symbol is returned in 'old'.
+    If 'sym' already exists in 'scope' then it is not inserted
+    and the original symbol is returned in 'old'.
 
     Symbols inserted in this fashion are kept in declaration order.
     This should not be a problem because they are all dealing with imported symbols
@@ -745,11 +765,19 @@ IMPORT
   *)
   PROCEDURE InsertImport*(scope : SymbolScope; sym : Symbol; VAR old : Symbol);
     VAR hash, len : LONGINT;
-  BEGIN old := FindInThisScope(scope, sym.name^);
-    IF old = NIL THEN len := LEN(scope.table^); hash := OPM.Hash(sym.name^) MOD len;
-      sym.hash := scope.table[hash]; scope.table[hash] := sym;
-      IF scope.first = NIL THEN scope.first := sym; scope.last := sym;
-      ELSE scope.last.link := sym; scope.last := sym;
+  BEGIN
+    old := FindInThisScope(scope, sym.name^);
+    IF old = NIL THEN
+      len := LEN(scope.table^);
+      hash := OPM.Hash(sym.name^) MOD len;
+      sym.hash := scope.table[hash];
+      scope.table[hash] := sym;
+      IF scope.first = NIL THEN
+        scope.first := sym;
+        scope.last := sym;
+      ELSE
+        scope.last.link := sym;
+        scope.last := sym;
       END;
       sym.owner := scope;
     END;

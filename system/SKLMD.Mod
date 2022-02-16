@@ -79,7 +79,8 @@ MODULE SKLMD; (* Machine Description *)
     MaxCases*        = 128;    (* maximal number of cases in a case statement: *)
     MaxCaseRange*    = 512;    (* max range of a case (hi - lo ~ jump table size): *)
         
-    HDNamePrefix*    = '@';      (* prefix for hidden names written to symbol file (to make them unique & inaccessible from source) *)
+    HiddenNameSentinel*    = '@';      (* Sentinel for hidden names written to symbol file
+                                        * (to make them unique & inaccessible from source). *)
   
     NEWusingAdr*    = TRUE;    (* NEW, SYSTEM.NEW uses address of the variable? *)
   
@@ -218,7 +219,7 @@ MODULE SKLMD; (* Machine Description *)
     SFext      = ".Sym";
     RFext      = ".Ref";
     OFext    = ".Obj";
-    SFtag      = 0FBX;  (* SKL symbol file tag *)
+    SFtag      = 0FCX;  (* SKL symbol file tag *)
     SFversion = "0";
     OFversion  = 11161967H; (* SKL 32-bit+ *)
     OFtag      = 0F8320000H;  (* SKL 32-bit object file tag *)
@@ -461,7 +462,8 @@ MODULE SKLMD; (* Machine Description *)
   (* ------------------ Fingerprinting ------------------ *)
 
   PROCEDURE FPrint*(VAR fp : LONGINT; val : LONGINT);
-  BEGIN  fp := SYSTEM.ROT(SYSTEM.VAL(LONGINT, SYSTEM.VAL(SET, fp) / SYSTEM.VAL(SET, val)), 1);
+  BEGIN
+    fp := SYSTEM.ROT(SYSTEM.VAL(LONGINT, SYSTEM.VAL(SET, fp) / SYSTEM.VAL(SET, val)), 1);
   END FPrint;
 
   PROCEDURE  FPrintSet*(VAR fp : LONGINT; val : SET);

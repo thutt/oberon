@@ -393,6 +393,7 @@ The files contained here are provided under the corresponding software license.
   system/SKLERR.Mod
   system/SKLERR.Obj
   system/SKLERR.Sym
+  system/SKLEnvironment.Mod
   system/SKLFileDir.Mod
   system/SKLHostOS.Mod
   system/SKLIE.Mod
