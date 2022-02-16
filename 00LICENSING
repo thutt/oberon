@@ -245,7 +245,7 @@ The files contained here are provided under the corresponding software license.
   scripts/flake8
   scripts/functions
   scripts/setup
-  scripts/skl-compile-os-skl-tests
+  scripts/skl-compile-os-skl
   scripts/skl-compile-skl-compiler-tests
   scripts/skl-test-compiler
   system/CTArrayTrap.Mod
@@ -283,6 +283,7 @@ The files contained here are provided under the corresponding software license.
   system/CTFileIO.Obj
   system/CTFileIO.Sym
   system/CTFileIO.data
+  system/CTFingerprint.Mod
   system/CTGC.Mod
   system/CTGC.Obj
   system/CTGC.Sym
@@ -392,6 +393,7 @@ The files contained here are provided under the corresponding software license.
   system/SKLERR.Mod
   system/SKLERR.Obj
   system/SKLERR.Sym
+  system/SKLEnvironment.Mod
   system/SKLFileDir.Mod
   system/SKLHostOS.Mod
   system/SKLIE.Mod
