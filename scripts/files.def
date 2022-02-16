@@ -122,6 +122,7 @@ COMPILER_TESTS=(                                \
     [CTEnvironment.Mod]="pass"                  \
     [CTExclude.Mod]="pass"                      \
     [CTFileIO.Mod]="pass"                       \
+    [CTFingerprint.Mod]="fail"                  \
     [CTGC.Mod]="pass,manual"                    \
     [CTImport.Mod]="pass"                       \
     [CTIncDec.Mod]="pass"                       \
