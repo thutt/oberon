@@ -119,22 +119,22 @@ namespace skl {
                  address_valid(r + rlen, sizeof(md::uint8)));
 
         if (LIKELY(valid)) {
-            v = strcmp(reinterpret_cast<const char *>(lp),
-                       reinterpret_cast<const char *>(rp));
-            if (v == 0) {
+            int compare = strcmp(reinterpret_cast<const char *>(lp),
+                                 reinterpret_cast<const char *>(rp));
+            if (compare == 0) {
                 zf = true;
                 cf = false;
                 of = false;
                 sf = false;
-            } else if (v > 0) {
+            } else if (compare > 0) {
                 zf = false;
                 cf = false;
                 of = false;
                 sf = false;
             } else {
                 /* result < 0 */
-                zf = true;
-                cf = true;
+                zf = false;
+                cf = false;
                 of = false;
                 sf = true;
             }

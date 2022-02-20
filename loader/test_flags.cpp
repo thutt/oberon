@@ -80,6 +80,14 @@ static value_t values[] = {
           0                     // OF
       }
     },
+    { -68, 0,
+      {
+          0,                    // ZF
+          0,                    // CF
+          1,                    // SF
+          0                     // OF
+      }
+    },
     { 0, 0,
       {
           1,                    // ZF
@@ -123,11 +131,10 @@ hardware_flags(md::int32 l, md::int32 r, flags_t *flags)
 static unsigned
 synthesize_overflow_int32(md::int32 l, md::int32 r)
 {
-    bool ls   = (l & (1 << 31)) != 0;       // Left sign.
-    bool rs   = (r & (1 << 31)) != 0;       // Right sign.
-    bool resS = ((l - r) & (1 << 31)) != 0; // Result sign.
+    unsigned sign_mask = 1 << 31;
+    unsigned res       = l - r;                 // Result sign.
 
-    return (ls != rs) && (ls != resS);
+    return !!(((l ^ r) & (l ^ res)) & sign_mask);
 }
 
 
