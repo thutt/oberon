@@ -17,6 +17,11 @@ Usage:
 
     + The disassembler and loader / interpreter need Gnu G++.
 
+    + To run the script that creates cscope files, cscope must be
+      installed.
+
+          sudo apt install cscope
+
     + The documentation requires a modern LaTeX installation, with a
       few extra packages.
 

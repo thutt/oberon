@@ -137,11 +137,9 @@ function remove-diagnostics ()
 export -f remove-diagnostics;
 
 
-function skl-oberon-path ()
+# Produces the root of the current build output.
+function skl-build-path ()
 {
-    # This pathname construction must match the pathname construction
-    # in the SKL interpreter build process.
-
     local obd="${SKL_BUILD_DIR}";
     local obt="/${SKL_BUILD_TYPE}";
     local obo;
@@ -151,7 +149,19 @@ function skl-oberon-path ()
     else
 	obo="";
     fi;
-    oberon_path="${obd}${obt}${obo}/loader/oberon";
+    echo "${obd}${obt}${obo}";
+}
+export -f skl-build-path;
+
+
+
+function skl-oberon-path ()
+{
+    # This pathname construction must match the pathname construction
+    # in the SKL interpreter build process.
+
+    local obp=$(skl-build-path);
+    oberon_path="${obp}/loader/oberon";
     echo "${oberon_path}";
 }
 export -f skl-oberon-path;

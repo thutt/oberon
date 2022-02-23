@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Copyright (c) 2021, 2022 Logic Magicians Software
+#
+# This produces the basic Oberon OS and compiler for SKL.
+#
+set -o errexit;
+set -o pipefail;
+set -o nounset;
+source ${SKL_DIR}/scripts/files.def
+source ${SKL_DIR}/scripts/functions
+
+function main ()
+{
+    echo -e "\n\n*** Building SKL-based Oberon OS & compiler.";
+    cd ${SKL_DIR}/system;
+    skl-skl-oc -n                                   \
+        ${SKL[*]};
+}
+
+main "${@}";
