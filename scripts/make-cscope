@@ -1,0 +1,16 @@
+#!/bin/bash
+set -o pipefail;
+set -o nounset;
+set -o errexit;
+
+function main ()
+{
+    cscope_options="-k -b -q -u";
+
+    cd ${SKL_DIR:?"Oberon environment is not configured"};
+    find "." -name '*.[ch]' > cscope.files;
+    find "." -name '*.cpp' >> cscope.files;
+    cscope $cscope_options;
+}
+
+main "${@}";
