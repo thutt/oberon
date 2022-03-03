@@ -340,7 +340,7 @@ IMPORT
         IF (typeS = NIL) OR (typeS.name^ = "") THEN
           fpinfo.pbfp := fpinfo.pvfp;
         END;
-      ELSE (* nop *)
+      ELSE (* No other CASE selections. *)
       END;
       type.pbfp := fpinfo.pbfp;
       type.pvfp := fpinfo.pvfp;
