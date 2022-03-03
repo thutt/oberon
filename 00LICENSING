@@ -218,11 +218,6 @@ The files contained here are provided under the corresponding software license.
   disasm/objio.h
   disasm/skl.cpp
   disasm/skl.h
-  disasm/x86.cpp
-  disasm/x86.h
-  disasm/x86dbopc.h
-  disasm/x86mne.h
-  disasm/x86sbopc.h
   doc/Makefile
   doc/skl/Makefile
   doc/skl/acronyms.tex
@@ -290,6 +285,8 @@ The files contained here are provided under the corresponding software license.
   system/CTFileIO.Sym
   system/CTFileIO.data
   system/CTFingerprint.Mod
+  system/CTFingerprint.Obj
+  system/CTFingerprint.Sym
   system/CTGC.Mod
   system/CTGC.Obj
   system/CTGC.Sym

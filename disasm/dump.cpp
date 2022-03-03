@@ -3,7 +3,6 @@
 #include "objio.h"
 #include "dump.h"
 #include "skl.h"
-#include "x86.h"
 
 namespace dump
 {
@@ -550,13 +549,9 @@ namespace dump
                 fprintf(fp, "] %s %s %s\n", kind, form, locals->name);
                 locals = locals->next;
             }
-            if (mode == objio::fm_x86) {
-                x86::disassemble(fp, objio::obj_info->code, sym->adr, sym->len);
-            } else {
-                assert(mode == objio::fm_skl);
-                skl::disassemble(fp, objio::obj_info->code, sym->adr, sym->len);
 
-            }
+            assert(mode == objio::fm_skl);
+            skl::disassemble(fp, objio::obj_info->code, sym->adr, sym->len);
             fprintf(fp, "\n");
         }
         else

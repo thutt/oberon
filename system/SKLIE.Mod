@@ -331,7 +331,7 @@ IMPORT
         nofhdfld := 0;
         FPrintFlds(type(ST.Record), 0, TRUE, fpinfo.pbfp, fpinfo.pvfp);
         IF nofhdfld > OPM.MaxHdFld THEN
-          OPM.err(-1);
+          OPM.internal('I', 1000);
         END;
 
         ST.ProcessScope(type(ST.Record).scope, FPrintTProcs, fpinfo);
@@ -340,7 +340,7 @@ IMPORT
         IF (typeS = NIL) OR (typeS.name^ = "") THEN
           fpinfo.pbfp := fpinfo.pvfp;
         END;
-      ELSE (* nop *)
+      ELSE (* No other CASE selections. *)
       END;
       type.pbfp := fpinfo.pbfp;
       type.pvfp := fpinfo.pvfp;
@@ -385,7 +385,7 @@ IMPORT
 
          | ST.nil: (* nothing *)
          ELSE
-           OPM.err(-1);
+           OPM.internal('I', 1001);
          END;
 
       |  ST.var:
@@ -875,7 +875,8 @@ IMPORT
       ref, tag : INTEGER;
       name : ST.SymbolName;
       t : ST.Type;
-      obj, old : ST.Symbol;
+      obj : ST.Symbol; (* Imported from symbol file *)
+      old : ST.Symbol; (* Compiled in module source. *)
       flags : SET;
   BEGIN
     ReadTag(tag);
@@ -1538,11 +1539,13 @@ END OutSymbolName;
            OPM.SymWCh(code[i]);
            INC(i);
          END;
-        OutSymbolName(sym);
+         OutSymbolName(sym);
 
       |  ST.iproc:
-         OPM.SymWInt(sftIPRO); OutSignature(sym.type(ST.Procedure));
-         OPM.SymWSet(sym.flags * ST.symPersistentFlags); OutSymbolName(sym);
+         OPM.SymWInt(sftIPRO);
+         OutSignature(sym.type(ST.Procedure));
+         OPM.SymWSet(sym.flags * ST.symPersistentFlags);
+         OutSymbolName(sym);
 
       |  ST.type:
          IF sym.type.sym = sym THEN
@@ -1563,7 +1566,8 @@ END OutSymbolName;
   END OutSymbol;
 
   PROCEDURE OutScope(VAR info : ST.ProcessScopeInfo);
-  BEGIN OutSymbol(info.sym);
+  BEGIN
+    OutSymbol(info.sym);
   END OutScope;
 
   PROCEDURE Export*(self : ARRAY OF CHAR; VAR newsf, extsf : BOOLEAN);

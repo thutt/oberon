@@ -1,15 +1,20 @@
 MODULE SKLST; (* Symbol Table Hash Table *)
-(* XXX document: SYSTEM is always given level 0.  If it is given another level, the GlbMod array needs to be modified so range
-  errors do not occur when things like fingerprinting access the array based on the declaration level of the symbol *)
+(* XXX document: SYSTEM is always given level 0.
+ * If it is given another level, the GlbMod array needs to be modified so
+ * range errors do not occur when things like fingerprinting access the
+ *  array based on the declaration level of the symbol
+ *)
 
-IMPORT 
-  OPM:=SKLMD, 
-  OPS:=SKLOS, 
+IMPORT
+  OPM:=SKLMD,
+  OPS:=SKLOS,
   EL:=SKLERR;
 
   CONST
     IntrinsicLevel = 0; (* declaration level of standard identifiers *)
-    UndefMnolev = MIN(SHORTINT); (* Used so that if the mnolev is initialized outside this module, do not reset it here when inserting *)
+    UndefMnolev = MIN(SHORTINT); (* Used so that if the mnolev is
+                                  * initialized outside this module, do not reset
+                                  * it here when inserting *)
 
   CONST (* type structure *)
     undef*      = 0; (* indicates an error occurred during declaration; used for continuation *)
@@ -35,7 +40,8 @@ IMPORT
     IntSet* = {sint..lint};
     RealSet* = {real, lreal};
     NumSet* = IntSet + RealSet;
-    BasicSet* = {bool, byte, char, sint, int, lint, real, lreal, set, nil, pointer, procedure}; (* basic types (which can fit into a register) *)
+    BasicSet* = {bool, byte, char, sint, int, lint, real,
+                 lreal, set, nil, pointer, procedure}; (* Types that can fit into a register. *)
     ReturnSet* = BasicSet; (* allowed in a RETURN statement *)
     AggregateSet* = {array, dynarr, record};
 
@@ -52,11 +58,16 @@ IMPORT
       16..27 for Type specific use
       28..31 generic use (can be used outside of this module)
     *)
-    allocated* = 4; method* = 5;
-    typCommonFlags* = {04..15}; typSpecificFlags* = {16..27}; typGenericFlags* = {28..31};
-    typPersistentFlags* = typCommonFlags + typSpecificFlags + typGenericFlags; (* flags which will be written to Sym *)
+    allocated* = 4;
+    method* = 5;
+    typCommonFlags* = {04..15};
+    typSpecificFlags* = {16..27};
+    typGenericFlags* = {28..31};
+    typPersistentFlags* = (typCommonFlags +
+                           typSpecificFlags +
+                           typGenericFlags); (* flags which will be written to Sym *)
 
-  TYPE            
+  TYPE
     Symbol* = POINTER TO SymbolDesc;
     SymbolScope* = POINTER TO SymbolScopeDesc;  (* scope, module *)
     SymbolTypeDesc* = POINTER TO SymbolTypeDescDesc;
@@ -71,7 +82,7 @@ IMPORT
 
   CONST
     typDynArrParm* = 16; (* dynamic array type a parameter, not heap-based; size calculated diferently *)
-    
+
   TYPE
     Array* = POINTER TO ArrayDesc;
     ArrayDesc* = RECORD (TypeDesc)
@@ -80,7 +91,7 @@ IMPORT
       td* : SymbolTypeDesc; (* type descriptor (97.07.19: use GetTD to read) *)
       offset* : LONGINT;  (* form = array => 0; form = dynarr => offset of LEN() in descriptor *)
     END;
-    
+
     ArrayInfoDesc* = RECORD
       form : SHORTINT;
       nofdim : LONGINT;
@@ -167,26 +178,37 @@ IMPORT
 
   CONST
     (* leaf & used status are not persistent *)
-    symPersistentFlags* = (symCommonFlags - {leaf, used, invisible}) + symSpecificFlags + symGenericFlags; (* flags which will be written to Sym *)
+    symPersistentFlags* = ((symCommonFlags - {leaf, used, invisible}) +
+                           symSpecificFlags +
+                           symGenericFlags); (* flags which will be written to Sym *)
 
   TYPE
     SymbolName* = POINTER TO ARRAY OF CHAR;
-    
-    SymbolDesc* = RECORD
+
+    SymtabEntryDesc = RECORD
+      (* owner: The scope owning a Symbol.  The owner is not necessarily
+       *        a scope.  It can be a record, or a procedure, for example.
+       *)
+      owner : Symbol;
+      link : Symbol;    (* Links symbols in scope together in a list. *)
+      hash : Symbol;    (* Links symbols together in the hash table. *)
+    END;
+
+    SymbolDesc* = RECORD (SymtabEntryDesc)
       kind* : SHORTINT;
-      mnolev*, vis*, history* : SHORTINT; (* mnolev <= 0 => mno = -mnolev; mnolev > 0 => nesting level *)
+      mnolev*, vis*, history* : SHORTINT; (* mnolev <= 0 => mno = -mnolev;
+                                           * mnolev > 0 => nesting level *)
       flags* : SET;
       type* : Type;
       ref*  : INTEGER;
       adr*, fprint* : LONGINT;
       name- : SymbolName;
 
-      (* XXX document: during ObjFile Uses block writing, the adr field is set to the index of the Using record for the
-        symbol.  This is so external fixups can get their external address, since it isn't stored in the symbol file *)
-      
-      owner : SymbolScope;
-      link : Symbol;    (* used for linking symbols together in a list *)
-      hash : Symbol; (* used for linking symbols together in the hash table *)
+      (* XXX document:
+       * During ObjFile Uses block writing, the adr field is set to
+       * the index of the Using record for the symbol.
+       * This is so external fixups can get their external address,
+       * since it isn't stored in the symbol file *)
     END;
 
     SymbolConst* = POINTER TO SymbolConstDesc;
@@ -198,16 +220,16 @@ IMPORT
     ScopeLenRecord = 8;
     ScopeLenProcedure = 8;
     ScopeLenModule = 16;
-    
+
   TYPE
     HashTable = POINTER TO ARRAY OF Symbol;
 
     (* SymbolScopeDesc: a symbol table scope
-      
+
       A scope must maintain the declaration order of symbols.
       A scope must reference its owner.
       A scope must reference its enclosing scope.
-      
+
       inv: (link # NIL) & (link(SymbolScope) <-> enclosing scope)
       inv: (hash = NIL) OR (hash <-> owner of the scope) (owner = procedure, for example)
       inv: (first = NIL) OR defined(first^) & (first <-> first variable declared in scope)
@@ -223,7 +245,7 @@ IMPORT
     ModuleScopeDesc* = RECORD (SymbolScopeDesc)
       module : Symbol;  (* symbol which represents the initialization code *)
     END;
-    
+
   CONST (* SymbolTypeDesc flags *)
     tdinit* = 16; (* type descriptor already appears on the init-td list *)
 
@@ -306,7 +328,7 @@ IMPORT
     realtyp-, lrltyp-, settyp-, stringtyp-, niltyp-, notyp-, sysptrtyp-, proctyp-: Type;
 
   VAR
-    nofTD : INTEGER; (* really? Why isn't 127 enought? Why does it really overflow? 97.12.03 *)
+    nofTD : INTEGER;
     sysScope : SymbolScope;
     universe : SymbolScope;
     NullString : SymbolName;
@@ -318,18 +340,28 @@ IMPORT
   PROCEDURE ^ FindInThisScope*(scope : SymbolScope; name : ARRAY OF CHAR) : Symbol;
 
   PROCEDURE Hash*(name : ARRAY OF CHAR) : LONGINT;
-  BEGIN RETURN OPM.Hash(name);
+  BEGIN
+    RETURN OPM.Hash(name);
   END Hash;
 
-  PROCEDURE MakeGeneratedName(described : Symbol; prefix : ARRAY OF CHAR; VAR nofGenNames : INTEGER) : SymbolName;
-    VAR name, symName : SymbolName; i, j, len : LONGINT; ch : CHAR; number : OPS.Name;
+  PROCEDURE MakeGeneratedName(described : Symbol;
+                              prefix : ARRAY OF CHAR;
+                              VAR nofGenNames : INTEGER) : SymbolName;
+    VAR
+      name, symName : SymbolName;
+      i, j, len : LONGINT;
+      ch : CHAR;
+      number : OPS.Name;
 
     (* pre: undefined(dest) *)
     (* pre: undefined(l) *)
     (* post: ASCIIZ(dest) *)
     (* post: (El: 0 <= i < LEN(dest): dest[i] = 0X & (l <- i + LEN(prefix) - )) *)
     PROCEDURE NextNumber(VAR dest : OPS.Name; VAR l : LONGINT);
-      VAR temp : OPS.Name; len, i, j, val : INTEGER; ch : CHAR;
+      VAR
+        temp : OPS.Name;
+        len, i, j, val : INTEGER;
+        ch : CHAR;
     BEGIN
       val := nofGenNames;
       INC(nofGenNames); i := 0;
@@ -380,20 +412,26 @@ IMPORT
         INC(i);
       UNTIL ch = 0X;
     END;
-    RETURN name;    
+    RETURN name;
   END MakeGeneratedName;
-    
+
   PROCEDURE IntTypeOf*(v : LONGINT) : Type;
-    VAR t : Type;
+    VAR
+      t : Type;
   BEGIN
-    IF (v >= OPM.MinSInt) & (v <= OPM.MaxSInt) THEN t := sinttyp;
-    ELSIF (v >= OPM.MinInt) & (v <= OPM.MaxInt) THEN t := inttyp;
-    ELSIF (v >= OPM.MinLInt) & (v <= OPM.MaxLInt) (*bootstrap/cross*) THEN t := linttyp;
-    ELSE OPM.err(EL.NumberTooLarge); t := linttyp; (* only possible on bootstrapping compilers *)
+    IF (v >= OPM.MinSInt) & (v <= OPM.MaxSInt) THEN
+      t := sinttyp;
+    ELSIF (v >= OPM.MinInt) & (v <= OPM.MaxInt) THEN
+      t := inttyp;
+    ELSIF (v >= OPM.MinLInt) & (v <= OPM.MaxLInt) (*bootstrap/cross*) THEN
+      t := linttyp;
+    ELSE
+      OPM.err(EL.NumberTooLarge);
+      t := linttyp; (* only possible on bootstrapping compilers *)
     END;
     RETURN t;
   END IntTypeOf;
-    
+
   PROCEDURE InitBasicType(t : Type; f : SHORTINT);
   BEGIN
     t.form := f;
@@ -410,7 +448,8 @@ IMPORT
   END InitBasicType;
 
   PROCEDURE InitBasicSymbol(s : Symbol; k : SHORTINT);
-    VAR i : INTEGER;
+    VAR
+      i : INTEGER;
   BEGIN
     s.kind := k;
     s.mnolev := UndefMnolev;
@@ -428,26 +467,49 @@ IMPORT
 
   (*** Type Constructors ***)
   PROCEDURE NewBasicType*() : Type;
-    VAR t : Type;
-  BEGIN NEW(t); InitBasicType(t, undef); RETURN t;
+    VAR
+      t : Type;
+  BEGIN
+    NEW(t);
+    InitBasicType(t, undef);
+    RETURN t;
   END NewBasicType;
 
   PROCEDURE NewArrayType*(f : SHORTINT) : Array;
-    VAR t : Array;
-  BEGIN NEW(t); InitBasicType(t, f); t.n := 0; t.of := undftyp; t.td := NIL; t.offset := 0; RETURN t;
+    VAR
+      t : Array;
+  BEGIN
+    NEW(t);
+    InitBasicType(t, f);
+    t.n := 0;
+    t.of := undftyp;
+    t.td := NIL;
+    t.offset := 0;
+    RETURN t;
   END NewArrayType;
 
   PROCEDURE NewPointerType*() : Pointer;
-    VAR t : Pointer;
-  BEGIN NEW(t); InitBasicType(t, pointer); t.to := undftyp; RETURN t;
+    VAR
+      t : Pointer;
+  BEGIN
+    NEW(t);
+    InitBasicType(t, pointer);
+    t.to := undftyp;
+    RETURN t;
   END NewPointerType;
 
   PROCEDURE NewRecordType*() : Record;
-    VAR t : Record;
+    VAR
+      t : Record;
   BEGIN
-    NEW(t); InitBasicType(t, record);
-    t.ancestor := NIL; t.scope := NIL; t.td := NIL;
-    t.nofmeth := -1; (* methods not counted yet *) t.align := 0; t.extlev := 0;
+    NEW(t);
+    InitBasicType(t, record);
+    t.ancestor := NIL;
+    t.scope := NIL;
+    t.td := NIL;
+    t.nofmeth := -1; (* methods not counted yet *)
+    t.align := 0;
+    t.extlev := 0;
     RETURN t;
   END NewRecordType;
 
@@ -466,23 +528,32 @@ IMPORT
   (*** Symbol Constructors ***)
 
   PROCEDURE NewConstExt*() : ConstExt;
-    VAR x : ConstExt;
-  BEGIN NEW(x); RETURN x;
+    VAR
+      x : ConstExt;
+  BEGIN
+    NEW(x);
+    RETURN x;
   END NewConstExt;
 
   PROCEDURE SetSymbolName*(sym : Symbol; name : ARRAY OF CHAR);
-    VAR l : LONGINT; ch : CHAR;
+    VAR
+      l : LONGINT;
+      ch : CHAR;
   BEGIN
-    IF name[0] = 0X THEN sym.name := NullString;
-    ELSE ASSERT(sym.name = NIL); (* can only set unset names *)
+    IF name[0] = 0X THEN
+      sym.name := NullString;
+    ELSE
+      ASSERT(sym.name = NIL); (* can only set unset names *)
       l := LEN(name);
       (* inv: i includes 0X terminator *)
-      NEW(sym.name, l); COPY(name, sym.name^);
+      NEW(sym.name, l);
+      COPY(name, sym.name^);
     END;
   END SetSymbolName;
 
   PROCEDURE NewConst*(type : Type) : Const;
-    VAR x : Const;
+    VAR
+      x : Const;
   BEGIN
     NEW(x);
     x.type := type;
@@ -493,46 +564,84 @@ IMPORT
     x.real := 0.0;
     RETURN x;
   END NewConst;
-  
+
   PROCEDURE NewBasicSym*(kind : SHORTINT) : Symbol;
-    VAR s : Symbol;
-  BEGIN NEW(s); InitBasicSymbol(s, kind); RETURN s;
+    VAR
+      s : Symbol;
+  BEGIN
+    NEW(s);
+    InitBasicSymbol(s, kind);
+    RETURN s;
   END NewBasicSym;
 
   PROCEDURE NewConstSym*(t : Type) : SymbolConst;
-    VAR s : SymbolConst;
-  BEGIN NEW(s); InitBasicSymbol(s, const); s.val := NewConst(t); s.type := t; RETURN s;
+    VAR
+      s : SymbolConst;
+  BEGIN
+    NEW(s);
+    InitBasicSymbol(s, const);
+    s.val := NewConst(t);
+    s.type := t;
+    RETURN s;
   END NewConstSym;
 
   PROCEDURE InitScopeSym(s : SymbolScope; len : LONGINT);
-  BEGIN InitBasicSymbol(s, scope); OPM.GetCurrentSourcePos(s.adr); NEW(s.table, len); s.first := NIL; s.last := NIL; s.dsize := OPM.UndefSize;
-    WHILE len > 0 DO DEC(len); s.table[len] := NIL; END;
+  BEGIN
+    InitBasicSymbol(s, scope);
+    OPM.GetCurrentSourcePos(s.adr);
+    NEW(s.table, len);
+    s.first := NIL;
+    s.last := NIL;
+    s.dsize := OPM.UndefSize;
+    WHILE len > 0 DO
+      DEC(len);
+      s.table[len] := NIL;
+    END;
   END InitScopeSym;
-  
+
   PROCEDURE NewModuleScopeSym*() : ModuleScope;
-    VAR s : ModuleScope;
-  BEGIN NEW(s); InitScopeSym(s, ScopeLenModule); RETURN s;
+    VAR
+      s : ModuleScope;
+  BEGIN
+    NEW(s);
+    InitScopeSym(s, ScopeLenModule);
+    RETURN s;
   END NewModuleScopeSym;
 
   PROCEDURE NewRecordScopeSym*() : SymbolScope;
-    VAR s : SymbolScope;
-  BEGIN NEW(s); InitScopeSym(s, ScopeLenRecord); RETURN s;
+    VAR
+      s : SymbolScope;
+  BEGIN
+    NEW(s);
+    InitScopeSym(s, ScopeLenRecord);
+    RETURN s;
   END NewRecordScopeSym;
 
   PROCEDURE NewProcedureScopeSym*() : SymbolScope;
-    VAR s : SymbolScope;
-  BEGIN NEW(s); InitScopeSym(s, ScopeLenProcedure); RETURN s;
+    VAR
+      s : SymbolScope;
+  BEGIN
+    NEW(s);
+    InitScopeSym(s, ScopeLenProcedure);
+    RETURN s;
   END NewProcedureScopeSym;
 
   PROCEDURE NewTempVar*(type : Type) : Symbol;
-    VAR s : Symbol; name : SymbolName;
+    VAR
+      s : Symbol;
+      name : SymbolName;
   BEGIN
-    NEW(s); InitBasicSymbol(s, var); s.type := type; name := MakeGeneratedName(NIL, 'var_', nofGenVar);
-    Insert(name^, s); RETURN s;
+    NEW(s);
+    InitBasicSymbol(s, var);
+    s.type := type;
+    name := MakeGeneratedName(NIL, 'var_', nofGenVar);
+    Insert(name^, s);
+    RETURN s;
   END NewTempVar;
-  
+
   PROCEDURE InitTD(kind : SHORTINT; td : SymbolTypeDesc; described : Type);
-    VAR symname : OPS.Name;
+    VAR
+      symname : OPS.Name;
   BEGIN
     InitBasicSymbol(td, kind);
     td.type := linttyp;
@@ -543,40 +652,60 @@ IMPORT
   END InitTD;
 
   PROCEDURE NewRecordTD*(desc : Type) : RecordTD;
-    VAR s : RecordTD;
-  BEGIN NEW(s);  InitTD(recdesc, s, desc); RETURN s;
+    VAR
+      s : RecordTD;
+  BEGIN
+    NEW(s);
+    InitTD(recdesc, s, desc);
+    RETURN s;
   END NewRecordTD;
 
   PROCEDURE NewDynArrayTD*(desc : Type) : ArrayTD;
-    VAR s : ArrayTD;
-  BEGIN NEW(s); InitTD(darrdesc, s, desc); RETURN s;
+    VAR
+      s : ArrayTD;
+  BEGIN
+    NEW(s);
+    InitTD(darrdesc, s, desc);
+    RETURN s;
   END NewDynArrayTD;
 
   PROCEDURE NewArrayTD*(desc : Type) : ArrayTD;
-    VAR s : ArrayTD;
-  BEGIN NEW(s); InitTD(arrdesc, s, desc); RETURN s;
+    VAR
+      s : ArrayTD;
+  BEGIN
+    NEW(s);
+    InitTD(arrdesc, s, desc);
+    RETURN s;
   END NewArrayTD;
 
   PROCEDURE SetTD*(type : Type; td : SymbolTypeDesc);
-    VAR tf : SHORTINT;
-  BEGIN tf := type.form;
-    IF tf = record THEN type(Record).td := td;
-    ELSE (* tf IN {array, dynarr} *) type(Array).td := td;
+    VAR
+      tf : SHORTINT;
+  BEGIN
+    tf := type.form;
+    IF tf = record THEN
+      type(Record).td := td;
+    ELSE (* tf IN {array, dynarr} *)
+      type(Array).td := td;
     END;
   END SetTD;
-  
+
   PROCEDURE  HasTD*(type : Type) : BOOLEAN ; (* TRUE => type has a TD; FALSE => no TD associated *)
   BEGIN
     (* named global exported static arrays are given type descriptors because an importing module
       can declare a pointer to that array type -- at which point a TD is required.  It's best to err on the side
       of not needing a TD and creating one rather than needing one and creating it in many different modules.
     *)
-    RETURN
-      (type.form = record)
-      OR (type.form = pointer) & (type(Pointer).to.form IN {record, dynarr, array})
-      OR (type.form = array) & (type.mno = 0) & (type.sym # NIL) & (type.sym.vis # internal) & (type.sym.mnolev = 0);
+    RETURN ((type.form = record) OR
+            (type.form = pointer) &
+            (type(Pointer).to.form IN {record, dynarr, array}) OR
+            (type.form = array) &
+            (type.mno = 0) &
+            (type.sym # NIL) &
+            (type.sym.vis # internal) &
+            (type.sym.mnolev = 0));
   END HasTD;
-  
+
   (* returns: NIL => no TD associated with type; ~NIL => type descriptor symbol
     works with records, pointer to records & pointer to dynarr
   *)
@@ -584,8 +713,13 @@ IMPORT
     VAR tf : SHORTINT; to : Type; td : SymbolTypeDesc;
 
     PROCEDURE GlobalScope() : SymbolScope;
-      VAR scope : SymbolScope;
-    BEGIN scope := topScope; WHILE scope.link # universe DO scope := scope.link(SymbolScope); END;
+      VAR
+        scope : SymbolScope;
+    BEGIN
+      scope := topScope;
+      WHILE scope.link # universe DO
+        scope := scope.link(SymbolScope);
+      END;
       RETURN scope;
     END GlobalScope;
 
@@ -615,6 +749,7 @@ IMPORT
         END;
         describedType(Array).td := td;
         element := describedType;
+
         WHILE element.form IN {array, dynarr} DO
           element := element(Array).of;
         END;
@@ -631,33 +766,64 @@ IMPORT
   BEGIN
     IF HasTD(type) THEN
       CASE type.form OF
-      |  record: td := type(Record).td;
-      |  array: td := type(Array).td;
-      | pointer: to := type(Pointer).to; tf := to.form;
+      | record:
+        td := type(Record).td;
+
+      | array:
+        td := type(Array).td;
+
+      | pointer:
+        to := type(Pointer).to;
+        tf := to.form;
+
         CASE tf OF
-        |  record: td := to(Record).td;
-        |  array, dynarr: td := to(Array).td;
+        | record:
+          td := to(Record).td;
+
+        | array, dynarr:
+          td := to(Array).td;
         END;
-        IF td = NIL THEN ASSERT(type.mno = 0, 141); td := NewTypeDesc(to);  END;
+        IF td = NIL THEN
+          ASSERT(type.mno = 0, 141);
+          td := NewTypeDesc(to);
+        END;
       END;
-      IF td = NIL THEN ASSERT(type.form IN {record, array}, 142); ASSERT(type.mno = 0, 143); td := NewTypeDesc(type); END;
-      
+
+      IF td = NIL THEN
+        ASSERT(type.form IN {record, array}, 142);
+        ASSERT(type.mno = 0, 143);
+        td := NewTypeDesc(type);
+      END;
+
       (* inv: td # NIL *)
-      INCL(td.flags, used); (* getting a type descriptor implicitly uses it; even if it is just created *)
+      INCL(td.flags, used); (* getting a type descriptor implicitly uses it;
+                             * even if it is just created *)
       RETURN td;
-    ELSE RETURN NIL;
+    ELSE
+      RETURN NIL;
     END;
   END GetTD;
 
-  PROCEDURE UseTD*(type : Type); (* 98.02.25: obsolete since 'GetTD' now will implicitly use the returned TD *)
-    VAR td : SymbolTypeDesc;
-  BEGIN td := GetTD(type); INCL(td.flags, used);
+  PROCEDURE UseTD*(type : Type); (* 98.02.25: obsolete since 'GetTD' now
+                                  * will implicitly use the returned TD *)
+    VAR
+      td : SymbolTypeDesc;
+  BEGIN
+    td := GetTD(type);
+    INCL(td.flags, used);
   END UseTD;
-  
+
   PROCEDURE NewStdProcSym(form : SHORTINT; result : Type) : SymbolStdProc;
-    VAR s : SymbolStdProc; type : Procedure;
-  BEGIN NEW(s); InitBasicSymbol(s, stdproc); s.procno := form;
-    type := NewProcedureType(); type.result := result; s.type := type;
+    VAR
+      s : SymbolStdProc;
+    type : Procedure;
+  BEGIN
+    NEW(s);
+    InitBasicSymbol(s, stdproc);
+    s.procno := form;
+    type := NewProcedureType();
+    type.result := result;
+    s.type := type;
     RETURN s;
   END NewStdProcSym;
 
@@ -672,17 +838,27 @@ IMPORT
   END InitProcedureSym;
 
   PROCEDURE NewProcedureSym*() : SymbolProc;
-    VAR s : SymbolProc;
-  BEGIN NEW(s); InitProcedureSym(s, lproc); RETURN s;
+    VAR
+      s : SymbolProc;
+  BEGIN
+    NEW(s);
+    InitProcedureSym(s, lproc);
+    RETURN s;
   END NewProcedureSym;
 
   PROCEDURE NewCodeProcSym*() : SymbolCodeProc;
-    VAR s : SymbolCodeProc;
-  BEGIN NEW(s); InitProcedureSym(s, cproc); s.code := NewConstExt(); RETURN s;
+    VAR
+      s : SymbolCodeProc;
+  BEGIN
+    NEW(s);
+    InitProcedureSym(s, cproc);
+    s.code := NewConstExt();
+    RETURN s;
   END NewCodeProcSym;
 
   PROCEDURE NewTypeBoundProcSym*() : SymbolProc;
-    VAR s : SymbolProc;
+    VAR
+      s : SymbolProc;
   BEGIN
     NEW(s);
     InitProcedureSym(s, tproc);
@@ -690,18 +866,36 @@ IMPORT
   END NewTypeBoundProcSym;
 
   (*** Initialization Helpers ***)
-  PROCEDURE EnterTyp(name : OPS.Name; form : SHORTINT; size :INTEGER; VAR res : Type);
-    VAR sym : Symbol; typ : Type;
+  PROCEDURE EnterTyp(name : OPS.Name;
+                     form : SHORTINT;
+                     size : INTEGER;
+                     VAR res : Type);
+    VAR
+      sym : Symbol;
+      typ : Type;
   BEGIN
-    sym := NewBasicSym(type); Insert(name, sym); sym.vis := exportR;
-    typ := NewBasicType(); typ.form := form; typ.ref := form;
-    typ.size := size; typ.mno := IntrinsicLevel;
-    sym.type := typ; typ.sym := sym; res := typ; sym.mnolev := IntrinsicLevel;
+    sym := NewBasicSym(type);
+    Insert(name, sym);
+    sym.vis := exportR;
+    typ := NewBasicType();
+    typ.form := form;
+    typ.ref := form;
+    typ.size := size;
+    typ.mno := IntrinsicLevel;
+    sym.type := typ;
+    typ.sym := sym;
+    res := typ;
+    sym.mnolev := IntrinsicLevel;
     typ.flags := {allocated, idfpdone, typfpdone};
   END EnterTyp;
 
-  PROCEDURE EnterPtrTyp(name : OPS.Name; form : SHORTINT; size :INTEGER; VAR res : Type);
-    VAR sym : Symbol; typ : Pointer;
+  PROCEDURE EnterPtrTyp(name : OPS.Name;
+                        form : SHORTINT;
+                        size : INTEGER;
+                        VAR res : Type);
+    VAR
+      sym : Symbol;
+      typ : Pointer;
   BEGIN
     sym := NewBasicSym(type);
     Insert(name, sym);
@@ -721,36 +915,96 @@ IMPORT
   END EnterPtrTyp;
 
   PROCEDURE EnterProc(name : OPS.Name; procno: SHORTINT; result : Type);
-    VAR sym : Symbol;
+    VAR
+      sym : Symbol;
   BEGIN
-    sym := NewStdProcSym(procno, result); sym.mnolev := IntrinsicLevel;
-    Insert(name, sym); sym.vis := export;
+    sym := NewStdProcSym(procno, result);
+    sym.mnolev := IntrinsicLevel;
+    Insert(name, sym);
+    sym.vis := export;
   END EnterProc;
 
   PROCEDURE EnterIntConst(name : OPS.Name; val : SHORTINT) : Symbol;
-    VAR sym : SymbolConst;
+    VAR
+      sym : SymbolConst;
   BEGIN
-    sym := NewConstSym(IntTypeOf(val)); Insert(name, sym); sym.mnolev := IntrinsicLevel;
-    sym.val.i0 := val; sym.vis := export; RETURN sym;
+    sym := NewConstSym(IntTypeOf(val));
+    Insert(name, sym);
+    sym.mnolev := IntrinsicLevel;
+    sym.val.i0 := val;
+    sym.vis := export;
+    RETURN sym;
   END EnterIntConst;
 
   PROCEDURE EnterBoolConst(name : OPS.Name; val : SHORTINT);
-    VAR sym : SymbolConst;
-  BEGIN sym := NewConstSym(booltyp); Insert(name, sym); sym.mnolev := IntrinsicLevel; sym.val.i0 := val;
+    VAR
+      sym : SymbolConst;
+  BEGIN
+    sym := NewConstSym(booltyp);
+    Insert(name, sym);
+    sym.mnolev := IntrinsicLevel;
+    sym.val.i0 := val;
   END EnterBoolConst;
 
+  PROCEDURE InsertHash(scope : SymbolScope; sym : Symbol);
+    VAR
+      hash, len : LONGINT;
+      curr, prev : Symbol;
+  BEGIN
+    len := LEN(scope.table^);
+    hash := OPM.Hash(sym.name^) MOD len;
+
+    (* Insert in alphabetical order.
+     *
+     * The symbols are kept in alphabetical order so that scope
+     * traversal has a deterministic order of symbols.  This is
+     * important because fingerprint is order-dependent; traversing
+     * the set of symbols in a scope in a different order will most
+     * likely yeild a different fingerprint, resulting in error
+     * FprintRedefinedPublic (125), or FprintRedefinedPrivate (126).
+     *
+     * By ensuring that the scope is in alphabetical order
+     * ProcessScope() will always produce the same result when
+     * fingerprinting the self-import module when writing the symbol
+     * file.
+     *)
+    prev := NIL;
+    curr := scope.table[hash];
+    WHILE (curr # NIL) & (sym.name^ > curr.name^) DO
+      prev := curr;
+      curr := curr.hash;
+    END;
+
+    IF prev = NIL THEN          (* Insert at beginning of list. *)
+      sym.hash  := scope.table[hash];
+      scope.table[hash] := sym;
+    ELSE                        (* Insert into list. *)
+      sym.hash  := curr;
+      prev.hash := sym;
+    END;
+
+    (* Link variables in the scope in declaration order. *)
+    IF scope.first = NIL THEN
+      scope.first := sym;
+      scope.last := sym;
+    ELSE
+      scope.last.link := sym;
+      scope.last := sym;
+    END;
+    sym.owner := scope;
+  END InsertHash;
+
   PROCEDURE InsertScope*(scope : SymbolScope; name : ARRAY OF CHAR; sym : Symbol);
-    VAR hash, len : LONGINT;
-  BEGIN len := LEN(scope.table^); hash := OPM.Hash(name) MOD len;
-    IF FindInThisScope(scope, name) = NIL THEN INCL(sym.flags, leaf); SetSymbolName(sym, name);
-      IF sym.mnolev = UndefMnolev THEN sym.mnolev := scope.mnolev; END;
-      (* insert & link variables in the scope in decl order *)
-      sym.hash := scope.table[hash]; scope.table[hash] := sym;
-      IF scope.first = NIL THEN scope.first := sym; scope.last := sym;
-      ELSE scope.last.link := sym; scope.last := sym;
+  BEGIN
+    IF FindInThisScope(scope, name) = NIL THEN
+      INCL(sym.flags, leaf);
+      SetSymbolName(sym, name);
+      IF sym.mnolev = UndefMnolev THEN
+        sym.mnolev := scope.mnolev;
       END;
-      sym.owner := scope;
-    ELSE OPM.err(EL.MultipleDefinition);
+      InsertHash(scope, sym);
+    ELSE
+      OPM.err(EL.MultipleDefinition);
     END;
   END InsertScope;
 
@@ -764,75 +1018,100 @@ IMPORT
     and as such are not important to the current compilation.
   *)
   PROCEDURE InsertImport*(scope : SymbolScope; sym : Symbol; VAR old : Symbol);
-    VAR hash, len : LONGINT;
+    VAR
+      hash, len : LONGINT;
   BEGIN
     old := FindInThisScope(scope, sym.name^);
     IF old = NIL THEN
-      len := LEN(scope.table^);
-      hash := OPM.Hash(sym.name^) MOD len;
-      sym.hash := scope.table[hash];
-      scope.table[hash] := sym;
-      IF scope.first = NIL THEN
-        scope.first := sym;
-        scope.last := sym;
-      ELSE
-        scope.last.link := sym;
-        scope.last := sym;
-      END;
-      sym.owner := scope;
+      InsertHash(scope, sym);
     END;
   END InsertImport;
-  
+
   PROCEDURE Insert*(name : ARRAY OF CHAR; sym : Symbol);
-  BEGIN InsertScope(topScope, name, sym);
+  BEGIN
+    InsertScope(topScope, name, sym);
   END Insert;
 
   PROCEDURE ReverseSymbolList*(VAR head : Symbol);
-    VAR p, l, h : Symbol;
+    VAR
+      p, l, h : Symbol;
   BEGIN
     IF head # NIL THEN
-      h := head; p := h; l := h.link; p.link := NIL;
-      WHILE l # NIL DO h := l; l := l.link; h.link := p; p := h; END;
+      h := head;
+      p := h;
+      l := h.link;
+      p.link := NIL;
+      WHILE l # NIL DO
+        h := l;
+        l := l.link;
+        h.link := p;
+        p := h;
+      END;
       head := h;
     END;
   END ReverseSymbolList;
 
   PROCEDURE OpenScope(s : SymbolScope; level: SHORTINT; owner: Symbol);
   BEGIN
-    s.mnolev := level; s.link := topScope; topScope := s; s.hash := owner;
-    IF (owner # NIL) & (owner.kind IN {fwdproc..tproc}) THEN owner(SymbolProc).scope := s; END;
+    s.mnolev := level;
+    s.link := topScope;
+    topScope := s;
+    s.hash := owner;
+    IF (owner # NIL) & (owner.kind IN {fwdproc..tproc}) THEN
+      owner(SymbolProc).scope := s;
+    END;
   END OpenScope;
 
   PROCEDURE OpenRecordScope*;
-    VAR s : SymbolScope;
-  BEGIN s := NewRecordScopeSym(); OpenScope(s, 0, NIL);
+    VAR
+      s : SymbolScope;
+  BEGIN
+    s := NewRecordScopeSym();
+    OpenScope(s, 0, NIL);
   END OpenRecordScope;
 
   PROCEDURE OpenProcedureScope*(level : SHORTINT; owner : SymbolProc);
-    VAR s : SymbolScope;
-  BEGIN  s := NewProcedureScopeSym(); OpenScope(s, level, owner);
+    VAR
+      s : SymbolScope;
+  BEGIN
+    s := NewProcedureScopeSym();
+    OpenScope(s, level, owner);
   END OpenProcedureScope;
 
   PROCEDURE OpenModuleScope*(level : SHORTINT; owner : Symbol);
-    VAR s : ModuleScope;
-  BEGIN s := NewModuleScopeSym(); OpenScope(s, level, owner);
+    VAR
+      s : ModuleScope;
+  BEGIN
+    s := NewModuleScopeSym();
+    OpenScope(s, level, owner);
   END OpenModuleScope;
 
   PROCEDURE HashStats(s : SymbolScope);
-    VAR len, i, empty, symbols : LONGINT; sym : Symbol;
-  BEGIN len := LEN(s.table^); empty := 0; symbols := 0;
+    VAR
+      len, i, empty, symbols : LONGINT;
+      sym : Symbol;
+  BEGIN
+    len := LEN(s.table^);
+    empty := 0;
+    symbols := 0;
     i := 0;
     WHILE i < len DO
       sym := s.table[i];
       IF sym # NIL THEN
-        WHILE sym # NIL DO INC(symbols); sym := sym.hash; END;
+        WHILE sym # NIL DO
+          INC(symbols);
+          sym := sym.hash;
+        END;
       ELSE INC(empty);
       END;
       INC(i);
     END;
-    OPM.LogWStr('hash len='); OPM.LogWHex(len);
-    OPM.LogWStr(' empty slots='); OPM.LogWHex(empty);
-    OPM.LogWStr(' symbols='); OPM.LogWHex(symbols);
+    OPM.LogWStr('hash len=');
+    OPM.LogWHex(len);
+    OPM.LogWStr(' empty slots=');
+    OPM.LogWHex(empty);
+    OPM.LogWStr(' symbols=');
+    OPM.LogWHex(symbols);
     IF (s.hash # NIL) & (s.hash.name # NIL) THEN
       OPM.LogWStr(' owner=');
       OPM.LogWStr(s.hash.name^);
@@ -841,48 +1120,83 @@ IMPORT
   END HashStats;
 
   PROCEDURE CloseScope*() : SymbolScope;
-    VAR s : SymbolScope;
-  BEGIN s := topScope;
-    IF topScope.link = NIL THEN topScope := NIL;
-    ELSE topScope := topScope.link(SymbolScope);
+    VAR
+      s : SymbolScope;
+  BEGIN
+    s := topScope;
+    IF topScope.link = NIL THEN
+      topScope := NIL;
+    ELSE
+      topScope := topScope.link(SymbolScope);
     END;
-    IF OPM.OptHashStats IN OPM.options THEN HashStats(s); END;
+    IF OPM.OptHashStats IN OPM.options THEN
+      HashStats(s);
+    END;
     RETURN s;
   END CloseScope;
 
   PROCEDURE ReopenScope*(scope : SymbolScope; owner : Symbol);
-  BEGIN scope.link := topScope; scope.hash := owner; topScope := scope;
+  BEGIN
+    scope.link := topScope;
+    scope.hash := owner;
+    topScope := scope;
   END ReopenScope;
 
   PROCEDURE ScopeOwner*(scope : SymbolScope) : Symbol;
-  BEGIN IF scope # NIL THEN RETURN scope.hash; ELSE RETURN NIL; END;
+  BEGIN
+    IF scope # NIL THEN
+      RETURN scope.hash;
+    ELSE
+      RETURN NIL;
+    END;
   END ScopeOwner;
 
   PROCEDURE PreviousScope*(scope : SymbolScope) : SymbolScope;
   BEGIN
-    IF (scope # NIL) & (scope.link # NIL) THEN RETURN scope.link(SymbolScope);
-    ELSE RETURN NIL;
+    IF (scope # NIL) & (scope.link # NIL) THEN
+      RETURN scope.link(SymbolScope);
+    ELSE
+      RETURN NIL;
     END;
   END PreviousScope;
 
   PROCEDURE FirstScopeVar*(scope : SymbolScope) : Symbol;
-  BEGIN IF scope # NIL THEN RETURN scope.first; ELSE RETURN NIL; END;
+  BEGIN
+    IF scope # NIL THEN
+      RETURN scope.first;
+    ELSE
+      RETURN NIL;
+    END;
   END FirstScopeVar;
 
   PROCEDURE FirstParm*(proctype : Procedure) : Symbol;
-    VAR parm : Symbol;
-  BEGIN parm := proctype.parms; ASSERT((parm = NIL) OR (parm.kind IN {par, varpar})); RETURN parm;
+    VAR
+      parm : Symbol;
+  BEGIN
+    parm := proctype.parms;
+    ASSERT((parm = NIL) OR (parm.kind IN {par, varpar}));
+    RETURN parm;
   END FirstParm;
 
   PROCEDURE FirstLocalVar*(proc : SymbolProc) : Symbol;
-    VAR sym : Symbol;
-  BEGIN sym := proc.scope.first; WHILE (sym # NIL) & (sym.kind IN {par, varpar}) DO sym := sym.link; END; RETURN sym;
+    VAR
+      sym : Symbol;
+  BEGIN
+    sym := proc.scope.first;
+    WHILE (sym # NIL) & (sym.kind IN {par, varpar}) DO
+      sym := sym.link;
+    END;
+    RETURN sym;
   END FirstLocalVar;
 
   PROCEDURE NextParm*(parm : Symbol) : Symbol;
   BEGIN
-    IF (parm # NIL) & (parm.link # NIL) & (parm.link.kind IN {par, varpar}) THEN RETURN parm.link;
-    ELSE RETURN NIL;
+    IF (parm # NIL) &
+       (parm.link # NIL) &
+       (parm.link.kind IN {par, varpar}) THEN
+      RETURN parm.link;
+    ELSE
+      RETURN NIL;
     END;
   END NextParm;
 
@@ -894,10 +1208,16 @@ IMPORT
     the compiler is stuck with this special reversal routine.
   *)
   PROCEDURE ReverseParmList*(proc: Procedure);
-    VAR f, c, p, q : Symbol;
-  BEGIN f := NIL; p := NIL; c := proc.parms;
+    VAR
+      f, c, p, q : Symbol;
+  BEGIN
+    f := NIL;
+    p := NIL;
+    c := proc.parms;
     WHILE (c # NIL) & (c.kind IN {par, varpar}) DO
-      IF f = NIL THEN f := c; END;
+      IF f = NIL THEN
+        f := c;
+      END;
       q := c.link;
       c.link := p;
       p := c;
@@ -908,42 +1228,61 @@ IMPORT
   END ReverseParmList;
 
   PROCEDURE FirstField*(rec : Record) : Symbol;
-  BEGIN RETURN rec.scope.first;
+  BEGIN
+    RETURN rec.scope.first;
   END FirstField;
-  
+
   PROCEDURE NextField*(f : Symbol) : Symbol;
   BEGIN
-    IF (f # NIL) & (f.link # NIL) & (f.link.kind = field) THEN RETURN f.link;
-    ELSE RETURN NIL;
+    IF (f # NIL) & (f.link # NIL) & (f.link.kind = field) THEN
+      RETURN f.link;
+    ELSE
+      RETURN NIL;
     END;
   END NextField;
 
   PROCEDURE NextSymbol*(sym : Symbol) : Symbol;
   BEGIN
-    IF (sym # NIL) & (sym.link # NIL) THEN RETURN sym.link;
-    ELSE RETURN NIL;
+    IF (sym # NIL) & (sym.link # NIL) THEN
+      RETURN sym.link;
+    ELSE
+      RETURN NIL;
     END;
   END NextSymbol;
 
   PROCEDURE LinkSymbol*(cur, next : Symbol);
-  BEGIN cur.link := next;
+  BEGIN
+    cur.link := next;
   END LinkSymbol;
 
   PROCEDURE FindInThisScope*(scope : SymbolScope; name : ARRAY OF CHAR) : Symbol;
-    VAR sym : Symbol; hash, len : LONGINT;
+    VAR
+      sym : Symbol;
+      hash, len : LONGINT;
   BEGIN
-    len := LEN(scope.table^); hash := OPM.Hash(name) MOD len; sym := scope.table[hash];
-    WHILE (sym # NIL) & (sym.name^ # name) DO sym := sym.hash; END;
+    len := LEN(scope.table^);
+    hash := OPM.Hash(name) MOD len;
+    sym := scope.table[hash];
+    WHILE (sym # NIL) & (sym.name^ # name) DO
+      sym := sym.hash;
+    END;
     RETURN sym;
   END FindInThisScope;
-  
+
   PROCEDURE FindInOpenScopes*(scope : SymbolScope; name : ARRAY OF CHAR) : Symbol;
-    VAR sym : Symbol;
+    VAR
+      sym : Symbol;
   BEGIN
-    REPEAT sym := FindInThisScope(scope, name);
-      IF scope.link # NIL THEN scope := scope.link(SymbolScope); ELSE scope := NIL; END;
+    REPEAT
+      sym := FindInThisScope(scope, name);
+      IF scope.link # NIL THEN
+        scope := scope.link(SymbolScope);
+      ELSE
+        scope := NIL;
+      END;
     UNTIL (sym # NIL) OR (scope = NIL);
-    ASSERT((scope = NIL) OR (sym # NIL)); (* if scopes have not run out, a symbol must have been found *)
+    ASSERT((scope = NIL) OR (sym # NIL)); (* if scopes have not run out,
+                                           * a symbol must have been found *)
     RETURN sym;
   END FindInOpenScopes;
 
@@ -954,39 +1293,61 @@ IMPORT
     post: result # NIL -> defined(result^)
   *)
   PROCEDURE FindField*(name : ARRAY OF CHAR; rec : Record) : Symbol;
-    VAR sym : Symbol;
+    VAR
+      sym : Symbol;
   BEGIN
     IF rec # NIL THEN
-      REPEAT sym := FindInThisScope(rec.scope, name); rec := rec.ancestor; UNTIL (rec = NIL) OR (sym # NIL);
-      ASSERT((rec = NIL) OR (sym # NIL));  (* if scopes have not run out, a symbol must have been found *)
+      REPEAT
+        sym := FindInThisScope(rec.scope, name);
+        rec := rec.ancestor;
+      UNTIL (rec = NIL) OR (sym # NIL);
+      ASSERT((rec = NIL) OR (sym # NIL));  (* if scopes have not run out,
+                                            * a symbol must have been found *)
       RETURN sym;
-    ELSE RETURN NIL;
+    ELSE
+      RETURN NIL;
     END;
   END FindField;
 
   PROCEDURE Find*(name : ARRAY OF CHAR) : Symbol;
-  BEGIN RETURN FindInOpenScopes(topScope, name);
+  BEGIN
+    RETURN FindInOpenScopes(topScope, name);
   END Find;
 
   PROCEDURE FindImport*(module : SymbolProc; name : ARRAY OF CHAR) : Symbol;
-    VAR sym : Symbol; td : SymbolTypeDesc;
-  BEGIN sym := FindInThisScope(module.scope, name);
-    IF (sym # NIL) & (sym.vis IN {export, exportR}) THEN INCL(sym.flags, used);
-      td := GetTD(sym.type);  (* insure type descriptors for types also get imported *)
+    VAR
+      sym : Symbol;
+      td : SymbolTypeDesc;
+  BEGIN
+    sym := FindInThisScope(module.scope, name);
+    IF (sym # NIL) & (sym.vis IN {export, exportR}) THEN
+      INCL(sym.flags, used);
+      td := GetTD(sym.type);  (* Ensure type descriptors for types also get imported. *)
       RETURN sym;
-    ELSE RETURN NIL;
+    ELSE
+      RETURN NIL;
     END;
   END FindImport;
-  
+
   PROCEDURE FindMethodByNumber*(rec : Record; methno : LONGINT) : Symbol;
-    VAR sym : Symbol; i, len : LONGINT;
-  BEGIN ASSERT(rec # NIL, 1098); ASSERT(methodcounted IN rec.flags, 190);
-    WHILE rec # NIL DO ASSERT(rec.scope # NIL, 1099); ASSERT(rec.scope.table # NIL, 1100);
-      i := 0; len := LEN(rec.scope.table^);
-      WHILE i < len DO sym := rec.scope.table[i];
-        WHILE sym # NIL DO
-          IF (sym.kind = tproc) & (sym(SymbolProc).methno = methno) THEN RETURN sym; END;
-          sym := sym.hash;
+    VAR
+      meth : Symbol;
+      i, len : LONGINT;
+  BEGIN
+    ASSERT(rec # NIL, 1098);
+    ASSERT(methodcounted IN rec.flags, 190);
+    WHILE rec # NIL DO
+      ASSERT(rec.scope # NIL, 1099);
+      ASSERT(rec.scope.table # NIL, 1100);
+      i := 0;
+      len := LEN(rec.scope.table^);
+      WHILE i < len DO
+        meth := rec.scope.table[i];
+        WHILE meth # NIL DO
+          IF (meth.kind = tproc) & (meth(SymbolProc).methno = methno) THEN
+            RETURN meth;
+          END;
+          meth := meth.hash;
         END;
         INC(i);
       END;
@@ -998,7 +1359,10 @@ IMPORT
   (* TRUE => x is extension of b *)
   PROCEDURE Extends*(x, b: Type) : BOOLEAN;
   BEGIN
-    IF (b.form = pointer) & (x.form = pointer) THEN b := b(Pointer).to; x := x(Pointer).to END ;
+    IF (b.form = pointer) & (x.form = pointer) THEN
+      b := b(Pointer).to;
+      x := x(Pointer).to
+    END;
     IF (b.form = record) & (x.form = record) THEN
       WHILE (x # b) & (x # NIL) DO
         x := x(Record).ancestor;
@@ -1008,40 +1372,70 @@ IMPORT
   END Extends;
 
   PROCEDURE ImportSYSTEM*(VAR mod : SymbolScope);
-  BEGIN mod := sysScope;
+  BEGIN
+    mod := sysScope;
   END ImportSYSTEM;
 
   PROCEDURE SetModuleName*(name : ARRAY OF CHAR);
-  BEGIN COPY(name, SelfName); SetSymbolName(topScope, name);
+  BEGIN
+    COPY(name, SelfName);
+    SetSymbolName(topScope, name);
   END SetModuleName;
 
   PROCEDURE MakeIntrinsicType(VAR t : Type; form : SHORTINT);
   BEGIN
     t := NewBasicType();
-    t.form := form; t.flags := {allocated, idfpdone, typfpdone};
-    t.size := OPM.ByteSize; t.ref := form; t.idfp := form; t.pbfp := form; t.pvfp := form;
+    t.form := form;
+    t.flags := {allocated, idfpdone, typfpdone};
+    t.size := OPM.ByteSize;
+    t.ref := form;
+    t.idfp := form;
+    t.pbfp := form;
+    t.pvfp := form;
     t.sym := NewBasicSym(anon);
   END MakeIntrinsicType;
-  
+
   PROCEDURE MakeStringConst*(VAR str : OPS.String; len : LONGINT) : SymbolConst;
-    VAR s : SymbolConst; name : SymbolName;
+    VAR
+      s : SymbolConst;
+      name : SymbolName;
   BEGIN
     s := NewConstSym(stringtyp);
-    s.val.ext := NewConstExt(); s.val.i0 := len; COPY(str, s.val.ext^);
-    name := MakeGeneratedName(NIL, 'str_', nofGenString); Insert(name^, s); s.mnolev := 0;
+    s.val.ext := NewConstExt();
+    s.val.i0 := len;
+    COPY(str, s.val.ext^);
+    name := MakeGeneratedName(NIL, 'str_', nofGenString);
+    Insert(name^, s);
+    s.mnolev := 0;
     RETURN s;
   END MakeStringConst;
 
   PROCEDURE GetArrayInfo*(arr : Type; VAR info : ArrayInfoDesc);  (* 1998.11.16: obsolete *)
-    VAR t : Type; nofdim : LONGINT; f : SHORTINT;
-  BEGIN nofdim := 0; f := arr.form; ASSERT(f IN {dynarr, array});
-    t := arr; WHILE t.form = f DO INC(nofdim); t := t(Array).of; END;
-    info.form := f; info.nofdim := nofdim; info.eltype := t;
+    VAR
+      t : Type;
+      nofdim : LONGINT;
+      f : SHORTINT;
+  BEGIN
+    nofdim := 0;
+    f := arr.form;
+    ASSERT(f IN {dynarr, array});
+    t := arr;
+    WHILE t.form = f DO
+      INC(nofdim);
+      t := t(Array).of;
+    END;
+    info.form := f;
+    info.nofdim := nofdim;
+    info.eltype := t;
   END GetArrayInfo;
-  
+
   (* retrieve full procedure name, format is: (Object).proc or proc *)
   PROCEDURE GetFullProcedureName*(proc : SymbolProc; VAR name : ARRAY OF CHAR);
-    VAR i, j : INTEGER; ch : CHAR; sym : Symbol; symname : SymbolName;
+    VAR
+      i, j : INTEGER;
+      ch : CHAR;
+      sym : Symbol;
+      symname : SymbolName;
   BEGIN
     IF proc.kind = tproc THEN
       sym := FirstScopeVar(proc.scope);
@@ -1073,78 +1467,149 @@ IMPORT
     END;
   END GetFullProcedureName;
 
-  (* returns element type of array and dynamic arrays; element type is when the type form is not the same as the input type form *)
+  (* returns element type of array and dynamic arrays;
+   * element type is when the type form is not the same as the input type form
+   *)
   PROCEDURE ElemType*(arr : Array) : Type;
-    VAR of : Type; form : SHORTINT;
-  BEGIN of := arr.of; form := arr.form; WHILE of.form = form DO of := of(Array).of; END; RETURN of;
+    VAR
+      of : Type;
+      form : SHORTINT;
+  BEGIN
+    of := arr.of;
+    form := arr.form;
+    WHILE of.form = form DO
+      of := of(Array).of;
+    END;
+    RETURN of;
   END ElemType;
-  
+
   (* alignment of base type *)
   PROCEDURE Base*(type : Type) : LONGINT;
-    VAR align : LONGINT;
+    VAR
+      align : LONGINT;
   BEGIN
-    WHILE type.form = array DO type := type(Array).of; END;
-    IF type.form = record THEN RETURN type(Record).align;
+    WHILE type.form = array DO
+      type := type(Array).of;
+    END;
+    IF type.form = record THEN
+      RETURN type(Record).align;
     ELSE
       align := type.size;
-      IF align > 4 THEN RETURN 4 ELSE RETURN align; END;
+      IF align > 4 THEN
+        RETURN 4
+      ELSE
+        RETURN align;
+      END;
     END;
   END Base;
 
-  PROCEDURE ProcessScope*(scope : SymbolScope; proc : ProcessScopeProc; VAR info : ProcessScopeInfo);
-    VAR i, len : LONGINT; sym : Symbol;
-  BEGIN len := LEN(scope.table^); i := 0;
-    WHILE i < len DO sym := scope.table[i];
-      WHILE sym # NIL DO info.sym := sym; proc(info); sym := sym.hash; END;
+  PROCEDURE ProcessScope*(scope    : SymbolScope;
+                          proc     : ProcessScopeProc;
+                          VAR info : ProcessScopeInfo);
+    VAR
+      i, len : LONGINT;
+      sym : Symbol;
+  BEGIN
+    len := LEN(scope.table^);
+    i := 0;
+    WHILE i < len DO
+      sym := scope.table[i];
+      WHILE sym # NIL DO
+        info.sym := sym;
+        proc(info);
+        sym := sym.hash;
+      END;
       INC(i);
     END;
   END ProcessScope;
 
   PROCEDURE Size*(type : Type);
     VAR
-      f : SHORTINT; elem, base : Type; arr : Array; rec : Record;
-      fld : Symbol; offset, size, align, falign, offs : LONGINT;
+      f : SHORTINT;
+      elem, base : Type;
+      arr : Array;
+      rec : Record;
+      fld : Symbol;
+      offset, size, align, falign, offs : LONGINT;
   BEGIN
-    IF (type # undftyp) & (type.size = OPM.UndefSize) THEN f := type.form;
+    IF (type # undftyp) & (type.size = OPM.UndefSize) THEN
+      f := type.form;
       CASE f OF
-      |  record:
-        rec := type(Record); base := rec.ancestor;
-        IF base = NIL THEN offset := 0; align := 1;
-        ELSE Size(base); offset := base.size; align := base(Record).align;
+      | record:
+        rec := type(Record);
+        base := rec.ancestor;
+        IF base = NIL THEN
+          offset := 0;
+          align := 1;
+        ELSE
+          Size(base);
+          offset := base.size;
+          align := base(Record).align;
         END;
         fld := FirstScopeVar(rec.scope);
+
         WHILE (fld # NIL) & (fld.kind = field) DO
-          base := fld.type; Size(base); size := base.size;
-          falign := Base(base); OPM.Align(offset, falign);
-          fld.adr := offset; INC(offset, size);
-          IF falign > align THEN align := falign; END;
+          base := fld.type;
+          Size(base);
+          size := base.size;
+          falign := Base(base);
+          OPM.Align(offset, falign);
+          fld.adr := offset;
+          INC(offset, size);
+          IF falign > align THEN
+            align := falign;
+          END;
           fld := fld.link;
         END;
         rec.align := align;
-        OPM.Align(offset, Base(rec)); rec.size := offset;
+        OPM.Align(offset, Base(rec));
+        rec.size := offset;
         EXCL(rec.flags, methodcounted);
-      |  array, dynarr:
-        arr := type(Array); base := arr.of; Size(base);
-        IF f = array THEN arr.size := arr.n * base.size;
+
+      | array, dynarr:
+        arr := type(Array);
+        base := arr.of;
+        Size(base);
+        IF f = array THEN
+          arr.size := arr.n * base.size;
         ELSE
           IF base.form = dynarr THEN
             (* determine location of array bound offset *)
-            IF typDynArrParm IN arr.flags THEN offs := 4; ELSE offs := -4; END; (* DOC: a section on calculating array bound offsets coupled with array layout *)
-            arr.size := base.size + 4; arr.offset := base(Array).offset + offs; (* offset to next array bound  *)
-          ELSIF typDynArrParm IN arr.flags THEN (* parameter dynarr *) arr.size := 8; (* data pointer + LEN(arr, 0) *) arr.offset := 4; (* LEN(arr, 0) offset *)
-          ELSE (* heap dynarr *) elem := ElemType(arr);
-            IF elem.form = array THEN elem := ElemType(elem(Array)); END;
-            IF elem.form IN {bool, byte, char, sint, int, lint, real, lreal, set, procedure} THEN
-              arr.size := OPM.DynArrSmpElemSize; arr.offset := OPM.DynArrSmpLen0Offs;
+            IF typDynArrParm IN arr.flags THEN
+              offs := 4;
+            ELSE
+              offs := -4;
+            END;
+            (* DOC: a section on calculating array bound offsets coupled with array layout *)
+            arr.size := base.size + 4;
+            arr.offset := base(Array).offset + offs; (* offset to next array bound  *)
+          ELSIF typDynArrParm IN arr.flags THEN (* parameter dynarr *)
+            arr.size := 8; (* data pointer + LEN(arr, 0) *)
+            arr.offset := 4; (* LEN(arr, 0) offset *)
+          ELSE (* heap dynarr *)
+            elem := ElemType(arr);
+            IF elem.form = array THEN
+              elem := ElemType(elem(Array));
+            END;
+            IF elem.form IN {bool, byte, char, sint, int,
+                             lint, real, lreal, set, procedure} THEN
+              arr.size := OPM.DynArrSmpElemSize;
+              arr.offset := OPM.DynArrSmpLen0Offs;
             ELSIF elem.form = pointer THEN
-              arr.size := OPM.DynArrPtrElemSize; arr.offset := OPM.DynArrPtrLen0Offs;
+              arr.size := OPM.DynArrPtrElemSize;
+              arr.offset := OPM.DynArrPtrLen0Offs;
             ELSE (* elem.form = record *)
-              arr.size := OPM.DynArrRecElemSize; arr.offset := OPM.DynArrRecLen0Offs;
+              arr.size := OPM.DynArrRecElemSize;
+              arr.offset := OPM.DynArrRecLen0Offs;
             END;
           END;
         END;
-      |  pointer: type.size := OPM.PointerSize;
-      |  procedure: type.size := OPM.ProcSize;
+
+      | pointer:
+        type.size := OPM.PointerSize;
+
+      | procedure:
+        type.size := OPM.ProcSize;
       END;
     END;
   END Size;
@@ -1153,18 +1618,22 @@ IMPORT
     pre: sym # NIL
   *)
   PROCEDURE IsModule*(sym : Symbol) : BOOLEAN;
-  BEGIN RETURN (sym.kind = xproc) & (modinit IN sym.flags);
+  BEGIN
+    RETURN (sym.kind = xproc) & (modinit IN sym.flags);
   END IsModule;
 
   PROCEDURE SetModuleSymbol*(mod : ModuleScope; sym : SymbolProc);
-  BEGIN mod.module := sym;
+  BEGIN
+    mod.module := sym;
   END SetModuleSymbol;
 
   (* Number of "open" dimensions of `type'.  Zero if `type' isn't an open array (or no array at all).  *)
   PROCEDURE OpenDimensions*(type: Type): INTEGER;
   BEGIN
-    IF type.form # dynarr THEN RETURN 0;
-    ELSE RETURN OpenDimensions(type(Array).of) + 1;
+    IF type.form # dynarr THEN
+      RETURN 0;
+    ELSE
+      RETURN OpenDimensions(type(Array).of) + 1;
     END;
   END OpenDimensions;
 
@@ -1174,46 +1643,63 @@ IMPORT
   *)
   PROCEDURE Dimensions*(type: Type): INTEGER;
   BEGIN
-    IF ~(type.form IN {array, dynarr}) THEN RETURN 0;
-    ELSE RETURN Dimensions(type(Array).of) + 1;
+    IF ~(type.form IN {array, dynarr}) THEN
+      RETURN 0;
+    ELSE
+      RETURN Dimensions(type(Array).of) + 1;
     END;
   END Dimensions;
 
-  (* Given an object designating a procedure, a type-bound procedure, or the module, return the module the declaration is part of.  
-      Use function `SymbolTable.Module' for arbitrary objects.
-  *)
-  PROCEDURE ModuleOf*(sym: Symbol): Symbol;
-    VAR scope : SymbolScope;
-  BEGIN scope := sym.owner;
-    WHILE (scope.link # NIL) DO scope := scope.link(SymbolScope); END;
-    RETURN scope(ModuleScope).module;
-  END ModuleOf;
-
   PROCEDURE NILGlobalPointers;
-    VAR i : INTEGER;
-  BEGIN topScope := NIL; NullString := NIL;
-    i := 0; WHILE i < LEN(GlbMod) DO GlbMod[i] := NIL; INC(i); END;
+    VAR
+      i : INTEGER;
+  BEGIN
+    topScope := NIL;
+    NullString := NIL;
+    i := 0;
+    WHILE i < LEN(GlbMod) DO
+      GlbMod[i] := NIL;
+      INC(i);
+    END;
   END NILGlobalPointers;
-  
+
   PROCEDURE ModuleBegin*;
-  BEGIN NILGlobalPointers;
-    nofGenString := 0; nofGenTD := 0; nofGenVar := 0;
-    nofTD := 0; topScope := universe; OpenModuleScope(0, NIL);
-    SYSimported := FALSE; SelfName[0] := 0X; topScope.name := NIL; GlbMod[0] := topScope(ModuleScope); nofGmod := 1;
-    NEW(NullString, 1); NullString[0] := 0X;
+  BEGIN
+    NILGlobalPointers;
+    nofGenString := 0;
+    nofGenTD := 0;
+    nofGenVar := 0;
+    nofTD := 0;
+    topScope := universe;
+    OpenModuleScope(0, NIL);
+    SYSimported := FALSE;
+    SelfName[0] := 0X;
+    topScope.name := NIL;
+    GlbMod[0] := topScope(ModuleScope);
+    nofGmod := 1;
+    NEW(NullString, 1);
+    NullString[0] := 0X;
   END ModuleBegin;
 
   PROCEDURE ModuleEnd*;
-    VAR s : SymbolScope;
-  BEGIN s := CloseScope(); NILGlobalPointers;
+    VAR
+      s : SymbolScope;
+  BEGIN
+    s := CloseScope();
+    NILGlobalPointers;
   END ModuleEnd;
 
   PROCEDURE SymtabInit;
-    VAR c, stdcall : Symbol;
+    VAR
+      c, stdcall : Symbol;
   BEGIN
-    MakeIntrinsicType(undftyp, undef); MakeIntrinsicType(notyp, void);
-    MakeIntrinsicType(stringtyp, string); MakeIntrinsicType(niltyp, nil); niltyp.size := OPM.PointerSize;
-    topScope := NIL; OpenModuleScope(0, NIL);
+    MakeIntrinsicType(undftyp, undef);
+    MakeIntrinsicType(notyp, void);
+    MakeIntrinsicType(stringtyp, string);
+    MakeIntrinsicType(niltyp, nil);
+    niltyp.size := OPM.PointerSize;
+    topScope := NIL;
+    OpenModuleScope(0, NIL);
 
     (*initialization of module SYSTEM*)
     EnterTyp("BYTE", byte, OPM.ByteSize, bytetyp);
@@ -1237,10 +1723,12 @@ IMPORT
 
     c := EnterIntConst("C", OPM.CCallVal);
     stdcall := EnterIntConst("STDCALL", OPM.StdCallVal);
-    
-    sysScope := topScope; sysScope.kind := module;
+
+    sysScope := topScope;
+    sysScope.kind := module;
     universe := CloseScope();
-    OpenModuleScope(0, NIL); universe := topScope;
+    OpenModuleScope(0, NIL);
+    universe := topScope;
 
     EnterTyp("BOOLEAN", bool, OPM.BoolSize, booltyp);
     EnterTyp("CHAR", char, OPM.CharSize, chartyp);
@@ -1254,7 +1742,7 @@ IMPORT
     (* init things which need a real type which are in the SYSTEM unit *)
     c.type := inttyp;
     stdcall.type := inttyp;
-    
+
     EnterBoolConst("FALSE", OPM.FalseVal);
     EnterBoolConst("TRUE",  OPM.TrueVal);
     EnterProc("HALT", haltfn, notyp);
@@ -1291,11 +1779,10 @@ BEGIN
   ASSERT(~(method IN FPrintSet), 136);
   ASSERT(nofTypes <= MAX(SET), 137);
   ASSERT(nofSymbols <= MAX(SET), 138);
-  
+
   (* enusre that arithmetic on these entities uses masking logic instead of IDIV *)
   ASSERT(ScopeLenRecord MOD 2 = 0, 139);
   ASSERT(ScopeLenProcedure MOD 2 = 0, 140);
   ASSERT(ScopeLenModule MOD 2 = 0, 141);
   SymtabInit;
 END SKLST.
-
