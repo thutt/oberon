@@ -22,6 +22,13 @@ Usage:
 
           sudo apt install cscope
 
+      cscope is a code indexing and searching system that integrates
+      with editors or can be used standalone.  It allows finding
+      symbols in the C source code very easily.
+
+      If you do not use cscope to find symbols in C code, you do not
+      need to install this.
+
     + The documentation requires a modern LaTeX installation, with a
       few extra packages.
 
@@ -35,44 +42,49 @@ Usage:
 
   o Configure shell environment.
 
-    There is a set of shell commands that allow easy invocation of
-    different parts of the system.  They are written for Bash.
+    There is a set of Bash shell commands that allow easy invocation
+    of different parts of the system.  These shell commands simplify
+    the effort necessary to run the compiler or execute the
+    interpreter to run Oberon code you have written and compiled.
 
-    To configure the current shell environment:
+    The commands are loaded into the current shell environment by
+    'source'-ing the file, using something the following template as a
+    guide.  An example follows.
 
-    cd <place where the software was cloned>
-    source ./scripts/setup \
-       -a (Intel-x86-64 | Arm64) \
-       -b (alpha | beta | release) \
-       -o <location for build output>
+      cd <place where the software was cloned>
+      source ./scripts/setup \
+         -a (Intel-x86-64 | Arm64) \
+         -b (alpha | beta | release) \
+         -o <location for build output>
 
-    + The '-a' option specifies the target architecture.
+      + The '-a' option specifies the target architecture.
 
-      If not specified, the default value of 'Intel-x86-64' will be
-      used.
+        If not specified, the default value of 'Intel-x86-64' will be
+        used.
 
-    + The '-b' option specifies the build type.
+      + The '-b' option specifies the build type.
 
-      If not specified, the default value of 'alpha' will be used.
+        If not specified, the default value of 'alpha' will be used.
 
-      An 'alpha' build has all runtime checking turned on, and allows
-      all capabilities such as tracing the program execution on an
-      instruction level.
+        An 'alpha' build has all runtime checking turned on, and allows
+        all capabilities such as tracing the program execution on an
+        instruction level.
 
-      A 'release' build disables runtime checking and features that
-      probably are not useful for non-developers.
+        A 'release' build disables runtime checking and features that
+        probably are not useful for non-developers.
 
-      A 'release' build runs appreciably faster than an 'alpha' build.
+        A 'release' build runs appreciably faster than an 'alpha' build.
 
-      A 'beta' build has performance between 'alpha' and 'release'.
+        A 'beta' build has performance between 'alpha' and 'release'.
+
 
     Example:
 
+      cd <place where the software was cloned>
       source ./scripts/setup \
-        -a Intel-x86-64 \
-        -b release \
-        -o release
-
+        -a Intel-x86-64      \
+        -b release           \
+        -o /tmp/oberon
 
       SKL_DIR          : '/nas/homes/thutt/skl/skl-o2'
       SKL_ARCHITECTURE : 'Intel-x86-64'
@@ -81,13 +93,14 @@ Usage:
       SKL_BUILD_DIR    : '/tmp/skl/skl-o2'
       SKL_OBJ_PATH     : '/nas/homes/thutt/skl/skl-o2/system'
 
-      SKL_DIR is used by the shell functions, and is the root of the
-      source tree.
 
-      SKL_BUILD_TYPE is the type of build that will be produced.
+    SKL_DIR is used by the shell functions, and is the root of the
+    source tree.
 
-      SKL_BUILD_OPTIONS shows the build options that are turned on.
-      These options are enabled and disabled with:
+    SKL_BUILD_TYPE is the type of build that will be produced.
+
+    SKL_BUILD_OPTIONS holds the build options that are enabled.  These
+    options are enabled and disabled with:
 
         build-option-enable <option>
         build-option-disable <option>
@@ -108,7 +121,7 @@ Usage:
      oberon-show-config
 
      This prints out the environment configuration; the same as
-     printed after loading 'setup'.
+     printed after loading the 'setup' file.
 
 
    o Build everything:
@@ -154,7 +167,7 @@ Usage:
      executes the Oberon Command provided on the command line.
 
      This sample will compile a module that prints prime numbers under
-     10,000, and then executes its main exported function.
+     100,000, and then executes its main exported function.
 
         cd ${SKL_DIR}/system
         skl-skl-oc Prime.Mod
@@ -165,13 +178,14 @@ Usage:
 
 
    o If your program terminates due to a programming error (assert
-     failure, halt, NIL deref, type guard failure, etc.),
-     ${SKL_DIR}/system/.DiagnosticOutput will contain a stack
-     backtrace.
+     failure, halt, NIL pointer dereference, type guard failure,
+     etc.), the system will print a backtrace of the stack to the
+     console and exit with a non-zero return code.
 
 
    o More formal documentation on the system implementation and usage
      will be forthcoming.
+
 
    o Notes on code formatting
 
