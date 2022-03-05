@@ -65,7 +65,7 @@ IMPORT
     nofTypeMax = FirstRef + OPM.nofTypeMax;
 
   CONST
-    SelfImportAlias = "@self";
+    SelfImportAlias = "self@";
 
   TYPE
     ImportContext = RECORD
@@ -1585,7 +1585,7 @@ END OutSymbolName;
     COPY(SelfImportAlias, selfName);
     Import(selfName, self, done);
     selfSym := ST.Find(SelfImportAlias);
-    (* export @self => fingerprint errors; set vis to internal so it it not exported
+    (* export self@ => fingerprint errors; set vis to internal so it it not exported
      *                 in the object file or symbol file
      *)
     IF selfSym # NIL THEN
