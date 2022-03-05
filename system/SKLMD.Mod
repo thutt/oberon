@@ -3,7 +3,7 @@ MODULE SKLMD; (* Machine Description *)
 
   TYPE
     SourceInfo* = IO.SourceInfo;
-    
+
   CONST
     (* basic type sizes *)
     ByteSize*        = 1;      (* SYSTEM.BYTE *)
@@ -26,7 +26,7 @@ MODULE SKLMD; (* Machine Description *)
     MinRealPat      = 0FF7FFFFFH;  (* most  negative, 32-bit pattern *)
     MinLRealPatL    = 0FFFFFFFFH;  (* most  negative, lower 32-bit pattern *)
     MinLRealPatH    = 0FFEFFFFFH;  (* most  negative, higher 32-bit pattern *)
-    
+
     (* target machine maximum values of basic types expressed in host machine format: *)
     MaxSInt*        = 7FH;
     MaxInt*          = 7FFFH;
@@ -36,12 +36,12 @@ MODULE SKLMD; (* Machine Description *)
     MaxLRealPatL    = 0FFFFFFFFH;    (* most positive, lower 32-bit pattern *)
     MaxLRealPatH    = 7FEFFFFFH;    (* most positive, higher 32-bit pattern *)
     MaxIndex*        = MaxLInt;      (* maximal index value for array declaration: *)
-    
+
     (* Scanner *)
     MaxHDig*        = 8;            (* maximal hexadecimal longint length *)
     MaxRExp*        = 38;            (* maximal real exponent *)
     MaxLExp*        = 308;          (* maximal longreal exponent *)
-    
+
     (* HALT: inclusive range of parameter of standard procedure *)
     HaltAssert*      = 8;            (* anonymous ASSERT *)
     HaltRange*  = 12;          (* value out of range *)
@@ -59,7 +59,7 @@ MODULE SKLMD; (* Machine Description *)
     (* SYSTEM.GETREG & SYSTEM.PUTREG: inclusive range of register number of procedures *)
     MinRegNr*        = 0;
     MaxRegNr*        = 31;      (* SKL: FP and integer registers. *)
-    
+
     (* maximal value of flag used to mark interface structures: *)
     MinSysFlag*      = 0;
     MaxSysFlag*      = 2;
@@ -68,22 +68,22 @@ MODULE SKLMD; (* Machine Description *)
     MaxCC*          = 15;      (* XXX remove this.  It's a remnant of x86's SYSTEM.CC() *)
 
     ConstNotAlloc*  = MAX(LONGINT);
-    
+
     (* initialization of tdadr field in StrDesc, must be different from any valid address: *)
     UndefReg*        = MAX(INTEGER);
     UndefAdr*        = MAX(LONGINT);
     UndefTDAdr*      = MAX(LONGINT);
     UndefSize*       = MAX(LONGINT);      (* default value to indicate uncalculated type size *)
     UndefTD*         = MAX(LONGINT);      (* indicates an undefined type descriptor number *)
-      
+
     MaxCases*        = 128;    (* maximal number of cases in a case statement: *)
     MaxCaseRange*    = 512;    (* max range of a case (hi - lo ~ jump table size): *)
-        
+
     HiddenNameSentinel*    = '@';      (* Sentinel for hidden names written to symbol file
                                         * (to make them unique & inaccessible from source). *)
-  
+
     NEWusingAdr*    = TRUE;    (* NEW, SYSTEM.NEW uses address of the variable? *)
-  
+
     Eot*            = 0X;      (* character (< " ") returned by procedure Get, for end-of-text *)
 
     nofTypeMax*      = 200;    (* max exported types allowed in single module inv: < MAX(INTEGER) DIV 2  & <= RecMaxPtrs DIV 2 *)
@@ -100,18 +100,18 @@ MODULE SKLMD; (* Machine Description *)
                                       * not pointer offset.  See documentation for
                                       * Memory Layout and block tags.
                                       *)
-    
+
     (* low-order 8 bits of 'descriptor flags' *)
     DescFlagsRecord* = 0; (* pointer to record *)
-    
+
     DescFlagsDynArray0* = 1; (* pointer to array of simple or procedure type *)
     DescFlagsDynArray1* = 2; (* pointer to array of pointer type *)
     DescFlagsDynArray2* = 3; (* pointer to array of record *)
-    
+
     DescFlagsDynArray3* = 4; (* pointer to array of static array of simple or procedure type *)
     DescFlagsDynArray4* = 5; (* pointer to array of static array of pointer type *)
     DescFlagsDynArray5* = 6; (* pointer to array of static array of record type *)
-    
+
     DescFlagsStatArr0* = 7; (* pointer to static array of simple or procedure type *)
     DescFlagsStatArr1* = 8; (* pointer to static array of pointer type *)
     DescFlagsStatArr2* = 9; (* pointer to static array of record *)
@@ -123,12 +123,12 @@ MODULE SKLMD; (* Machine Description *)
     DynArrSmpLen0Offs* = -8;  (* element: simple & procedure *)
     DynArrPtrLen0Offs* = -8;  (* element: pointer *)
     DynArrRecLen0Offs* = -8;  (* element: record *)
-  
+
     (* (base) offsets of the 0-th element in dynamic arrays*)
     DynArrSmpElem0Offs* = 0;  (* element: simple & procedure *)
     DynArrPtrElem0Offs* = 0;  (* element: pointer *)
     DynArrRecElem0Offs* = 0;  (* element: record *)
-  
+
     (* basic size of dynamic array types
       97.06.15:
       Since the allocation size of heap-based dynamic arrays is handled by the heap allocator (by using the
@@ -138,12 +138,12 @@ MODULE SKLMD; (* Machine Description *)
     DynArrSmpElemSize* = 0;
     DynArrPtrElemSize* = 0;
     DynArrRecElemSize* = 0;
-    
-  CONST (* RECORD type *)  
+
+  CONST (* RECORD type *)
     (* be aware that on NT, making RecMaxPtrs larger than the 4K pagesize can result in a stack fault by accessing a stack page that is not yet loaded *)
     RecMaxPtrs*    = 512;      (* maximum pointers a record can have (changing this requires changes to TDs and the GC) *)
     RecMaxExtension*    = 7;        (* maximum level of record extension *) (* XXX remove this limitation from version 2 *)
-    
+
     (* record type descriptor offsets *)
     RecFlags* = 0;
     RecTDTab* = 4; (* address of the extension table for the described type *)
@@ -159,10 +159,10 @@ MODULE SKLMD; (* Machine Description *)
     (* object file parametes *)
     MaxGlobalPointers*  = 100;
     MaxCommands* = 64; (* maximum exported commands in a module *)
-    
+
     MaxIdLen*        = 24;      (* max length of an identifier *)
 
-    (* Intrinsic constants used by the compiler *)    
+    (* Intrinsic constants used by the compiler *)
     FalseVal*        = 0;      (* compiler-internal value of FALSE *)
     TrueVal*        = 1;      (* compiler-internal value of TRUE *)
     NilVal*          = 0;      (* compiler-internal value of constant NIL *)
@@ -194,7 +194,7 @@ MODULE SKLMD; (* Machine Description *)
     OptBanner* = IO.OptBanner ; (* OptBanner IN options => print banner & exit *)
     OptHashStats* = IO.OptHashStats; (* HashStats IN options => print hash table statistics *)
     DefaultOptions* = IO.DefaultOptions;
-    
+
   CONST (* Symbol File Imports *)
     MaxImports*      = 31;
 
@@ -214,7 +214,7 @@ MODULE SKLMD; (* Machine Description *)
 
   CONST
     RefPointTag* = 097X;
-    
+
   CONST
     SFext      = ".Sym";
     RFext      = ".Ref";
@@ -237,7 +237,7 @@ MODULE SKLMD; (* Machine Description *)
   PROCEDURE GetCurrentSourcePos*(VAR pos : LONGINT);
   BEGIN IO.GetCurrentSourcePos(pos);
   END GetCurrentSourcePos;
-  
+
   PROCEDURE OpenSource(FileInfo : SourceInfo);
   BEGIN IO.OpenSource(FileInfo, noerr);
   END OpenSource;
@@ -281,14 +281,14 @@ MODULE SKLMD; (* Machine Description *)
   PROCEDURE LogWReal*(x : REAL);
   BEGIN LogWHex(SYSTEM.VAL(LONGINT, x));
   END LogWReal;
-  
+
   PROCEDURE LogWLReal*(x : LONGREAL);
     VAR lo, hi : LONGINT;
   BEGIN
     SYSTEM.GET(SYSTEM.ADR(x), lo); SYSTEM.GET(SYSTEM.ADR(x) + 4, hi);
     LogWHex(lo); LogW(' '); LogWHex(hi);
   END LogWLReal;
-  
+
   PROCEDURE LogWLn*;
   BEGIN IO.LogWLn;
   END LogWLn;
@@ -296,8 +296,8 @@ MODULE SKLMD; (* Machine Description *)
   PROCEDURE err*(n: INTEGER);
   BEGIN IO.err(n, noerr);
   END err;
-  
-  
+
+
   PROCEDURE internal*(ch : CHAR; i : INTEGER);
     VAR curpos : LONGINT;
   BEGIN
@@ -334,7 +334,7 @@ MODULE SKLMD; (* Machine Description *)
   PROCEDURE RefWNum*(i: LONGINT);
   BEGIN IO.RefWNum(i);
   END RefWNum;
-  
+
   PROCEDURE ObjW*(ch: CHAR);
   BEGIN IO.ObjW(ch);
   END ObjW;
@@ -405,7 +405,7 @@ MODULE SKLMD; (* Machine Description *)
   PROCEDURE DeleteNewSym*;
   BEGIN IO.DeleteNewSym;
   END DeleteNewSym;
-  
+
   PROCEDURE DiscardNewSym*;
   BEGIN IO.DiscardNewSym;
   END DiscardNewSym;
@@ -445,7 +445,7 @@ MODULE SKLMD; (* Machine Description *)
   PROCEDURE InitSourceInfoOptions*(VAR info : SourceInfo);
   BEGIN IO.InitSourceInfoOptions(info);
   END InitSourceInfoOptions;
-  
+
   PROCEDURE GetSourceInfo*(VAR FileInfo : SourceInfo);
   BEGIN IO.GetSourceInfo(FileInfo, noerr);
   END GetSourceInfo;
@@ -490,7 +490,7 @@ MODULE SKLMD; (* Machine Description *)
     | 8: INC(offset, (-offset) MOD 8)
     END
   END Align;
-  
+
   PROCEDURE NegAlign*(VAR offset: LONGINT; align: LONGINT);
   BEGIN
     CASE align OF
@@ -501,20 +501,40 @@ MODULE SKLMD; (* Machine Description *)
     END
   END NegAlign;
 
-  (* Hashing; same as IE.FPrintId *)
-  (* The tenet of the hash function is to return the largest hash value possible.  it will be mapped into a lower
-  range by the client of the function.  This allows tables of varying size w/o impacting the function.
-  *)
+  (* Hashing; same as IE.FPrintId
+   *
+   * The tenet of the hash function is to return the
+   * largest hash value possible.  it will be mapped into a lower
+   * range by the client of the function.
+   * This allows tables of varying size w/o impacting the function.
+   *)
   PROCEDURE Hash*(name : ARRAY OF CHAR) : LONGINT;
     VAR i, val : LONGINT; ch : CHAR;
 
     PROCEDURE FPrint(VAR fp : LONGINT; val : LONGINT);
       VAR x : LONGINT;
-    BEGIN IF ODD(val) THEN x := fp + val; ELSE x := fp - val; END;
-      fp := SYSTEM.VAL(LONGINT, SYSTEM.VAL(SET, SYSTEM.ROT(x, -1)) / SYSTEM.VAL(SET, val));
+    BEGIN
+      IF ODD(val) THEN
+        x := fp + val;
+      ELSE
+        x := fp - val;
+      END;
+      fp := SYSTEM.VAL(LONGINT, SYSTEM.VAL(SET, SYSTEM.ROT(x, -1)) /
+                                SYSTEM.VAL(SET, val));
     END FPrint;
 
-  BEGIN val := 0; i := 0; ch := name[0]; WHILE ch # 0X DO FPrint(val, ORD(ch)); INC(i); ch := name[i]; END; RETURN val;
+  BEGIN
+    val := 0;
+    i := 0;
+    ch := name[0];
+    WHILE (ch # HiddenNameSentinel) & (ch # 0X) DO
+      FPrint(val, ORD(ch));
+      INC(i);
+      ch := name[i];
+    END;
+    (* inv: HiddenNameSentinel can only be at the end. *)
+    ASSERT((ch # HiddenNameSentinel) OR (name[i + 1] = 0X));
+    RETURN val;
   END Hash;
 
 
@@ -544,12 +564,18 @@ MODULE SKLMD; (* Machine Description *)
     VAR i : LONGINT;
 
     PROCEDURE SetLongReal(VAR lr : LONGREAL; lo, hi : LONGINT);
-    BEGIN SYSTEM.MEMW(SYSTEM.ADR(lr), 0, lo); SYSTEM.MEMW(SYSTEM.ADR(lr), SIZE(LONGINT), hi);
+    BEGIN
+      SYSTEM.MEMW(SYSTEM.ADR(lr), 0, lo);
+      SYSTEM.MEMW(SYSTEM.ADR(lr), SIZE(LONGINT), hi);
     END SetLongReal;
 
   BEGIN
-    i := MaxRealPat; MaxReal := SYSTEM.VAL(REAL, i); i := MinRealPat; MinReal := SYSTEM.VAL(REAL, i);
-    SetLongReal(MinLReal, MinLRealPatL, MinLRealPatH); SetLongReal(MaxLReal, MaxLRealPatL, MaxLRealPatH);    
+    i := MaxRealPat;
+    MaxReal := SYSTEM.VAL(REAL, i);
+    i := MinRealPat;
+    MinReal := SYSTEM.VAL(REAL, i);
+    SetLongReal(MinLReal, MinLRealPatL, MinLRealPatH);
+    SetLongReal(MaxLReal, MaxLRealPatL, MaxLRealPatH);
   END InitRealPatterns;
 
   (* returns number of characters in S, not including the 0X *)
@@ -560,4 +586,3 @@ MODULE SKLMD; (* Machine Description *)
 
 BEGIN InitRealPatterns; noerr := TRUE;
 END SKLMD.
-
