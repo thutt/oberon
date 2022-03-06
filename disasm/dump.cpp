@@ -164,34 +164,31 @@ namespace dump
                 fprintf(fp, " td adr="); put_hex(s->rectd.link);
                 fprintf(fp, " recsize="); put_hex(s->rectd.recsize);
                 fprintf(fp, " ");
-                if (s->rectd.basemod == -1)
-                {
+                if (s->rectd.basemod == -1) {
                     if (s->ancestor != NULL)
                         fprintf(fp, "ancestor=%s", s->ancestor);
                     else
                         fprintf(fp, "ancestor fp=%8.8x", s->rectd.ancestorfp);
-                }
-                else
+                } else {
                     fprintf(fp, "ancestor module=%d", s->rectd.basemod);
+                }
 
                 fprintf(fp, "\n        nofMeth=%d nofInhMeth=%d nofNewMeth=%d nofPtrs=%d\n",
                         s->rectd.n_meth, s->rectd.n_inhmeth, s->rectd.n_newmeth, s->rectd.n_ptr);
                 fprintf(fp, "        Methods\n");
 
-                for (int i = s->rectd.n_meth; i > 0; --i)
-                {
+                for (int i = s->rectd.n_meth; i > 0; --i) {
                     fprintf(fp, "          ");
-                    put_hex(s->rectd.methinfo[i].entry);
-                    fprintf(fp, ":");
                     put_hex(s->rectd.methinfo[i].methno);
-                    fprintf(fp, "VMT[");
+                    fprintf(fp, " VMT[");
                     put_hex(-4 /* CGL.TBPOffset */ - s->rectd.methinfo[i].methno * 4);
-                    fprintf(fp, "]");
+                    fprintf(fp, "]  ");
+                    put_hex(s->rectd.methinfo[i].entry);
+                    fprintf(fp, "\n");
                 }
 
                 fprintf(fp, "        Pointers\n");
-                for (int i = s->rectd.n_ptr; i > 0; --i)
-                {
+                for (int i = s->rectd.n_ptr; i > 0; --i) {
                     fprintf(fp, "           ");
                     put_hex(s->rectd.ptroffs[i]);
                     fprintf(fp, "\n");
