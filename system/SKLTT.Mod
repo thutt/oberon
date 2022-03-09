@@ -592,16 +592,21 @@ IMPORT
     END Sreturn;
   
     PROCEDURE Sfor(n : T.For);
-      VAR control, result, v, temp, inc : CGL.Item; bot, top : CGL.Label; cc : SHORTINT;
+      VAR
+        control, result, v, upper, inc : CGL.Item;
+        bot, top : CGL.Label;
+        cc : SHORTINT;
     BEGIN
       top := CGL.NewLabel();
       bot := CGL.NewLabel();
       InitConstItem(TB.NewIntConst(n.step), inc);
-      dsgn(TB.NewDesign(n.temp), temp);
+      dsgn(TB.NewDesign(n.temp), upper);
       expr(n.upper, v);
-      CGH.Assign(temp, v);
-      expr(n.lower, v);
       dsgn(n.control, control);
+      v.type := control.type;
+      CGH.Assign(upper, v);
+      expr(n.lower, v);
+      v.type := control.type;
       CGH.Assign(control, v);
       CGL.SetLabel(top);
       IF n.step > 0 THEN
@@ -610,13 +615,16 @@ IMPORT
         cc := CGL.ccLT;
       END;
       result := control;
-      CGH.Compare(result, temp, cc);
+      CGH.Compare(result, upper, cc);
       CGH.JmpT(result, bot);
       stmt(n.body);
       INCL(control.flags, CGL.common);
       inc.type := control.type;
-      CGH.Add(control, inc);
-      CGL.Jmp(top); CGL.SetLabel(bot);
+      result := control;
+      CGH.Add(result, inc);
+      CGH.Assign(control, result);
+      CGL.Jmp(top);
+      CGL.SetLabel(bot);
     END Sfor;
   
   BEGIN
