@@ -2416,7 +2416,7 @@ IMPORT
   (* x.type = ST.proc; all relevant info can be found from this type *)
   PROCEDURE Call*(VAR x : CGL.Item; proc : ST.SymbolProc);
     VAR
-      i, n : INTEGER; 
+      i, n : INTEGER;
       Rx, base, R0 : CGL.Item;
       code : ST.ConstExt;
   BEGIN
@@ -2983,7 +2983,8 @@ IMPORT
           VAR t0 : LONGINT;
         BEGIN
           IF rec # NIL THEN
-            GenAncestorTable(rec.ancestor); ST.UseTD(rec);
+            GenAncestorTable(rec.ancestor);
+            ST.UseTD(rec);
             t0 := CGL.TDGenSym(ST.GetTD(rec));
             IF exttabLab = NIL THEN
               exttabLab := CGL.NewLabel(); (* address of extension table *)
@@ -3018,6 +3019,7 @@ IMPORT
         WHILE i >= 1 DO (* method table *)
           DEC(i);
           meth := ST.FindMethodByNumber(type(ST.Record), i);
+          INCL(meth.flags, ST.used);
           t0 := CGL.TDGenSym(meth);
         END;
 

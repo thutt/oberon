@@ -610,8 +610,9 @@ IMPORT
       nofptr, nofhlp, noffix : INTEGER; (* written to Obj file as LONGINT *)
       PtrTab : ARRAY OPM.MaxGlobalPointers + 1 OF LONGINT;
       ComTab : ARRAY OPM.MaxCommands OF ST.Symbol;
-      useIndex : LONGINT; (* used to set address of external-used
-                           *  symbols for fixup resolution during object loading *)
+      useIndex : LONGINT; (* Used to set address of external-used
+                           * symbols for fixup resolution during object
+                           * loading. *)
     END;
 
   TYPE (* used for finding new methods when outputting the object file *)
@@ -933,7 +934,7 @@ IMPORT
 
   PROCEDURE DumpRegisters(header  : ARRAY OF CHAR;
                           free    : SET;
-                          VAR use : ARRAY OF SHORTINT); 
+                          VAR use : ARRAY OF SHORTINT);
     VAR i : INTEGER;
   BEGIN
     OPM.LogWLn;
@@ -957,7 +958,7 @@ IMPORT
   END DumpRegisters;
 
 
-  PROCEDURE DumpRegInfo*(header : ARRAY OF CHAR); 
+  PROCEDURE DumpRegInfo*(header : ARRAY OF CHAR);
     VAR i : INTEGER;
   BEGIN
     OPM.LogWStr("++++++ Registers "); OPM.LogWStr(header); OPM.LogWLn;
@@ -972,7 +973,7 @@ IMPORT
      * Ignore attempts to add them back to the set of free registers. *)
     IF ~(reg IN RegSystem) THEN
       IF ~(GReg[reg] > 0) THEN
-        OPM.LogWStr("Failed freeing GReg "); OPM.LogWNum(reg, 3); OPM.LogWLn; 
+        OPM.LogWStr("Failed freeing GReg "); OPM.LogWNum(reg, 3); OPM.LogWLn;
         OPM.internal("L", 10000);
       END;
       ASSERT(GReg[reg] > 0, 200);
@@ -1874,7 +1875,7 @@ IMPORT
       d := (SYSTEM.VAL(SET, SYSTEM.LSH(inst.opclass, 26)) +
             SYSTEM.VAL(SET, SYSTEM.LSH(inst.R0, 16)) +
             SYSTEM.VAL(SET, LONG(inst.opc)));
-      
+
       ASSERT(inst.lab # NIL, 203);
       PutWord(SYSTEM.VAL(LONGINT, d));
       JccFixupEmit(inst.jcc, inst.lab);
@@ -1900,7 +1901,7 @@ IMPORT
       ASSERT(inst.lab = NIL);
       FixupEmitSym(FixAbs, inst);
     ELSIF inst.lab # NIL THEN
-      FixupEmitLab(FixAbs, inst.lab); 
+      FixupEmitLab(FixAbs, inst.lab);
     ELSE (* Actual constant value *)
       PutWord(inst.dataLo);
       IF inst.opc = opcLDI THEN
@@ -2636,7 +2637,7 @@ IMPORT
     inst.Rd      := SHORT(SHORT(x.reg));
     PutInst(inst);
   END PutStack;
- 
+
 
   PROCEDURE PutJRAL*(VAR x : Item); (* Used for call through procedure variable only. *)
     VAR
@@ -2787,7 +2788,7 @@ IMPORT
         ASSERT(cond IN ccSet, 200);
         ASSERT(R0.mode = Icoc, 201);
         DefaultInst(inst);
-        
+
         (* The condition code (ccXYZ) values must match the
          * opcode encodings, up to ccAW.  ccNV is a special case that
          * causes no jump to be generated here.
@@ -3044,7 +3045,9 @@ IMPORT
       END;
     END FindStr;
 
-  BEGIN index := FindStr(s); OPM.ObjWNum(index);
+  BEGIN
+    index := FindStr(s);
+    OPM.ObjWNum(index);
     IF index > 0 THEN
       i := 0;
       ch := s[0];
@@ -3064,17 +3067,40 @@ IMPORT
   END WStr;
 
   PROCEDURE WSymbolName(sym : ST.Symbol);
+    VAR
+      l : LONGINT;
+      n : ST.SymbolName;
   BEGIN
-    WStr(sym.name^);
+    l := LEN(sym.name^);
+    IF (l > 2) (* One character + 0X *) & (sym.name[l - 2] = '@') THEN
+      (* This is an imported hidden symbol.  It must be a TBP
+       * from an imported module.  The name is suffixed by
+       * OPM.HiddenNameSentinel so that it cannot be accessed by
+       * the importing module.  The '@' is removed so that the
+       * name can actually be found in the Export table of the imported
+       * module at load time.
+       *)
+      NEW(n, l);
+      COPY(sym.name^, n^);
+      n[l - 2] := 0X;           (* Remove '@' from end. *)
+    ELSE
+      n := sym.name;
+    END;
+    WStr(n^);
+
   END WSymbolName;
 
+  PROCEDURE ^ Export(VAR info : ST.ProcessScopeInfo);
   PROCEDURE WType(sym : ST.Symbol; VAR info : ObjScopeInfo);
-    VAR f : SHORTINT; typesym : ST.Symbol; type : ST.Type;
+    VAR
+      f : SHORTINT;
+      typesym : ST.Symbol;
+      type : ST.Type;
   BEGIN
     type := sym.type;
     typesym := type.sym;
     IF ST.HasTD(type) & (typesym = sym) THEN (* not an alias *)
-      ASSERT(type.mno = 0);
+      ASSERT(type.mno = 0);                  (* Not imported, not nested. *)
       IF (typesym.name^ # "") & (type.ref # OPM.nofTypeMax) THEN
         (* named & exported; entires in module desc: pbfp & pvfp *)
         INC(info.nofexp);
@@ -3083,6 +3109,9 @@ IMPORT
         IE.FPrintType(type);
         OPM.ObjWNum(type.pbfp);
         OPM.ObjWNum(type.pvfp);
+      END;
+      IF type.form = ST.record THEN
+        ST.ProcessScope(type(ST.Record).scope, Export, info);
       END;
     END;
   END WType;
@@ -3093,7 +3122,7 @@ IMPORT
     sym := info(ObjScopeInfo).sym;
     IF ST.used IN sym.flags THEN
       IE.FPrintSymbol(sym);
-      sym.adr := info(ObjScopeInfo).useIndex;
+      sym.adr := info(ObjScopeInfo).useIndex; (* Written to symbol file. *)
       INC(info(ObjScopeInfo).useIndex);
 
       CASE sym.kind OF
@@ -3127,13 +3156,18 @@ IMPORT
              (* ELSE fp already checked *)
            END;
          END;
+         IF ST.HasTD(type) & (typesym = sym) THEN
+           IF type.form = ST.record THEN
+             ST.ProcessScope(type(ST.Record).scope, Use, info);
+           END;
+         END;
 
       |  ST.var:
          OPM.ObjW(Uvar);
          WSymbolName(sym);
          OPM.ObjWNum(sym.fprint);
 
-      |  ST.xproc, ST.iproc:
+      |  ST.xproc, ST.iproc, ST.tproc:
          OPM.ObjW(Uxproc);
          WSymbolName(sym);
          OPM.ObjWNum(sym.fprint);
@@ -3157,7 +3191,7 @@ IMPORT
          OPM.ObjW(Uarrtd);
          WSymbolName(sym);
          OPM.ObjWNum(sym.fprint);
-      ELSE (* nop *)
+      ELSE (* NOP *)
       END;
     END;
   END Use;
@@ -3204,7 +3238,8 @@ IMPORT
         END;
         OPM.ObjWNum(type.size);
         IF ancestor = NIL THEN
-          nofinhmth := 0; OPM.ObjWNum(-1);
+          nofinhmth := 0;
+          OPM.ObjWNum(-1);
         ELSE
           ancestorTD := ST.GetTD(ancestor);
           nofinhmth := SHORT(ancestor.nofmeth);
@@ -3378,11 +3413,18 @@ IMPORT
   END Private;
 
   PROCEDURE Export(VAR info : ST.ProcessScopeInfo);
-    VAR proc : ST.Procedure; f : Fixup; sym : ST.Symbol;
+    VAR
+      proc : ST.Procedure;
+      f : Fixup;
+      sym : ST.Symbol;
+      localTBP : BOOLEAN;
+      exported : BOOLEAN;
   BEGIN
     sym := info.sym;
     IF sym.history # ST.removed THEN
-      IF (sym.vis IN {ST.hidden, ST.export, ST.exportR}) & (sym.mnolev = 0) THEN
+      exported := sym.vis IN {ST.hidden, ST.export, ST.exportR};
+      localTBP := (sym.kind = ST.tproc) & (sym.vis = ST.internal);
+      IF (exported OR localTBP) & (sym.mnolev = 0) THEN
         IE.FPrintSymbol(sym);
         CASE sym.kind OF
         |  ST.const:
@@ -3390,6 +3432,7 @@ IMPORT
            OPM.ObjW(Econst);
            WSymbolName(sym);
            OPM.ObjWNum(sym.fprint);
+
         |  ST.type:
            INC(info(ObjScopeInfo).nofexp);
            OPM.ObjW(Etype);
@@ -3420,9 +3463,10 @@ IMPORT
            OPM.ObjW(Evar);
            WSymbolName(sym);
            OPM.ObjWNum(sym.fprint);
-           FindPtrs(sym.type, sym.adr, info(ObjScopeInfo).PtrTab, info(ObjScopeInfo).nofptr);
+           FindPtrs(sym.type, sym.adr, info(ObjScopeInfo).PtrTab,
+                    info(ObjScopeInfo).nofptr);
 
-        |  ST.xproc, ST.iproc:
+        |  ST.xproc, ST.iproc, ST.tproc:
            IF ~(ST.intrinsic IN sym.flags) THEN
              INC(info(ObjScopeInfo).nofexp);
              OPM.ObjW(Exproc);
@@ -3430,11 +3474,11 @@ IMPORT
              OPM.ObjWNum(sym.fprint);
              proc := sym.type(ST.Procedure);
 
+             (* inv: A ST.tproc symbol will have at one argument. *)
              IF (proc.parms = NIL) & (proc.result.form = ST.void) THEN (* command *)
                IF info(ObjScopeInfo).nofcom < OPM.MaxCommands THEN
                  info(ObjScopeInfo).ComTab[info(ObjScopeInfo).nofcom] := sym;
                  INC(info(ObjScopeInfo).nofcom);
-
                ELSE
                  OPM.err(EL.TooManyCommands);
                  info(ObjScopeInfo).nofcom := 0;
@@ -3447,17 +3491,17 @@ IMPORT
            OPM.ObjW(Ecproc);
            WSymbolName(sym);
            OPM.ObjWNum(sym.fprint);
-        ELSE (* nop *)
+        ELSE
+          (* nop *)
         END;
 
-
-          (* if the exported symbol has an address or it is one of the few types of constants that
-            actually are allocated to memory, then make a fixup into the export table.
-            97.09.07: only string constants are allocated memory
-          *)
+        (* If the exported symbol has an address or it is one of
+         * the few types of constants that actually are allocated to
+         * memory, then make a fixup into the export table.
+         * 97.09.07: only string constants are allocated memory. *)
 
         IF (((sym.kind IN {ST.darrdesc, ST.arrdesc, ST.recdesc,
-                          ST.var, ST.xproc, ST.iproc}) OR
+                          ST.var, ST.xproc, ST.iproc, ST.tproc}) OR
              (sym.kind = ST.const) & (sym.type = ST.stringtyp)) &
             ~(ST.intrinsic IN sym.flags)) THEN
           f := NewFixup(FixAbs, segExport, info(ObjScopeInfo).nofexp - 1);
@@ -3545,7 +3589,13 @@ IMPORT
   BEGIN
     ProcessJumpFixups(JccFixupList);
     Align(segCode, 4); Align(segConst, 4);
-    info.nofexp := 0; info.nofprv := 0; info.nofdesc := 0; info.nofcom := 0; info.nofptr := 0; info.nofhlp := 0; info.noffix := 0;
+    info.nofexp := 0;
+    info.nofprv := 0;
+    info.nofdesc := 0;
+    info.nofcom := 0;
+    info.nofptr := 0;
+    info.nofhlp := 0;
+    info.noffix := 0;
     (* header block *) OPM.ObjW(80X);
     OPM.ObjWLInt(0); (* ref size *)
     OPM.ObjWLInt(0); (* nofexp *)
@@ -3571,7 +3621,8 @@ IMPORT
     END;
 
     (* exports *) OPM.ObjW(82X);
-    ST.ProcessScope(ST.topScope, Export, info); (* export objects, collect commands & pointers *)
+    ST.ProcessScope(ST.topScope, Export, info); (* Export objects, collect
+                                                 * commands & pointers. *)
 
     (* privates *) OPM.ObjW(83X);
     ST.ProcessScope(ST.topScope, Private, info);
