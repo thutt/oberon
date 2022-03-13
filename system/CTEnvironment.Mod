@@ -1,3 +1,5 @@
+(* Copyright (c) 2022 Logic Magicians Software
+ *)
 MODULE CTEnvironment;
 IMPORT Console, Environment;
 

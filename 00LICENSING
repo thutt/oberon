@@ -287,6 +287,9 @@ The files contained here are provided under the corresponding software license.
   system/CTFingerprint.Mod
   system/CTFingerprint.Obj
   system/CTFingerprint.Sym
+  system/CTFor.Mod
+  system/CTFor.Obj
+  system/CTFor.Sym
   system/CTGC.Mod
   system/CTGC.Obj
   system/CTGC.Sym

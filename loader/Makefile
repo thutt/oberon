@@ -1,4 +1,5 @@
 # Copyright (c) 2000, 2020-2022 Logic Magicians Software
+MAKEFILE	:= $(lastword $(MAKEFILE_LIST))
 include $(SKL_DIR)/make/config.mk
 
 TEST-FLAGS	:= test-flags-$(SKL_ARCHITECTURE)
@@ -46,6 +47,8 @@ SOURCE :=					\
 
 OBJ 	:= $(SOURCE:.cpp=.o)
 
+$(OBJ):	$(SKL_DIR)/make/config.mk $(MAKEFILE)
+
 fail:
 	$(PROLOG);							\
 	echo "This Makefile must be used via $(SKL_DIR)/Makefile";	\
@@ -64,8 +67,12 @@ oberon:	$(OBJ) $(TEST-FLAGS)
 loader__:	oberon
 	$(PROLOG);
 
+$(TEST-FLAGS):
+test_flags:	CXXFLAGS +=			\
+	-Wno-narrowing				\
+	-Wno-sign-conversion			\
+	-Wno-error=sign-conversion
 
-test_flags:	CXXFLAGS += -Wno-narrowing
 test_flags:	test_flags.cpp
 	$(PROLOG);				\
 	$(CC) $(CXXFLAGS) -o $@ $^;

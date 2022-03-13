@@ -1353,7 +1353,7 @@ IMPORT
       END;
       rec := rec.ancestor;
     END;
-    ASSERT(FALSE); (* the method number requested did not exist; fatal error *)
+    HALT(1024); (* The method number requested did not exist; fatal error. *)
   END FindMethodByNumber;
 
   (* TRUE => x is extension of b *)

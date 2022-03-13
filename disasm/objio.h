@@ -297,8 +297,12 @@ namespace objio
                 delete typedesc;
                 delete exports;
                 delete privates;
-                delete use; delete command; delete refinfo; delete helper;
-                delete fixup; delete strings;
+                delete use;
+                delete command;
+                delete refinfo;
+                delete helper;
+                delete fixup;
+                delete strings;
                 for (unsigned i = 0; i < sizeof(imports) / sizeof(imports[0]); ++i)
                     delete imports[i];
             }
