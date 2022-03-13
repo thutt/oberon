@@ -1,3 +1,5 @@
+(* Copyright (c) 2022 Logic Magicians Software
+ *)
 MODULE CTDivZero; (* Test divide by 0 exception *)
 IMPORT Console;
 
