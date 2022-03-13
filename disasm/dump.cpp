@@ -7,6 +7,8 @@
 namespace dump
 {
     static FILE *fp = stdout;
+    static int n_uses;          // Number of elements in Uses block.
+
 
     static void
     put_hex(int i)
@@ -416,7 +418,6 @@ namespace dump
                 break;
 
             case objio::u_type: /* Utype */
-                put_hex(sym->kind);
                 fprintf(fp, "%s.%s 0%8.8XH\n",
                         objio::obj_info->imports[sym->mno],
                         sym->name, sym->fprint);
@@ -480,10 +481,9 @@ namespace dump
     static void
     uses(void)
     {
-        int n;
         fprintf(fp, "Uses\n");
-        n = 0;
-        uses_backwards(objio::obj_info->use, n);
+        n_uses = 0;
+        uses_backwards(objio::obj_info->use, n_uses);
     }
 
     static void
@@ -530,6 +530,23 @@ namespace dump
         }
     }
 
+    static unsigned char const *
+    get_imported_symbol(int use_num)
+    {
+        objio::use_info_desc_t *use  = objio::obj_info->use;
+        int                     i;
+
+        assert(n_uses > 0);
+        i = use_num;
+        while (n_uses - 1 - i > 0) {
+            use = use->next;
+            ++i;
+        }
+        assert(i >= 0 && use != NULL);
+        return use->name;
+    }
+
+
     static void
     fixups(void)
     {
@@ -542,12 +559,13 @@ namespace dump
         i = 0;
         fix = objio::obj_info->fixup;
         while (fix != NULL) {
-            seg = fix->segment; assert(0 <= seg && seg < 8); /* segment values; see LMCGL.MOD */
+            seg = fix->segment;
+            assert(0 <= seg && seg < 8); /* segment values; see LMCGL.MOD */
 
             get_seg_name(seg, segname);
             switch (fix->mode) {
             case 0:
-            case 1:
+            case 1: {
                 fixtype = (fix->mode == 0) ? "ABS" : "REL";
                 put_hex(i);
                 fprintf(fp, ":  %s[", segname);
@@ -556,15 +574,23 @@ namespace dump
 
                 if (fix->target == '\1') { /* fixup to a symbol */
                     get_seg_name(fix->a0, segname);
-                    fprintf(fp, "(sym) %s (import) %s ", segname,
-                            objio::obj_info->imports[-fix->a1]);
-                    put_hex(fix->a2);
+                    if (fix->a1 < 0) { /* Imported symbol? */
+                        fprintf(fp, "(sym) %s %s.%s", segname,
+                                objio::obj_info->imports[-fix->a1],
+                                get_imported_symbol(fix->a2));
+                    } else { /* Current module symbol. */
+                        fprintf(fp, "(sym) %s[",
+                                segname);
+                        put_hex(fix->a2);
+                        fprintf(fp, "]");
+                    }
                 } else { /* fixup to a label */
                     get_seg_name(fix->a0, segname);
                     fprintf(fp, "(lab) %s ", segname);
                     put_hex(fix->a1);
                 }
                 break;
+            }
 
             case 2:
                 fixtype = "BLK";
