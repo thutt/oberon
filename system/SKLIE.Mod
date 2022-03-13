@@ -103,7 +103,6 @@ IMPORT
     SymPresent : BOOLEAN; (* true => symbol file present;
                            * false => symbol file not present *)
 
-  PROCEDURE ^ FPrintSymbol*(sym : ST.Symbol);
   PROCEDURE ^ FPrintId(type : ST.Type);
   PROCEDURE ^ FPrintFlds(rec : ST.Record;
                          adr : LONGINT;
@@ -388,6 +387,14 @@ IMPORT
            OPM.internal('I', 1001);
          END;
 
+      | ST.field:
+        (* NOP
+         *
+         *  Fields are not fingerprinted here, but this case
+         *  can be reached while processing a record scope to
+         *  include exported methods in the export block.
+         *)
+
       |  ST.var:
          OPM.FPrint(fprint, sym.vis);
          FPrintType(sym.type);
@@ -400,6 +407,10 @@ IMPORT
 
       |  ST.xproc, ST.lproc, ST.iproc:
          FPrintSignature(fprint, sym.type(ST.Procedure));
+
+      | ST.tproc:
+        OPM.FPrint(fprint, ST.tproc);
+        OPM.FPrint(fprint, sym(ST.SymbolProc).methno);
 
       |  ST.cproc:
          FPrintSignature(fprint, sym.type(ST.Procedure));
