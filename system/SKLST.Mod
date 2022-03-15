@@ -1430,7 +1430,7 @@ IMPORT
   END GetArrayInfo;
 
   (* retrieve full procedure name, format is: (Object).proc or proc *)
-  PROCEDURE GetFullProcedureName*(proc : SymbolProc; VAR name : ARRAY OF CHAR);
+  PROCEDURE GetFullProcedureName*(proc : SymbolProc; VAR name : OPS.FullName);
     VAR
       i, j : INTEGER;
       ch : CHAR;

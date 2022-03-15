@@ -3069,25 +3069,24 @@ IMPORT
   PROCEDURE WSymbolName(sym : ST.Symbol);
     VAR
       l : LONGINT;
-      n : ST.SymbolName;
+      name : OPS.FullName;
   BEGIN
-    l := LEN(sym.name^);
-    IF (l > 2) (* One character + 0X *) & (sym.name[l - 2] = '@') THEN
-      (* This is an imported hidden symbol.  It must be a TBP
-       * from an imported module.  The name is suffixed by
-       * OPM.HiddenNameSentinel so that it cannot be accessed by
-       * the importing module.  The '@' is removed so that the
-       * name can actually be found in the Export table of the imported
-       * module at load time.
-       *)
-      NEW(n, l);
-      COPY(sym.name^, n^);
-      n[l - 2] := 0X;           (* Remove '@' from end. *)
+    IF sym.kind = ST.tproc THEN
+      ST.GetFullProcedureName(sym(ST.SymbolProc), name);
+      l := 0;
+      LOOP
+        IF l >= LEN(name) THEN
+          EXIT;
+        ELSIF name[l] = OPM.HiddenNameSentinel THEN
+          name[l] := 0X;
+          EXIT;
+        END;
+        INC(l);
+      END;
+      WStr(name);
     ELSE
-      n := sym.name;
+      WStr(sym.name^);
     END;
-    WStr(n^);
-
   END WSymbolName;
 
   PROCEDURE ^ Export(VAR info : ST.ProcessScopeInfo);
@@ -3167,7 +3166,12 @@ IMPORT
          WSymbolName(sym);
          OPM.ObjWNum(sym.fprint);
 
-      |  ST.xproc, ST.iproc, ST.tproc:
+      |  ST.xproc, ST.iproc:
+         OPM.ObjW(Uxproc);
+         WSymbolName(sym);
+         OPM.ObjWNum(sym.fprint);
+
+      |  ST.tproc:
          OPM.ObjW(Uxproc);
          WSymbolName(sym);
          OPM.ObjWNum(sym.fprint);
@@ -3419,6 +3423,8 @@ IMPORT
       sym : ST.Symbol;
       localTBP : BOOLEAN;
       exported : BOOLEAN;
+      hasAddress : BOOLEAN;
+      constAddress : BOOLEAN;
   BEGIN
     sym := info.sym;
     IF sym.history # ST.removed THEN
@@ -3474,7 +3480,7 @@ IMPORT
              OPM.ObjWNum(sym.fprint);
              proc := sym.type(ST.Procedure);
 
-             (* inv: A ST.tproc symbol will have at one argument. *)
+             (* inv: A ST.tproc symbol will have at least one argument. *)
              IF (proc.parms = NIL) & (proc.result.form = ST.void) THEN (* command *)
                IF info(ObjScopeInfo).nofcom < OPM.MaxCommands THEN
                  info(ObjScopeInfo).ComTab[info(ObjScopeInfo).nofcom] := sym;
@@ -3500,10 +3506,10 @@ IMPORT
          * memory, then make a fixup into the export table.
          * 97.09.07: only string constants are allocated memory. *)
 
-        IF (((sym.kind IN {ST.darrdesc, ST.arrdesc, ST.recdesc,
-                          ST.var, ST.xproc, ST.iproc, ST.tproc}) OR
-             (sym.kind = ST.const) & (sym.type = ST.stringtyp)) &
-            ~(ST.intrinsic IN sym.flags)) THEN
+        constAddress := (sym.kind = ST.const) & (sym.type = ST.stringtyp);
+        hasAddress   := (sym.kind IN {ST.darrdesc, ST.arrdesc, ST.recdesc,
+                                      ST.var, ST.xproc, ST.iproc, ST.tproc});
+        IF (hasAddress OR constAddress) & ~(ST.intrinsic IN sym.flags) THEN
           f := NewFixup(FixAbs, segExport, info(ObjScopeInfo).nofexp - 1);
           SetFixupSym(f, sym);
         END;

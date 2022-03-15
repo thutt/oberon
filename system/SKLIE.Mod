@@ -705,7 +705,7 @@ IMPORT
     END;
   END OutSymbolTag;
 
-  PROCEDURE InSignature(mno : SHORTINT; VAR proc : ST.Type);
+  PROCEDURE InSignature(mno : SHORTINT; VAR proc : ST.Type; owner : ST.SymbolProc);
     VAR
       dummy : ST.SymbolScope;
       sym : ST.Symbol;
@@ -715,7 +715,7 @@ IMPORT
       name : ST.SymbolName;
   BEGIN
     type := proc(ST.Procedure);
-    ST.OpenProcedureScope(mno, NIL);
+    ST.OpenProcedureScope(mno, owner);
     InType(type.result);
     ReadTag(tag);
     WHILE tag # sftEND DO
@@ -773,11 +773,12 @@ IMPORT
     sym := tproc;
     sym.mnolev := -mno;
     IF impContext.nextTag = sftTPRO THEN
-      InSignature(mno, tproc.type);
+      InSignature(mno, tproc.type, sym(ST.SymbolProc));
       OPM.SymRSet(tproc.flags);
       tproc.vis := ST.export;
     ELSE
       ASSERT(impContext.nextTag = sftHDTPRO); (* hidden tproc *)
+      InSignature(mno, tproc.type, sym(ST.SymbolProc));
       INCL(sym.flags, ST.invisible);
     END;
     InSymbolName(tproc);
@@ -876,7 +877,7 @@ IMPORT
 
     | sftPRO:
       t.size := OPM.ProcSize;
-      InSignature(mno, t);
+      InSignature(mno, t, NIL);
     END;
   END ReadType;
 
@@ -1047,7 +1048,7 @@ IMPORT
        END;
        obj := ST.NewProcedureSym();
        obj.type := ST.NewProcedureType();
-       InSignature(mno, obj.type);
+       InSignature(mno, obj.type, obj(ST.SymbolProc));
        OPM.SymRSet(obj.flags);
        InSymbolName(obj);
        obj.kind := kind;
@@ -1061,7 +1062,7 @@ IMPORT
        sc := ST.NewCodeProcSym();
        obj := sc;
        sc.type := ST.NewProcedureType();
-       InSignature(mno, sc.type);
+       InSignature(mno, sc.type, NIL);
        OPM.SymRCh(ch);
        s := ORD(ch);
        ext := sc.code;
@@ -1356,6 +1357,7 @@ END OutSymbolName;
         OPM.SymWInt(field(ST.SymbolProc).methno);
       ELSE
         OPM.SymWInt(sftHDTPRO);
+        OutSignature(field.type(ST.Procedure));
         OutHiddenSymbolName(field);
         OPM.SymWInt(field(ST.SymbolProc).methno);
       END;
