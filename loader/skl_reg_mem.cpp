@@ -22,11 +22,11 @@ namespace skl {
 
 
     typedef struct reg_mem_decode_t {
-        unsigned int  Rd;
-        unsigned int  Rbase;
-        unsigned int  Rindex;
-        unsigned int  scale;    // { 1, 2, 4, 8 }
-        const char   *mne;      // XXX remove this field?
+        int         Rd;
+        int         Rbase;
+        int         Rindex;
+        int         scale;      // { 1, 2, 4, 8 }
+        const char *mne;        // XXX remove this field?
     } reg_mem_decode_t;
 
 
@@ -45,7 +45,7 @@ namespace skl {
 
 
     struct skl_lwi_t : skl_reg_mem_t {
-        unsigned   cdata;
+        md::uint32 cdata;
         md::uint32 value;
 
 
@@ -137,7 +137,8 @@ namespace skl {
                              const char **mne_,
                              const reg_mem_decode_t &decode_) :
             skl_reg_mem_t(cpu_, inst_, mne_, decode_),
-            offset(skl::read(pc + 4, false, sizeof(md::uint32)))
+            offset(static_cast<int>(skl::read(pc + 4, false,
+                                              static_cast<int>(sizeof(md::uint32)))))
         {
         }
     };
@@ -153,8 +154,7 @@ namespace skl {
         }
 
 
-        void load(bool     sign_extend,
-                  unsigned size)
+        void load(bool sign_extend, int size)
         {
             char sign = '+';
             int  offs;
@@ -200,7 +200,7 @@ namespace skl {
 
 
         void
-        store(bool integer, unsigned size)
+        store(bool integer, int size)
         {
             char sign = '+';
             int  offs = offset;
@@ -241,7 +241,7 @@ namespace skl {
         }
 
 
-        double read_real_little_endian(unsigned size)
+        double read_real_little_endian(int size)
         {
             union {
                 md::uint32 i[2];
@@ -251,7 +251,8 @@ namespace skl {
 
             v.i[0] = skl::read(cpu->ea, false, sizeof(md::uint32));
             if (size == sizeof(double)) {
-                v.i[1] = skl::read(cpu->ea + sizeof(md::uint32),
+                v.i[1] = skl::read(cpu->ea +
+                                   static_cast<md::OADDR>(sizeof(md::uint32)),
                                    false, sizeof(md::uint32));
                 md::recompose_double(v.i[0], v.i[1], d);
             } else {
@@ -261,10 +262,10 @@ namespace skl {
         }
 
 
-        void load(unsigned size)
+        void load(int size)
         {
-            unsigned offs;
-            char     sign = '+';
+            int  offs;
+            char sign = '+';
 
             compute_effective_address(cpu,
                                       read_integer_register(cpu, decode.Rbase),
@@ -309,9 +310,9 @@ namespace skl {
 
 
         void
-        store(unsigned size)
+        store(int size)
         {
-            unsigned int    R0   = decode.Rd;
+            int             R0   = decode.Rd;
             char            sign = '+';
             O3::decode_pc_t decoded_pc;
             double          value;
@@ -344,13 +345,15 @@ namespace skl {
                     md::decompose_double(value, lo, hi);
                     COMPILE_TIME_ASSERT(skl_endian_little);
                     write(cpu->ea, lo, sizeof(md::uint32));
-                    write(cpu->ea + sizeof(md::uint32), hi, sizeof(md::uint32));
+                    write(cpu->ea +
+                          static_cast<md::OADDR>(sizeof(md::uint32)),
+                          hi, sizeof(md::uint32));
                 } else {
                     union {
                         md::uint32 i;
                         float f;
                     } v;
-                    v.f = value;
+                    v.f = static_cast<float>(value);
                     write(cpu->ea, v.i, sizeof(md::uint32));
                 }
                 increment_pc(cpu, 2);
@@ -613,7 +616,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_reg_mem(cpu_t *cpu, md::uint32 inst)
+    op_reg_mem(cpu_t *cpu, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
         reg_mem_decode_t decode;

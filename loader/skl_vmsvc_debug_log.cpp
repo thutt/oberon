@@ -16,9 +16,9 @@ namespace skl {
 
 
     void
-    vmsvc_debug_log(md::uint32 adr)
+    vmsvc_debug_log(md::OADDR adr)
     {
-        md::uint8              *ptr   = heap::host_address(adr);
+        md::HADDR               ptr   = heap::host_address(adr);
         vmsvc_debug_log_desc_t *vmsvc = reinterpret_cast<vmsvc_debug_log_desc_t *>(ptr);
         md::uint32              l     = vmsvc->data;
 
@@ -29,7 +29,7 @@ namespace skl {
         }
 
         case 1: {               // String
-            md::uint8 *p = heap::host_address(vmsvc->adr);
+            md::HADDR p = heap::host_address(vmsvc->adr);
 
             dialog::print("%.*s", l, p);
             break;

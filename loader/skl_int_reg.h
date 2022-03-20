@@ -7,6 +7,6 @@
 #include "skl.h"
 
 namespace skl {
-    skl::instruction_t *op_int_reg(cpu_t *cpu, md::uint32 inst);
+    skl::instruction_t *op_int_reg(cpu_t *cpu, md::OINST inst);
 }
 #endif

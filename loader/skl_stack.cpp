@@ -23,18 +23,18 @@ namespace skl {
     };
 
     static inline bool
-    stack_access_ok(unsigned n_words, bool push)
+    stack_access_ok(int n_words, bool push)
     {
         return true;        // Stack bounds disabled.
     }
 
     struct stack_frame_t  : skl::instruction_t {
-        unsigned    Rd;
-        unsigned    words;
-        unsigned    n_words;
+        int Rd;
+        int words;
+        int n_words;
 
         stack_frame_t(skl::cpu_t  *cpu_,
-                      md::uint32   inst_,
+                      md::OINST    inst_,
                       const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
@@ -48,7 +48,7 @@ namespace skl {
     struct enter_t : stack_frame_t {
 
         enter_t(skl::cpu_t  *cpu_,
-                md::uint32   inst_,
+                md::OINST   inst_,
                 const char **mne_) :
             stack_frame_t(cpu_, inst_, mne_)
         {
@@ -66,15 +66,16 @@ namespace skl {
                 md::uint32 sp1 = sp0;
                 md::uint32 rd1;
 
-                sp1 -= sizeof(md::uint32);
+                sp1 -= static_cast<md::uint32>(sizeof(md::uint32));
                 write(sp1, r31, sizeof(md::uint32));  /* Save return address. */
 
-                sp1 -= sizeof(md::uint32);
+                sp1 -= static_cast<md::uint32>(sizeof(md::uint32));
                 write(sp1, rd0, sizeof(md::uint32));   /* Save old SFP. */
 
                 rd1 = sp1;
 
-                sp1 -= words * sizeof(md::uint32);    /* Local variable space. */
+                sp1 -= static_cast<md::uint32>(words * /* Local variable space. */
+                                               static_cast<int>(sizeof(md::uint32)));
 
                 dialog::trace("[R%u: %xH -> %xH, R%u: %xH -> %xH]\n",
                               SFP, rd0, rd1, SP, sp0, sp1);
@@ -105,7 +106,7 @@ namespace skl {
 
     struct leave_t : stack_frame_t {
         leave_t(skl::cpu_t  *cpu_,
-                md::uint32   inst_,
+                md::OINST   inst_,
                 const char **mne_) :
             stack_frame_t(cpu_, inst_, mne_)
         {
@@ -128,12 +129,13 @@ namespace skl {
                 sfp = rd0;
 
                 rd1 = skl::read(sfp, false, sizeof(md::uint32));   /* Old SFP. */
-                sfp += sizeof(md::uint32);
+                sfp += static_cast<md::uint32>(sizeof(md::uint32));
 
                 r31 = skl::read(sfp, false, sizeof(md::uint32)); /* Restore return address. */
-                sfp += sizeof(md::uint32);
+                sfp += static_cast<md::uint32>(sizeof(md::uint32));
 
-                sfp += words * sizeof(md::uint32);   /* Remove arguments. */
+                sfp += static_cast<md::uint32>(words * /* Remove arguments. */
+                                               static_cast<int>(sizeof(md::uint32))); 
 
                 dialog::trace("[R%u: %xH -> %xH,   R%u: %xH -> %xH]\n",
                               SFP, rd0, rd1, SP, sp0, sfp);
@@ -151,10 +153,10 @@ namespace skl {
 
 
     struct stack_op_t : skl::instruction_t {
-        unsigned Rd;
+        int Rd;
 
         stack_op_t(skl::cpu_t  *cpu_,
-                   md::uint32   inst_,
+                   md::OINST    inst_,
                    const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             Rd(field(inst, 25, 21))
@@ -165,7 +167,7 @@ namespace skl {
         {
             md::uint32 sp  = read_integer_register(cpu, SP);
 
-            sp -= sizeof(md::uint32);
+            sp -= static_cast<md::uint32>(sizeof(md::uint32));
             write(sp, data, sizeof(md::uint32));
             write_integer_register(cpu, SP, sp);
         }
@@ -179,7 +181,7 @@ namespace skl {
             sp     = read_integer_register(cpu, SP);
             rsp    = sp;
             value  = skl::read(sp, false, sizeof(md::uint32));
-            sp    += sizeof(md::uint32);
+            sp    += static_cast<md::uint32>(sizeof(md::uint32));
             write_integer_register(cpu, SP, sp);
 
             return value;
@@ -189,8 +191,8 @@ namespace skl {
 
     struct push_t : stack_op_t {
         push_t(skl::cpu_t  *cpu_,
-              md::uint32   inst_,
-              const char **mne_) :
+               md::OINST    inst_,
+               const char **mne_) :
             skl::stack_op_t(cpu_, inst_, mne_)
         {
         }
@@ -216,7 +218,7 @@ namespace skl {
 
     struct pushf_t : stack_op_t {
         pushf_t(skl::cpu_t  *cpu_,
-                md::uint32   inst_,
+                md::OINST    inst_,
                 const char **mne_) :
             skl::stack_op_t(cpu_, inst_, mne_)
         {
@@ -237,7 +239,7 @@ namespace skl {
                 COMPILE_TIME_ASSERT(sizeof(float) == sizeof(md::uint32));
                 COMPILE_TIME_ASSERT(skl_endian_little);
 
-                v.f = rvalue;
+                v.f = static_cast<float>(rvalue);
                 push_word(cpu, v.i);
                 sp = read_integer_register(cpu, SP);
                 dialog::trace("[ea: %xH  val: %f]\n", sp, v.f);
@@ -251,7 +253,7 @@ namespace skl {
 
     struct pushd_t : stack_op_t {
         pushd_t(skl::cpu_t  *cpu_,
-                md::uint32   inst_,
+                md::OINST    inst_,
                 const char **mne_) :
             skl::stack_op_t(cpu_, inst_, mne_)
         {
@@ -285,7 +287,7 @@ namespace skl {
 
     struct pop_t : stack_op_t {
         pop_t(skl::cpu_t  *cpu_,
-              md::uint32   inst_,
+              md::OINST    inst_,
               const char **mne_) :
             skl::stack_op_t(cpu_, inst_, mne_)
         {
@@ -312,7 +314,7 @@ namespace skl {
 
     struct popf_t : stack_op_t {
         popf_t(skl::cpu_t  *cpu_,
-               md::uint32   inst_,
+               md::OINST    inst_,
                const char **mne_) :
             skl::stack_op_t(cpu_, inst_, mne_)
         {
@@ -328,7 +330,7 @@ namespace skl {
 
     struct popd_t : stack_op_t {
         popd_t(skl::cpu_t  *cpu_,
-               md::uint32   inst_,
+               md::OINST    inst_,
                const char **mne_) :
             skl::stack_op_t(cpu_, inst_, mne_)
         {
@@ -361,7 +363,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_stack(cpu_t *cpu, md::uint32 inst)
+    op_stack(cpu_t *cpu, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 

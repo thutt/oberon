@@ -22,8 +22,8 @@ namespace skl {
 
 
     struct skl_conditional_set_t : skl::instruction_t {
-        unsigned   Rd;
-        unsigned   R0;
+        int        Rd;
+        int        R0;
         md::uint32 R0v;
         bool       value;
 
@@ -50,7 +50,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_conditional_set(cpu_t *cpu, md::uint32 inst)
+    op_conditional_set(cpu_t *cpu, md::OINST inst)
     {
         COMPILE_TIME_ASSERT(N_OPCODES == (sizeof(relation) /
                                           sizeof(relation[0])));

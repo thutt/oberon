@@ -21,9 +21,9 @@ namespace skl {
 
 
     struct skl_jal_t : skl::instruction_t {
-        unsigned        Rd;
-        md::uint32      addr;
-        md::uint32      return_addr;
+        int             Rd;
+        md::OADDR       addr;
+        md::OADDR       return_addr;
         O3::decode_pc_t decoded_ra;
         O3::decode_pc_t decoded_new;
 
@@ -36,7 +36,7 @@ namespace skl {
         {
             Rd          = field(inst, 25, 21);
             addr        = skl::read(pc + 4, false, sizeof(md::uint32));
-            return_addr = pc + 2 * sizeof(md::uint32);
+            return_addr = pc + 2 * static_cast<md::OADDR>(sizeof(md::uint32));
             assert(Rd == RETADR);
             O3::decode_pc(return_addr, decoded_ra);
             O3::decode_pc(addr, decoded_new);
@@ -53,23 +53,24 @@ namespace skl {
     };
 
     struct skl_conditional_jump_t : skl::instruction_t {
-        unsigned        rel;
-        unsigned        R0;
+        int             rel;
+        int             R0;
         md::uint32      flags;
-        md::uint32      addr;
-        md::uint32      dest_addr;
+        md::OADDR       addr;
+        md::OADDR       dest_addr;
         O3::decode_pc_t decoded_da;
         bool            compare_result;
         skl_conditional_jump_t(cpu_t       *cpu_,
-                               unsigned     rel_,
-                               md::uint32   inst_,
+                               opc_t        rel_,
+                               md::OINST    inst_,
                                const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             rel(rel_),
             R0(field(inst, 20, 16)),
             flags(0),
             addr(skl::read(pc + 4, false, sizeof(md::uint32))),
-            dest_addr(pc + 2 * sizeof(md::uint32) + addr)
+            dest_addr(pc +
+                      2 * static_cast<md::OADDR>(sizeof(md::uint32)) + addr)
         {
             O3::decode_pc(dest_addr, decoded_da);
         }
@@ -96,8 +97,8 @@ namespace skl {
 
 
     struct skl_jump_t : skl::instruction_t {
-        md::uint32      addr;
-        md::uint32      dest_addr;
+        md::OADDR       addr;
+        md::OADDR       dest_addr;
         O3::decode_pc_t decoded_da;
 
         skl_jump_t(cpu_t       *cpu_,
@@ -105,7 +106,8 @@ namespace skl {
                    const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             addr(skl::read(pc + 4, false, sizeof(md::uint32))),
-            dest_addr(pc + 2 * sizeof(md::uint32) + addr)
+            dest_addr(pc +
+                      2 * static_cast<md::OADDR>(sizeof(md::uint32)) + addr)
         {
             O3::decode_pc(dest_addr, decoded_da);
         }
@@ -121,7 +123,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_jump(cpu_t *cpu, md::uint32 inst)
+    op_jump(cpu_t *cpu, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 

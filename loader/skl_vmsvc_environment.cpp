@@ -42,7 +42,7 @@ namespace skl {
 
         vmsvc->found = val != NULL;
         if (vmsvc->found) {
-            vmsvc->len = strlen(val);
+            vmsvc->len = static_cast<md::int32>(strlen(val));
         }
     }
 
@@ -60,11 +60,11 @@ namespace skl {
 
 
     void
-    vmsvc_environment(md::uint32 adr)
+    vmsvc_environment(md::OADDR adr)
     {
-        md::uint8        *ptr   = heap::host_address(adr);
+        md::HADDR         ptr   = heap::host_address(adr);
         vmsvc_env_desc_t *vmsvc = reinterpret_cast<vmsvc_env_desc_t *>(ptr);
-        const char *key         = reinterpret_cast<const char *>(heap::host_address(vmsvc->key));
+        const char       *key   = reinterpret_cast<const char *>(heap::host_address(vmsvc->key));
 
         switch (vmsvc->op) {
         case env_lookup:

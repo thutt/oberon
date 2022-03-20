@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2021 Logic Magicians Software */
+/* Copyright (c) 2000, 2021, 2022 Logic Magicians Software */
 #if !defined(_O3_H)
 #define _O3_H
 
@@ -13,26 +13,26 @@ namespace O3
 
     typedef struct bootstrap_symbols_t {
         const char *name;
-        md::uint32 adr;
+        md::OADDR adr;
     } bootstrap_symbols_t;
 
     struct uses_info_t {
-        md::uint32  name;       /* POINTER TO ARRAY OF CHAR */
-        md::uint32  pbfprint;   /* LONGINT */
-        md::uint32  module;     /* (module_t *) */
+        md::OADDR  name;        /* POINTER TO ARRAY OF CHAR */
+        md::int32  pbfprint;    /* LONGINT */
+        md::OADDR  module;      /* (module_t *) */
     };
 
     struct export_t {
-        md::uint32 name;        /* (name_t) (POINTER TO ARRAY OF CHAR)*/
-        md::uint32 fprint;      /* LONGINT */
-        md::uint32 pvfprint;    /* LONGINT */
-        md::uint32 adr;         /* POINTER */
-        md::uint16 kind;        /* INTEGER */
+        md::OADDR name;         /* (name_t) (POINTER TO ARRAY OF CHAR)*/
+        md::int32 fprint;       /* LONGINT */
+        md::int32 pvfprint;     /* LONGINT */
+        md::OADDR adr;          /* POINTER */
+        md::int16 kind;         /* INTEGER */
     };
 
     struct cmd_t {
-        md::uint32 name;        /* name_t */
-        md::uint32 adr;
+        md::OADDR name;        /* name_t */
+        md::OADDR adr;
     };
 
     typedef md::uint32  typedesc_array_t;
@@ -44,29 +44,29 @@ namespace O3
     typedef md::uint8   refs_array_t;
 
     struct module_t {
-        md::uint32 next;        /* Oberon: 'module_t *' */
-        md::int32  refcnt;      /* number of references to this module */
-        md::int32  sb;          /* static base - offset in module 'data' where data begins  */
-        md::uint32 finalize;    /* (void (*finalize)(void)) */
-        md::uint32 tdescs;      /* (typedesc_array_t *) */
-        md::uint32 exports;     /* (export_array_t *) exported data */
-        md::uint32 privates;    /* (export_array_t *) private data */
-        md::uint32 commands;    /* (cmds_array_t *) exported commands */
-        md::uint32 pointers;    /* (ptr_array_t *) offsets of global pointers; for GC */
-        md::uint32 imports;     /* (imports_array_t *) imported modules */
-        md::uint32 jumps;       /* (data_array_t *) case tables */
-        md::uint32 data;        /* (data_array_t *) data (const & variable) */
-        md::uint32 tddata;      /* (data_array_t *) type descriptor records */
-        md::uint32 code;        /* POINTER TO ARRAY OF SYSTEM.BYTE. */
-        md::uint32 refs;        /* (refs_array_t *) Oberon references (for Post Mortem Debugger */
-        md::uint32 name;        /* Oberon: POINTER TO ARRAY OF CHAR. */
+        md::OADDR next;         /* Oberon: 'module_t *' */
+        md::int32 refcnt;       /* number of references to this module */
+        md::int32 sb;           /* static base - offset in module 'data' where data begins  */
+        md::OADDR finalize;     /* (void (*finalize)(void)) */
+        md::OADDR tdescs;       /* (typedesc_array_t *) */
+        md::OADDR exports;      /* (export_array_t *) exported data */
+        md::OADDR privates;     /* (export_array_t *) private data */
+        md::OADDR commands;     /* (cmds_array_t *) exported commands */
+        md::OADDR pointers;     /* (ptr_array_t *) offsets of global pointers; for GC */
+        md::OADDR imports;      /* (imports_array_t *) imported modules */
+        md::OADDR jumps;        /* (data_array_t *) case tables */
+        md::OADDR data;         /* (data_array_t *) data (const & variable) */
+        md::OADDR tddata;       /* (data_array_t *) type descriptor records */
+        md::OADDR code;         /* POINTER TO ARRAY OF SYSTEM.BYTE. */
+        md::OADDR refs;         /* (refs_array_t *) Oberon references (for Post Mortem Debugger */
+        md::OADDR name;         /* Oberon: POINTER TO ARRAY OF CHAR. */
     };
     extern const int sizeof_module_t;
     extern bootstrap_symbols_t bootstrap_symbol[];
 
-    extern md::uint32 module_list; /* Oberon: module_t * */
-    extern md::int32  n_inited;
-    extern md::int32  n_loaded;
+    extern md::OADDR module_list; /* Oberon: module_t * */
+    extern md::int32 n_inited;
+    extern md::int32 n_loaded;
 
     void get_kernel_td_info(module_t *module);
     void fixup_type_descriptors(void);
@@ -77,24 +77,13 @@ namespace O3
     void verify_module_name(module_t *m, const char *mname);
     const char *module_name(module_t *m);
 
-    /* find_module_and_offset:
-     *
-     *   Given an Oberon heap address, synthesize the module and the
-     *   offset in the module's code block.
-     *
-     *   Only valid for code.
-     */
-    void find_module_and_offset(md::uint32   address,
-                                module_t   *&module,
-                                md::uint32  &offs);
-
-    md::uint32 lookup_command(module_t *m, const char *cmd);
+    md::OADDR lookup_command(module_t *m, const char *cmd);
     void dump_module_list(void);
 
 
-    void decode_pc__(md::uint32 pc, decode_pc_t &decode);
+    void decode_pc__(md::OADDR pc, decode_pc_t &decode);
     static inline void
-    decode_pc(md::uint32 pc, decode_pc_t &decode)
+    decode_pc(md::OADDR pc, decode_pc_t &decode)
     {
         if (skl_trace) {
             decode_pc__(pc, decode);
@@ -102,8 +91,8 @@ namespace O3
     }
 
 
-    static inline md::uint32
-    DIV(md::uint32 x, md::uint32 y)
+    static inline md::int32
+    DIV(md::int32 x, md::int32 y)
     {
         if (x >= 0) {
             if (y > 0) {
@@ -121,8 +110,8 @@ namespace O3
     }
 
 
-    static inline md::uint32
-    MOD(md::uint32 x, md::uint32 y)
+    static inline md::int32
+    MOD(md::int32 x, md::int32 y)
     {
         if (x >= 0) {
             if (y > 0) {

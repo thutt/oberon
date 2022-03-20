@@ -28,8 +28,8 @@ namespace skl {
         N_OPCODE_CLASSES
     } opcode_class_t;
 
-    md::uint32 initial_stack_bot;
-    md::uint32 initial_stack_top;
+    md::OADDR initial_stack_bot;
+    md::OADDR initial_stack_top;
 
     const char *reg_bank[2] = {
         "R",
@@ -41,10 +41,10 @@ namespace skl {
 
 
     void
-    initialize_memory(md::uint32 membeg, md::uint32 n_bytes)
+    initialize_memory(md::OADDR membeg, int n_bytes)
     {
         memory.beg     = membeg;
-        memory.end     = membeg + n_bytes;
+        memory.end     = membeg + static_cast<md::OADDR>(n_bytes);
         memory.n_bytes = n_bytes;
     }
 
@@ -52,15 +52,15 @@ namespace skl {
     static void
     dump_cpu_stack(cpu_t *cpu)
     {
-        const unsigned  default_stack_words = 32;
-        unsigned        i;
+        const int       default_stack_words = 32;
+        int             i;
         O3::decode_pc_t decoded_pc;
         md::uint32      v;
         md::uint32      p;
-        md::uint32      sp          = read_integer_register(cpu, SP);
-        md::uint32      sfp         = read_integer_register(cpu, SFP);
-        unsigned        stack_words = default_stack_words;
-        md::uint32      next_sfp    = sfp;
+        md::uint32      sp                  = read_integer_register(cpu, SP);
+        md::uint32      sfp                 = read_integer_register(cpu, SFP);
+        int             stack_words         = default_stack_words;
+        md::uint32      next_sfp            = sfp;
 
         if (sp >= initial_stack_top - sizeof(md::uint32)) {
             /* At startup, with an empty stack, SP will be one word
@@ -69,7 +69,8 @@ namespace skl {
              */
             stack_words = 0;
         } else {
-            stack_words = (initial_stack_top - sp) / sizeof(md::uint32);
+            stack_words = static_cast<int>((initial_stack_top - sp) /
+                                           static_cast<int>(sizeof(md::uint32)));
         }
 
         if (stack_words > 0) {
@@ -77,18 +78,20 @@ namespace skl {
                         initial_stack_bot, initial_stack_top, stack_words);
             i = 0;
             do {
-                p = sp + i * sizeof(md::uint32);
+                p = sp + static_cast<md::uint32>(i * static_cast<int>(sizeof(md::uint32)));
                 v = skl::read(p, false, sizeof(md::uint32));
 
                 O3::decode_pc(v, decoded_pc);
 
                 if (p == next_sfp) {
                     dialog::cpu("  %0xH [SP+%03.3xH] : (SFP) %s\n",
-                                p, i * sizeof(md::uint32), decoded_pc);
+                                p, i * static_cast<int>(sizeof(md::uint32)),
+                                decoded_pc);
                     next_sfp = v;
                 } else {
                     dialog::cpu("  %0xH [SP+%03.3xH] :       %s\n",
-                                p, i * sizeof(md::uint32), decoded_pc);
+                                p, i * static_cast<int>(sizeof(md::uint32)),
+                                decoded_pc);
                 }
                 ++i;
             } while (i < stack_words);
@@ -115,7 +118,7 @@ namespace skl {
     dump_cpu__(cpu_t *cpu)
     {
         bool            dump_float_registers = true;
-        unsigned        i;
+        int              i;
         O3::decode_pc_t decoded_pc;
 
         if (config::options & config::opt_trace_cpu) {
@@ -124,7 +127,8 @@ namespace skl {
             dump_control_registers(cpu);
 
             i = 0;
-            while (i < sizeof(cpu->_R) / sizeof(cpu->_R[0])) {
+            while (i < static_cast<int>(sizeof(cpu->_R) /
+                                        sizeof(cpu->_R[0]))) {
                 dialog::cpu("R%-2u: %8.8xH", i, cpu->_R[i]);
                 ++i;
                 if ((i % 4) == 0) {
@@ -137,7 +141,8 @@ namespace skl {
             if (dump_float_registers) {
                 dialog::cpu("\n");
                 i = 0;
-                while (i < sizeof(cpu->_F) / sizeof(cpu->_F[0])) {
+                while (i < static_cast<int>(sizeof(cpu->_F) /
+                                            sizeof(cpu->_F[0]))) {
                     dialog::cpu("F%-2u: %e", i, cpu->_F[i]);
                     ++i;
                     if ((i % 3) == 0) {
@@ -154,9 +159,10 @@ namespace skl {
 
 
     void
-    software_trap(cpu_t *cpu, unsigned trap)
+    software_trap(cpu_t *cpu, int trap)
     {
-        write_integer_register(cpu, 1, trap);     // Trap code.
+        write_integer_register(cpu, 1,
+                               static_cast<md::uint32>(trap)); // Trap code.
         write_integer_register(cpu, 31, cpu->pc);  // Return address.
         cpu->pc = read_control_register(cpu, CR5); // Kernel.SysTrap
         cpu->exception_raised = true;
@@ -168,9 +174,9 @@ namespace skl {
     {
         md::uint32 cr2;
         write_control_register(cpu, CR0, cpu->pc); // Exception address.
-        cr2 = (trap |
-               0    | // Interrupt enable setting (not supported).
-               1);    // Processor, not external.
+        cr2 = static_cast<md::uint32>(trap |
+                                      0    | // Interrupt enable setting (not supported).
+                                      1);    // Processor, not external.
         write_control_register(cpu, CR2, cr2);
         cpu->pc = read_control_register(cpu, CR1); // Kernel.HardwareTrap
         cpu->exception_raised = true;
@@ -178,9 +184,9 @@ namespace skl {
 
 
     static inline opcode_class_t
-    classof(md::uint32 inst)
+    classof(md::OINST inst)
     {
-        unsigned v = field(inst, 31, 26);
+        int v = field(inst, 31, 26);
         if (v > N_OPCODE_CLASSES) {
             v = N_OPCODE_CLASSES; // Invalid opcode.
         }
@@ -189,26 +195,30 @@ namespace skl {
 
 
     void
-    write(md::uint32 addr, md::uint32 val, unsigned size)
+    write(md::OADDR addr, md::uint32 val, int size)
     {
         if (LIKELY(address_valid(addr, size))) {
-            md::uint8 *p = heap::heap_to_host(addr);
+            md::HADDR p = heap::heap_to_host(addr);
 
             switch (size) {
-            case 1:
-                *reinterpret_cast<md::uint8 *>(p) = val;
+            case 1: {
+                md::uint8 v = static_cast<md::uint8>(val);
+                *reinterpret_cast<md::uint8 *>(p) = v;
                 break;
+            }
 
-            case 2:
-                *reinterpret_cast<md::uint16 *>(p) = val;
+            case 2: {
+                md::uint16 v = static_cast<md::uint16>(val);
+                *reinterpret_cast<md::uint16 *>(p) = v;
                 break;
+            }
 
             case 4:
                 *reinterpret_cast<md::uint32 *>(p) = val;
                 break;
 
             default:
-                dialog::internal_error("%s: invalid write size '%u'",
+                dialog::internal_error("%s: invalid write size '%d'",
                                        __func__, size);
             }
         } else {
@@ -222,7 +232,7 @@ namespace skl {
     {
         md::uint32 inst;
 
-        if (LIKELY(aligned(cpu.pc, sizeof(md::uint32)))) {
+        if (LIKELY(aligned(cpu.pc, static_cast<int>(sizeof(md::uint32))))) {
             inst = skl::read(cpu.pc, false, sizeof(md::uint32));
         } else {
             hardware_trap(&cpu, CR2_BAD_ALIGNMENT);
@@ -233,7 +243,7 @@ namespace skl {
     static skl::instruction_t *
     fetch_and_cache_instruction(skl::cpu_t *cpu)
     {
-        md::uint32          inst;
+        md::OINST           inst;
         opcode_class_t      cls;
         skl::instruction_t *cinst = NULL;
 
@@ -317,7 +327,7 @@ namespace skl {
 
 
     void
-    execute(cpu_t *cpu, md::uint32 addr)
+    execute(cpu_t *cpu, md::OADDR addr)
     {
         cpu->pc = addr;
 
@@ -325,6 +335,7 @@ namespace skl {
             skl::instruction_t *cinst = fetch_cached_instruction(cpu);
 
             write_integer_register(cpu, 0, 0); // Reset R0 to zero.
+
             cpu->_instruction_count++;
             if (cinst == NULL) {
                 cinst = fetch_and_cache_instruction(cpu);
@@ -348,20 +359,20 @@ namespace skl {
 
     md::uint32
     register_as_integer(cpu_t           *cpu,
-                        unsigned         regno,
+                        int              regno,
                         register_bank_t  bank)
     {
         if (bank == RB_INTEGER) {
             return read_integer_register(cpu, regno);
         } else {
             assert(bank == RB_DOUBLE);
-            return cpu->_F[regno];
+            return static_cast<md::uint32>(cpu->_F[regno]);
         }
     }
 
     double
     register_as_double(cpu_t           *cpu,
-                       unsigned         regno,
+                       int              regno,
                        register_bank_t  bank)
     {
         if (bank == RB_INTEGER) {
@@ -387,8 +398,8 @@ namespace skl {
          * SFP is initialized to within the stack, as it is used
          * without decrement or increment.
          */
-        md::uint32 stack_top = (heap::heap_address(heap::oberon_stack) +
-                                heap::oberon_stack_size_in_bytes);
+        md::OADDR stack_top = (heap::heap_address(heap::oberon_stack) +
+                               static_cast<md::OADDR>(heap::oberon_stack_size_in_bytes));
         /* Stack is predecrement.  To use the last element of the
          * stack, the stack pointer must be positioned one word past
          * the end of the stack; it does at the end of heap

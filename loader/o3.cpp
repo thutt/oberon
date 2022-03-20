@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2021 Logic Magicians Software */
+/* Copyright (c) 2000, 2021, 2022 Logic Magicians Software */
 #include <string.h>
 
 #include "heap.h"
@@ -52,37 +52,37 @@ namespace O3
      * `Kernel' type descriptor fixups
      */
     struct td_record {
-        md::uint32  flags;
-        md::uint32  extension_table;
-        md::uint32  extension_level;
-        md::uint32  record_size;
-        md::uint32  block_size;
-        md::uint32  n_pointers;
-        md::uint32  record_name; /* (const char *) POINTER TO ARRAY OF CHAR */
-        md::uint32  module_descriptor;
-        md::uint32  finalization;
-        md::uint32  pointer_offset; // variably-sized array: pointer_offset[n_pointers + 1]
+        md::OFLAGS flags;
+        md::OADDR  extension_table;
+        md::int32  extension_level;
+        md::int32  record_size;
+        md::int32  block_size;
+        md::int32  n_pointers;
+        md::OADDR  record_name; /* (const char *) POINTER TO ARRAY OF CHAR */
+        md::OADDR  module_descriptor;
+        md::OADDR  finalization;
+        md::OADDR  pointer_offset; // variably-sized array: pointer_offset[n_pointers + 1]
     };
 
 
     struct td_simple_array {
-        md::uint32 flags;
-        md::uint32 element_form;
-        md::uint32 n_dimensions;
+        md::OFLAGS flags;
+        md::int32  element_form;
+        md::int32  n_dimensions;
     };
 
 
     struct td_record_array {
-        md::uint32  flags;
-        md::uint32  td;         /* (td_record *) */
-        md::uint32  n_dimensions;
+        md::OFLAGS flags;
+        md::OADDR  td;          /* (td_record *) */
+        md::int32  n_dimensions;
     };
 
 
     struct td_record_pointer_array {
-        md::uint32 flags;
+        md::OFLAGS flags;
         md::uint32 reserved;
-        md::uint32 n_dimensions;
+        md::int32  n_dimensions;
     };
 
 
@@ -90,47 +90,61 @@ namespace O3
      * (Not provided to Oberon)
      */
     struct typedesc_info_geometry_t {
-        unsigned int flags;
-        typedesc_info_geometry_t(md::uint32 f) : flags(f) { }
+        md::OFLAGS flags;
+        typedesc_info_geometry_t(md::OFLAGS f) : flags(f) { }
     };
 
     struct typedesc_geometry_record_t : typedesc_info_geometry_t
     {
-        unsigned int  extension_level;
-        unsigned int  record_size_in_bytes;
-        unsigned int  n_pointers;
-        const char   *record_name;
-        typedesc_geometry_record_t(md::uint32 f,
-                                   md::uint32 ext,
-                                   md::uint32 size,
-                                   md::uint32 n_ptr,
+        int         extension_level;
+        int         record_size_in_bytes;
+        int         n_pointers;
+        const char *record_name;
+        typedesc_geometry_record_t(md::OFLAGS  f,
+                                   int         ext,
+                                   int         size,
+                                   int         n_ptr,
                                    const char *name) :
-            typedesc_info_geometry_t(f), extension_level(ext),
-            record_size_in_bytes(size), n_pointers(n_ptr), record_name(name) { }
+            typedesc_info_geometry_t(f),
+            extension_level(ext),
+            record_size_in_bytes(size),
+            n_pointers(n_ptr),
+            record_name(name) { }
     };
 
     struct typedesc_geometry_simple_array_t : typedesc_info_geometry_t
     {
-        unsigned int element_form;
-        unsigned int n_dimensions;
-        typedesc_geometry_simple_array_t(int f, int form, int n_dim) :
-            typedesc_info_geometry_t(f), element_form(form), n_dimensions(n_dim) { }
+        int element_form;
+        int n_dimensions;
+        typedesc_geometry_simple_array_t(md::OFLAGS f,
+                                         int        form,
+                                         int        n_dim) :
+            typedesc_info_geometry_t(f),
+            element_form(form),
+            n_dimensions(n_dim) { }
     };
 
     struct typedesc_geometry_record_array_t : typedesc_info_geometry_t
     {
-        td_record    *td_physcial_address;
-        unsigned int  n_dimensions;
-        const char   *record_name;
-        typedesc_geometry_record_array_t(int f, int n_dim, const char *name) :
-            typedesc_info_geometry_t(f), n_dimensions(n_dim), record_name(name) { }
+        td_record  *td_physcial_address;
+        int         n_dimensions;
+        const char *record_name;
+        typedesc_geometry_record_array_t(md::OFLAGS f,
+                                         int n_dim,
+                                         const char *name) :
+            typedesc_info_geometry_t(f),
+            n_dimensions(n_dim),
+            record_name(name) { }
     };
 
     struct typedesc_geometry_record_pointer_array_t : typedesc_info_geometry_t
     {
-        unsigned int n_dimensions;
-        typedesc_geometry_record_pointer_array_t(int f, int n_dim) :
-            typedesc_info_geometry_t(f), n_dimensions(n_dim) { }
+        int n_dimensions;
+        typedesc_geometry_record_pointer_array_t(md::OFLAGS f, int n_dim) :
+            typedesc_info_geometry_t(f),
+            n_dimensions(n_dim)
+            {
+            }
     };
 
     /* typedesc_info_t is used to store type descriptor information
@@ -140,7 +154,7 @@ namespace O3
      */
     struct typedesc_info_t
     {
-        md::uint32                adr;
+        md::OADDR                 adr;
         string_t                  name; /* name as it appears in the export table */
         bool                      (*validity_check)(md::uint32 physical_address,
                                                     typedesc_info_geometry_t &geometry);
@@ -188,13 +202,15 @@ namespace O3
     typedef void (*init_code_t)(void);
 
     /* type descriptor validation records */
-    typedesc_geometry_record_t tdesc_moduledesc = typedesc_geometry_record_t(0x40000000, 0,
-                                                                             0x40, 0x0d,
-                                                                             "ModuleDesc");
+    typedesc_geometry_record_t tdesc_moduledesc =
+        typedesc_geometry_record_t(0x40000000, 0,
+                                   0x40, 0x0d,
+                                   "ModuleDesc");
     typedesc_geometry_record_t tdesc_vmservicedesc = typedesc_geometry_record_t(0x40000000, 0,
                                                                                 4, 0,
                                                                                 "VMServiceDesc");
-    typedesc_geometry_simple_array_t tdesc_tdescs          = typedesc_geometry_simple_array_t(0x40000001, 6, 1);
+    typedesc_geometry_simple_array_t
+    tdesc_tdescs = typedesc_geometry_simple_array_t(0x40000001, 6, 1);
     typedesc_geometry_record_array_t tdesc_exports         = typedesc_geometry_record_array_t(0x40000003, 1,
                                                                                               "Export");
     typedesc_geometry_record_array_t tdesc_privates        = typedesc_geometry_record_array_t(0x40000003, 1,
@@ -283,16 +299,16 @@ namespace O3
     static uses_info_t  uses_info[151];
     static uses_list_t *uses_list;
 
-    md::uint32 module_list;     /* Oberon: module_t * */
-    const int  sizeof_module_t = 0x40;
-    md::int32  n_inited        = 0; // number of modules initialized
-    md::int32  n_loaded        = 0; // number of modules actually loaded
+    md::OADDR module_list;      /* Oberon: module_t * */
+    const int sizeof_module_t = 0x40;
+    md::int32 n_inited        = 0; // number of modules initialized
+    md::int32 n_loaded        = 0; // number of modules actually loaded
 
     static char                *current_module_name    = NULL;
     static object_module_str_t *current_module_strings = NULL;
 
     static void
-    indent(unsigned int n)
+    indent(int n)
     {
         while (n-- > 0)
             dialog::print(" ");
@@ -300,17 +316,16 @@ namespace O3
 
 
     static void
-    print_header(const char *header, md::uint32 p, md::uint32 len)
+    print_header(const char *header, md::uint32 p, int len)
     {
-        dialog::print("%15s: addr=%#x  len=%#x\n", header,
-                      p, len);
+        dialog::print("%15s: addr=%#x  len=%#x\n", header, p, len);
     }
 
 
     static void
     print_simple_elem_array_info(const char *header, md::uint32 a)
     {
-        md::uint32 len = 0;
+        int len = 0;
 
         if (a != 0) {
             len = heap::simple_elem_array_len(heap::host_address(a));
@@ -322,7 +337,7 @@ namespace O3
     static void
     print_pointer_elem_array_info(const char *header, md::uint32 a)
     {
-        md::uint32 len = 0;
+        int len = 0;
 
         if (a != 0) {
             len = heap::pointer_elem_array_len(heap::host_address(a));
@@ -334,10 +349,10 @@ namespace O3
     static void
     print_record_elem_array_info(const char *header, md::uint32 a)
     {
-        md::uint32 len = 0;
+        int len = 0;
 
         if (a != 0) {
-            len =heap::record_elem_array_len(heap::host_address(a));
+            len = heap::record_elem_array_len(heap::host_address(a));
         }
         print_header(header, a, len);
     }
@@ -406,9 +421,11 @@ namespace O3
                 md::int32 *tbl = reinterpret_cast<md::int32 *>(&td->pointer_offset);
                 md::int32 sentinel;
 
-                last_index = 9 + td->n_pointers / sizeof(md::uint32);
+                last_index = 9 + (td->n_pointers /
+                                  static_cast<int>(sizeof(md::uint32)));
                 sentinel = tbl[last_index + 1];
-                if (sentinel + (9 + td->n_pointers) * sizeof(md::uint32) != 0) {
+                if (sentinel +
+                    (9 + td->n_pointers) * static_cast<int>(sizeof(md::uint32)) != 0) {
                     return false;
                 }
             }
@@ -442,10 +459,10 @@ namespace O3
     {
         td_record_array *td = reinterpret_cast<td_record_array *>(heap::host_address(adr));
         typedesc_geometry_record_array_t &g = static_cast<typedesc_geometry_record_array_t&>(geometry);
-        md::uint8 *rtdp   = heap::host_address(td->td);
-        td_record *rtd    = reinterpret_cast<td_record *>(rtdp);
-        md::uint8 *uint8p = heap::host_address(rtd->record_name);
-        const char *name  = reinterpret_cast<const char *>(uint8p);
+        md::HADDR   rtdp   = heap::host_address(td->td);
+        td_record  *rtd    = reinterpret_cast<td_record *>(rtdp);
+        md::HADDR   uint8p = heap::host_address(rtd->record_name);
+        const char *name   = reinterpret_cast<const char *>(uint8p);
 
 
         dialog::diagnostic("record array information: %#x %#x `%s'\n",
@@ -463,10 +480,13 @@ namespace O3
     validate_record_pointer_array_td(md::uint32                adr,
                                      typedesc_info_geometry_t &geometry)
     {
-        td_record_pointer_array *td = reinterpret_cast<td_record_pointer_array *>(heap::host_address(adr));
-        typedesc_geometry_record_pointer_array_t &g = static_cast<typedesc_geometry_record_pointer_array_t&>(geometry);
+        td_record_pointer_array *td =
+            reinterpret_cast<td_record_pointer_array *>(heap::host_address(adr));
+        typedesc_geometry_record_pointer_array_t &g =
+            static_cast<typedesc_geometry_record_pointer_array_t&>(geometry);
 
-        dialog::diagnostic("record array information: %#x %#x\n", td->flags, td->n_dimensions);
+        dialog::diagnostic("record array information: %#x %#x\n",
+                           td->flags, td->n_dimensions);
         return (td != NULL &&
                 td->flags == g.flags &&
                 td->n_dimensions == g.n_dimensions) ? true : false;
@@ -474,9 +494,9 @@ namespace O3
 
 
     static export_t *
-    get_module_export(const module_t *module, md::uint32 n)
+    get_module_export(const module_t *module, int n)
     {
-        md::uint8      *expp    = heap::host_address(module->exports);
+        md::HADDR       expp    = heap::host_address(module->exports);
         export_array_t *exports = reinterpret_cast<export_array_t *>(expp);
 
         return &exports[n];
@@ -484,9 +504,9 @@ namespace O3
 
 
     static const export_t *
-    get_module_private(const module_t *module, md::uint32 n)
+    get_module_private(const module_t *module, int n)
     {
-        md::uint8      *prip = heap::host_address(module->privates);
+        md::HADDR       prip = heap::host_address(module->privates);
         export_array_t *pri  = reinterpret_cast<export_array_t *>(prip);
 
         return &pri[n];
@@ -501,9 +521,9 @@ namespace O3
 
 
     static cmd_t *
-    get_module_command(const module_t *module, md::uint32 n)
+    get_module_command(const module_t *module, int n)
     {
-        md::uint8        *cmdp = heap::host_address(module->commands);
+        md::HADDR     cmdp = heap::host_address(module->commands);
         cmds_array_t *cmds = reinterpret_cast<cmds_array_t *>(cmdp);
 
         return &cmds[n];
@@ -528,13 +548,13 @@ namespace O3
          * considerably: considering it's only a few (13 entries as of
          * 2000.06.19) entries, a linear search will not hurt.
          */
-        md::uint32 len = heap::record_elem_array_len(heap::host_address(module->exports));
+        int len = heap::record_elem_array_len(heap::host_address(module->exports));
 
         dialog::diagnostic("Searching for Kernel Type Descriptors:\n");
 
-        for (unsigned int f = 0; f < sizeof(td_info) / sizeof(td_info[0]); ++f) {
+        for (size_t f = 0; f < sizeof(td_info) / sizeof(td_info[0]); ++f) {
             dialog::diagnostic("'%s' ", td_info[f].name);
-            for (unsigned int i = 0; i < len; ++i) {
+            for (int i = 0; i < len; ++i) {
                 const export_t *exp = get_module_export(module, i);
 
                 if (strcmp(td_info[f].name, get_export_name(exp)) == 0) {
@@ -557,13 +577,15 @@ namespace O3
 
         /* sanity check: ensure that all type descriptors were actually found */
         len = heap::record_elem_array_len(heap::host_address(module->exports));
-        for (unsigned int i = 0; i < sizeof(td_info) / sizeof(td_info[0]); ++i) {
+        for (int i = 0; i < static_cast<int>(sizeof(td_info) /
+                                             sizeof(td_info[0])); ++i) {
             dialog::diagnostic("Kernel.%s: TD address: %#x\n",
                                td_info[i].name, td_info[i].adr);
             if (td_info[i].adr == 0) {
                 dialog::fatal("type descriptor for Kernel.%s not found\n",
                               td_info[i].name);
-            } else if (MOD(td_info[i].adr, heap::allocation_block_size) != 0) {
+            } else if (MOD(static_cast<md::int32>(td_info[i].adr),
+                           heap::allocation_block_size) != 0) {
                 dialog::fatal("Type descriptor Kernel.%s not aligned (%#x)\n",
                               td_info[i].name, td_info[i].adr);
             }
@@ -580,7 +602,7 @@ namespace O3
          * post: result != NULL -> function found & defined(*result)
          */
         if (module->exports != 0) {
-            unsigned int i = 0;
+            int i = 0;
             while (i < heap::record_elem_array_len(heap::host_address(module->exports))) {
                 const export_t *exp = get_module_export(module, i);
                 if (strcmp(function, get_export_name(exp)) == 0) {
@@ -600,7 +622,7 @@ namespace O3
         while (m != NULL) {
             dialog::diagnostic("Fixup type descriptors for %s\n",
                                heap::host_address(m->name));
-            heap::fixup_td(reinterpret_cast<md::uint8 *>(m), "mod",
+            heap::fixup_td(reinterpret_cast<md::HADDR>(m), "mod",
                            heap::host_address(td_info[td_module].adr),   false);
             heap::fixup_td(heap::host_address(m->tdescs), "tdsc",
                            heap::host_address(td_info[td_tdescs].adr),   true);
@@ -628,8 +650,8 @@ namespace O3
                            heap::host_address(td_info[td_name].adr),     true);
 
             if (m->commands != 0) {
-                unsigned int i   = 0;
-                md::uint32   len = heap::record_elem_array_len(heap::host_address(m->commands));
+                int i   = 0;
+                int len = heap::record_elem_array_len(heap::host_address(m->commands));
 
                 while (i < len) {
                     const cmd_t *cmd = get_module_command(m, i);
@@ -640,8 +662,8 @@ namespace O3
             }
 
             if (m->exports != 0) {
-                unsigned int i   = 0;
-                md::uint32   len = heap::record_elem_array_len(heap::host_address(m->exports));
+                int i   = 0;
+                int len = heap::record_elem_array_len(heap::host_address(m->exports));
 
                 while (i < len) {
                     const export_t *exp = get_module_export(m, i);
@@ -652,8 +674,8 @@ namespace O3
             }
 
             if (m->privates != 0) {
-                unsigned int i   = 0;
-                md::uint32   len = heap::record_elem_array_len(heap::host_address(m->privates));
+                int i   = 0;
+                int len = heap::record_elem_array_len(heap::host_address(m->privates));
 
                 while (i < len) {
                     const export_t *pri = get_module_private(m, i);
@@ -674,7 +696,7 @@ namespace O3
         uses_list_t *prev;
 
         while (uses_list != NULL) {
-            md::uint8 *name = reinterpret_cast<md::uint8 *>(uses_list->name);
+            md::HADDR name = reinterpret_cast<md::HADDR>(uses_list->name);
 
             prev = uses_list;
             heap::fixup_td(name, "use",
@@ -685,42 +707,20 @@ namespace O3
     }
 
 
-#if 0
-    static void
-    init_eax_ebx_edi_esi(init_code_t init,
-                         unsigned int ebx,
-                         unsigned int edi,
-                         unsigned int esi)
-    {
-        assert(false);          // This is not needed for SKL.
-        __asm__("movl %0, %%eax\n"
-                "movl %1, %%ebx\n"
-                "movl %2, %%edi\n"
-                "movl %3, %%esi\n"
-                "call *%%eax"
-                :  /* no outputs */
-                :"g" (init),
-                "g" (ebx),
-                "g" (edi),
-                "g" (esi)
-                : "eax", "ebx", "edi", "esi");
-    }
-#endif
-
-    static md::uint8 *
+    static md::HADDR
     data_base(module_t *module)
     {
-        md::uint8 *hp = heap::host_address(module->data);
+        md::HADDR hp = heap::host_address(module->data);
         return &hp[module->sb];
     }
 
 
     static void
-    read_bytes(FILE *fp, unsigned char *buf, unsigned int n_bytes)
+    read_bytes(FILE *fp, unsigned char *buf, int n_bytes)
     {
-        unsigned int read;
-        read = fread(buf, sizeof(buf[0]), n_bytes, fp);
-        if (read != n_bytes) {
+        size_t read = fread(buf, sizeof(buf[0]),
+                            static_cast<size_t>(n_bytes), fp);
+        if (static_cast<int>(read) != n_bytes) {
             dialog::fatal("expected to read %#x bytes but read only %#x");
         }
     }
@@ -788,13 +788,15 @@ namespace O3
 
 
     static void
-    read_num(FILE *fp, int &x)
+    read_num(FILE *fp, int &res)
     {
         char rCH;
         int  n;
         long y;
+        long x;
 
-        n = y = 0;
+        n = 0;
+        y = 0;
         read_ch(fp, rCH);
 
         while (static_cast<unsigned char>(rCH) >= 0x80) {
@@ -809,6 +811,7 @@ namespace O3
             x = (rCH << 25) << (n - 25);
         }
         x += y;
+        res = static_cast<int>(x);
     }
 
 
@@ -852,7 +855,7 @@ namespace O3
     add_module(module_t *m)
     {
         module_t  *l  = reinterpret_cast<module_t *>(heap::host_address(module_list));
-        md::uint8 *mp = reinterpret_cast<md::uint8 *>(m);
+        md::HADDR  mp = reinterpret_cast<md::HADDR>(m);
 
         if (l != NULL) {
             while (l->next != 0) {
@@ -885,8 +888,9 @@ namespace O3
     static md::uint32
     new_string(const char *str)
     {
-        md::uint8 *n;
-        char *name;
+        md::HADDR  n;
+        char      *name;
+
         /* pre : ASCIIZ(s)
          * post: name # NULL & ASCIIZ(name)
          *
@@ -895,47 +899,47 @@ namespace O3
          */
 
         /* bootstrap loader does not handle dynamic string lengths */
-        assert(strlen(str) + 1 <= static_cast<unsigned>(NAME_LEN));
+        assert(strlen(str) + 1 <= static_cast<size_t>(NAME_LEN));
 
         /* number of elements includes 0X */
-        n = heap::new_simple_elem_array(strlen(str) + 1,
-                                        sizeof(str[0]),
+        n = heap::new_simple_elem_array(static_cast<int>(strlen(str) + 1),
+                                        static_cast<int>(sizeof(str[0])),
                                         heap::host_address(td_info[td_refs].adr));
         name = reinterpret_cast<char *>(n);
         strcpy(name, str);
-        return heap::heap_address(reinterpret_cast<md::uint8 *>(name));
+        return heap::heap_address(reinterpret_cast<md::HADDR>(name));
     }
 
 
     static md::uint32
-    new_exports(unsigned int n_exports, unsigned int record_size)
+    new_exports(int n_exports, int record_size)
     {
-        md::uint8 *exp = heap::new_record_elem_array(n_exports,
-                                                     record_size,
-                                                     heap::host_address(td_info[td_exports].adr));
+        md::HADDR exp = heap::new_record_elem_array(n_exports,
+                                                    record_size,
+                                                    heap::host_address(td_info[td_exports].adr));
 
         return heap::heap_address(exp);
     }
 
 
     static md::uint32
-    new_privates(unsigned int n_privates, unsigned int record_size)
+    new_privates(int n_privates, int record_size)
     {
-        md::uint8 *pri = heap::new_record_elem_array(n_privates,
-                                                     record_size,
-                                                     heap::host_address(td_info[td_privates].adr));
+        md::HADDR pri = heap::new_record_elem_array(n_privates,
+                                                    record_size,
+                                                    heap::host_address(td_info[td_privates].adr));
         return heap::heap_address(pri);
     }
 
 
     static md::uint32
-    new_typedescs(unsigned int n_typedesc, unsigned int elem_size)
+    new_typedescs(int n_typedesc, int elem_size)
     {
         /* Allocate an array of memory to hold pointers to type
          * descriptors for this module. */
-        md::uint8 *td = heap::new_simple_elem_array(n_typedesc,
-                                                    elem_size,
-                                                    heap::host_address(td_info[td_tdescs].adr));
+        md::HADDR td = heap::new_simple_elem_array(n_typedesc,
+                                                   elem_size,
+                                                   heap::host_address(td_info[td_tdescs].adr));
         dialog::diagnostic("%s: %d new TDesc; %d bytes; address %p\n",
                            __func__, n_typedesc, n_typedesc * elem_size, td);
         return heap::heap_address(td);
@@ -943,11 +947,11 @@ namespace O3
 
 
     static md::uint32
-    new_commands(unsigned int n_cmd, unsigned int record_size)
+    new_commands(int n_cmd, int record_size)
     {
-        md::uint8 *cmd = heap::new_record_elem_array(n_cmd,
-                                                     record_size,
-                                                     heap::host_address(td_info[td_commands].adr));
+        md::HADDR cmd = heap::new_record_elem_array(n_cmd,
+                                                    record_size,
+                                                    heap::host_address(td_info[td_commands].adr));
         assert(sizeof(cmds_array_t) == 8);
         return heap::heap_address(cmd);
 
@@ -955,72 +959,72 @@ namespace O3
 
 
     static md::uint32
-    new_pointers(unsigned int n_pointers, unsigned int elem_size)
+    new_pointers(int n_pointers, int elem_size)
     {
-        md::uint8 *ptr = heap::new_simple_elem_array(n_pointers,
-                                                     elem_size,
-                                                     heap::host_address(td_info[td_pointers].adr));
+        md::HADDR ptr = heap::new_simple_elem_array(n_pointers,
+                                                    elem_size,
+                                                    heap::host_address(td_info[td_pointers].adr));
         return heap::heap_address(ptr);
     }
 
 
     static md::uint32
-    new_imports(unsigned int n_imports, unsigned int elem_size)
+    new_imports(int n_imports, int elem_size)
     {
-        md::uint8 *imp = heap::new_pointer_elem_array(n_imports,
-                                                      elem_size,
-                                                      heap::host_address(td_info[td_imports].adr));
+        md::HADDR imp = heap::new_pointer_elem_array(n_imports,
+                                                     elem_size,
+                                                     heap::host_address(td_info[td_imports].adr));
         return heap::heap_address(imp);
     }
 
 
     static md::uint32
-    new_jumps(unsigned int n_jumps, unsigned int elem_size)
+    new_jumps(int n_jumps, int elem_size)
     {
-        md::uint8 *jmps = heap::new_simple_elem_array(n_jumps,
-                                                      elem_size,
-                                                      heap::host_address(td_info[td_jumps].adr));
+        md::HADDR jmps = heap::new_simple_elem_array(n_jumps,
+                                                     elem_size,
+                                                     heap::host_address(td_info[td_jumps].adr));
 
         return heap::heap_address(jmps);
     }
 
 
     static md::uint32
-    new_data(unsigned int n_bytes, unsigned int elem_size)
+    new_data(int n_bytes, int elem_size)
     {
-        md::uint8 *data = heap::new_simple_elem_array(n_bytes,
-                                                      elem_size,
-                                                      heap::host_address(td_info[td_data].adr));
+        md::HADDR data = heap::new_simple_elem_array(n_bytes,
+                                                     elem_size,
+                                                     heap::host_address(td_info[td_data].adr));
         return heap::heap_address(data);
     }
 
 
     static md::uint32
-    new_tddata(unsigned int n_bytes, unsigned int elem_size)
+    new_tddata(int n_bytes, int elem_size)
     {
-        md::uint8 *tddata = heap::new_simple_elem_array(n_bytes,
-                                                        elem_size,
-                                                        heap::host_address(td_info[td_tddata].adr));
+        md::HADDR tddata = heap::new_simple_elem_array(n_bytes,
+                                                       elem_size,
+                                                       heap::host_address(td_info[td_tddata].adr));
         return heap::heap_address(tddata);
     }
 
 
     static md::uint32
-    new_code(unsigned int n_bytes, unsigned int elem_size)
+    new_code(int n_bytes, int elem_size)
     {
-        md::uint8 *code = heap::new_simple_elem_array(n_bytes,
-                                                      elem_size,
-                                                      heap::host_address(td_info[td_code].adr));
+        md::HADDR code = heap::new_simple_elem_array(n_bytes,
+                                                     elem_size,
+                                                     heap::host_address(td_info[td_code].adr));
         return heap::heap_address(code);
     }
 
 
     static md::uint32
-    new_references(unsigned int n_bytes, unsigned int elem_size)
+    new_references(int n_bytes, int elem_size)
     {
-        md::uint8 *ref = heap::new_simple_elem_array(n_bytes,
-                                                     elem_size,
-                                                     heap::host_address(td_info[td_refs].adr));
+        md::HADDR ref = heap::new_simple_elem_array(n_bytes,
+                                                    elem_size,
+                                                    heap::host_address(td_info[td_refs].adr));
         return heap::heap_address(ref);
     }
 
@@ -1028,8 +1032,8 @@ namespace O3
     static void
     new_module(module_t *&module, objf_header_t &h)
     {
-        md::uint8 *adr = heap::new_module(heap::host_address(td_info[td_module].adr),
-                                          sizeof(module_t));
+        md::HADDR adr = heap::new_module(heap::host_address(td_info[td_module].adr),
+                                         sizeof(module_t));
         module = reinterpret_cast<module_t *>(adr);
 
         add_module(module);
@@ -1051,45 +1055,59 @@ namespace O3
     }
 
 
-    md::uint32
+    md::OADDR
     get_seg_adr(module_t *module, int segment, int offs)
     {
-        md::uint8 *r = NULL;
+        md::HADDR r = NULL;
 
         switch (segment)
         {
-        case objinfo::segCode:
-            r = heap::host_address(module->code + offs);
+        case objinfo::segCode: {
+            md::OADDR offset = static_cast<md::OADDR>(offs);
+            r = heap::host_address(module->code + offset);
             break;
-        case objinfo::segConst:
-            r = heap::host_address(module->data + module->sb + offs);
-            break;
+        }
 
-        case objinfo::segCase:
-            r = heap::host_address(module->jumps + offs);
+        case objinfo::segConst: {
+            md::OADDR offset = static_cast<md::OADDR>(static_cast<int>(module->sb) + offs);
+            r = heap::host_address(module->data + offset);
             break;
+        }
 
-        case objinfo::segData:
-            r = heap::host_address(module->data + module->sb + offs);
+        case objinfo::segCase: {
+            md::OADDR offset = static_cast<md::OADDR>(offs);
+            r = heap::host_address(module->jumps + offset);
             break;
+        }
+
+        case objinfo::segData: {
+            md::OADDR offset = static_cast<md::OADDR>(static_cast<int>(module->sb) + offs);
+            r = heap::host_address(module->data + offset);
+            break;
+        }
 
         case objinfo::segExport: {
             export_t *exp = get_module_export(module, offs);
-            r =  reinterpret_cast<md::uint8 *>(&exp->adr);
+            r =  reinterpret_cast<md::HADDR>(&exp->adr);
             break;
         }
 
         case objinfo::segCommand:
-            r = reinterpret_cast<md::uint8 *>(&(get_module_command(module, offs)->adr));
+            r = reinterpret_cast<md::HADDR>(&(get_module_command(module, offs)->adr));
             break;
 
-        case objinfo::segTypeDesc:
-            r = heap::host_address(module->tddata + offs);
+        case objinfo::segTypeDesc: {
+            md::OADDR offset = static_cast<md::OADDR>(offs);
+            r = heap::host_address(module->tddata + offset);
             break;
+        }
 
-        case objinfo::segTDesc:
-            r = heap::host_address(module->tdescs + offs * sizeof(md::uint32));
+        case objinfo::segTDesc: {
+            md::OADDR offset = static_cast<md::OADDR>(offs *
+                                                      static_cast<int>(sizeof(md::uint32)));
+            r = heap::host_address(module->tdescs + offset);
             break;
+        }
 
         default:
             dialog::fatal("bad segment type");
@@ -1100,7 +1118,11 @@ namespace O3
 
 
     static void
-    fixup_segment(module_t *module, int segment, int kind, int offs, md::uint32 target)
+    fixup_segment(module_t   *module,
+                  int         segment,
+                  int         kind,
+                  int         offs,
+                  md::uint32  target)
     {
         md::uint32  adr;
         md::uint32  target_offset;
@@ -1115,12 +1137,12 @@ namespace O3
         case objinfo::FixRel:
             if (kind == objinfo::FixAbs) {
                 adr = get_seg_adr(module, segment, offs);
-            } else if (kind == objinfo::FixRel) {
+            } else {
+                assert(kind == objinfo::FixRel);
                 adr = get_seg_adr(module, segment, offs);
                 /* Relative offset to fixup-to target. */
-                target = target - (adr + 2 * sizeof(md::uint32));
-            } else {
-                assert(false);
+                target -= (adr +
+                           2 * static_cast<md::uint32>(sizeof(md::uint32)));
             }
 
             dialog::diagnostic("%s: %s at %8.8x to %8.8x [%8.8x] (%s:%#x)\n",
@@ -1146,23 +1168,25 @@ namespace O3
     }
 
 
-    md::uint32
-    get_local_symbol_adr(module_t *module, int sym_seg, md::uint32 sym_adr)
+    static md::OADDR
+    get_local_symbol_adr(module_t *module, int sym_seg, int sym_adr)
     {
         return get_seg_adr(module, sym_seg, sym_adr);
     }
 
 
-    md::uint32
-    get_imported_symbol_adr(module_t *module, unsigned int useIndex)
+    static md::uint32
+    get_imported_symbol_adr(module_t *module, int useIndex)
     {
         md::uint32  adr;
         module_t   *m;
         char       *name;
 
-        if (useIndex >= sizeof(uses_info) / sizeof(uses_info[0])) {
+        if (useIndex >= static_cast<int>(sizeof(uses_info) /
+                                         sizeof(uses_info[0]))) {
             dialog::fatal("useIndex: %#x; LEN(uses_info): %#x",
-                          useIndex, sizeof(uses_info) / sizeof(uses_info[0]));
+                          useIndex, (sizeof(uses_info) /
+                                     sizeof(uses_info[0])));
         }
 
         m    = reinterpret_cast<module_t *>(heap::host_address(uses_info[useIndex].module));
@@ -1176,19 +1200,19 @@ namespace O3
     }
 
 
-    void
-    read_imports(FILE *fp, module_t *module, unsigned int n_imports)
+    static void
+    read_imports(FILE *fp, module_t *module, int n_imports)
     {
         string_t    mname;
         md::uint32  m;
-        md::uint8  *imps    = heap::host_address(module->imports);
+        md::HADDR   imps    = heap::host_address(module->imports);
         md::uint32 *imports = reinterpret_cast<md::uint32 *>(imps);
 
-        for (unsigned int i = 0; i < n_imports; ++i) {
+        for (int i = 0; i < n_imports; ++i) {
             read_str(fp, mname);
             dialog::diagnostic("module '%s' imports '%s'\n", module->name, mname);
 
-            m = heap::heap_address(reinterpret_cast<md::uint8 *>(find_module(mname)));
+            m = heap::heap_address(reinterpret_cast<md::HADDR>(find_module(mname)));
             assert(m != 0); // desired module not found?
             imports[i] = m;
         }
@@ -1353,11 +1377,11 @@ namespace O3
 
 
     static void
-    read_typedescriptors(FILE *objF, module_t *module, unsigned int n_descriptors)
+    read_typedescriptors(FILE *objF, module_t *module, int n_descriptors)
     {
         char ch;
 
-        for (unsigned int i = 0; i < n_descriptors; ++i) {
+        for (int i = 0; i < n_descriptors; ++i) {
             read_ch(objF, ch);
 
             switch (ch) {
@@ -1381,10 +1405,10 @@ namespace O3
 
 
     static void
-    read_exports(FILE *objF, module_t *module, unsigned int n_export)
+    read_exports(FILE *objF, module_t *module, int n_export)
     {
-        md::uint8 *exports = heap::host_address(module->exports);
-        for (unsigned int i = 0; i < n_export; ++i) {
+        md::HADDR exports = heap::host_address(module->exports);
+        for (int i = 0; i < n_export; ++i) {
             read_symbol_info(objF,
                              reinterpret_cast<export_t *>(exports)[i]);
         }
@@ -1392,10 +1416,10 @@ namespace O3
 
 
     static void
-    read_privates(FILE *objF, module_t *module, unsigned int n_privates)
+    read_privates(FILE *objF, module_t *module, int n_privates)
     {
-        for (unsigned int i = 0; i < n_privates; ++i) {
-            md::uint8 *privates = heap::host_address(module->privates);
+        for (int i = 0; i < n_privates; ++i) {
+            md::HADDR privates = heap::host_address(module->privates);
             read_symbol_info(objF,
                              *reinterpret_cast<export_t *>(privates[i]));
         }
@@ -1403,12 +1427,12 @@ namespace O3
 
 
     static void
-    read_commands(FILE *objF, module_t *module, unsigned int n_commands)
+    read_commands(FILE *objF, module_t *module, int n_commands)
     {
         cmd_t command;
         string_t name;
 
-        for (unsigned int i = 0; i < n_commands; ++i) {
+        for (int i = 0; i < n_commands; ++i) {
             cmd_t *cmds = reinterpret_cast<cmd_t *>(heap::host_address(module->commands));
 
             read_str(objF, name);
@@ -1420,10 +1444,10 @@ namespace O3
 
 
     static void
-    read_pointers(FILE *objF, module_t *module, unsigned int n_pointers)
+    read_pointers(FILE *objF, module_t *module, int n_pointers)
     {
         md::uint32 *ptrs = reinterpret_cast<md::uint32 *>(heap::host_address(module->pointers));
-        for (unsigned int i = 0; i < n_pointers; ++i) {
+        for (int i = 0; i < n_pointers; ++i) {
             int offs;
             read_num(objF, offs);
             ptrs[i] = heap::heap_address(data_base(module) + offs);
@@ -1432,7 +1456,7 @@ namespace O3
 
 
     static void
-    read_constants(FILE *objF, module_t *module, unsigned int n_bytes)
+    read_constants(FILE *objF, module_t *module, int n_bytes)
     {
         read_bytes(objF, &(heap::host_address(module->data)[module->sb]),
                    n_bytes);
@@ -1440,26 +1464,26 @@ namespace O3
 
 
     static void
-    read_typedescdata(FILE *objF, module_t *module, unsigned int n_bytes)
+    read_typedescdata(FILE *objF, module_t *module, int n_bytes)
     {
         read_bytes(objF, heap::host_address(module->tddata), n_bytes);
     }
 
 
     static void
-    read_code(FILE *objF, module_t *module, unsigned int n_bytes)
+    read_code(FILE *objF, module_t *module, int n_bytes)
     {
         read_bytes(objF, heap::host_address(module->code), n_bytes);
     }
 
 
     static void
-    check_structure_fingerprint(module_t *imported, md::uint32 name, int fp, bool priv)
+    check_structure_fingerprint(module_t *imported, md::OADDR name, int fp, bool priv)
     {
-        int                 found;
-        unsigned int        i;
-        md::uint8          *hp     = heap::host_address(imported->exports);
-        md::uint32          n_elem = heap::record_elem_array_len(hp);
+        int             found;
+        int             i;
+        md::HADDR       hp     = heap::host_address(imported->exports);
+        int             n_elem = heap::record_elem_array_len(hp);
         export_array_t *exps   = reinterpret_cast<export_array_t *>(hp);
 
         dialog::diagnostic("checking fingerprint of %s.%s %#x\n",
@@ -1468,9 +1492,10 @@ namespace O3
 
         i = 0;
         while (i < n_elem) {
-            md::uint8  *hp      = heap::host_address(exps[i].name);
+            md::HADDR   hp      = heap::host_address(exps[i].name);
             const char *expname = reinterpret_cast<const char *>(hp);
             const char *hname   = reinterpret_cast<const char *>(heap::host_address(name));
+
             if ((strcmp(expname, hname) == 0) &&
                 (exps[i].kind & ((1 << objinfo::Upbstruc) |
                                  (1 << objinfo::Upvstruc)))) {
@@ -1494,7 +1519,7 @@ namespace O3
 
 
     static void
-    read_uses(FILE *objF, module_t *module, unsigned int n_imports)
+    read_uses(FILE *objF, module_t *module, int n_imports)
     {
         int          i;
         char         tag;
@@ -1505,7 +1530,7 @@ namespace O3
         module_t    *umod;
 
         i = 0;
-        for (unsigned int mno = 0; mno < n_imports; ++mno) {
+        for (int mno = 0; mno < n_imports; ++mno) {
             read_ch(objF, tag);
             while (tag != '\0') {
                 md::uint32 *imps;       // Array of 'module_t' in Oberon heap.
@@ -1524,7 +1549,8 @@ namespace O3
                 case objinfo::Uvar: case objinfo::Uxproc:
                 case objinfo::Ucproc: case objinfo::Urectd:
                 case objinfo::Uarrtd: case objinfo::Udarrtd:
-                    assert((unsigned)i <= sizeof(uses_info) / sizeof(uses_info[0]));
+                    assert(i <= static_cast<int>(sizeof(uses_info) /
+                                                 sizeof(uses_info[0])));
                     uses_info[i].name     = name;
                     uses_info[i].pbfprint = pbfprint;
                     uses_info[i].module   = importedO;
@@ -1563,7 +1589,7 @@ namespace O3
 
 
     static void
-    read_helper_fixups(FILE *objF, module_t *module, unsigned int n_helpers)
+    read_helper_fixups(FILE *objF, module_t *module, int n_helpers)
     {
         string_t    name;
         string_t    funcName;
@@ -1571,7 +1597,7 @@ namespace O3
         module_t   *thatMod;
         md::uint32  funcAdr;
 
-        for (unsigned int i = 0; i < n_helpers; ++i) {
+        for (int i = 0; i < n_helpers; ++i) {
             read_str(objF, name);
 
             /* only Kernel-based helper fixups allowed in bootstrap */
@@ -1608,14 +1634,15 @@ namespace O3
 
 
     static void
-    read_fixups(FILE *objF, module_t *module, unsigned int n_fixups)
+    read_fixups(FILE *objF, module_t *module, int n_fixups)
     {
-        int mode, segment, offs, symMno, symSeg, symAdr, labSeg, labOffs, adr;
+        int mode, segment, offs, symMno, symSeg, symAdr, labSeg, labOffs;
+        md::OADDR adr;
         char tag;
 
         dialog::diagnostic("\nregular fixups\n");
 
-        for (unsigned int i = 0; i < n_fixups; ++i) {
+        for (int i = 0; i < n_fixups; ++i) {
             read_num(objF, mode);
             read_num(objF, segment);
             read_num(objF, offs);
@@ -1647,10 +1674,16 @@ namespace O3
                 fixup_segment(module, segment, mode, offs, adr);
                 break;
 
-            case 2: /* FixBlk */
-                read_num(objF, adr);
-                fixup_segment(module, segment, mode, offs, heap::align_block_size(adr));
+            case 2: {
+                /* FixBlk (record type descriptor size) */
+                md::int32 sz;
+                md::uint32 aligned_size;
+
+                read_num(objF, sz); // Read size.
+                aligned_size = static_cast<md::uint32>(heap::align_block_size(sz));
+                fixup_segment(module, segment, mode, offs, aligned_size);
                 break;
+            }
 
             default:
                 assert(false);
@@ -1660,7 +1693,7 @@ namespace O3
 
 
     static void
-    read_reference(FILE *objF, module_t *module, unsigned int n_bytes)
+    read_reference(FILE *objF, module_t *module, int n_bytes)
     {
         read_bytes(objF, heap::host_address(module->refs), n_bytes);
     }
@@ -1669,7 +1702,7 @@ namespace O3
     static void
     read_magic_block(FILE *fp)
     {
-        const md::int32 OFtag    = 0x0f8320000;
+        const md::int32 OFtag    = static_cast<md::int32>(0x0f8320000);
         const md::int32 OFtarget = 0x011161967;
 
         md::int32 version, targ;
@@ -1817,10 +1850,15 @@ namespace O3
     }
 
 
-    void
-    find_module_and_offset(md::uint32   address,
-                           module_t   *&module,
-                           md::uint32  &offs)
+    /* find_module_and_offset:
+     *
+     *   Given an Oberon heap address, synthesize the module and the
+     *   offset in the module's code block.
+     *
+     *   Only valid for code.
+     */
+    static void
+    find_module_and_offset(md::OADDR address, module_t *&module, int &offs)
     {
         module_t *m = reinterpret_cast<module_t *>(heap::host_address(module_list));
         int       code_bytes;
@@ -1831,21 +1869,23 @@ namespace O3
                 dialog::print("module: '%s' no code  %p\n", m->name, &m->code);
             }
             code_bytes = heap::simple_elem_array_len(heap::host_address(m->code));
-            if (address >= m->code && address < m->code + code_bytes) {
+            if (address >= m->code &&
+                address < m->code + static_cast<md::OADDR>(code_bytes)) {
                 module = m;
-                offs   = address - m->code;
-                break;;
+                offs   = static_cast<int>(address - m->code);
+                break;
             }
             m = reinterpret_cast<module_t *>(heap::host_address(m->next));
         }
     }
 
+
     /* Looks up Kernel module commands that are used by Virtual Machine engine */
-    md::uint32
+    md::OADDR
     lookup_command(module_t *m, const char *helper)
     {
-        unsigned   i   = 0;
-        md::uint32 len = heap::record_elem_array_len(heap::host_address(m->commands));
+        int i   = 0;
+        int len = heap::record_elem_array_len(heap::host_address(m->commands));
 
         while (i < len) {
             const cmd_t *cmd  = get_module_command(m, i);
@@ -1879,8 +1919,8 @@ namespace O3
     void
     lookup_kernel_bootstrap_symbols(module_t *m)
     {
-        md::uint32 adr;
-        unsigned   i = 0;
+        md::OADDR adr;
+        int       i = 0;
 
         /* The virtual machine has two special symbols in the Kernel
          * module that work to allow bootstrapping, and termination of
@@ -1889,7 +1929,8 @@ namespace O3
          */
         verify_module_name(m, "Kernel");
 
-        while (i < sizeof(bootstrap_symbol) / sizeof(bootstrap_symbol[0])) {
+        while (i < static_cast<int>(sizeof(bootstrap_symbol) /
+                                    sizeof(bootstrap_symbol[0]))) {
             adr = lookup_command(m, bootstrap_symbol[i].name);
             bootstrap_symbol[i].adr = adr;
             ++i;
@@ -1898,11 +1939,11 @@ namespace O3
 
 
     void
-    decode_pc__(md::uint32 pc, decode_pc_t &decode)
+    decode_pc__(md::OADDR pc, decode_pc_t &decode)
     {
         module_t   *module;
         const char *name;
-        md::uint32  offs;
+        int         offs;
 
         find_module_and_offset(pc, module, offs);
         if (module != NULL) {

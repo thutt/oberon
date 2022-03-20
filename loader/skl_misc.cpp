@@ -20,7 +20,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_misc(cpu_t *cpu, md::uint32 inst)
+    op_misc(cpu_t *cpu, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 

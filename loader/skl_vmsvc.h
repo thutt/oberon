@@ -13,16 +13,16 @@ namespace skl {
     } vmsvc_desc_t;
 
 
-    skl::instruction_t *op_vmsvc(cpu_t *cpu, md::uint32 inst, const char **mne);
+    skl::instruction_t *op_vmsvc(cpu_t *cpu, md::OINST inst, const char **mne);
     void vmsvc_bootstrap(void);
-    void vmsvc_console(md::uint32 adr);
-    void vmsvc_debug_log(md::uint32 adr);
-    void vmsvc_early_systrap(md::uint32 adr);
-    void vmsvc_early_hwdtrap(md::uint32 adr);
-    void vmsvc_environment(md::uint32 adr);
-    void vmsvc_file(md::uint32 adr);
-    void vmsvc_terminate(md::uint32 adr);
-    void vmsvc_trace_control(md::uint32 adr);
-    void vmsvc_fill_memory(md::uint32 adr);
+    void vmsvc_console(md::OADDR adr);
+    void vmsvc_debug_log(md::OADDR adr);
+    void vmsvc_early_systrap(md::OADDR adr);
+    void vmsvc_early_hwdtrap(md::OADDR adr);
+    void vmsvc_environment(md::OADDR adr);
+    void vmsvc_file(md::OADDR adr);
+    void vmsvc_terminate(md::OADDR adr);
+    void vmsvc_trace_control(md::OADDR adr);
+    void vmsvc_fill_memory(md::OADDR adr);
 }
 #endif

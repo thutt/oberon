@@ -16,11 +16,11 @@ namespace skl {
 
 
     void
-    vmsvc_early_systrap(md::uint32 adr)
+    vmsvc_early_systrap(md::OADDR adr)
     {
-        md::uint8 *ptr = heap::host_address(adr);
+        md::HADDR                   ptr   = heap::host_address(adr);
         vmsvc_early_systrap_desc_t *vmsvc = reinterpret_cast<vmsvc_early_systrap_desc_t *>(ptr);
-        O3::decode_pc_t decoded_pc;
+        O3::decode_pc_t             decoded_pc;
 
         fflush(stdout); // Ensure all stdout appears before terminating.
 

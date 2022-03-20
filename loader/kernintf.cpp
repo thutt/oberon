@@ -20,9 +20,9 @@ namespace kernintf
     void
     init_module(O3::module_t *m)
     {
-        md::uint8  *oname = heap::host_address(m->name);
-        const char *mname = reinterpret_cast<const char *>(oname);
-        md::uint32 init_fn = O3::lookup_command(m, mname);
+        md::HADDR   oname   = heap::host_address(m->name);
+        const char *mname   = reinterpret_cast<const char *>(oname);
+        md::OADDR   init_fn = O3::lookup_command(m, mname);
 
         assert(strcmp(O3::bootstrap_symbol[0].name, "BootstrapModuleInit") == 0);
 

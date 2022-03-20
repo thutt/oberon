@@ -69,7 +69,7 @@ segv_signal_handler(int signum, void *siginfo, void *uc)
 
 
 static bool
-create_heap(md::uint32 heap_mb, md::uint32 stack_mb)
+create_heap(int heap_mb, int stack_mb)
 {
     if (heap::make_heap(heap_mb, stack_mb)) {
         skl::initialize_memory(heap::host_to_heap(heap::oberon_heap),
@@ -197,9 +197,9 @@ main(int argc, char *argv[])
          * processed by the bootstrap loader into a single command
          * line for passing to the Oberon system.
          */
-        len = strlen(argv[0]);
+        len = static_cast<int>(strlen(argv[0]));
         for (int i = optind; i < argc; ++i) {
-            len += strlen(argv[i]) + 1; /* argument + ' ' */
+            len += static_cast<int>(strlen(argv[i]) + 1); /* argument + ' ' */
         }
 
         cmdline = new char[len + 1]; /* total length + '\0' */

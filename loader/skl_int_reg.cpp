@@ -36,13 +36,13 @@ namespace skl {
 
 
     struct skl_int_reg_t : skl::instruction_t {
-        const unsigned   Rd;
-        const unsigned   R0;
-        const unsigned   R1;
-        int_opc_fn_t     operation;
+        int          Rd;
+        int          R0;
+        int          R1;
+        int_opc_fn_t operation;
 
         skl_int_reg_t(cpu_t       *cpu_,
-                      md::uint32   inst_,
+                      md::OINST   inst_,
                       const char **mne_,
                       int_opc_fn_t operation_) :
             skl::instruction_t(cpu_, inst_, mne_),
@@ -81,14 +81,15 @@ namespace skl {
     static md::uint32
     oper_ASH(md::uint32 l, md::uint32 r)
     {
-        md::uint32 v;
+        unsigned v;
 
         if (static_cast<md::int8>(r) >= 0) {
-            v = left_shift(l, r);
+            v = left_shift(l, static_cast<int>(r));
             dialog::trace("[%xH, %xH, %xH left]\n", l, r, v);
         } else {
             /* Arithmetic shift; do not use right_shift(). */
-            v = static_cast<md::int32>(l) >> (-static_cast<md::int8>(r) & 31);
+            v = static_cast<unsigned>(static_cast<md::int32>(l) >>
+                                      (-static_cast<md::int8>(r) & 31));
             dialog::trace("[%xH, %xH, %xH right]\n", l, r, v);
         }
         return v;
@@ -98,25 +99,29 @@ namespace skl {
     static md::uint32
     oper_CMPS(md::uint32 l, md::uint32 r)
     {
-        md::uint32  v;
-        md::uint8  *lp;
-        md::uint8  *rp;
-        size_t      llen;
-        size_t      rlen;
-        bool        zf;         // Zero flag.
-        bool        cf;         // Carry flag.
-        bool        of;         // Overflow flag.
-        bool        sf;         // Sign flag.
-        bool        valid;
+        md::uint32 v;
+        md::HADDR  lp;
+        md::HADDR  rp;
+        int        llen;
+        int        rlen;
+        bool       zf;          // Zero flag.
+        bool       cf;          // Carry flag.
+        bool       of;          // Overflow flag.
+        bool       sf;          // Sign flag.
+        bool       valid;
 
         lp   = heap::heap_to_host(l);
-        llen = strlen(reinterpret_cast<const char *>(lp));
+        llen = static_cast<int>(strlen(reinterpret_cast<const char *>(lp)));
         rp   = heap::heap_to_host(r);
-        rlen = strlen(reinterpret_cast<const char *>(rp));
-        valid = (address_valid(l, sizeof(md::uint8))        &&
-                 address_valid(l + llen, sizeof(md::uint8)) &&
-                 address_valid(r, sizeof(md::uint8))        &&
-                 address_valid(r + rlen, sizeof(md::uint8)));
+        rlen = static_cast<int>(strlen(reinterpret_cast<const char *>(rp)));
+        valid = (address_valid(l,
+                               static_cast<int>(sizeof(md::uint8))) &&
+                 address_valid(l + static_cast<md::OADDR>(llen),
+                               static_cast<int>(sizeof(md::uint8))) &&
+                 address_valid(r,
+                               static_cast<int>(sizeof(md::uint8))) &&
+                 address_valid(r + static_cast<md::OADDR>(rlen),
+                               static_cast<int>(sizeof(md::uint8))));
 
         if (LIKELY(valid)) {
             int compare = strcmp(reinterpret_cast<const char *>(lp),
@@ -167,9 +172,9 @@ namespace skl {
              */
             COMPILE_TIME_ASSERT(sizeof(1)   == sizeof(md::uint32) &&
                                 sizeof(1UL) == sizeof(md::uint64));
-            v = ((1UL << (r - l + 1UL)) - 1UL) << l;
+            v = static_cast<md::uint32>(((1UL << (r - l + 1UL)) - 1UL) << l);
         } else {
-            v = ~0;
+            v = ~0U;
             software_trap(&cpu, 12);
         }
         dialog::trace("[%xH, %xH]    value: %xH]\n", l, r, v);
@@ -180,10 +185,10 @@ namespace skl {
     static md::uint32
     oper_LSH(md::uint32 l, md::uint32 r)
     {
-        md::uint32 v;
+        unsigned v;
 
         if (static_cast<md::int8>(r) >= 0) {
-            v = left_shift(l, r);
+            v = left_shift(l, static_cast<int>(r));
             dialog::trace("[%xH, %xH, %xH left]\n", l, r, v);
         } else {
             v = right_shift(l, -static_cast<md::int8>(r));
@@ -219,11 +224,11 @@ namespace skl {
          *
          * Shifting is limited to 31 bits.
          */
-        const md::uint32 n_bits      = 32;
-        bool             rotate_left = static_cast<md::int32>(r) >= 0;
-        md::uint32       bits        = abs(static_cast<int>(r)) % n_bits;
-        md::uint32       lbits;
-        md::uint32       rbits;
+        int      n_bits      = 32;
+        bool     rotate_left = static_cast<md::int32>(r) >= 0;
+        int      bits        = abs(static_cast<int>(r)) % n_bits;
+        unsigned lbits;
+        unsigned rbits;
         if (rotate_left) {
             lbits = left_shift(l, bits);
             rbits = right_shift(l, n_bits - bits);
@@ -245,7 +250,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_int_reg(cpu_t *cpu, md::uint32 inst)
+    op_int_reg(cpu_t *cpu, md::OINST inst)
     {
         const opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 

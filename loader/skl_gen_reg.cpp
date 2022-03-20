@@ -40,15 +40,15 @@ namespace skl {
 
 
     struct skl_gen_reg_t : skl::instruction_t {
-        unsigned        Rd;
-        unsigned        R0;
-        unsigned        R1;
+        int             Rd;
+        int             R0;
+        int             R1;
         register_bank_t bd;
         register_bank_t b0;
         register_bank_t b1;
 
         skl_gen_reg_t(cpu_t           *cpu_,
-                      md::uint32       inst_,
+                      md::OINST        inst_,
                       const char      **mne_,
                       register_bank_t  b0_,
                       register_bank_t  b1_) :
@@ -83,7 +83,7 @@ namespace skl {
         md::uint32 v;
 
         skl_gen_reg_int_t(cpu_t           *cpu_,
-                          md::uint32       inst_,
+                          md::OINST       inst_,
                           const char      **mne_,
                           register_bank_t  b0_,
                           register_bank_t  b1_) :
@@ -114,7 +114,7 @@ namespace skl {
         double v;
 
         skl_gen_reg_real_t(cpu_t           *cpu_,
-                           md::uint32       inst_,
+                           md::OINST        inst_,
                            const char      **mne_,
                            register_bank_t  b0_,
                            register_bank_t  b1_) :
@@ -150,7 +150,8 @@ namespace skl {
 
             if (!cpu->exception_raised) {
                 if (bd == RB_INTEGER) {
-                    write_integer_register(cpu, Rd, v);
+                    write_integer_register(cpu, Rd,
+                                           static_cast<md::uint32>(v));
                 } else {
                     write_real_register(cpu, Rd, v);
                 }
@@ -163,9 +164,11 @@ namespace skl {
     synthesize_overflow_int32(md::int32 l, md::int32 r)
     {
         unsigned sign_mask = left_shift(1, 31);
-        unsigned res       = l - r;                 // Result sign.
+        int      res       = l - r; // Result sign.
+        unsigned not_equal = static_cast<unsigned>(l ^ r);
+        unsigned sign_diff = static_cast<unsigned>(l ^ res);
 
-        return !!(((l ^ r) & (l ^ res)) & sign_mask);
+        return !!((not_equal & sign_diff) & sign_mask);
     }
 
 
@@ -213,7 +216,7 @@ namespace skl {
     static md::uint32
     ABS_int(md::uint32 l, md::uint32 r)
     {
-        return abs(static_cast<int>(r));
+        return static_cast<md::uint32>(abs(static_cast<int>(r)));
     }
 
 
@@ -242,10 +245,11 @@ namespace skl {
     DIV_int(md::uint32 l, md::uint32 r)
     {
         if (LIKELY(r != 0)) {
-            return O3::DIV(l, r);
+            return static_cast<md::uint32>(O3::DIV(static_cast<md::int32>(l),
+                                                   static_cast<md::int32>(r)));
         } else {
             hardware_trap(&cpu, CR2_DIVIDE_BY_ZERO);
-            return 0;           // Silence compiler.
+            return 0U;          // Silence compiler.
         }
     }
 
@@ -254,10 +258,11 @@ namespace skl {
     MOD_int(md::uint32 l, md::uint32 r)
     {
         if (LIKELY(r != 0)) {
-            return O3::MOD(l, r);
+            return static_cast<md::uint32>(O3::MOD(static_cast<md::int32>(l),
+                                                   static_cast<md::int32>(r)));
         } else {
             hardware_trap(&cpu, CR2_DIVIDE_BY_ZERO);
-            return 0;           // Silence compiler.
+            return 0U;          // Silence compiler.
         }
     }
 
