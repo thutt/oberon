@@ -340,8 +340,11 @@ namespace skl {
             if (cinst == NULL) {
                 cinst = fetch_and_cache_instruction(cpu);
             }
-            assert(cinst != NULL);
-            cinst->interpret();
+
+            /* cinst == NIL --> Invalid opcode. */
+            if (LIKELY(cinst != NULL)) {
+                cinst->interpret();
+            }
         }
     }
 
