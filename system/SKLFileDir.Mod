@@ -144,12 +144,12 @@ MODULE FileDir;
     ofSYNC     = {12, 20};      (* O_SYNC     101000H *)
 
   CONST (* OpenFileProc modes (POSIX open()) *)
-    sRUSR = 8;                  (* S_IRUSR *)
-    sWUSR = 7;                  (* S_IWUSR *)
-    sRGRP = 5;                  (* S_IRGRP *)
-    sWGRP = 4;                  (* S_IWGRP *)
-    sROTH = 3;                  (* S_IROTH *)
-    sWOTH = 1;                  (* S_IWOTH *)
+    sRUSR = 8;                  (* S_IRUSR (0400 / 0x100) *)
+    sWUSR = 7;                  (* S_IWUSR (0200 /  0x80) *)
+    sRGRP = 5;                  (* S_IRGRP ( 040 /  0x20) *)
+    sWGRP = 4;                  (* S_IWGRP ( 020 /  0x10) *)
+    sROTH = 3;                  (* S_IROTH (  04 /   0x4) *)
+    sWOTH = 1;                  (* S_IWOTH (  02 /   0x2) *)
 
 
   CONST (* Handle flags *)
@@ -464,8 +464,8 @@ MODULE FileDir;
     svc.mode     := {sRUSR, sWUSR, sRGRP, sWGRP, sROTH, sWOTH};
     svc.pathname := SYSTEM.ADR(path);
     Kernel.VMService(Kernel.VMSVCFile, svc);
-    fp  := svc.fp;              (* fp # 0 -> success. *)
-    err := fp = 0;              (* err => file not opened. *)
+    fp  := svc.fp;              (* fp >= 0 -> success. *)
+    err := fp < 0;              (* err => file not opened. *)
   END opencreate;
 
 
@@ -473,7 +473,7 @@ MODULE FileDir;
                      VAR fp             : FILE;
                      VAR err            : BOOLEAN);
   BEGIN
-    opencreate(path, fp, err, ofRDWR + ofCREAT);
+    opencreate(path, fp, err, ofRDWR);
   END openfile;
 
 

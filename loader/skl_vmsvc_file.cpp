@@ -1,4 +1,4 @@
-/* Copyright (c) 2021 Logic Magicians Software */
+/* Copyright (c) 2021, 2022 Logic Magicians Software */
 #include <assert.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -37,10 +37,10 @@ namespace skl {
 
 
     typedef struct vmsvc_rw_desc_t : vmsvc_file_desc_t {
-        md::int32   fd;
-        md::uint32  bytes;
-        md::uint32  buffer;
-        md::uint32  result;
+        md::int32  fd;
+        md::int32  bytes;
+        md::uint32 buffer;
+        md::int32  result;
     } vmsvc_rw_desc_t;
 
 
@@ -71,10 +71,10 @@ namespace skl {
 
 
     typedef struct vmsvc_seek_desc_t : vmsvc_file_desc_t {
-        md::int32  fd;
-        md::int32  pos;
-        md::uint32 whence;
-        md::int32  new_pos;
+        md::int32 fd;
+        md::int32 pos;
+        md::int32 whence;
+        md::int32 new_pos;
     } vmsvc_seek_desc_t;
 
 
@@ -97,9 +97,9 @@ namespace skl {
     static void
     open_file(vmsvc_open_desc_t *svc)
     {
-        md::uint8 *path  = heap::host_address(svc->pathname);
-        md::int8   flags = svc->flags;
-        md::int8   mode  = svc->mode;
+        md::HADDR path  = heap::host_address(svc->pathname);
+        md::int32 flags = static_cast<md::int32>(svc->flags);
+        mode_t    mode  = static_cast<mode_t>(svc->mode);
 
         svc->fd = open(reinterpret_cast<const char *>(path), flags, mode);
     }
@@ -108,7 +108,7 @@ namespace skl {
     static void
     make_temp_file(vmsvc_mkstemp_desc_t *svc)
     {
-        md::uint8 *templ = heap::host_address(svc->templ);
+        md::HADDR templ = heap::host_address(svc->templ);
         svc->fd = mkstemp(reinterpret_cast<char *>(templ));
     }
 
@@ -116,16 +116,20 @@ namespace skl {
     static void
     write_file(vmsvc_rw_desc_t *svc)
     {
-        svc->result = ::write(svc->fd, heap::host_address(svc->buffer),
-                              svc->bytes);
+        ssize_t s = ::write(svc->fd, heap::host_address(svc->buffer),
+                            static_cast<size_t>(svc->bytes));
+        assert(s == static_cast<md::int32>(s));
+        svc->result = static_cast<md::int32>(s);
     }
 
 
     static void
     read_file(vmsvc_rw_desc_t *svc)
     {
-        svc->result = ::read(svc->fd, heap::host_address(svc->buffer),
-                             svc->bytes);
+        ssize_t n = ::read(svc->fd, heap::host_address(svc->buffer),
+                           static_cast<size_t>(svc->bytes));
+        assert(n == static_cast<md::int32>(n));
+        svc->result = static_cast<md::int32>(n);
     }
 
 
@@ -139,16 +143,16 @@ namespace skl {
     static void
     unlink_file(vmsvc_unlink_desc_t *svc)
     {
-        md::uint8 *pathname = heap::host_address(svc->pathname);
-        svc->result         = unlink(reinterpret_cast<const char *>(pathname));
+        md::HADDR pathname = heap::host_address(svc->pathname);
+        svc->result = unlink(reinterpret_cast<const char *>(pathname));
     }
 
 
     static void
     rename_file(vmsvc_rename_desc_t *svc)
     {
-        md::uint8 *old_pathname = heap::host_address(svc->old_pathname);
-        md::uint8 *new_pathname = heap::host_address(svc->new_pathname);
+        md::HADDR old_pathname = heap::host_address(svc->old_pathname);
+        md::HADDR new_pathname = heap::host_address(svc->new_pathname);
         svc->result = rename(reinterpret_cast<const char *>(old_pathname),
                              reinterpret_cast<const char *>(new_pathname));
     }
@@ -157,14 +161,16 @@ namespace skl {
     static void
     seek_file(vmsvc_seek_desc_t *svc)
     {
-        svc->new_pos = lseek(svc->fd, svc->pos, svc->whence);
+        off_t pos = lseek(svc->fd, svc->pos, svc->whence);
+        assert(pos == static_cast<md::int32>(pos));
+        svc->new_pos = static_cast<md::int32>(pos);
     }
 
 
     void
-    vmsvc_file(md::uint32 adr)
+    vmsvc_file(md::OADDR adr)
     {
-        md::uint8         *ptr   = heap::host_address(adr);
+        md::HADDR          ptr   = heap::host_address(adr);
         vmsvc_file_desc_t *vmsvc = reinterpret_cast<vmsvc_file_desc_t *>(ptr);
 
         switch (vmsvc->op) {
