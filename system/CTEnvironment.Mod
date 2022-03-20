@@ -37,6 +37,7 @@ PROCEDURE split;
     IF elem # NIL THEN
       Console.Int(LEN(elem^), 5);
       Console.Ln;
+      i := 0;
       WHILE i < LEN(elem^) DO
         Console.Str("  ");
         Console.Str(elem[i]^);
