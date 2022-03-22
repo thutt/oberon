@@ -1,10 +1,13 @@
-% Copyright (c) 2007 Logic Magicians Software
+% Copyright (c) 2007, 2022 Logic Magicians Software
 % All Rights Reserved
 
 \newcommand{\lms}{Logic Magicians\xspace}
 \newcommand{\chap}[1] {\chapter{#1} \label{#1}}
 \newcommand{\todo}[1]{\marginpar{\textsf{\footnotesize{TODO: \xspace}\scriptsize{#1}}}}
 \newcommand{\note}[1]{} % Like a todo, but it need not be deleted.
+\newcommand{\xref}[1]{\S\ref{#1}}
+\newcommand{\Figref}[1]{Figure~\ref{fig:#1}\xspace}
+\newcommand{\figref}[1]{figure~\ref{fig:#1}\xspace}
 
 \newcommand{\skiptooddpage}{\ifodd \value{page} \else {\newpage\vspace*{\fill}\center{This page intentionally left blank}\vspace*{\fill}\newpage}\fi}
 

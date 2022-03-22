@@ -1,0 +1,111 @@
+\chap{Environment}
+
+This module provides access to the host OS' shell environment
+variables.  Environment variables can be changed within the Oberon
+environment, but any change made will not be reflected into the shell
+environment from which the Oberon program was launched.  Moreover,
+changes to the shell environment made after the Oberon program was
+launched will not be reflected in Oberon.
+
+These variables are key-value pairs specified in the shell
+environment that can be used to configure runtime aspects of programs.
+For example, a default directory for file output, or a search path for
+program executables.
+
+As a key-value pair, the shell environment variables have the
+following form:
+
+\begin{alltt}
+
+  Key     := name
+  Value   := element \{ ':' element \}
+
+  Name    := letter \{ letter | digit | '_' | \}
+  element := <ASCII characters except ':'>
+\end{alltt}
+
+\section{Source}
+
+\begin{tabularx}{\textwidth}{lX}
+  Source & \texttt{SKLEnvironment.Mod} \\
+  Test & \texttt{CTEnvironment.Mod} \\
+\end{tabularx}
+
+\section{Constants}
+
+There are no exported constants from this module.
+
+\section{Types}
+\subsection{\texttt{Text}}\label{environment:text}
+\begin{alltt}
+Text = POINTER TO ARRAY OF CHAR;
+\end{alltt}
+
+This type is used to refer to data that is stored in the internal
+\emph{kev-value} cache.  In terms of this module exported function, it
+refers to the raw \emph{value} associated with a key.
+
+\subsection{\texttt{Elements}}\label{environment:elements}
+\begin{alltt}
+Elements = POINTER TO ARRAY OF Text;
+\end{alltt}
+
+This type is used to refer to individual values associated with a
+\emph{key} in the internal \emph{key-value} cache.  When the raw data
+(\xref{environment:text}) is split on a separator character, this type
+is produced.
+
+
+\section{Procedures}
+
+\subsection{Delete}
+\begin{alltt}
+  PROCEDURE Delete*(key : ARRAY OF CHAR);
+\end{alltt}
+
+This procedure removes \emph{key} from the internal data cache.  If
+\emph{key} does not exist in the cache, nothing happens.
+
+The input argument, \emph{key}, must be ASCIIZ.
+
+\subsection{Set}
+\begin{alltt}
+  PROCEDURE Set*(key   : ARRAY OF CHAR;
+                 value : ARRAY OF CHAR);
+\end{alltt}
+
+This procedure sets \emph{key} to \emph{value}.  If \emph{key} does not
+exist in the internal data cache, it is added.  If \emph{key} exists,
+the value is set to \emph{value}.
+
+Both input arguments, \emph{key} and \emph{value}, must be ASCIIZ.
+
+\subsection{Lookup}
+\begin{alltt}
+  PROCEDURE Lookup*(key : ARRAY OF CHAR) : Text;
+\end{alltt}
+
+This procedure looks up \emph{key} in the internal data cache.  If
+\emph{key} is present, its value is returned.  If \emph{key} is not
+present, \texttt{NIL} is returned.
+
+The input argument, \emph{key}, must be ASCIIZ.
+
+
+\subsection{Split}
+\begin{alltt}
+  PROCEDURE Split*(v         : Text;
+                   separator : CHAR) : Elements;
+\end{alltt}
+
+This procedure splits the input, \emph{v}, using the character
+\emph{separator} as a value separator and returns the separated
+values.
+
+If \emph{v} is \texttt{NIL}, \texttt{NIL} is returned.
+Otherwise, the length of the return value is dependent upon the number
+of \emph{separator} characters present in the input.
+
+The test module provides examples of how this function can be used.
+
+

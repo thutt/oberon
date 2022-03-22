@@ -219,6 +219,10 @@ The files contained here are provided under the corresponding software license.
   disasm/skl.cpp
   disasm/skl.h
   doc/Makefile
+  doc/module/Makefile
+  doc/module/environment.tex
+  doc/module/intro.tex
+  doc/module/module.tex
   doc/skl/Makefile
   doc/skl/acronyms.tex
   doc/skl/architecture.tex

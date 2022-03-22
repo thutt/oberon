@@ -67,6 +67,13 @@ BEGIN
   work("alpha::beta:gamma");
 END split;
 
+PROCEDURE nilsplit;
+  VAR
+    elem : Environment.Elements;
+BEGIN
+  elem := Environment.Split(NIL, ':');
+  ASSERT(elem = NIL);
+END nilsplit;
 
 PROCEDURE Test*;
 BEGIN
@@ -77,7 +84,8 @@ BEGIN
   lookup("GUNGLA");
 
   split;
-
+  nilsplit;
+  
   lookup("SKL_DIR");
   Environment.Delete("SKL_DIR");
   lookup("SKL_DIR");
