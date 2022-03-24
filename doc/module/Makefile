@@ -2,6 +2,7 @@
 include $(SKL_DIR)/make/config.mk
 
 TEX	=	module.tex			\
+		macros.tex			\
 		intro.tex			\
 		environment.tex
 

@@ -222,6 +222,7 @@ The files contained here are provided under the corresponding software license.
   doc/module/Makefile
   doc/module/environment.tex
   doc/module/intro.tex
+  doc/module/macros.tex
   doc/module/module.tex
   doc/skl/Makefile
   doc/skl/acronyms.tex
