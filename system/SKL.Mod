@@ -22,7 +22,12 @@ MODULE SKL;
     source : OPM.SourceInfo;
 
   PROCEDURE Module*(FileInfo : OPM.SourceInfo; VAR error: BOOLEAN);
-    VAR ext, new: BOOLEAN; mod: T.Node; inittd : T.InitTD; err : BOOLEAN;
+    VAR 
+      ext, new: BOOLEAN; 
+      mod: T.Node; 
+      inittd : T.InitTD; 
+      err : BOOLEAN;
+      i: INTEGER;
   BEGIN
     OPM.ModuleBegin(FileInfo);
     OPS.ModuleBegin;
@@ -53,14 +58,20 @@ MODULE SKL;
         IF ~err THEN
           CGL.OutCode(mod(T.Enter).info.name^);
           IF new THEN
-            OPM.LogWStr(" new symbol file")
+            OPM.LogWStr("new symbol file     ")
           ELSIF ext THEN
-            OPM.LogWStr(" extended symbol file")
+            OPM.LogWStr("extended symbol file")
+          ELSE
+            OPM.LogWStr("                    ")
           END ;
           OPM.LogWNum(CGL.pc, 8);
-          OPM.LogWStr(' bytes code ');
-          OPM.LogWNum(-ST.topScope(ST.SymbolScope).dsize, 8);
-          OPM.LogWStr(' bytes data');
+          OPM.LogWStr(" ");
+          IF -ST.topScope(ST.SymbolScope).dsize # 0 THEN
+            OPM.LogWNum(-ST.topScope(ST.SymbolScope).dsize, 8);
+          ELSE
+            OPM.LogWStr("        ");
+          END;
+            OPM.LogWStr('       ');
         ELSE
           OPM.DeleteNewSym;
           OPM.DeleteRefObj;
@@ -85,10 +96,20 @@ MODULE SKL;
     VAR err : BOOLEAN;
 
     PROCEDURE Do(VAR FileInfo : OPM.SourceInfo);
-      VAR S1: Texts.Scanner;
+      VAR
+        S1: Texts.Scanner;
+        i: INTEGER;
     BEGIN
       OPM.LogWStr(FileInfo.filename);
-      OPM.LogWStr(" compiling  ");
+      i := 0;
+      WHILE FileInfo.filename[i] # 0X DO
+        INC(i);
+      END;
+      WHILE i < 20 DO
+        OPM.LogW(" ");
+        INC(i)
+      END;
+      OPM.LogWStr(" ");
       IF FileInfo.source # NIL THEN
         Texts.OpenScanner(S1, FileInfo.source, FileInfo.beg);
         Texts.Scan(S1);
@@ -96,7 +117,15 @@ MODULE SKL;
         IF (S1.class = Texts.Name) & (S1.s = "MODULE") THEN
           Texts.Scan(S1);
           IF S1.class = Texts.Name THEN
-            OPM.LogWStr(S1.s)
+            OPM.LogWStr(S1.s);
+            i := 0;
+            WHILE S1.s[i] # 0X DO
+              INC(i)
+            END;
+            WHILE i < 15 DO
+              OPM.LogW(" ");
+              INC(i)
+            END
           END
         END ;
         Module(FileInfo, err);
