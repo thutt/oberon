@@ -14,7 +14,7 @@ MODULE SKL;
     DN:=SKLDN,
     TH:=SKLTH,
     Kernel;
-  
+
   CONST
     SignOnMessage = "LMSO SKL Compiler  TWH 2022.02.09";
 
@@ -37,7 +37,7 @@ MODULE SKL;
       CGL.ModuleBegin;
       CGH.ModuleBegin;
       TT.ModuleBegin; (* before allocation *)
-      
+
       OPM.NewRefObj(mod(T.Enter).info.name^);
       ASSERT((mod.class = T.Nstmt) & (mod.subcl = T.Senter));
       ASSERT(ST.topScope # NIL);
@@ -49,15 +49,21 @@ MODULE SKL;
         END;
 
         TT.Module(mod, inittd, err);
-        
+
         IF ~err THEN
           CGL.OutCode(mod(T.Enter).info.name^);
-          IF new THEN OPM.LogWStr(" new symbol file")
-          ELSIF ext THEN OPM.LogWStr(" extended symbol file")
+          IF new THEN
+            OPM.LogWStr(" new symbol file")
+          ELSIF ext THEN
+            OPM.LogWStr(" extended symbol file")
           END ;
-          OPM.LogWNum(CGL.pc, 8); OPM.LogWStr(' bytes code '); 
-          OPM.LogWNum(-ST.topScope(ST.SymbolScope).dsize, 8); OPM.LogWStr(' bytes data');
-        ELSE OPM.DeleteNewSym; OPM.DeleteRefObj;
+          OPM.LogWNum(CGL.pc, 8);
+          OPM.LogWStr(' bytes code ');
+          OPM.LogWNum(-ST.topScope(ST.SymbolScope).dsize, 8);
+          OPM.LogWStr(' bytes data');
+        ELSE
+          OPM.DeleteNewSym;
+          OPM.DeleteRefObj;
         END;
       END;
 
@@ -81,12 +87,17 @@ MODULE SKL;
     PROCEDURE Do(VAR FileInfo : OPM.SourceInfo);
       VAR S1: Texts.Scanner;
     BEGIN
-      OPM.LogWStr(FileInfo.filename); OPM.LogWStr(" compiling  ");
+      OPM.LogWStr(FileInfo.filename);
+      OPM.LogWStr(" compiling  ");
       IF FileInfo.source # NIL THEN
-        Texts.OpenScanner(S1, FileInfo.source, FileInfo.beg); Texts.Scan(S1);
+        Texts.OpenScanner(S1, FileInfo.source, FileInfo.beg);
+        Texts.Scan(S1);
 
-        IF (S1.class = Texts.Name) & (S1.s = "MODULE") THEN Texts.Scan(S1);
-          IF S1.class = Texts.Name THEN OPM.LogWStr(S1.s) END
+        IF (S1.class = Texts.Name) & (S1.s = "MODULE") THEN
+          Texts.Scan(S1);
+          IF S1.class = Texts.Name THEN
+            OPM.LogWStr(S1.s)
+          END
         END ;
         Module(FileInfo, err);
       END ;
@@ -114,7 +125,7 @@ MODULE SKL;
       END;
       OPM.LogW(')');
     END OnOff;
-    
+
     PROCEDURE Banner;
     BEGIN
       OPM.LogWStr('A: assertion evaluation'); OnOff(OPM.Assert IN source.options); OPM.LogWLn;
