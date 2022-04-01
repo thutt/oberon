@@ -1032,9 +1032,6 @@ IMPORT
          ReleaseGReg(x.inxreg);
       ELSE (* nop *)
       END;
-      IF (x.td.mode >= 0) & (x.td.mode = Iregi) THEN
-        ReleaseGReg(x.td.reg);
-      END;
     ELSE (* floating point release *)
       IF x.mode = Ireg THEN
         ReleaseFReg(x.reg);
