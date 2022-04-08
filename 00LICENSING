@@ -224,6 +224,7 @@ The files contained here are provided under the corresponding software license.
   doc/module/intro.tex
   doc/module/macros.tex
   doc/module/module.tex
+  doc/module/pathnames.tex
   doc/skl/Makefile
   doc/skl/acronyms.tex
   doc/skl/architecture.tex
@@ -323,6 +324,9 @@ The files contained here are provided under the corresponding software license.
   system/CTOpenArray.Mod
   system/CTOpenArray.Obj
   system/CTOpenArray.Sym
+  system/CTPathnames.Mod
+  system/CTPathnames.Obj
+  system/CTPathnames.Sym
   system/CTProcedure.Mod
   system/CTProcedure.Obj
   system/CTProcedure.Sym
@@ -375,6 +379,9 @@ The files contained here are provided under the corresponding software license.
   system/KernelTD.Mod
   system/KernelTD.Obj
   system/KernelTD.Sym
+  system/Pathnames.Mod
+  system/Pathnames.Obj
+  system/Pathnames.Sym
   system/Prime.Mod
   system/Prime.Obj
   system/Prime.Sym

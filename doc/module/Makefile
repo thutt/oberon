@@ -4,7 +4,8 @@ include $(SKL_DIR)/make/config.mk
 TEX	=	module.tex			\
 		macros.tex			\
 		intro.tex			\
-		environment.tex
+		environment.tex			\
+		pathnames.tex
 
 PKG_DIR		:= $(SKL_DIR)/doc/packages
 PKG_MACRO	:=

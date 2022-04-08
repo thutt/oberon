@@ -1,0 +1,494 @@
+\chap{Pathnames}
+
+A \emph{pathname} on a hierarchical \posix file system refers to a
+directory or a file in a manner analogous to a street address can
+refer to a building or an individual at a particular location.
+Consider, for example, this fictitious business address:
+
+\begin{xnote}
+JOYCE L. BROWNING \\
+2045 ROYAL ROAD \\
+06570 ST PAUL \\
+FRANCE
+\end{xnote}
+
+Although not as well organized hierarchically as a \posix pathname,
+such a street address provides enough information to locate a specific
+person in the country of France.  Just like a pathname facilitates
+finding a specific file on a file system.
+
+In this system, a pathname has the following characteristics:
+\begin{enumerate}
+
+  \item An \asciiz sequence of characters that specifies a file on a
+    hierarchical files system.
+
+    For example, \texttt{/var/log/syslog}.
+
+  \item The '\texttt{/}' character is used to separate directory names
+    in the hierarchy from each other in the pathname.
+
+  \item Multiple '\texttt{/}' characters in a row are converted to a
+    single instance.
+
+  \item When the special character '\TILDE' appears at the beginning
+    of a \emph{pathname}, it is replaced with the value of the shell
+    environment variable \texttt{HOME}.
+
+    For example, \texttt{\TILDE/scripts/remindo/remindo}
+
+  \item If '\texttt{/}' appears at the beginning of the pathname, it
+    is called an \emph{absolute pathname}, rooted at the top of the
+    file system.
+
+    For example, '\texttt{/etc/fstab}'.
+
+  \item If '\texttt{/}' does not appear at the beginning of the
+    pathname, it is called a \emph{relative pathname}.  A relative
+    pathname is rooted at the \emph{current working
+      directory}\footnote{The semantics of \emph{current working
+        directory} are beyond the scope of this document}.
+
+    For example, '\texttt{bin/emacs}' or '\texttt{fstab}'.
+
+  \item All pathnames elements, up to the final element, are
+    collectively known as the \emph{directory name}.
+
+    The \emph{directory name} of '\texttt{bin/emacs}' is
+    '\texttt{./bin}'.
+
+  \item The character sequence '\texttt{.}' appearing as an element of
+    the \emph{directory name} represents the \emph{current directory}.
+
+    For example,
+
+    \texttt{\TILDE/scripts/remindo/remindo}
+
+    and
+
+    \texttt{\TILDE/scripts/remindo/././././remindo}
+
+    are equivalent.
+
+  \item The character sequence '\texttt{..}' appearing as an element of
+    the \emph{directory name} represents the \emph{parent directory}.
+
+    For example,
+
+    \texttt{\TILDE/scripts/remindo/remindo}
+
+    and
+
+    \texttt{\TILDE/scripts/remindo/../remindo/../remindo/../remindo}
+
+    are equivalent.
+
+  \item The final element in a \emph{pathname} is called the
+    \emph{filename}.  The \emph{filename} includes the \emph{basename}
+    and an optional \emph{extension}.
+
+    The \emph{filename} of '\texttt{./bin/emacs}' is '\texttt{emacs}'.
+
+    The \emph{filename} of '\texttt{/etc/fuse.conf}' is
+    '\texttt{fuse.conf}'.
+
+  \item The \emph{basename} is the portion of a \emph{filename} that
+    is not the \emph{extension}.
+
+    The \emph{basename} of '\texttt{converter.sh}' is '\texttt{converter}'.
+
+    The \emph{basename} of '\texttt{converter.sh.save}' is '\texttt{converter.sh}'.
+
+  \item A \emph{filename} may have an \emph{extension}.  An extension
+    is, inclusively, the final '\texttt{.}' followed by \ascii
+    characters up to the terminating \texttt{0X} character.
+
+    The \emph{extension} of '\texttt{converter.sh}' is '\texttt{.sh}'.
+
+    The \emph{extension} of '\texttt{converter.sh.save}' is '\texttt{.save}'.
+
+  \item A special form of \emph{filename}, called a \emph{dotfile}, is
+    when a filename begins with '\texttt{.}'.
+
+    A \emph{dotfile} may have an extension.
+
+    For example, '\texttt{.emacs}' or '\texttt{.emacs.save}'.
+
+\end{enumerate}
+
+\section{Constants}
+
+There are no constants exported from this module.
+
+
+\section{Types}
+
+\subsection{\texttt{Element}}\label{pathnames:element}
+\begin{alltt}
+  Element* = POINTER TO ARRAY OF CHAR;
+\end{alltt}
+
+This type is used to refer to any individual part of a
+\emph{pathname}, including a full reconstituted pathname.
+
+\begin{invariant}
+  (\forall i: 0 \leq i < \texttt{LEN(Element\deref)}:
+  \texttt{Element[}i\texttt{]} \neq \texttt{'/'}) \logicaland
+  \\
+  (\texttt{Element[0]} \neq \texttt{0X}) \logicaland
+  (\exists i: 1 \leq i < \texttt{LEN(Element\deref)}:
+  \texttt{Element[}i\texttt{]} = \texttt{0X})
+\end{invariant}
+
+\begin{xnote}
+It is possible for a pathname, or the element of a pathname, to be
+syntactically correct, but semantically incorrect for the host
+operatating system. There are many ways that a pathname can be correct
+and incorrect at the same time, for example, a referring to a file in
+a directory that does not exist will be correct and incorrect at the
+same time.
+
+This module only deals with syntax, while the host operating system
+will deal with semantics when operations (open, close, delete, etc.)
+are attempted on a pathname.
+\end{xnote}
+
+
+\subsection{\texttt{Pathname}}\label{pathnames:pathname}
+\begin{alltt}
+  Pathname* = POINTER TO PathnameDesc;
+\end{alltt}
+
+\begin{semantics}
+  This type is a reference \texttt{PathnameDesc}.
+
+It is used to manipulate the decomposed \emph{pathname} returned value
+by \texttt{Create} (\xref{pathnames:create}).
+\end{semantics}
+
+\subsection{\texttt{PathnameDesc}}\label{pathnames:pathnamedesc}
+
+\begin{alltt}
+  PathnameDesc* = RECORD
+    elements-  : Elements;
+    basename-  : Element;
+    extension- : Element;
+    absolute-  : BOOLEAN;
+  END;
+\end{alltt}
+
+\begin{semantics}
+  This record is used to hold the decomposed pathame created by
+  \texttt{Create} (\xref{pathnames:create}).
+
+  \begin{description}
+  \item{\texttt{elements}}
+
+    This field holds the individual elements of the original pathname
+    that were separated by \texttt{'/'}.  The field will be
+    \texttt{NIL} if the original pathname was only a filename.
+
+    \begin{invariant}
+      (\texttt{elements} = \nil) \logicalor \\
+      (\forall i: 0 \leq i < \texttt{LEN(elements\deref)}:
+      (\texttt{elements[i]} \neq \nil) \logicaland (\validfn{elements[i]\deref}))
+    \end{invariant}
+
+    \item{\texttt{basename}}
+
+      This field contains the \emph{basename} from the original pathname.
+
+    \begin{invariant}
+      (\texttt{basename} \neq \nil) \logicaland \\
+      (\exists i: 0 \leq i < \texttt{LEN(basename\deref)}:
+      \texttt{basename[i]} = \texttt{0X})
+    \end{invariant}
+
+    \item{\texttt{extension}}
+
+      This field contains the \emph{extension} from the original
+      pathname.  If there was no extension in the original pathname,
+      this field will be NIL.
+
+    \begin{invariant}
+      (\texttt{extension} = \nil) \logicalor
+      ((\texttt{extension[0]} = \texttt{'.'}) \logicaland \\
+      (\exists i: 1 \leq i < \texttt{LEN(extension\deref)}:
+      \texttt{extension[i]} = \texttt{0X}))
+    \end{invariant}
+
+    \item{\texttt{absolute}}
+
+      If \texttt{TRUE}, the first character of the original pathname
+      was \texttt{'/'}.  If \texttt{FALSE}, the first character of the
+      original pathname was not \texttt{'/'}.
+  \end{description}
+\end{semantics}
+
+
+\section{Procedures}
+\subsection{\texttt{Basename}}\label{pathnames:basename}
+\begin{alltt}
+  PROCEDURE (self : Pathname) Basename*() : Element;
+\end{alltt}
+
+\begin{semantics}
+This procedure returns the \emph{basename} contained in the
+\texttt{self} variable.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref}
+\end{precondition}
+
+\begin{postcondition}
+(\texttt{result} \neq \nil) \logicaland \validfn{result\deref}
+\end{postcondition}
+
+
+\subsection{\texttt{Create}}\label{pathnames:create}
+\begin{alltt}
+  PROCEDURE Create*(path : ARRAY OF CHAR) : Pathname;
+\end{alltt}
+
+\begin{semantics}
+This procedure decomposes the input \texttt{path} into an internal
+representation which can be operated upon by other procedures in this
+modlue.
+
+It returns a pointer to this internal representation, if the input is
+properly formed.  If the input is not properly formed, \nil is
+returned.
+\end{semantics}
+
+\begin{precondition}
+  (\texttt{path[0]} \neq \texttt{0X}) \logicaland
+  (\exists i: 1 \leq i < \texttt{LEN(path)}:
+  \texttt{path[}i\texttt{]} = \texttt{0X})
+\end{precondition}
+
+\begin{postcondition}
+(\texttt{result} = \nil) \logicalor \validfn{result\deref}
+\end{postcondition}
+
+\subsection{\texttt{Dirname}}\label{pathnames:dirname}
+\begin{alltt}
+  PROCEDURE (self : Pathname) Dirname*() : Element;
+\end{alltt}
+
+\begin{semantics}
+  This procedure returns the \emph{directory name} contained in the
+  \texttt{self} variable.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref}
+\end{precondition}
+
+\begin{postcondition}
+(\texttt{result} \neq \nil) \logicaland \validfn{result\deref}
+\end{postcondition}
+
+
+\subsection{\texttt{Delete}}\label{pathnames:delete}
+\begin{alltt}
+  PROCEDURE (self : Pathname) Delete*(beg, end : INTEGER;
+                                      VAR success : BOOLEAN);
+\end{alltt}
+
+\begin{semantics}
+  This procedure deletes the open-ended range, $[beg, end)$ of
+    elements from the \texttt{self}, when the range is valid.
+
+    The variable \texttt{success} is set to \texttt{TRUE} when the
+    input range is valid, otherwise it is set to \texttt{FALSE}.
+\end{semantics}
+
+\begin{precondition}
+  (\texttt{self} \neq \nil) \logicaland \validfn{self\deref}
+  \logicaland \\
+  (\texttt{beg} \geq 0) \logicaland (\texttt{beg} < \texttt{end})
+  \logicaland (\texttt{end} \leq \texttt{LEN(self.elements\deref)})
+\end{precondition}
+
+\begin{postcondition}
+  (\texttt{success} \implies \textrm{Given range of
+    elements deleted from the pathname.}) \logicalor \\
+  (\texttt{\logicalnot success} \implies \textrm{Input range invalid;
+    pathname unchanged.})
+\end{postcondition}
+
+\subsection{\texttt{Extension}}\label{pathnames:extension}
+\begin{alltt}
+  PROCEDURE (self : Pathname) Extension*() : Element;
+\end{alltt}
+
+\begin{semantics}
+  This procedure returns the optional \emph{extension} contained in the
+  \texttt{self} variable.
+
+  If there is no \emph{extension}, then \nil is returned.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref}
+\end{precondition}
+
+\begin{postcondition}
+(\texttt{result} = \nil) \logicalor \validfn{result\deref}
+\end{postcondition}
+
+
+\subsection{\texttt{Filename}}\label{pathnames:filename}
+\begin{alltt}
+  PROCEDURE (self : Pathname) Filename*() : Element;
+\end{alltt}
+
+\begin{semantics}
+  This procedure returns the \emph{filename} contained in the
+  \texttt{self} variable.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref}
+\end{precondition}
+
+\begin{postcondition}
+(\texttt{result} \neq \nil) \logicaland \validfn{result\deref}
+\end{postcondition}
+
+
+\subsection{\texttt{Insert}}\label{pathnames:insert}
+\begin{alltt}
+  PROCEDURE (self : Pathname) Insert*(beg        : INTEGER;
+                                      path        : Pathname;
+                                      VAR success : BOOLEAN);
+\end{alltt}
+
+\begin{semantics}
+This procedure inserts \texttt{path} at position \texttt{beg} in the
+pathname contained in \texttt{self}.
+
+An \emph{absolute} \texttt{path} can only be inserted at position zero
+(0).
+
+The internally decomposed equivalent of \texttt{path.Pathname()} result
+is inserted into the \emph{pathname} held in \texttt{self} at position
+\texttt{beg}.
+
+If the preconditions are met, \texttt{success} is set to
+\texttt{TRUE}, otherwise \texttt{FALSE}.
+
+\end{semantics}
+
+\begin{precondition}
+  (\texttt{self} \neq \nil) \logicaland \validfn{self\deref} \logicaland \\
+  ((\texttt{beg} = 0) \logicalor \logicalnot \texttt{path.absolute}) \logicaland \\
+    (\texttt{beg} \geq 0) \logicaland (\texttt{beg} \leq \texttt{LEN(self.elements\deref)})
+\end{precondition}
+
+\begin{postcondition}
+  (\texttt{success} \implies \validfn{self\deref} \logicaland
+  \texttt{path}\textrm{\xspace is inserted}) \logicalor \\
+  (\logicalnot \texttt{success} \implies \texttt{self\deref}\textrm{\xspace is unchanged})
+\end{postcondition}
+
+
+\subsection{\texttt{Pathname}}\label{pathnames:pathname}
+\begin{alltt}
+  PROCEDURE (self : Pathname) Pathname*() : Element;
+\end{alltt}
+
+\begin{semantics}
+  This procedure returns the full \emph{pathname} contained in the
+  \texttt{self} variable.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref}
+\end{precondition}
+
+\begin{postcondition}
+(\texttt{result} \neq \nil) \logicaland \validfn{result\deref}
+\end{postcondition}
+
+
+\subsection{\texttt{SetAbsolute}}\label{pathnames:setAbsolute}
+\begin{alltt}
+  PROCEDURE (self : Pathname)
+            SetAbsolute*(v : BOOLEAN);
+\end{alltt}
+
+\begin{semantics}
+  This procedure sets \texttt{self.absolute} to \texttt{v}.  When a
+  pathname is \emph{absolute}, it is rooted at the top of the file
+  system.  When it is not \emph{absolute}, it is rooted at the
+  \emph{current working directory}.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref}
+\end{precondition}
+
+\begin{postcondition}
+  (\texttt{self.absolute}  = \texttt{v})
+\end{postcondition}
+
+
+\subsection{\texttt{SetBasename}}\label{pathnames:setBasename}
+\begin{alltt}
+  PROCEDURE (self : Pathname)
+            SetBasename*(basename    : ARRAY OF CHAR;
+                         VAR success : BOOLEAN);
+\end{alltt}
+
+\begin{semantics}
+  This procedure changes the \emph{basename} of the \texttt{self}
+  variable.  Because every pathname must have a basename, the first
+  character of \texttt{basename} cannot be \texttt{0X}.
+
+  The \texttt{success} argument indicates the sucess or failure of the
+  operation.  If \texttt{success} is \texttt{FALSE}, the \emph{basename}
+  will not be changed.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref} \logicaland
+  (\texttt{basename[0]} \neq 0X) \logicaland \\
+  (\exists i: 1 \leq i < \texttt{LEN(basename)}: \texttt{basename[}i\texttt{]} = \texttt{0X})
+\end{precondition}
+
+\begin{postcondition}
+  (\texttt{success} \implies \textrm{\emph{Basename} changed.}) \logicalor
+  (\logicalnot \texttt{success} \implies \textrm{\emph{Basename} not changed.})
+\end{postcondition}
+
+
+\subsection{\texttt{SetExtension}}\label{pathnames:setextension}
+\begin{alltt}
+  PROCEDURE (self : Pathname)
+            SetExtension*(ext         : ARRAY OF CHAR;
+                          VAR success : BOOLEAN);
+\end{alltt}
+
+\begin{semantics}
+  This procedure changes the \emph{extension} of the \texttt{self} variable.
+
+  To remove the extension, set \texttt{ext[0]} to \texttt{0X}, or pass
+  the empty string (\texttt{""}).
+
+  The \texttt{success} argument indicates the sucess or failure of the
+  operation.  If \texttt{success} is \texttt{FALSE}, the \emph{extension}
+  will be unchanged.
+\end{semantics}
+
+\begin{precondition}
+(\texttt{self} \neq \nil) \logicaland \validfn{self\deref}  \logicaland
+  (\texttt{ext[0]} = \texttt{'.'}) \logicaland \\
+  (\exists i: 1 \leq i < \texttt{LEN(ext)}: \texttt{ext[}i\texttt{]} = \texttt{0X})
+\end{precondition}
+
+\begin{postcondition}
+  (\texttt{success} \implies \textrm{\emph{Extension} changed.}) \logicalor
+  (\logicalnot \texttt{success} \implies \textrm{\emph{Extension} not changed.})
+\end{postcondition}
