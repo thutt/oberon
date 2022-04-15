@@ -14,7 +14,7 @@ function compile()
 {
     local module="${1}";
     local cmd="skl-skl-oc ${module}.Mod";
-    local output="$(skl-build-path)/${module}.out"
+    local output="$(skl-build-path)/${module}.compile.out"
 
     echo "Executing: ${cmd}";
     if ! ${cmd} 2>&1 >"${output}"; then
@@ -30,16 +30,17 @@ function run()
     local module="${1}";
     local value="${2}";        # Value of dictionary for '${1}'.
     local cmd="skl-oberon ${module}.Test";
+    local output="$(skl-build-path)/${module}.out"
 
     echo "Executing: ${cmd}";
     if [[ ${value} == *manual* ]] ; then # Substring check
         echo "**** Module '${module} is only run manually";
     elif [[ "${value}" == *pass* ]] ; then
-        if ! ${cmd} 2>&1 >"${module}.out"; then
+        if ! ${cmd} 2>&1 >"${output}"; then
             echo "**** $?: Module '${module} expected to pass, but did not.";
         fi;
     elif [[ "${value}" == *fail* ]] ; then
-        if ${cmd} 2>&1 >"${module}.out"; then
+        if ${cmd} 2>&1 >"${output}"; then
             echo "**** $?: Module '${module} expected to fail, but did not.";
         fi;
     else
