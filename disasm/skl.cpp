@@ -77,19 +77,20 @@ namespace skl
     };
 
 
-    static unsigned  pc;
-    static byte_t   *code_base;
+    static int     pc;
+    static byte_t *code_base;
 
     static inline void
     pc_init(byte_t *code, int p)
     {
         code_base = code;
-        assert(p % sizeof(word_t) == 0);
+        assert(p % static_cast<int>(sizeof(word_t)) == 0);
         pc = p;
     }
 
 
-    static const char *format_hex(word_t v)
+    static const char *
+    format_hex(int v)
     {
         static char buf[16];
         char sprintf_buf[16];   // Avoids gcc error that says buffer is ALWAYS overrun.
@@ -111,7 +112,7 @@ namespace skl
     {
         word_t result;
 
-        assert(pc % sizeof(word_t) == 0);
+        assert(pc % static_cast<int>(sizeof(word_t)) == 0);
         result = *reinterpret_cast<word_t *>(&code_base[pc]);
         pc     += 4;
         return result;
@@ -125,7 +126,7 @@ namespace skl
         return r & mask;
     }
 
-    static void print_header(unsigned pc, word_t inst)
+    static void print_header(int pc, word_t inst)
     {
         /* pc is incremented with each instruction fetch; adjust for
          * display */
@@ -133,7 +134,7 @@ namespace skl
     }
 
 
-    static void print_header_2(unsigned pc, word_t i0, word_t i1)
+    static void print_header_2(int pc, word_t i0, word_t i1)
     {
         /* pc is incremented with each instruction fetch; adjust for
          * display */
@@ -141,7 +142,7 @@ namespace skl
     }
 
 
-    static void print_header_3(unsigned pc, word_t i0, word_t i1, word_t i2)
+    static void print_header_3(int pc, word_t i0, word_t i1, word_t i2)
     {
         /* pc is incremented with each instruction fetch; adjust for
          * display */
@@ -162,26 +163,27 @@ namespace skl
         };
         char        sign = '+';
         static char buffer[200];
+        int offs = static_cast<int>(offset);
 
-        if (static_cast<int>(offset) < 0) {
-            offset = -static_cast<int>(offset);
+        if (offs < 0) {
+            offs = abs(offs);
             sign   = '-';
         }
         if (Rbase != 0 && Rindex != 0) { /* Base.  Index. */
             snprintf(buffer, sizeof(buffer) / sizeof(buffer[0]),
                      "(R%d + R%d:%s %c %s)",
-                     Rbase, Rindex, scale[S], sign, format_hex(offset));
+                     Rbase, Rindex, scale[S], sign, format_hex(offs));
         } else if (Rbase != 0 && Rindex == 0) { /* Base.  No index. */
             snprintf(buffer, sizeof(buffer) / sizeof(buffer[0]),
-                     "(R%d %c %s)", Rbase, sign, format_hex(offset));
+                     "(R%d %c %s)", Rbase, sign, format_hex(offs));
         } else if (Rbase == 0 && Rindex != 0) { /* No base.  Index */
             snprintf(buffer, sizeof(buffer) / sizeof(buffer[0]),
                      "(R%d:%s %c %XH)",
-                     Rindex, scale[S], sign, offset);
+                     Rindex, scale[S], sign, offs);
         } else {                         /* No base.  No index. */
             assert(Rbase == 0 && Rindex == 0);
             snprintf(buffer, sizeof(buffer) / sizeof(buffer[0]),
-                     "(%c%s)", sign, format_hex(offset));
+                     "(%c%s)", sign, format_hex(offs));
         }
 
         return buffer;
@@ -276,7 +278,9 @@ namespace skl
         {
             word_t v = get_next_word();
             print_header_2(pc - 4, inst, v);
-            printf("%-*s  %s, R%d\n", mnemonic_width, mne[opc], format_hex(v), Rd);
+            printf("%-*s  %s, R%d\n",
+                   mnemonic_width, mne[opc],
+                   format_hex(static_cast<int>(v)), Rd);
             break;
         }
 
@@ -584,7 +588,7 @@ namespace skl
             unsigned R0 = field(inst, 20, 16);
             print_header_2(pc - 4, inst, dest);
             printf("%-*s  R%u, %s\n", mnemonic_width, mne[opc], R0,
-                   format_hex(pc + dest));
+                   format_hex(pc + static_cast<int>(dest)));
             break;
         }
 
@@ -592,7 +596,9 @@ namespace skl
         case 11:                 // jal
         {
             print_header_2(pc - 4, inst, dest);
-            printf("%-*s  %s\n", mnemonic_width, mne[opc], format_hex(pc + dest));
+            printf("%-*s  %s\n",
+                   mnemonic_width, mne[opc],
+                   format_hex(pc + static_cast<int>(dest)));
             break;
         }
 
@@ -766,11 +772,11 @@ namespace skl
 
 
     void
-    disassemble(FILE *fp, unsigned char *code, unsigned offs, unsigned len)
+    disassemble(FILE *fp, unsigned char *code, int offs, int len)
     {
         assert(sizeof(byte_t) == 1);
         assert(sizeof(word_t) == 4);
-        assert(len >= sizeof(word_t));
+        assert(len >= static_cast<int>(sizeof(word_t)));
 
         pc_init(code, offs);
 

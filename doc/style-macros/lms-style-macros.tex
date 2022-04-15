@@ -1,13 +1,73 @@
-% Copyright (c) 2007 Logic Magicians Software
+% Copyright (c) 2007, 2022 Logic Magicians Software
 % All Rights Reserved
 
 \newcommand{\lms}{Logic Magicians\xspace}
 \newcommand{\chap}[1] {\chapter{#1} \label{#1}}
 \newcommand{\todo}[1]{\marginpar{\textsf{\footnotesize{TODO: \xspace}\scriptsize{#1}}}}
 \newcommand{\note}[1]{} % Like a todo, but it need not be deleted.
+\newcommand{\xref}[1]{\S\ref{#1}}
+\newcommand{\Figref}[1]{Figure~\ref{fig:#1}\xspace}
+\newcommand{\figref}[1]{figure~\ref{fig:#1}\xspace}
 
+\newcommand{\logicalor}{\ensuremath{\vee}}
+\newcommand{\logicaland}{\ensuremath{\wedge}}
+\newcommand{\logicalnot}{\ensuremath{\neg}}
+\newcommand{\implies}{\Rightarrow}
 \newcommand{\skiptooddpage}{\ifodd \value{page} \else {\newpage\vspace*{\fill}\center{This page intentionally left blank}\vspace*{\fill}\newpage}\fi}
 
-%%% Local Variables: 
+\newenvironment{xnote}{
+  \begin{center}
+    \begin{tabular}{|p{0.9\textwidth}|}
+    \hline\\
+    }
+    {
+    \\\\\hline
+    \end{tabular}
+    \end{center}
+    }
+
+\newenvironment{invariant}{
+  \begin{bf}
+    Invariant:
+  \end{bf}
+
+    \begin{math}
+    }
+    {
+    \end{math}
+    }
+
+\newenvironment{semantics}{
+  \begin{bf}
+    Description:
+
+  \end{bf}
+    }
+    {
+    }
+
+\newenvironment{precondition}{
+  \begin{bf}
+    Precondition:
+  \end{bf}
+
+    \begin{math}
+    }
+    {
+    \end{math}
+    }
+
+\newenvironment{postcondition}{
+  \begin{bf}
+    Postcondition:
+  \end{bf}
+
+    \begin{math}
+    }
+    {
+    \end{math}
+    }
+
+%%% Local Variables:
 %%% mode: latex
-%%% End: 
+%%% End:

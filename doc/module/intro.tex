@@ -1,0 +1,155 @@
+\chap{Introduction}
+
+This manual provides a programmatic reference to the modules added to
+the ETHZ Oberon distribution.
+
+\section{Conventions}
+
+This manual will document the externally visible state of modules so
+that users can understand the declared API; the external API will
+generally not changed.  It will not document the internal state,
+because that can change over time
+
+\subsection{Invariant}\label{intro:invariant}
+
+The documentation will use \emph{invariant properties} of the exported
+types to simplify the documentation.  An invariant is described by
+David Gries:
+
+\begin{quote}
+... The adjective \emph{invariant} means \emph{constant} or
+  \emph{unchanging}.  In mathematics the term means \emph{unaffected
+    by the group of mathematical operations under
+    consideration}...\footnote{The Science of Programming, David
+    Gries.  Page 141, Copyright 1981, Springer Verlag, ISBN
+    0-387-96480-0, ISBN 3-540-96840-0}
+\end{quote}
+
+In the case of this documentation, it means that the invariant
+expression must always be true.  If it is not true, the program is in
+undefined state, and its continued execution cannot be expected to be
+correct.
+
+As an example, a pointer \texttt{P} that cannot be \nil after
+module initialization would be written as shown in
+\figref{intro:invariant}.
+
+\begin{figure}[h]
+  \begin{invariant}
+    \texttt{P} \neq \nil
+  \end{invariant}
+  \caption{\texttt{P} may never be \nil}\label{fig:intro:invariant}
+\end{figure}
+
+\subsection{Precondition}
+
+A \emph{precondition} is a boolean expression that must be true before
+invoking a procedure.
+
+
+\subsection{Postcondition}
+
+A \emph{postcondition} is a boolean expression that will be true
+after invoking a procedure.
+
+\subsection{Or ($\logicalor$)}\label{intro:or}
+
+This symbol is \emph{disjunctive or}.  For simplicity, it this
+documentation, it has the same precdence as \emph{conjunctive and}
+(\xref{intro:and}), so if precedence is desired, uses parenthesis to
+disambiguate the order.
+
+\subsection{And ($\logicaland$)}\label{intro:and}
+
+This symbol is \emph{conjunctive and}.  For simplicity, in this
+documentation, it has the same precdence as \emph{disjunctive or}
+(\xref{intro:or}), so if precedence is desired, uses parenthesis to
+disambiguate the order.
+
+\subsection{Exists ($\exists$)}
+
+The \emph{exists} construction allows iteration over a type or
+variable to verify an aspect regarding the whole item.  It has two
+parts:
+\begin{enumerate*}[label=\arabic*)]
+\item A variable with its bounding range,
+\item A boolean expression which must hold for \emph{at least one}
+  element in the range.
+\end{enumerate*}  Given the type declaration below, one could assert
+each \texttt{String} must be \texttt{0X} terminated as shown in
+\figref{intro:exists}.
+
+\begin{alltt}
+  TYPE
+    String = POINTER TO ARRAY OF CHAR;
+\end{alltt}
+
+\begin{figure}[h]
+  \begin{invariant}
+    (\exists i: 0 \leq i < \texttt{LEN(String)}: \texttt{String[}i\texttt{]} = \texttt{0X})
+  \end{invariant}
+  \caption{Each \texttt{String} must be \texttt{0X} terminated.}\label{fig:intro:exists}
+\end{figure}
+
+\subsection{For All ($\forall$)}\label{intro:forall}
+
+The \emph{for all} construction allows iteration over a type or
+variable to verify each element.  It has two parts:
+\begin{enumerate*}[label=\arabic*)]
+\item A variable with its bounding range,
+\item A boolean expression which must hold for \emph{each} element in
+  the range.
+\end{enumerate*}  Given the type declarations below, one could assert
+that every value in a variable of type \texttt{Table} is \nil
+or references a valid string as shown in \figref{intro:forall}.
+
+\begin{alltt}
+  TYPE
+    String = POINTER TO ARRAY OF CHAR;
+    Table = POINTER TO ARRAY OF String;
+\end{alltt}
+
+\begin{figure}[h]
+  \begin{invariant}
+    \begin{small}
+      \begin{array}{lll}
+        (\forall i: 0 \leq i < \texttt{LEN(Table)}:
+        & \texttt{Table[}i\texttt{]} = \nil \logicalor \\
+        & (\exists j: 0 \leq j < \texttt{LEN(String)}: \texttt{Table[}i\texttt{][j]} = \texttt{0X})
+      \end{array}
+    \end{small}
+  \end{invariant}
+  \caption{Each table entry is \nil or references a valid string.}\label{fig:intro:forall}
+\end{figure}
+
+
+\subsection{ASCIIZ}
+
+\asciiz is a shorthand for the following invariant, which states that
+the character array \texttt{V} must be \texttt{0X}-terminated.
+
+\begin{invariant}
+(\exists i: 0 \leq i < \texttt{LEN(V)}: \texttt{V[}i\texttt{]} = \texttt{0X})
+\end{invariant}
+
+\subsection{Validity}
+
+The meta function \texttt{valid} is used as a shorthand to assert that
+all invariants (\xref{intro:invariant}) hold on the argument.
+
+Using this meta function, the invariant in \xref{intro:forall} could
+be simplified as shown in \figref{intro:valid}
+
+\begin{figure}[h]
+  \begin{invariant}
+    (\forall i: 0 \leq i < \texttt{LEN(Table)}:
+    \texttt{Table[}i\texttt{]} = \nil \logicalor valid(\texttt{Table[}i\texttt{]\deref}))
+  \end{invariant}
+  \caption{Each table entry is \nil or references a valid string.}\label{fig:intro:valid}
+\end{figure}
+
+
+\subsection{Result}
+
+The meta variable \result{} is used as a shorthand to refer to the
+result of a function invocation.

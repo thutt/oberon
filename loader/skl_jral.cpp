@@ -19,18 +19,18 @@ namespace skl {
 
 
     struct skl_jral_t : skl::instruction_t {
-        unsigned        Rd;
-        unsigned        R0;
-        md::uint32      return_addr;
-        md::uint32      new_pc;
+        int       Rd;
+        int       R0;
+        md::OADDR return_addr;
+        md::OADDR new_pc;
 
         skl_jral_t(cpu_t      *cpu_,
-                   md::uint32  inst_,
+                   md::OINST   inst_,
                    const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16)),
-            return_addr(pc + sizeof(md::uint32))
+            return_addr(pc + static_cast<md::OADDR>(sizeof(md::uint32)))
         {
         }
 
@@ -54,7 +54,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_jral(cpu_t *cpu, md::uint32 inst)
+    op_jral(cpu_t *cpu, md::OINST inst)
     {
         /* If new opcodes added, this code needs investigation. */
         COMPILE_TIME_ASSERT(sizeof(mne) / sizeof(mne[0]) == 1);

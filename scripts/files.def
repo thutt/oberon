@@ -134,6 +134,7 @@ COMPILER_TESTS=(                                \
     [CTOOBRead.Mod]="fail"                      \
     [CTOOBWrite.Mod]="fail"                     \
     [CTOpenArray.Mod]="pass"                    \
+    [CTPathnames.Mod]="pass"                    \
     [CTProcedure.Mod]="pass"                    \
     [CTRange.Mod]="fail"                        \
     [CTReal.Mod]="pass"                         \

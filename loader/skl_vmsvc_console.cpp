@@ -16,11 +16,11 @@ namespace skl {
 
 
     void
-    vmsvc_console(md::uint32 adr)
+    vmsvc_console(md::OADDR adr)
     {
-        md::uint8            *ptr    = heap::host_address(adr);
+        md::HADDR             ptr    = heap::host_address(adr);
         vmsvc_console_desc_t *vmsvc  = reinterpret_cast<vmsvc_console_desc_t *>(ptr);
-        md::uint8            *buffer = heap::host_address(vmsvc->buffer);
+        md::HADDR             buffer = heap::host_address(vmsvc->buffer);
 
         assert(vmsvc->op == 0); // SKLConsole.svcWrite
 

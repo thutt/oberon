@@ -7,9 +7,9 @@
 namespace objio
 {
     static const int max_id_len    = 24; // Must match compiler limit.
-    static const int OFTag_x86     = 0xf8310000;
+    static const int OFTag_x86     = static_cast<int>(0xf8310000);
     static const int OFVersion_x86 = 0x15100151;
-    static const int OFTag_skl     = 0xf8320000;
+    static const int OFTag_skl     = static_cast<int>(0xf8320000);
     static const int OFVersion_skl = 0x11161967;
 
     static FILE      *obj_file = NULL;
@@ -20,15 +20,12 @@ namespace objio
     static void
     read_bytes(void * x, int n_bytes)
     {
-        int r;
-        long pos;
+        long   pos = ftell(obj_file);
+        size_t r   = fread(x, 1, static_cast<size_t>(n_bytes), obj_file);
 
-        pos = ftell(obj_file);
-        r = fread(x, 1, n_bytes, obj_file);
-
-        if (r != n_bytes)
-        {
-            fprintf(stderr, "fatal error reading %d bytes at position %#lx\n", n_bytes, pos);
+        if (r != static_cast<size_t>(n_bytes)) {
+            fprintf(stderr, "fatal error reading %d bytes at position %#lx\n",
+                    n_bytes, pos);
             exit(1);
         }
     }
@@ -38,8 +35,7 @@ namespace objio
     read_tag(const char *fn, int line, unsigned char expected)
     {
         unsigned char tag;
-        long nr;
-        nr = fread(&tag, sizeof(tag), 1, obj_file);
+        size_t nr = fread(&tag, sizeof(tag), 1, obj_file);
         if (nr != 1 || tag != expected) {
             fprintf(stderr, "%s(%d): found tag %#x at %#lx; expected %#x\n",
                     fn, line, tag, ftell(obj_file) - 1, expected);
@@ -51,11 +47,11 @@ namespace objio
     static void
     read_char(unsigned char &x)
     {
-        int r;
+        size_t r = fread(&x, sizeof(x), 1, obj_file);
 
-        r = fread(&x, sizeof(x), 1, obj_file);
-        if (r != 1)
+        if (r != 1) {
             x = '\0';
+        }
     }
 
 
@@ -80,13 +76,15 @@ namespace objio
 
 
     static void
-    read_num(int &x)
+    read_num(int &res)
     {
         unsigned char rCH;
         int n;
         long y;
+        long x;
 
-        n = y = 0;
+        n = 0;
+        y = 0;
         read_char(rCH);
 
         while (rCH >= 0x80)
@@ -101,6 +99,8 @@ namespace objio
         else
             x = (rCH << 25) << (n - 25);
         x += y;
+        res = static_cast<int>(x);
+        assert(res == x);
     }
 
 
@@ -108,16 +108,8 @@ namespace objio
     read_raw_string(unsigned char *&str)
     {
         int i, len;
-        
-        read_num(len);
-        /* The disassembler does not support fully dynamic string
-         * lengths.  Since the bootstrap modules are easily controlled
-         * in source form, it is not necessary to go to the extra
-         * expense to ensure that all string lengths can be read in
-         * correctly.  Modules.Mod does it the complete way
-         */
-        assert(len <= max_id_len);
 
+        read_num(len);
         str = new unsigned char[len + 1];
         for (i = 0; i < len; ++i)
             read_char(str[i]);

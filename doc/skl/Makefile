@@ -15,7 +15,7 @@ TEX	=	skl.tex				\
 PKG_DIR		:= $(SKL_DIR)/doc/packages
 PKG_MACRO	:=
 STYLE_MACRO	:= $(SKL_DIR)/doc/style-macros
-DOC_DIR		:= $(SKL_DIR)/doc/skl
+DOC_DIR		:= $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
 PACKAGES	:= $(PKG_MACRO):$(STYLE_MACRO):$(DOC_DIR):$(TEXINPUTS)
 TEX_OPTS	:= \
 	--halt-on-error

@@ -37,6 +37,7 @@ PROCEDURE split;
     IF elem # NIL THEN
       Console.Int(LEN(elem^), 5);
       Console.Ln;
+      i := 0;
       WHILE i < LEN(elem^) DO
         Console.Str("  ");
         Console.Str(elem[i]^);
@@ -66,6 +67,13 @@ BEGIN
   work("alpha::beta:gamma");
 END split;
 
+PROCEDURE nilsplit;
+  VAR
+    elem : Environment.Elements;
+BEGIN
+  elem := Environment.Split(NIL, ':');
+  ASSERT(elem = NIL);
+END nilsplit;
 
 PROCEDURE Test*;
 BEGIN
@@ -76,7 +84,8 @@ BEGIN
   lookup("GUNGLA");
 
   split;
-
+  nilsplit;
+  
   lookup("SKL_DIR");
   Environment.Delete("SKL_DIR");
   lookup("SKL_DIR");

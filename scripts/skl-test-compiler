@@ -14,9 +14,10 @@ function compile()
 {
     local module="${1}";
     local cmd="skl-skl-oc ${module}.Mod";
+    local output="$(skl-build-path)/${module}.out"
 
     echo "Executing: ${cmd}";
-    if ! ${cmd} 2>&1 >"${module}.out"; then
+    if ! ${cmd} 2>&1 >"${output}"; then
         echo "**** Compiling '${module} failed";
         return 1;
     fi;

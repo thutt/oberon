@@ -14,7 +14,6 @@
 \newcommand{\abs}[1]{\textrm{abs(}#1\textrm{)}}
 \newcommand{\constant}{\textrm{C}\xspace}
 \newcommand{\becomes}{\ensuremath{\leftarrow}}
-\newcommand{\implies}{\Rightarrow}
 \newlength{\veelen}
 \settowidth{\veelen}{\ensuremath{\vee}}
 \newcommand{\xor}{\makebox[\width]{\ensuremath{\vee\hspace{-\veelen}}\rule[-.5pt]{\veelen}{.5pt}}}
@@ -30,9 +29,6 @@
 \newcommand{\pc}{\textrm{PC}\xspace}
 \newcommand{\eip}{\textrm{EIP}\xspace}
 \newcommand{\neip}{\textrm{next }\eip\xspace}
-\newcommand{\xref}[1]{\S\ref{#1}}
-\newcommand{\Figref}[1]{Figure~\ref{fig:#1}\xspace}
-\newcommand{\figref}[1]{figure~\ref{fig:#1}\xspace}
 \newcommand{\xrefinst}[1]{\texttt{#1}\xspace(\xref{inst:#1})\xspace}
 \newenvironment{instruction}[1]{
   \section{\texttt{#1}}
@@ -41,16 +37,6 @@
 }{}
 
 
-\newenvironment{xnote}{
-  \begin{center}
-    \begin{tabular}{|p{0.9\textwidth}|}
-    \hline\\
-    }
-    {
-    \\\\\hline
-    \end{tabular}
-    \end{center}
-    }
 % Instruction class encodings.
 \newcommand{\gregtypeclass}{0}    % General Register class
    \newcommand{\aaddopc}{0}
@@ -330,8 +316,8 @@
     \begin{bytefield}{32}
       \bitheader[endianness=big]{0-31}          \\
       \bitbox{6}{\gregtypeclass}
+      \bitbox{5}{\dr}
       \bitbox{5}{0}
-      \bitbox{5}{\sr{0}}
       \bitbox{5}{\sr{1}}
       \bitbox{1}{0}
       \bitbox{1}{\regbank{0}}
@@ -346,7 +332,7 @@
   \begin{InstructionInfo}{Instruction Data}
   \item[Encoding] \absbox{#2} \usebox{\gregtypebox}
   \item[Semantics] #3
-  \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{1}, \dr \end{alltt}
+  \item[Syntax] \begin{alltt} #1 \sr{1}, \dr \end{alltt}
   \end{InstructionInfo}
 
   #4

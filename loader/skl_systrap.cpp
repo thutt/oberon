@@ -20,12 +20,12 @@ namespace skl {
 
 
     struct skl_trap_t : skl::instruction_t {
-        unsigned Rd;
-        unsigned R0;
-        unsigned subcl;
+        int Rd;
+        int R0;
+        int subcl;
 
         skl_trap_t(cpu_t       *cpu_,
-                   md::uint32   inst_,
+                   md::OINST   inst_,
                    const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             Rd(field(inst, 25, 21)),
@@ -142,7 +142,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_systrap(cpu_t *cpu, md::uint32 inst)
+    op_systrap(cpu_t *cpu, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 15,  8));
 

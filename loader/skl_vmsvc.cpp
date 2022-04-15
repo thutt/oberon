@@ -22,10 +22,10 @@ namespace skl {
 
 
     struct skl_vmsvc_t : skl::instruction_t {
-        unsigned R0;
+        int R0;
 
         skl_vmsvc_t(cpu_t       *cpu_,
-                    md::uint32   inst_,
+                    md::OINST    inst_,
                     const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             R0(field(inst_, 20, 16))
@@ -35,9 +35,9 @@ namespace skl {
 
         virtual void interpret(void)
         {
-            md::uint32        svc;
-            const md::uint32  adr       = read_integer_register(cpu, R0);
-            const char       *operation = "invalid vmsvc";
+            md::uint32       svc;
+            const md::OADDR  adr       = read_integer_register(cpu, R0);
+            const char      *operation = "invalid vmsvc";
 
             svc = skl::read(adr, false, sizeof(md::uint32));
 
@@ -107,7 +107,7 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_vmsvc(cpu_t *cpu, md::uint32 inst, const char **mne)
+    op_vmsvc(cpu_t *cpu, md::OINST inst, const char **mne)
     {
         return new skl_vmsvc_t(cpu, inst, mne);
     }

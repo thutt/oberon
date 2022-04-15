@@ -461,12 +461,7 @@ IMPORT
         y : T.Node;
         proc : ST.SymbolProc;
         sym : ST.Symbol;
-        (* maximum: (typename)tprocname, both names are OPS.Name *)
-        name : ARRAY SIZE(CHAR) (* '(' *)  +
-                     OPM.MaxIdLen          +
-                     SIZE(CHAR) (* ')' *)  +
-                     OPM.MaxIdLen          +
-                     SIZE(CHAR) (* 0X *) OF CHAR;
+        name  : OPS.FullName;
         nofTD : LONGINT;
         info : ST.ProcessScopeInfo;
 

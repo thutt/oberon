@@ -15,9 +15,9 @@ namespace skl {
 
 
     void
-    vmsvc_terminate(md::uint32 adr)
+    vmsvc_terminate(md::OADDR adr)
     {
-        md::uint8              *ptr   = heap::host_address(adr);
+        md::HADDR               ptr   = heap::host_address(adr);
         vmsvc_terminate_desc_t *vmsvc = reinterpret_cast<vmsvc_terminate_desc_t *>(ptr);
 
         COMPILE_TIME_ASSERT(sizeof(int) >= sizeof(md::uint32));

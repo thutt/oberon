@@ -213,51 +213,55 @@ PROCEDURE Split*(v : Text; separator : CHAR) : Elements;
   END CreateText;
 
 BEGIN
-  (* Count separators and allocate main array. *)
-  beg := 0;
-  end := 0;
-  cnt := 0;
-  LOOP
-    ch := v[end];
-    IF ch = separator THEN
-      IF end > beg (* [beg, end) *) THEN
-        INC(cnt);
+  IF v # NIL THEN
+    (* Count separators and allocate main array. *)
+    beg := 0;
+    end := 0;
+    cnt := 0;
+    LOOP
+      ch := v[end];
+      IF ch = separator THEN
+        IF end > beg (* [beg, end) *) THEN
+          INC(cnt);
+        END;
+        beg := end + 1;
       END;
-      beg := end + 1;
-    END;
-    IF ch = 0X THEN
-      IF end > beg THEN
-        INC(cnt);
+      IF ch = 0X THEN
+        IF end > beg THEN
+          INC(cnt);
+        END;
+        EXIT;
       END;
-      EXIT;
+      INC(end);
     END;
-    INC(end);
-  END;
 
-  IF cnt > 0 THEN
-     NEW(elem, cnt);
-
-     end := 0;
-     beg := 0;
-     cnt := 0;
-     LOOP
-       ch := v[end];
-       IF (ch = 0X) OR (ch = separator) THEN
-         IF end - beg > 0 THEN
-           (* Do not store 0-length elements. *)
-           elem[cnt] := CreateText(v, beg, end);
-           INC(cnt)
-         END;
-         beg := end + 1;
-       END;
-       INC(end);
-       IF ch = 0X THEN
-         EXIT;
-       END;
-     END;
-     RETURN elem;
+    IF cnt > 0 THEN
+      NEW(elem, cnt);
+      
+      end := 0;
+      beg := 0;
+      cnt := 0;
+      LOOP
+        ch := v[end];
+        IF (ch = 0X) OR (ch = separator) THEN
+          IF end - beg > 0 THEN
+            (* Do not store 0-length elements. *)
+            elem[cnt] := CreateText(v, beg, end);
+            INC(cnt)
+          END;
+          beg := end + 1;
+        END;
+        INC(end);
+        IF ch = 0X THEN
+          EXIT;
+        END;
+      END;
+      RETURN elem;
+    ELSE
+      RETURN NIL;                 (* No data found. *)
+    END;
   ELSE
-    RETURN NIL;                 (* No data found. *)
+    RETURN NIL;
   END;
 END Split;
 

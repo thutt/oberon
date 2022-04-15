@@ -35,7 +35,10 @@ namespace bootstrap
     static void
     initialize_kernel(O3::module_t *m, const char *command_line)
     {
-        md::uint32 cmdline   = heap::copy_command_line(command_line);
+        md::OADDR cmdline     = heap::copy_command_line(command_line);
+        md::uint32 heap_size  = static_cast<md::uint32>(heap::oberon_heap_size_in_bytes +
+                                                        heap::oberon_stack_size_in_bytes);
+        md::uint32 stack_size = static_cast<md::uint32>(heap::oberon_stack_size_in_bytes);
 
         fflush(stdout);
 
@@ -44,13 +47,10 @@ namespace bootstrap
 
         skl::write_integer_register(&skl::cpu, 1,
                                     heap::heap_address(heap::oberon_heap));
-        skl::write_integer_register(&skl::cpu, 2,
-                                    heap::oberon_heap_size_in_bytes +
-                                    heap::oberon_stack_size_in_bytes);
+        skl::write_integer_register(&skl::cpu, 2, heap_size);
         skl::write_integer_register(&skl::cpu, 3,
                                     heap::heap_address(heap::oberon_stack));
-        skl::write_integer_register(&skl::cpu, 4,
-                                    heap::oberon_stack_size_in_bytes);
+        skl::write_integer_register(&skl::cpu, 4, stack_size);
         skl::write_integer_register(&skl::cpu, 5,
                                     O3::module_list);
         skl::write_integer_register(&skl::cpu, 6,

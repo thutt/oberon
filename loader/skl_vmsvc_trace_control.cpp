@@ -15,9 +15,9 @@ namespace skl {
 
 
     void
-    vmsvc_trace_control(md::uint32 adr)
+    vmsvc_trace_control(md::OADDR adr)
     {
-        md::uint8                  *ptr   = heap::host_address(adr);
+        md::HADDR                   ptr   = heap::host_address(adr);
         vmsvc_trace_control_desc_t *vmsvc = reinterpret_cast<vmsvc_trace_control_desc_t *>(ptr);
 
         if (skl_trace) {

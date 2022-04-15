@@ -12,6 +12,12 @@ IMPORT
     Name* = ARRAY MaxIdLen OF CHAR;
     String* = ARRAY MaxStrLen OF CHAR;
 
+    FullName* = ARRAY SIZE(CHAR) (* '(' *)  + (* For ST.GetFullProcedureName(). *)
+                      OPM.MaxIdLen          +
+                      SIZE(CHAR) (* ')' *)  +
+                      OPM.MaxIdLen          +
+                      SIZE(CHAR) (* 0X *) OF CHAR;
+
   (* name, str, numtyp, intval, realval, lrlval are implicit results of Get *)
 
   VAR

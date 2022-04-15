@@ -26,41 +26,41 @@ namespace heap
     };
 
     struct simple_elem_open_array_t : open_array_base_t {
-        md::int32 pad;                // offset: 4
+        md::uint32 pad;         // offset: 4
         /* inv: bound > 0
          * inv: bound == max valid index
          */
-        md::int32 bound;              // offset: 8
-        md::int32 td;                 // offset: 12
+        md::int32  bound;       // offset: 8
+        md::uint32 td;          // offset: 12
         // offset: 16 array data starts here
     };
 
     struct pointer_elem_open_array_t : open_array_base_t {
-        md::int32 n_elements;         // offset: 4
-        md::int32 arrpos;             // offset: 8
-        md::int32 pad0;               // offset: 12
-        md::int32 pad1;               // offset: 16
-        md::int32 pad2;               // offset: 20
+        md::int32  n_elements;  // offset: 4
+        md::int32  arrpos;      // offset: 8
+        md::uint32 pad0;        // offset: 12
+        md::uint32 pad1;        // offset: 16
+        md::uint32 pad2;        // offset: 20
         /* inv: bound > 0
          * inv: bound == max valid index
          */
-        md::int32 bound;              // offset: 24
-        md::int32 td;                 // offset: 28
+        md::int32  bound;       // offset: 24
+        md::uint32 td;          // offset: 28
         // offset: 32 array data starts here
     };
 
     struct record_elem_open_array_t : open_array_base_t {
-        md::int32 n_elements;         // offset: 4
-        md::int32 count;              // offset: 8
-        md::int32 arrpos;             // offset: 12
-        md::int32 pad0;               // offset: 16
-        md::int32 pad1;               // offset: 20
+        md::int32  n_elements;  // offset: 4
+        md::int32  count;       // offset: 8
+        md::int32  arrpos;      // offset: 12
+        md::uint32 pad0;        // offset: 16
+        md::uint32 pad1;        // offset: 20
 
         /* inv: bound > 0
          * inv: bound == max valid index
          */
-        md::int32 bound;              // offset: 24
-        md::int32 td;                 // offset: 28
+        md::int32  bound;       // offset: 24
+        md::uint32 td;          // offset: 28
         // offset: 32 array data starts here
     };
 
@@ -85,20 +85,19 @@ namespace heap
      * allocated from the OS.  It is retained only to release the
      * memory.
      */
-    md::uint8        *allocated_heap = NULL; /* Heap allocated from OS. */
-    md::uint8        *oberon_heap    = NULL; /* Base address of Oberon heap. */
-    md::uint8        *oberon_stack   = NULL;
-    static md::uint8 *curr_heap      = NULL; /* used for allocation */
+    md::HADDR        allocated_heap = NULL; /* Heap allocated from OS. */
+    md::HADDR        oberon_heap    = NULL; /* Base address of Oberon heap. */
+    md::HADDR        oberon_stack   = NULL;
+    static md::HADDR curr_heap      = NULL; /* used for allocation */
 
     /* The allocation size of the entire Oberon heap, including the stack.
      *
      *  total_heap_size_in_bytes = oberon_heap_size_in_bytes +
      *                             oberon_stack_size_in_bytes
      */
-    md::uint32        total_heap_size_in_bytes;
-
-    md::uint32        oberon_stack_size_in_bytes;
-    md::uint32        oberon_heap_size_in_bytes;
+    int total_heap_size_in_bytes;
+    int oberon_stack_size_in_bytes;
+    int oberon_heap_size_in_bytes;
 
     static md::uint32
     ptr_to_uint32(void *p)
@@ -117,14 +116,14 @@ namespace heap
 
 
     static void
-    array_alloc_progress(const char        *kind,
-                         md::uint8         *block,
-                         md::uint32         size,
-                         md::uint8         *pointer,
-                         md::uint32         n_elements,
-                         md::uint32         element_size,
-                         md::uint8         *td_adr,
-                         md::uint8         *data)
+    array_alloc_progress(const char *kind,
+                         md::HADDR   block,
+                         int         size,
+                         md::HADDR   pointer,
+                         md::uint32  n_elements,
+                         md::uint32  element_size,
+                         md::HADDR   td_adr,
+                         md::HADDR   data)
     {
         dialog::diagnostic("%s: alloc=%xH; blk_size=%5.5xH; ptr=%xH; "
                            "len=%4.4xH; size=%4.4xH; tdadr=%xH data=%xH\n",
@@ -142,7 +141,7 @@ namespace heap
      * post: result != NULL -> result IS (record_elem_open_array_t *)
      */
     static const record_elem_open_array_t *
-    record_elem_array(const md::uint8 *p)
+    record_elem_array(const md::HADDR p)
     {
         if (p == NULL) {
             return NULL;
@@ -158,7 +157,7 @@ namespace heap
      * post: result != NULL -> result IS (simple_elem_open_array_t *)
      */
     static const simple_elem_open_array_t *
-    simple_elem_array(const md::uint8 *p)
+    simple_elem_array(const md::HADDR p)
     {
         if (p == NULL) {
             return NULL;
@@ -174,7 +173,7 @@ namespace heap
      * post: result != NULL -> result IS (pointer_elem_open_array_t *)
      */
     static const pointer_elem_open_array_t *
-    pointer_elem_array(const md::uint8 *p)
+    pointer_elem_array(const md::HADDR p)
     {
         if (p == NULL) {
             return NULL;
@@ -197,7 +196,7 @@ namespace heap
         dialog::print("{");
         assert(sizeof(mask) / sizeof(mask[0]) == (sizeof(name) /
                                                   sizeof(name[0])));
-        for (unsigned int i = 0; i < sizeof(mask) / sizeof(mask[0]); ++i) {
+        for (size_t i = 0; i < sizeof(mask) / sizeof(mask[0]); ++i) {
             if (tag & mask[i]) {
                 dialog::print("%s", name[i]);
                 tag &= ~mask[i];
@@ -210,10 +209,10 @@ namespace heap
     }
 
     static void basic_info(const char *l,
-                           md::uint8  *blk,
-                           md::uint32  size,
+                           md::HADDR   blk,
+                           md::int32   size,
                            md::uint32  tag,
-                           md::uint32  td,
+                           md::OADDR   td,
                            bool        is_array)
     {
         dialog::print("%s Adr: %xH ", l, ptr_to_uint32(blk));
@@ -230,14 +229,20 @@ namespace heap
             dialog::print("size: %6xH  td: ", size);
         }
 
-        if (td != 0) {
+        if (td != 0) {;
             if (is_array) {
-                dialog::print("%8.8xH%c", td & ~(BlkMark | BlkAray),
-                              O3::MOD(td & ~(BlkMark | BlkAray), allocation_block_size) != 0
-                              || ((td & BlkAray) == 0) ? '*' : ' ');
+                md::uint32 td_adr = static_cast<md::uint32>(td);
+                md::uint32 masked = td_adr & ~static_cast<md::uint32>(BlkMark |
+                                                                      BlkAray);
+                md::int32  n      = static_cast<md::int32>(masked);
+                bool       s0     = O3::MOD(n, allocation_block_size) != 0;
+                dialog::print("%8.8xH%c",
+                              td & ~static_cast<md::uint32>(BlkMark | BlkAray),
+                              s0 || ((td & BlkAray) == 0) ? '*' : ' ');
             } else {
-                dialog::print("%8.8xH%c", td & ~BlkMark,
-                              O3::MOD(td, allocation_block_size) != 0 ? '*' : ' ');
+                dialog::print("%8.8xH%c", td & ~static_cast<md::uint32>(BlkMark),
+                              O3::MOD(static_cast<md::int32>(td),
+                                      allocation_block_size) != 0 ? '*' : ' ');
             }
         } else {
             dialog::print("%9.9s ", "n/a");
@@ -252,10 +257,10 @@ namespace heap
      *
      */
     static void
-    internal_dump(md::uint8 *hb, md::uint8 *he)
+    internal_dump(md::HADDR hb, md::HADDR he)
     {
         md::uint32 htag;
-        md::uint32 bsize;
+        md::int32 bsize;
         md::uint32 tdadr;
 
         if (config::options & config::opt_dump_heap) {
@@ -268,12 +273,12 @@ namespace heap
                           ptr_to_uint32(he));
 
             while (hb < he) {
-                md::uint8  *hp   = hb;
+                md::HADDR   hp   = hb;
                 md::uint32 *blkp = reinterpret_cast<md::uint32 *>(hp);
                 htag             = reinterpret_cast<md::uint32 *>(hp)[0];
 
                 if ((BlkSyst & htag) != 0) { /* sysblk */
-                    bsize = htag & TagMask;
+                    bsize = static_cast<md::int32>(htag & TagMask);
                     basic_info("sblk", hb, bsize, htag, 0, false);
                 } else if ((BlkAray & htag) != 0) { /* array block */
                     open_array_base_t *oab = reinterpret_cast<open_array_base_t *>(&(blkp[1]));
@@ -291,7 +296,7 @@ namespace heap
                                     BlkFree | BlkAray)) == (BlkMark | BlkAray) ||
                            (htag & (BlkMark | BlkSyst |
                                     BlkFree | BlkAray)) == (BlkAray));
-                    assert(O3::MOD(array_data & TagMask,
+                    assert(O3::MOD(static_cast<md::int32>(array_data & TagMask),
                                    allocation_block_size) == 0); // TD validity check
 
                     tdadr = reinterpret_cast<md::uint32 *>(array_data)[-1];
@@ -305,13 +310,13 @@ namespace heap
                            (tdadr & (BlkMark | BlkSyst |
                                      BlkFree | BlkAray)) == (BlkAray));
                 } else if ((BlkFree & htag) != 0) { /* free block */
-                    bsize = htag & TagMask; /* */
+                    bsize = static_cast<md::int32>(htag & TagMask);
                     basic_info("fblk", hb, bsize, htag, 0, false);
                 } else {   /* record block */
                     tdadr = htag & TagMask;
 
                     // LMMD.RecBlockSize: allocated block size
-                    bsize = reinterpret_cast<md::uint32 *>(tdadr)[4];
+                    bsize = reinterpret_cast<md::int32 *>(tdadr)[4];
                     basic_info("dblk", hb, bsize, htag, htag & TagMask, false);
                 }
                 dialog::print("\n");
@@ -322,10 +327,10 @@ namespace heap
 
 
     static void
-    dump_contents(md::uint8 *allocated, md::uint8 *hb, md::uint8 *he)
+    dump_contents(md::HADDR allocated, md::HADDR hb, md::HADDR he)
     {
-        const unsigned bytes_per_line = 16;
-        unsigned       i;
+        const int bytes_per_line = 16;
+        int       i;
 
         /* The memory allocated from the host will be aligned to a
          * page boundary.  The Oberon heap is aligned to a 16-byte
@@ -343,7 +348,7 @@ namespace heap
         hb = allocated;
 
         while (hb < he) {
-            md::uint8 *p = hb;
+            md::HADDR p = hb;
 
             dialog::print("%xH:", heap_address_unchecked(hb));
 
@@ -388,13 +393,14 @@ namespace heap
 
 
     static md::uint32
-    compute_heap_size(md::uint32 s)
+    compute_heap_size(int sz)
     {
         int        page_size = getpagesize();
-        md::uint32 heap_size = ((s + HPAV) + page_size) & ~(page_size - 1);
+        md::uint32 heap_size = static_cast<md::uint32>(((sz + HPAV) + page_size) &
+                                                       ~(page_size - 1));
 
         assert(page_size == 4096);
-        assert(O3::MOD(heap_size, page_size) == 0);
+        assert(O3::MOD(static_cast<md::int32>(heap_size), page_size) == 0);
         return heap_size;
     }
 
@@ -424,7 +430,7 @@ namespace heap
 
 
     static bool
-    internal_make_heap(md::uint32 s)
+    internal_make_heap(int s)
     {
         /* The Oberon garbage collection system uses the top two bits
          * to signify information during traversal of pointers.
@@ -436,14 +442,12 @@ namespace heap
          * two bits function.  Reading Project Oberon section 8.3 for
          * more details on the pointer traversal algorithm.
          */
-        UNUSED md::uint8 *heap_limit_address   = reinterpret_cast<md::uint8 *>(0x40000000);
+        UNUSED md::HADDR  heap_limit_address   = reinterpret_cast<md::HADDR>(0x40000000);
         void             *heap_desired_address = reinterpret_cast<void *>(0x4000000);
         md::uint32        heap_size            = compute_heap_size(s);
-        md::uint64  h;
+        md::uint32        tag;
 
-        COMPILE_TIME_ASSERT(sizeof(h) == sizeof(allocated_heap));
-
-        assert((reinterpret_cast<md::uint8 *>(heap_desired_address) +
+        assert((reinterpret_cast<md::HADDR>(heap_desired_address) +
                 heap_size) < heap_limit_address);
 
         /* Since HPAV is added to the beginning of the heap to ensure
@@ -455,10 +459,13 @@ namespace heap
          * (since the size of the free block is placed in the tag
          * field).
          */
-        allocated_heap = (md::uint8 *)mmap(heap_desired_address, heap_size,
-                                           (PROT_READ | PROT_WRITE),
-                                           (MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED),
-                                           -1, 0);
+        allocated_heap = static_cast<md::HADDR>(mmap(heap_desired_address,
+                                                     heap_size,
+                                                     (PROT_READ | PROT_WRITE),
+                                                     (MAP_PRIVATE |
+                                                      MAP_ANONYMOUS |
+                                                      MAP_FIXED),
+                                                     -1, 0));
         if (allocated_heap == MAP_FAILED) {
             perror("mmap");
             dialog::fatal("%s:  failed to mmap heap: errno: %d\n",
@@ -468,21 +475,25 @@ namespace heap
                            heap_address(allocated_heap));
         assert(allocated_heap + heap_size < heap_limit_address);
         if (allocated_heap != NULL) {
+            md::OADDR h = host_to_heap(allocated_heap);
+
             memset(allocated_heap, '\0', heap_size);
             validate_heap_upper_bits();
-            h = reinterpret_cast<unsigned long>(allocated_heap);
+
             /* Heap must be aligned to a power-of-two boundary to
              * make internal oberon alignment work correctly.
              */
-            assert(O3::MOD(h, 4096) == 0);
-            memset(allocated_heap, '\0', s + HPAV);
+            assert(O3::MOD(static_cast<md::int32>(h), 4096) == 0);
+            memset(allocated_heap, '\0', static_cast<size_t>(s + HPAV));
 
             /* Round up the start of the Oberon heap so the heap
              * management routines will work.
              */
-            h += O3::MOD(-h, allocation_block_size);
-            assert(O3::MOD(h, allocation_block_size) == 0);
-            oberon_heap = reinterpret_cast<unsigned char *>(h);
+            h += static_cast<md::OADDR>(O3::MOD(-static_cast<md::int32>(h),
+                                                allocation_block_size));
+            assert(O3::MOD(static_cast<md::int32>(h),
+                           allocation_block_size) == 0);
+            oberon_heap = heap_to_host(h);
 
             /* Since the allocation blocks must be aligned on
              * paragraph boundaries it comes as no surprise that the
@@ -496,15 +507,18 @@ namespace heap
 
             {
                 /* Ensure the 'oberon_heap' alignment is 1 word below
-                 * a 16-byte boundary.
+                 * a 16-byte boundary so that the memory allocation
+                 * system is primed.
                  */
-                h = reinterpret_cast<md::uint64>(oberon_heap) + sizeof(md::uint32);
-                assert(O3::MOD(h, allocation_block_size) == 0);
+                h = host_to_heap(oberon_heap + sizeof(md::uint32));
+                assert(O3::MOD(static_cast<md::int32>(h),
+                               allocation_block_size) == 0);
             }
 
             /* Set up the heap as one giant free block. */
-            reinterpret_cast<unsigned int *>(oberon_heap)[0] = s | FreeBlock;
-            reinterpret_cast<unsigned int *>(oberon_heap)[1] = 0;
+            tag = static_cast<md::uint32>(s | FreeBlock);
+            reinterpret_cast<md::uint32 *>(oberon_heap)[0] = tag;
+            reinterpret_cast<md::uint32 *>(oberon_heap)[1] = 0;
 
             curr_heap = oberon_heap;
         }
@@ -513,7 +527,7 @@ namespace heap
 
 
     bool
-    make_heap(md::uint32 heap_mb, md::uint32 stack_mb)
+    make_heap(int heap_mb, int stack_mb)
     {
         bool r;
 
@@ -527,18 +541,17 @@ namespace heap
 
 
     void
-    release_heap(md::uint32 heap_in_megabytes,
-                 md::uint32 stack_in_megabytes)
+    release_heap(int heap_in_megabytes, int stack_in_megabytes)
     {
         assert(total_heap_size_in_bytes == ((heap_in_megabytes +
                                              stack_in_megabytes) *
                                             1024 * 1024));
-        munmap(allocated_heap, total_heap_size_in_bytes);
+        munmap(allocated_heap, static_cast<size_t>(total_heap_size_in_bytes));
     }
 
 
-    md::uint32
-    record_elem_array_len(const md::uint8 *array)
+    md::int32
+    record_elem_array_len(const md::HADDR array)
     {
         const record_elem_open_array_t *arr = record_elem_array(array);
 
@@ -550,8 +563,8 @@ namespace heap
     }
 
 
-    md::uint32
-    simple_elem_array_len(const md::uint8 *array)
+    md::int32
+    simple_elem_array_len(const md::HADDR array)
     {
         const simple_elem_open_array_t *arr = simple_elem_array(array);
 
@@ -563,8 +576,8 @@ namespace heap
     }
 
 
-    md::uint32
-    pointer_elem_array_len(const md::uint8 *array)
+    md::int32
+    pointer_elem_array_len(const md::HADDR array)
     {
         const pointer_elem_open_array_t *arr = pointer_elem_array(array);
 
@@ -576,10 +589,10 @@ namespace heap
     }
 
 
-    static md::uint8 *
-    get_heap_block(unsigned int size)
+    static md::HADDR
+    get_heap_block(int size)
     {
-        md::uint8 *retval = curr_heap;
+        md::HADDR  retval = curr_heap;
         md::uint32 free_tag;
         md::uint32 allocated_bytes; // Size allocated on heap.
         md::uint32 free_space;
@@ -589,9 +602,10 @@ namespace heap
         curr_heap += size;
 
         allocated_bytes = heap_address(curr_heap) - heap_address(oberon_heap);
-        free_space      = total_heap_size_in_bytes - allocated_bytes;
+        free_space      = (static_cast<md::uint32>(total_heap_size_in_bytes) -
+                           allocated_bytes);
         assert((free_space & ~TagMask) == 0);
-        free_tag        = reinterpret_cast<md::uint32>(free_space | FreeBlock);
+        free_tag        = free_space | static_cast<md::uint32>(FreeBlock);
 
         /* make the remainder of the heap a free block */
         /* free block tags contain the size */
@@ -606,15 +620,20 @@ namespace heap
     {
         assert(sizeof(md::uint32) == 4); // O3 heap fields are 4 bytes in size
         // Add the block tag and then round to a multiple of the allocation size
-        number_of_bytes += sizeof(md::uint32); // include block tag in calculations
-        return number_of_bytes + O3::MOD(-number_of_bytes, allocation_block_size);
+        number_of_bytes +=
+            static_cast<md::int32>(sizeof(md::uint32)); // Include block tag.
+        return (number_of_bytes +
+                O3::MOD(-number_of_bytes,
+                        allocation_block_size));
     }
 
 
-    md::uint32
-    system_new(md::uint8 *&adr, md::uint32 size)
+    void
+    system_new(md::HADDR &adr, int size)
     {
         md::int32 block_size = align_block_size(size);
+        md::int32 tag;
+
         // returns size of allocated block
         adr = get_heap_block(block_size);
         {
@@ -622,42 +641,43 @@ namespace heap
              * must be sizeof(md::uint32) before a
              * 'allocation_block_size' aligned address.
              */
-             UNUSED md::uint64 a = (reinterpret_cast<md::uint64>(adr) +
-                                    sizeof(md::uint32));
-            assert(O3::MOD(a, allocation_block_size) == 0);
+             UNUSED md::HADDR a = adr + sizeof(md::uint32);
+             assert(O3::MOD(static_cast<md::int32>(host_to_heap(a)),
+                            allocation_block_size) == 0);
         }
         assert(sizeof(md::uint32) == 4);         // O3 bitsets are 4 bytes
-        reinterpret_cast<md::uint32 *>(adr)[0] = block_size | SystemBlock; // block tag for GC
+        tag = block_size | SystemBlock;
+        reinterpret_cast<md::uint32 *>(adr)[0] = static_cast<md::uint32>(tag); // block tag for GC
         adr += sizeof(md::uint32);
-        return size;
     }
 
 
-    static md::uint32
-    new_array(md::uint8 *&adr, md::uint32 size, md::uint32 dataoffs)
+    static int
+    new_array(md::HADDR &adr, int size, md::uint32 dataoffs)
     {
         size = align_block_size(size);
         adr = get_heap_block(size);
-        assert(sizeof(md::uint32) == 4); // O3 block fields are 4 bytes in size
+        COMPILE_TIME_ASSERT(sizeof(md::uint32) == 4); // O3 block fields are 4 bytes in size
         assert((dataoffs % allocation_block_size) == 0);
         reinterpret_cast<md::uint32 *>(adr)[0] =
             heap_address(adr + sizeof(md::uint32) + dataoffs) | (BlkMark | BlkAray);
 
-        assert(sizeof(md::uint32) == 4); // O3 heap fields are 4 bytes in size
+        COMPILE_TIME_ASSERT(sizeof(md::uint32) == 4); // O3 heap fields are 4 bytes in size
         adr += sizeof(md::uint32);       // bypass tag
         return size;
     }
 
 
     void
-    fixup_td(md::uint8  *p,
+    fixup_td(md::HADDR   p,
              const char *lab,
-             md::uint8  *td_adr,
+             md::HADDR   td_adr,
              bool        is_array)
     {
         md::uint32 flags;
 
-        assert(O3::MOD(heap_address(td_adr), allocation_block_size) == 0);
+        assert(O3::MOD(static_cast<md::int32>(heap_address(td_adr)),
+                       allocation_block_size) == 0);
         if (is_array) {
             flags = BlkMark | BlkAray;
         } else {
@@ -676,10 +696,10 @@ namespace heap
     }
 
 
-    md::uint8 *
-    new_module(md::uint8 *td_adr, md::uint32 unpadded_record_size)
+    md::HADDR
+    new_module(md::HADDR td_adr, int unpadded_record_size)
     {
-        md::uint8 *adr;
+        md::HADDR adr;
 
         /* The modules loaded by the system loader are allocated as
          * system blocks.  This, of course, implies that they will
@@ -698,18 +718,19 @@ namespace heap
          * non-system blocks, but it does not seem worth the effort to
          * write the code to do so.
          */
-        /* return size ignored */ system_new(adr, unpadded_record_size);
+        system_new(adr, unpadded_record_size);
         fixup_td(adr, "mod", td_adr, false);
         return adr;
     }
 
 
     static void
-    alignment_check(const char *label, md::uint8 *adr)
+    alignment_check(const char *label, md::HADDR adr)
     {
         if (adr != NULL) {
             md::uint32 v = heap_address(adr);
-            if (O3::MOD(v, allocation_block_size) != 0) {
+            if (O3::MOD(static_cast<md::int32>(v),
+                        allocation_block_size) != 0) {
                 fprintf(stderr,
                         "Allocated: %xH\n"
                         "Oberon   : [%xH..%xH)   [size: %d]\n"
@@ -725,42 +746,42 @@ namespace heap
         }
     }
 
-    md::uint8 *
-    new_simple_elem_array(md::uint32  n_elements,
-                          md::uint32  elem_size,
-                          md::uint8  *td_adr)
+    md::HADDR
+    new_simple_elem_array(int       n_elements,
+                          int       elem_size,
+                          md::HADDR td_adr)
     {
-        md::uint8                *result = NULL;
-        md::uint8                *user_block;
-        md::uint8                *blk;
-        md::uint32                size_in_bytes;
+        md::HADDR                 result = NULL;
+        md::HADDR                 user_block;
+        md::HADDR                 blk;
+        int                       size_in_bytes;
         simple_elem_open_array_t *arr;
 
         assert(sizeof(simple_elem_open_array_t) == 16);
-        assert(O3::MOD(heap_address(td_adr),
+        assert(O3::MOD(static_cast<md::int32>(heap_address(td_adr)),
                        allocation_block_size) == 0); /* td must be
                                                       * paragraph
                                                       * block_size-aligned */
 
         size_in_bytes = n_elements * elem_size;
         if (size_in_bytes != 0) {
-            size_in_bytes += sizeof(simple_elem_open_array_t);
+            size_in_bytes += static_cast<int>(sizeof(simple_elem_open_array_t));
 
-            assert(sizeof(md::uint32) == 4); // O3 block tags are 4 bytes in size
+            COMPILE_TIME_ASSERT(sizeof(md::uint32) == 4); // O3 block tags are 4 bytes in size
             size_in_bytes   = new_array(blk, size_in_bytes,
                                         sizeof(simple_elem_open_array_t));
             arr             = reinterpret_cast<simple_elem_open_array_t *>(blk);
-            arr->block_size = size_in_bytes;
+            arr->block_size = static_cast<md::int32>(size_in_bytes);
             arr->pad        = 0xdeadbeef;
             arr->bound      = n_elements - 1;
             arr->td         = heap_address(td_adr) | (BlkMark | BlkAray);
-            user_block      = reinterpret_cast<md::uint8 *>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
+            user_block      = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
             array_alloc_progress("SE",
                                  blk,
                                  size_in_bytes,
                                  user_block,
-                                 n_elements,
-                                 elem_size,
+                                 static_cast<md::uint32>(n_elements),
+                                 static_cast<md::uint32>(elem_size),
                                  td_adr,
                                  user_block);
             assert(sizeof(md::uint32) == 4); // O3 heap fields are 4 bytes in size
@@ -773,22 +794,26 @@ namespace heap
     }
 
 
-    md::uint8 *
-    new_record_elem_array(md::uint32  n_elements,
-                          md::uint32  elem_size,
-                          md::uint8  *td_adr)
+    md::HADDR
+    new_record_elem_array(int       n_elements,
+                          int       elem_size,
+                          md::HADDR td_adr)
     {
         md::int32                 size;
-        md::uint8                *result = NULL;
-        md::uint8                *blk;
+        md::HADDR                 result = NULL;
+        md::HADDR                 blk;
         record_elem_open_array_t *arr;
 
         assert(sizeof(record_elem_open_array_t) == 32);
-        assert(O3::MOD(heap_address(td_adr), allocation_block_size) == 0);
+        assert(O3::MOD(static_cast<md::int32>(heap_address(td_adr)),
+                       allocation_block_size) == 0);
         size = n_elements * elem_size;
 
         if (size != 0) {
-            size += sizeof(record_elem_open_array_t);
+            md::HADDR data_adr;
+            md::HADDR pointer;
+
+            size += static_cast<md::int32>(sizeof(record_elem_open_array_t));
 
             assert(sizeof(md::uint32) == 4); // O3 heap fields are 4 bytes
             size            = new_array(blk, size, sizeof(record_elem_open_array_t));
@@ -802,14 +827,18 @@ namespace heap
             arr->bound      = n_elements - 1;
             arr->td         = heap_address(td_adr) | (BlkMark | BlkAray);
 
+            data_adr = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
+            pointer = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
             array_alloc_progress("RE",
-                                 blk, size,
-                                 reinterpret_cast<md::uint8 *>(&reinterpret_cast<unsigned int *>(&arr->td)[1]),
-                                 n_elements,
-                                 elem_size, td_adr,
-                                 reinterpret_cast<md::uint8 *>(&reinterpret_cast<unsigned int *>(&arr->td)[1]));
+                                 blk,
+                                 size,
+                                 pointer,
+                                 static_cast<md::uint32>(n_elements),
+                                 static_cast<md::uint32>(elem_size),
+                                 td_adr,
+                                 data_adr);
             assert(sizeof(md::uint32) == 4); // O3 heap fields are 4 bytes in size
-            result = reinterpret_cast<md::uint8 *>(&reinterpret_cast<unsigned int *>(&arr->td)[1]);
+            result = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
         } else {
             dialog::diagnostic("0-length RE\n");
         }
@@ -818,24 +847,33 @@ namespace heap
     }
 
 
-    md::uint8 *
-    new_pointer_elem_array(md::uint32  n_elements,
-                           md::uint32  elem_size,
-                           md::uint8  *td_adr)
+    md::HADDR
+    new_pointer_elem_array(int       n_elements,
+                           int       elem_size,
+                           md::HADDR td_adr)
     {
         md::int32                  size;
-        md::uint8                 *result = NULL;
-        md::uint8                 *blk;
+        md::HADDR                  result = NULL;
+        md::HADDR                  blk;
+        md::uint32                 td;
         pointer_elem_open_array_t *arr;
 
         assert(sizeof(pointer_elem_open_array_t) == 32);
-        assert(O3::MOD(heap_address(td_adr), allocation_block_size) == 0);
+        assert(O3::MOD(static_cast<md::int32>(heap_address(td_adr)),
+                       allocation_block_size) == 0);
         assert(sizeof(md::uint32) == 4); // pointers in O3 are 4 bytes
 
-        size = n_elements * sizeof(md::uint32);
+        size = n_elements * static_cast<md::int32>(sizeof(md::uint32));
 
         if (size != 0) {
-            size            += sizeof(pointer_elem_open_array_t);
+            md::HADDR data_adr;
+            md::HADDR pointer;
+
+            td = static_cast<md::uint32>((static_cast<md::int32>
+                                          (heap_address(td_adr)) |
+                                          (BlkMark | BlkAray)));
+
+            size            += static_cast<md::int32>(sizeof(pointer_elem_open_array_t));
             size            = new_array(blk, size, sizeof(pointer_elem_open_array_t));
             arr             = (pointer_elem_open_array_t *)blk;
             arr->block_size = size;
@@ -845,16 +883,20 @@ namespace heap
             arr->pad1       = 0xdeadbeef;
             arr->pad2       = 0xdeadbeef;
             arr->bound      = n_elements - 1;
-            arr->td         = heap_address(td_adr) | (BlkMark | BlkAray);
+            arr->td         = td;
 
+            data_adr = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
+            pointer  = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
             array_alloc_progress("PE",
-                                 blk, size,
-                                 reinterpret_cast<md::uint8 *>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]),
-                                 n_elements,
-                                 0, td_adr,
-                                 reinterpret_cast<md::uint8 *>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]));
+                                 blk,
+                                 size,
+                                 pointer,
+                                 static_cast<md::uint32>(n_elements),
+                                 0,
+                                 td_adr,
+                                 data_adr);
             assert(sizeof(md::uint32) == 4); // pointers in O3 are 4 bytes
-            result = reinterpret_cast<md::uint8 *>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
+            result = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
         } else {
             dialog::diagnostic("0-length PE\n");
         }
@@ -862,15 +904,15 @@ namespace heap
         return result;
     }
 
-    md::uint32
+    md::OADDR
     copy_command_line(const char *command_line)
     {
         /* Copy command line to a system block in the heap. */
-        const unsigned  len = strlen(command_line) + 1;
-        md::uint32      result;
-        md::uint8      *block;
+        size_t    len = strlen(command_line) + 1;
+        md::OADDR result;
+        md::HADDR block;
 
-        system_new(block, len);
+        system_new(block, static_cast<int>(len));
         result = heap_address(block);
         strcpy(reinterpret_cast<char *>(block), command_line);
         return result;

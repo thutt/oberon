@@ -17,11 +17,11 @@ namespace skl {
 
 
     void
-    vmsvc_fill_memory(md::uint32 adr)
+    vmsvc_fill_memory(md::OADDR adr)
     {
-        md::uint8                *ptr     = heap::host_address(adr);
+        md::HADDR                 ptr     = heap::host_address(adr);
         vmsvc_fill_memory_desc_t *vmsvc   = reinterpret_cast<vmsvc_fill_memory_desc_t *>(ptr);
-        md::uint8                *mem     = heap::host_address(vmsvc->adr);
+        md::HADDR                 mem     = heap::host_address(vmsvc->adr);
         md::uint32                n_bytes = vmsvc->n_bytes;
         md::uint32                value   = vmsvc->value;
 

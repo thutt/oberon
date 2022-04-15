@@ -1,4 +1,4 @@
-/* Copyright (c) 2020, 2021 Logic Magicians Software */
+/* Copyright (c) 2020, 2021, 2022 Logic Magicians Software */
 #if !defined(_MD_H)
 #define _MD_H
 #include <assert.h>
@@ -24,6 +24,28 @@ namespace md {                  /* Machine description. */
 
     double MinLReal(void);
     double MaxLReal(void);
+
+    typedef md::uint32 OFLAGS;  /* (Oberon Flags)
+                                 *
+                                 * A 32-bit unsigned value that holds
+                                 * Oberon condition codes.
+                                 */
+    typedef md::uint32 OINST;   /* (Oberon Instruction)
+                                 *
+                                 * A 32-bit unsigned value that is an
+                                 * SKL CPU instruction.
+                                 */
+    typedef md::uint32 OADDR;   /* (Oberon Address)
+                                 *
+                                 * An address in the Oberon heap,
+                                 * usable by the Oberon CPU.
+                                 */
+    typedef md::uint8 *HADDR;   /* (Host Address)
+                                 *
+                                 * An address in the Oberon heap,
+                                 * usable by the program running on
+                                 * the host.*/
+
 
     static inline void
     decompose_double(double d, uint32 &lo, uint32 &hi)

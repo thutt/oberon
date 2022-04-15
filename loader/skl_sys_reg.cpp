@@ -22,10 +22,10 @@ namespace skl {
 
 
     struct skl_sys_reg_t : skl::instruction_t {
-        unsigned    Rd;
+        int Rd;
 
         skl_sys_reg_t(cpu_t       *cpu_,
-                      md::uint32   inst_,
+                      md::OINST    inst_,
                       const char **mne_) :
             skl::instruction_t(cpu_, inst_, mne_),
             Rd(field(inst_, 25, 21))
@@ -42,7 +42,7 @@ namespace skl {
     };
 
     skl::instruction_t *
-    op_sys_reg(cpu_t *cpu, md::uint32 inst)
+    op_sys_reg(cpu_t *cpu, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 

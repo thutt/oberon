@@ -50,12 +50,15 @@ INCLUDE	:=					\
 WARNINGS	:=				\
 	--pedantic				\
 	-Wall					\
+	-Wconversion				\
 	-Werror					\
 	-Wno-switch				\
+	-Wsign-conversion			\
 	-fdata-sections				\
 	-fdiagnostics-color=never		\
 	-ffunction-sections			\
 	-fno-diagnostics-show-caret
+
 
 # Compiler Source code control
 TRACE	:=	\

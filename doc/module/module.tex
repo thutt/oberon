@@ -1,0 +1,47 @@
+% Copyright (c) 2022 Logic Magicians Software
+% All Rights Reserved
+\documentclass[10pt]{book}
+\title {Module Reference}
+
+\setlength{\parindent}{0pt}             % No indent on paragraphs.
+\setlength{\parskip}{6pt}
+\author{Logic Magicians Software \\ Copyright (c) 2022 Taylor Hutt}
+%\setcounter{secnumdepth}{5}
+
+\date {2022.03.21}
+
+\usepackage{times}  %postscript fonts
+\usepackage{acronym}
+\usepackage{calc}
+\usepackage{tabularx}
+\usepackage{xspace}
+\usepackage{float}
+\usepackage{ifthen}
+\usepackage{alltt}
+\usepackage{enumerate}
+\usepackage[inline]{enumitem}
+\usepackage{makeidx}
+\usepackage{bytefield}
+\makeindex
+\begin{document}
+% _ cannot be made into an active character because it interferes with
+% its use as a subscript operator in math mode.
+
+
+\include{lms-style-macros}
+\include{macros}
+\pagestyle{empty}
+\maketitle\eject\frontmatter
+\pagestyle{headings}
+\tableofcontents
+\mainmatter
+\skiptooddpage  \include{intro}
+\skiptooddpage  \include{environment}
+\skiptooddpage  \include{pathnames}
+\skiptooddpage
+\backmatter
+\printindex
+\end{document}
+% Local Variables: ***
+% mode:latex ***
+% End: ***

@@ -1,0 +1,166 @@
+\chap{Environment}
+
+This module provides access to the host OS' shell environment
+variables.  Environment variables can be changed within the Oberon
+environment, but any change made will not be reflected into the shell
+environment from which the Oberon program was launched.  Moreover,
+changes to the shell environment made after the Oberon program was
+launched will not be reflected in Oberon.
+
+These variables are key-value pairs specified in the shell
+environment that can be used to configure runtime aspects of programs.
+For example, a default directory for file output, or a search path for
+program executables.
+
+As a key-value pair, the shell environment variables have the
+following form:
+
+\begin{alltt}
+  Key     := name
+  Value   := element \{ ':' element \}
+
+  Name    := letter \{ letter | digit | '_' | \}
+  element := <ASCII characters except ':'>
+\end{alltt}
+
+\section{Source}
+
+\begin{tabularx}{\textwidth}{lX}
+  Source & \texttt{SKLEnvironment.Mod} \\
+  Test & \texttt{CTEnvironment.Mod} \\
+\end{tabularx}
+
+\section{Constants}
+
+There are no constants exported from this module.
+
+\section{Types}
+\subsection{\texttt{Text}}\label{environment:text}
+\begin{alltt}
+Text = POINTER TO ARRAY OF CHAR;
+\end{alltt}
+
+\begin{invariant}
+  \asciizfn{Text\deref}
+\end{invariant}
+
+\begin{semantics}
+  This type is used to refer to data that is stored in an internal
+  \emph{key-value} cache.  The unprocessed data was returned from the
+  host OS' when querying the value of an \emph{environment variable}.
+
+  If the data contains multiple value, such as directory names, it
+  must be split using \texttt{Split} (\xref{environment:split}) to
+  gain access to individual values.
+\end{semantics}
+
+
+\subsection{\texttt{Elements}}\label{environment:elements}
+\begin{alltt}
+Elements = POINTER TO ARRAY OF Text;
+\end{alltt}
+
+\begin{invariant}
+  (\forall i: 0 \leq i < \texttt{LEN(Elements\deref)}:
+    \texttt{Elements[}i\texttt{]} \neq \nil \logicaland \valid(\texttt{Elements[}i\texttt{]\deref}))
+\end{invariant}
+
+\begin{semantics}
+  Data of this type is produced by using \texttt{Split}
+  (\xref{environment:split}) to break down raw OS environment data
+  into an accessible data structure.
+\end{semantics}
+
+
+\section{Procedures}
+
+\subsection{Delete}\label{environment:delete}
+\begin{alltt}
+  PROCEDURE Delete*(key : ARRAY OF CHAR);
+\end{alltt}
+
+\begin{precondition}
+  ASCIIZ(\texttt{key})
+\end{precondition}
+
+\begin{semantics}
+  This procedure effectively removes \emph{key} from the internal data
+  cache.  Subsequent uses of \texttt{Lookup}
+  (\xref{environment:lookup}) for \texttt{key} will return \nil until
+  a new value is set.  A new value can be set using \texttt{Set}
+  (\xref{environment:set}).
+\end{semantics}
+
+\begin{postcondition}
+  \texttt{Environment.Lookup(key)} = \nil
+\end{postcondition}
+
+
+\subsection{Set}\label{environment:set}
+\begin{alltt}
+  PROCEDURE Set*(key   : ARRAY OF CHAR;
+                 value : ARRAY OF CHAR);
+\end{alltt}
+
+\begin{precondition}
+  ASCIIZ(\texttt{key}) \logicaland ASCIIZ(\texttt{value})
+\end{precondition}
+
+\begin{semantics}
+This procedure sets \emph{key} to \emph{value} in the internal data
+cache.  If \emph{key} does not exist in the internal data cache, it is
+added.  If \emph{key} exists, it is set to \emph{value} and the
+previous value is discarded.
+\end{semantics}
+
+\begin{postcondition}
+  \texttt{Environment.Lookup(key)\deref} = \texttt{value}
+\end{postcondition}
+
+
+\subsection{Lookup}\label{environment:lookup}
+\begin{alltt}
+  PROCEDURE Lookup*(key : ARRAY OF CHAR) : Text;
+\end{alltt}
+
+\begin{precondition}
+  ASCIIZ(\texttt{key})
+\end{precondition}
+
+\begin{semantics}
+This procedure looks up \emph{key} in the internal data cache.  If
+\emph{key} is present, its value is returned.  If \emph{key} is not
+present, \nil is returned.
+\end{semantics}
+
+\begin{postcondition}
+  \result = \nil \logicalor \validfn{\result\deref}
+\end{postcondition}
+
+
+\subsection{Split}\label{environment:split}
+\begin{alltt}
+  PROCEDURE Split*(v  : Text;
+                   ch : CHAR) : Elements;
+\end{alltt}
+
+\begin{precondition}
+  \texttt{v} = \nil \logicalor \validfn{v\deref}
+\end{precondition}
+
+\begin{semantics}
+This procedure splits the input, \emph{v}, using \emph{ch} as the
+character separating the multiple choices of the environment variable.
+
+If \emph{v} is \texttt{NIL}, \texttt{NIL} is returned.
+
+Otherwise, \result is an array containing the choices present in the
+variable.
+
+The test module provides examples of how this function can be used.
+\end{semantics}
+
+\begin{postcondition}
+  \result = \nil \logicalor \validfn{\result\deref}
+\end{postcondition}
+
