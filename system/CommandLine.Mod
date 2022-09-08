@@ -19,7 +19,7 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
     END;
 
   VAR    
-    (* Argument 0 <=> oberon loader
+    (* Argument 0 <=> Oberon loader
      * Argument 1 <=> Module.Command to load & execute
      * Argument 2..ParameterCount - 1 <=> arguments for Argument 1
      *
@@ -33,20 +33,32 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
 
   PROCEDURE GetArg*(num : INTEGER) : Parameter;
     VAR pl : ParmList;
-  BEGIN pl := parmlist.next;
-    WHILE (pl # NIL) & (num > 0) DO DEC(num); pl := pl.next; END;
-    IF pl # NIL THEN RETURN pl.text; ELSE RETURN NIL; END;
+  BEGIN
+    pl := parmlist.next;
+    WHILE (pl # NIL) & (num > 0) DO
+      DEC(num);
+      pl := pl.next;
+    END;
+    IF pl # NIL THEN
+      RETURN pl.text;
+    ELSE
+      RETURN NIL;
+    END;
   END GetArg;
 
   PROCEDURE InitParm( parm : ParmList);
-  BEGIN parm.next := NIL; parm.text := NIL;
+  BEGIN
+    parm.next := NIL;
+    parm.text := NIL;
   END InitParm;
 
   PROCEDURE AddParm(parm : ParmList);
   BEGIN (* pre: parmlist # NIL *)
     WITH parmlist:ParmListRoot DO
-      IF parmlist.last # NIL THEN parmlist.last.next := parm;
-      ELSE parmlist.next := parm;
+      IF parmlist.last # NIL THEN
+        parmlist.last.next := parm;
+      ELSE
+        parmlist.next := parm;
       END;
       parmlist.last := parm;
     END;
@@ -55,8 +67,18 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
   PROCEDURE NewParm(beg, len : INTEGER);
     VAR parm : ParmList; i : INTEGER;
   BEGIN
-    IF len > 0 THEN i := 0; NEW(parm); InitParm(parm); AddParm(parm); NEW(parm.text, len + 1);
-      WHILE len > 0 DO parm.text[i] := cmdline[beg]; INC(i); INC(beg); DEC(len); END;
+    IF len > 0 THEN
+      i := 0;
+      NEW(parm);
+      InitParm(parm);
+      AddParm(parm);
+      NEW(parm.text, len + 1);
+      WHILE len > 0 DO
+        parm.text[i] := cmdline[beg];
+        INC(i);
+        INC(beg);
+        DEC(len);
+      END;
       parm.text[i] := 0X;
     END;
   END NewParm;
@@ -67,26 +89,36 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
   PROCEDURE ParseNextParm(i : INTEGER) : INTEGER;
     VAR beg, j, len : INTEGER; ch : CHAR;
   BEGIN
-    LOOP (* skip leading tabs & spaces *)
+    LOOP (* Skip leading tabs & spaces. *)
       ch := cmdline[i];
-      IF (ch # 9X) & (ch # ' ') OR (ch = 0X) THEN EXIT; END;
+      IF (ch # 9X) & (ch # ' ') OR (ch = 0X) THEN
+        EXIT;
+      END;
       INC(i);
     END;
 
     IF ch # 0X THEN
       len := 0;
-      IF ch = '"' THEN (* collect until ending quote or end of command line *)
-        INC(i); beg := i;
+      IF ch = '"' THEN (* Collect until ending quote or end of command line. *)
+        INC(i);
+        beg := i;
         LOOP
           ch := cmdline[i];
-          IF (ch = '"' ) OR (ch = 0X) THEN EXIT; END;
-          INC(i); INC(len);
+          IF (ch = '"' ) OR (ch = 0X) THEN
+            EXIT;
+          END;
+          INC(i);
+          INC(len);
         END;
-      ELSE (* copy characters directly, until tab or space or end of command line *)
+      ELSE (* Copy characters directly, until tab or space or end of command line. *)
         beg := i;
         LOOP (* inv: ~(ch IN [' ', 9X, 0X]) *)
-          INC(len); INC(i); ch := cmdline[i];
-          IF (ch = ' ' ) OR (ch = 9X) OR (ch = 0X) THEN EXIT; END;
+          INC(len);
+          INC(i);
+          ch := cmdline[i];
+          IF (ch = ' ' ) OR (ch = 9X) OR (ch = 0X) THEN
+            EXIT;
+          END;
         END;
       END;
       NewParm(beg, len);
@@ -94,10 +126,11 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
     RETURN beg + len;
   END ParseNextParm;
 
-  (* pre: there must be no trailing whitespace characters at the end of the command line *)
+  (* pre: There must be no trailing whitespace characters at the end of the command line. *)
   PROCEDURE Parse;
     VAR i, NextOffset : INTEGER;
-  BEGIN i := 0;
+  BEGIN
+    i := 0;
     WHILE (i < LEN(cmdline)) & (cmdline[i] # 0X) DO
       NextOffset := ParseNextParm(i);
       i := NextOffset;
@@ -107,7 +140,12 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
 
   PROCEDURE Init;
     VAR root : ParmListRoot;
-  BEGIN ParameterCount := 0; NEW(root); InitParm(root); root.last := NIL; parmlist := root; (* dummy list head *)
+  BEGIN
+    ParameterCount := 0;
+    NEW(root);
+    InitParm(root);
+    root.last := NIL;
+    parmlist := root; (* dummy list head *)
     Kernel.GetCommandLine(cmdline);
     Parse;
   END Init;
