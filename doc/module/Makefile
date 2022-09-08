@@ -5,6 +5,7 @@ TEX	=	module.tex			\
 		macros.tex			\
 		intro.tex			\
 		environment.tex			\
+		getopt.tex			\
 		pathnames.tex
 
 PKG_DIR		:= $(SKL_DIR)/doc/packages
