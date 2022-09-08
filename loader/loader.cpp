@@ -44,7 +44,7 @@ help(const char *program_name)
                   " --verbose | "
                   "--dump-heap | "
                   "--diagnostic | "
-                  "instruction-count |\n"
+                  "--instruction-count |\n"
                   " --stack <stack-size-in-megabytes> | "
                   "--trace]..."
                   "\n", program_name);
