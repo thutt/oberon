@@ -838,9 +838,18 @@ IMPORT
 
   PROCEDURE ReverseArgList*(VAR head : Arg);
     VAR h, q, r : Node;
-  BEGIN q := NIL; h := head;
-    WHILE h # NIL DO r := h.next; h.next := q; q := h; h := r; END;
-    head := q(Arg);
+  BEGIN
+    q := NIL;
+    h := head;
+    WHILE h # NIL DO
+      r := h.next;
+      h.next := q;
+      q := h;
+      h := r;
+    END;
+    IF q # NIL THEN
+      head := q(Arg);
+    END;
   END ReverseArgList;
 
   PROCEDURE ArgumentN*(x : Arg; n : INTEGER) : Arg;

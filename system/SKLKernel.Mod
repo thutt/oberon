@@ -1678,8 +1678,33 @@
     END;
   END GetClock;
 
+  (* Returns length of command line, including 0X *)
+  PROCEDURE GetCommandLineLength*() : INTEGER;
+    VAR
+      adr : ADDRESS;
+      l   : INTEGER;
+      ch  : CHAR;
+  BEGIN
+    adr := CmdLine;
+    l   := 0;
+    IF adr # 0 THEN
+      LOOP
+        SYSTEM.GET(adr, ch);
+        INC(l);
+        INC(adr);
+        IF ch = 0X THEN (* inv: Block must be 0X terminated. *)
+          EXIT;
+        END;
+      END;
+    END;
+    RETURN l;
+  END GetCommandLineLength;
+
   PROCEDURE GetCommandLine*(VAR l : ARRAY OF CHAR);
-    VAR i, len : LONGINT; ch : CHAR; adr : ADDRESS;
+    VAR
+      i, len : LONGINT;
+      ch : CHAR;
+      adr : ADDRESS;
   BEGIN
     adr := CmdLine;
     IF adr # 0 THEN

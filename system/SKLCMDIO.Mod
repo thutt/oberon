@@ -7,6 +7,8 @@ IMPORT
   Files, 
   Texts, 
   CommandLine, 
+  GetOpt,
+  Kernel,
   Console;
 
   CONST (* compiler options: *)
@@ -33,7 +35,6 @@ IMPORT
       pc- : LONGINT; (* pc used for finding runtime errors *)
       name- : ARRAY FileDir.FnLength OF CHAR; (* module name, if determinable; else [0] = 0X *)
       filename- : ARRAY 24 OF CHAR; (* OPM.MaxIdLen *)
-      argno- : INTEGER; (* argument number: 2 <= argno <= MAX(INTEGER) *)
     END;
 
     CurrentSourceInfo = RECORD
@@ -55,6 +56,8 @@ IMPORT
 
     (* current command line parameter *)    
     CurrentArg : INTEGER; (* inv: 1 <= CurrentParm <= MAX(INTEGER) (index into CommandLine arguments; 0-based) *)
+
+    handle : GetOpt.Handle;
     
   PROCEDURE MakeFilename(VAR name, FName: ARRAY OF CHAR; ext: ARRAY OF CHAR);
     VAR i, j: INTEGER; ch: CHAR;
@@ -296,9 +299,171 @@ IMPORT
   END InitSourceInfoOptions;
   
   PROCEDURE InitSourceInfo(VAR info : SourceInfo);
-  BEGIN info.pc := 0; info.beg := 0; info.source := NIL; info.name[0] := 0X; info.filename[0] := 0X;
+  BEGIN
+    info.pc := 0;
+    info.beg := 0;
+    info.source := NIL;
+    info.name[0] := 0X;
+    info.filename[0] := 0X;
   END InitSourceInfo;
   
+  PROCEDURE InitializeOptions;
+    PROCEDURE AddOption(h      : GetOpt.Handle;
+                        value  : INTEGER; (* Option value when matched *)
+                        flags  : SET;
+                        short  : CHAR;
+                        name   : ARRAY OF CHAR;
+                        help   : ARRAY OF CHAR);
+      VAR
+        r : BOOLEAN;
+    BEGIN
+      r := GetOpt.AddOption(h, value, flags, short, name, help);
+      ASSERT(r);
+    END AddOption;
+
+  BEGIN
+    handle := GetOpt.Create();
+    AddOption(handle,
+              GetOpt.ValueMin + 0,
+              { },
+              'a',
+              "no-assert",
+              "Disable ASSERT code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 1,
+              { },
+              'A',
+              "assert",
+              "Enable ASSERT code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 2,
+              { },
+              'c',
+              "no-nil-check",
+              "Disable NIL check code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 3,
+              { },
+              'C',
+              "nil-check",
+              "Enable NIL check code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 4,
+              { },
+              'D',
+              "dump-ast",
+              "Dump AST to console.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 5,
+              { },
+              'e',
+              "no-symbol-extend",
+              "Disallow Symbol file extension.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 6,
+              { },
+              'E',
+              "symbol-extend",
+              "Allow Symbol file extension.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 7,
+              { },
+              'H',
+              "hash-stats",
+              "Dump hash table statistics to console.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 8,
+              { },
+              'i',
+              "no-index-check",
+              "Disable Index Check code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 9,
+              { },
+              'I',
+              "index-check",
+              "Enable Index Check code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 10,
+              { },
+              'n',
+              "no-new-symbol",
+              "Disable new Symbol file creation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 11,
+              { },
+              'N',
+              "new-symbol",
+              "Enable new Symbol file creation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 12,
+              { },
+              'o',
+              "no-overflow-check",
+              "Disable arithmetic overflow checking.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 13,
+              { },
+              'O',
+              "overflow-check",
+              "Enable arithmetic overflow checking.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 14,
+              { },
+              'p',
+              "no-pointer-init",
+              "Disable NIL pointer initialization code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 15,
+              { },
+              'P',
+              "pointer-init",
+              "Enable NIL pointer initialization code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 16,
+              { },
+              'r',
+              "no-range-check",
+              "Enable arithmetic range check code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 17,
+              { },
+              'R',
+              "range-check",
+              "Enable arithmetic range check code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 18,
+              { },
+              't',
+              "no-type-check",
+              "Disable runtime type checking code generation.");
+
+    AddOption(handle,
+              GetOpt.ValueMin + 19,
+              { },
+              'T',
+              "type-check",
+              "Enable runtime type checking code generation.");
+  END InitializeOptions;
+
   (* command line parsing
       Compiler command line syntax:
       
@@ -307,54 +472,95 @@ IMPORT
       inv: Compiler.Compile <=> CommandLine.GetArg(1)
   *)
   PROCEDURE GetSourceInfo*(VAR FileInfo : SourceInfo; VAR noerr : BOOLEAN);
-    VAR parm : CommandLine.Parameter; flag : INTEGER;
-  BEGIN noerr := TRUE; InitSourceInfo(FileInfo); INC(CurrentArg);
-    IF CurrentArg < CommandLine.ParameterCount THEN
-      parm := CommandLine.GetArg(CurrentArg);
-      FileInfo.argno := CurrentArg;
+    VAR
+      parm : CommandLine.Parameter;
+      flag : INTEGER;
+      arg  : GetOpt.ArgumentDesc;
+      r    : GetOpt.Status;
+  BEGIN
+    noerr := TRUE;
+    InitSourceInfo(FileInfo);
 
-      (* gather options for the filename that follows *)
-      WHILE noerr & (parm[0] = CommandLine.OptionChar) DO
-        IF parm[1] = '?' THEN
-          flag := OptBanner;
-        ELSE
-          CASE CAP(parm[1]) OF
-          |  'A': flag := Assert; (* assertion evaluation *)
-          |  'C': flag := OptPtrChk; (* NIL pointer check *)
-          |  'D': flag := OptDumpNode; (* turn on node dumper *)
-          |  'E': flag := ExtSF; (* symbol file extension *)
-          |  'H':  flag := OptHashStats; (* hash table statistics *)
-          |  'I':  flag := InxChk; (* index check *)
-          |  'N': flag := NewSF; (* new symbol file *)
-          |  'O': flag := OvflChk; (* overflow check *)
-          |  'P': flag := PtrInit; (* pointer initialization *)
-          |  'R': flag := RanChk; (* range checking *)
-          |  'T': flag := TypChk; (* type checking *)
-          ELSE
-            noerr := FALSE;
-          END;
-        END;
-        IF noerr THEN
-          FileInfo.options := FileInfo.options / {flag};
-          INC(CurrentArg);
-          FileInfo.argno := CurrentArg;
-          IF CurrentArg < CommandLine.ParameterCount THEN
-            parm := CommandLine.GetArg(CurrentArg);
-          ELSE
-            noerr := FALSE;
-          END;
-        END;
-      END;
+    REPEAT
+      r := GetOpt.Parse(handle, arg);
+      IF r = GetOpt.Success THEN
+        CASE arg.value OF
+        | GetOpt.ValueHelp:
+          GetOpt.Help(handle);
+          Kernel.Terminate(0);
 
-      IF noerr THEN (* inv: parm is set to a non-option parameter; presumably the filename *)
-          COPY(parm^, FileInfo.filename);
-          COPY(parm^, FileInfo.name);
-          Texts.New; FileInfo.source := Objects.NewObj(Texts.Text);
+        | GetOpt.ValueArgument:
+          COPY(arg.argument^, FileInfo.filename);
+          COPY(arg.argument^, FileInfo.name);
+          Texts.New;
+          FileInfo.source := Objects.NewObj(Texts.Text);
           Texts.Open(FileInfo.source, FileInfo.filename);
+          RETURN;               (* Return to compile file. *)
+
+        | GetOpt.ValueMin +  0: (* Disable assert. *)
+          EXCL(FileInfo.options, Assert);
+
+        | GetOpt.ValueMin +  1: (* Enable assert. *)
+          INCL(FileInfo.options, Assert);
+
+        | GetOpt.ValueMin +  2: (* Disable NIL check. *)
+          EXCL(FileInfo.options, OptPtrChk);
+
+        | GetOpt.ValueMin +  3: (* Enable NIL check. *)
+          INCL(FileInfo.options, OptPtrChk);
+
+        | GetOpt.ValueMin +  4: (* Dump AST. *)
+          INCL(FileInfo.options, OptDumpNode);
+
+        | GetOpt.ValueMin +  5: (* Disable symbol file extension. *)
+          EXCL(FileInfo.options, ExtSF);
+
+        | GetOpt.ValueMin +  6: (* Enable symbol file extension. *)
+          INCL(FileInfo.options, ExtSF);
+
+        | GetOpt.ValueMin +  7: (* Hash table stats. *)
+          EXCL(FileInfo.options, OptHashStats);
+
+        | GetOpt.ValueMin +  8: (* Disable index check. *)
+          EXCL(FileInfo.options, InxChk);
+
+        | GetOpt.ValueMin +  9: (* Enable index check. *)
+          INCL(FileInfo.options, InxChk);
+
+        | GetOpt.ValueMin + 10: (* Disable new symbol file. *)
+          EXCL(FileInfo.options, NewSF);
+
+        | GetOpt.ValueMin + 11: (* Enable new symbol file. *)
+          INCL(FileInfo.options, NewSF);
+
+        | GetOpt.ValueMin + 12: (* Disable overflow check. *)
+          EXCL(FileInfo.options, OvflChk);
+
+        | GetOpt.ValueMin + 13: (* Enable overflow check. *)
+          INCL(FileInfo.options, OvflChk);
+
+        | GetOpt.ValueMin + 14: (* Disable pointer initialization. *)
+          EXCL(FileInfo.options, PtrInit);
+
+        | GetOpt.ValueMin + 15: (* Enable pointer initialization. *)
+          INCL(FileInfo.options, PtrInit);
+
+        | GetOpt.ValueMin + 16: (* Disable arithmetic overflow check. *)
+          EXCL(FileInfo.options, RanChk);
+
+        | GetOpt.ValueMin + 17: (* Enable arithmetic overflow check. *)
+          INCL(FileInfo.options, RanChk);
+
+        | GetOpt.ValueMin + 18: (* Disable runtime type checking. *)
+          EXCL(FileInfo.options, TypChk);
+
+        | GetOpt.ValueMin + 19: (* Enable runtime type checking. *)
+          INCL(FileInfo.options, TypChk);
+        END;
+      ELSE
+        noerr := FALSE;
       END;
-    ELSE
-      noerr := FALSE;
-    END;
+    UNTIL ~noerr OR (r = GetOpt.Done);
   END GetSourceInfo;
 
   (* initialization *)
@@ -366,5 +572,7 @@ IMPORT
   BEGIN CFI.SymFile := NIL; CFI.RefFile := NIL; CFI.ObjFile := NIL; CFI.FileInfo.source := NIL;
   END ModuleEnd;
   
-BEGIN CurrentArg := 1;
+BEGIN
+  InitializeOptions;
+  CurrentArg := 1;
 END SKLCMDIO.

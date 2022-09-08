@@ -225,7 +225,7 @@ IMPORT
       | "&"  : s :=  and; OPM.Get(ch)
       | "("  : OPM.Get(ch);
                IF ch = "*" THEN Comment; Get(s)
-                 ELSE s := lparen
+               ELSE s := lparen
                END
       | ")"  : s := rparen; OPM.Get(ch)
       | "*"  : s :=  times; OPM.Get(ch)
