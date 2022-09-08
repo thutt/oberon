@@ -221,6 +221,7 @@ The files contained here are provided under the corresponding software license.
   doc/Makefile
   doc/module/Makefile
   doc/module/environment.tex
+  doc/module/getopt.tex
   doc/module/intro.tex
   doc/module/macros.tex
   doc/module/module.tex
@@ -299,6 +300,9 @@ The files contained here are provided under the corresponding software license.
   system/CTGC.Mod
   system/CTGC.Obj
   system/CTGC.Sym
+  system/CTGetOpt.Mod
+  system/CTGetOpt.Obj
+  system/CTGetOpt.Sym
   system/CTImport.Mod
   system/CTImport.Obj
   system/CTImport.Sym
@@ -372,6 +376,9 @@ The files contained here are provided under the corresponding software license.
   system/DebugIO.Sym
   system/FileDir.Obj
   system/FileDir.Sym
+  system/GetOpt.Mod
+  system/GetOpt.Obj
+  system/GetOpt.Sym
   system/HostOS.Obj
   system/HostOS.Sym
   system/Kernel.Obj

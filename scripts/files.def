@@ -12,6 +12,8 @@ OS=(SKLKernel.Mod                               \
     Reals.Mod                                   \
     SKLConsole.Mod                              \
     SKLEnvironment.Mod                          \
+    Pathnames.Mod                               \
+    GetOpt.Mod                                  \
     SKLFileDir.Mod                              \
     Files.Mod                                   \
     DebugIO.Mod                                 \
@@ -125,6 +127,7 @@ COMPILER_TESTS=(                                \
     [CTFingerprint.Mod]="pass"                  \
     [CTFor.Mod]="pass"                          \
     [CTGC.Mod]="pass,manual"                    \
+    [CTGetOpt.Mod]="pass,manual"                \
     [CTImport.Mod]="pass"                       \
     [CTIncDec.Mod]="pass"                       \
     [CTInstructionCount.Mod]="pass"             \
