@@ -326,140 +326,140 @@ IMPORT
     AddOption(handle,
               GetOpt.ValueMin + 0,
               { },
-              'a',
+              'A',
               "no-assert",
               "Disable ASSERT code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 1,
               { },
-              'A',
+              'a',
               "assert",
               "Enable ASSERT code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 2,
               { },
-              'c',
+              'C',
               "no-nil-check",
               "Disable NIL check code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 3,
               { },
-              'C',
+              'c',
               "nil-check",
               "Enable NIL check code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 4,
               { },
-              'D',
+              'd',
               "dump-ast",
               "Dump AST to console.");
 
     AddOption(handle,
               GetOpt.ValueMin + 5,
               { },
-              'e',
+              'E',
               "no-symbol-extend",
               "Disallow Symbol file extension.");
 
     AddOption(handle,
               GetOpt.ValueMin + 6,
               { },
-              'E',
+              'e',
               "symbol-extend",
               "Allow Symbol file extension.");
 
     AddOption(handle,
               GetOpt.ValueMin + 7,
               { },
-              'H',
+              0X,
               "hash-stats",
               "Dump hash table statistics to console.");
 
     AddOption(handle,
               GetOpt.ValueMin + 8,
               { },
-              'i',
+              'I',
               "no-index-check",
               "Disable Index Check code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 9,
               { },
-              'I',
+              'i',
               "index-check",
               "Enable Index Check code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 10,
               { },
-              'n',
+              'N',
               "no-new-symbol",
               "Disable new Symbol file creation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 11,
               { },
-              'N',
+              'n',
               "new-symbol",
               "Enable new Symbol file creation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 12,
               { },
-              'o',
+              'O',
               "no-overflow-check",
               "Disable arithmetic overflow checking.");
 
     AddOption(handle,
               GetOpt.ValueMin + 13,
               { },
-              'O',
+              'o',
               "overflow-check",
               "Enable arithmetic overflow checking.");
 
     AddOption(handle,
               GetOpt.ValueMin + 14,
               { },
-              'p',
+              'P',
               "no-pointer-init",
               "Disable NIL pointer initialization code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 15,
               { },
-              'P',
+              'p',
               "pointer-init",
               "Enable NIL pointer initialization code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 16,
               { },
-              'r',
+              'R',
               "no-range-check",
               "Enable arithmetic range check code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 17,
               { },
-              'R',
+              'r',
               "range-check",
               "Enable arithmetic range check code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 18,
               { },
-              't',
+              'T',
               "no-type-check",
               "Disable runtime type checking code generation.");
 
     AddOption(handle,
               GetOpt.ValueMin + 19,
               { },
-              'T',
+              't',
               "type-check",
               "Enable runtime type checking code generation.");
   END InitializeOptions;
