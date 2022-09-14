@@ -32,7 +32,7 @@ TYPE
    * a Text that have been split on a separator character.
    * For example:
    *
-   *  SKL_OBJ_PATH="/tmp:/var:/homes"
+   *  SKL_SEARCH_PATH="/tmp:/var:/homes"
    *
    *)
   Elements* = POINTER TO ARRAY OF Text;

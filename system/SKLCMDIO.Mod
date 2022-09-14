@@ -1,12 +1,14 @@
 MODULE SKLCMDIO; (* Command Line IO *)
 IMPORT
-  SYSTEM, 
-  Objects, 
-  EL:=SKLERR, 
-  FileDir, 
-  Files, 
-  Texts, 
-  CommandLine, 
+  SYSTEM,
+  Objects,
+  EL:=SKLERR,
+  Environment,
+  FileDir,
+  Files,
+  FileUtils,
+  Texts,
+  CommandLine,
   GetOpt,
   Kernel,
   Console;
@@ -33,8 +35,7 @@ IMPORT
       beg- : LONGINT; (* offset in 'source' where parsing should begin *)
       options- : SET; (* command line options *)
       pc- : LONGINT; (* pc used for finding runtime errors *)
-      name- : ARRAY FileDir.FnLength OF CHAR; (* module name, if determinable; else [0] = 0X *)
-      filename- : ARRAY 24 OF CHAR; (* OPM.MaxIdLen *)
+      filename- : ARRAY FileDir.FnLength OF CHAR; (* file name, if determinable; else [0] = 0X *)
     END;
 
     CurrentSourceInfo = RECORD
@@ -45,7 +46,7 @@ IMPORT
       lastpos : LONGINT;
       curpos : LONGINT;
     END;
-    
+
     ObjHeader* = RECORD
       nofexp*, nofprv*, nofdesc*, nofcom*, nofptr*, nofhlp*, noffix* : LONGINT;
     END;
@@ -53,24 +54,26 @@ IMPORT
   VAR
     objname, objmod : ARRAY 24 OF CHAR;
     CFI : CurrentSourceInfo; (* CurrentFileInfo *)
-
-    (* current command line parameter *)    
-    CurrentArg : INTEGER; (* inv: 1 <= CurrentParm <= MAX(INTEGER) (index into CommandLine arguments; 0-based) *)
-
     handle : GetOpt.Handle;
-    
-  PROCEDURE MakeFilename(VAR name, FName: ARRAY OF CHAR; ext: ARRAY OF CHAR);
-    VAR i, j: INTEGER; ch: CHAR;
-  BEGIN i := 0;
-    LOOP ch := name[i];
-      IF ch = 0X THEN EXIT END ;
-      FName[i] := ch; INC(i);
-    END ;
-    j := 0;
-    REPEAT ch := ext[j]; FName[i] := ch; INC(i); INC(j)
-    UNTIL ch = 0X
+
+  VAR
+    SearchPath : Environment.Elements;
+
+  PROCEDURE MakeFilename(modName      : ARRAY OF CHAR;
+                         ext          : ARRAY OF CHAR;
+                         VAR filename : FileDir.Filename);
+    VAR
+      info : FileDir.PathInfo;
+      temp : FileDir.Filename;
+  BEGIN
+    FileDir.Split(CFI.FileInfo.filename, info); (* Full path of source. *)
+    COPY(modName, temp);
+    FileDir.SetFileComponent(temp, FileDir.piFile, info);
+    COPY(ext, temp);
+    FileDir.SetFileComponent(temp, FileDir.piExtension, info);
+    FileDir.Join(info, filename);
   END MakeFilename;
-  
+
   (* ------------------------- Log Output ------------------------- *)
 
   PROCEDURE LogWSet*(s : SET);
@@ -95,7 +98,7 @@ IMPORT
   PROCEDURE LogWNum*(x, digits : LONGINT);
   BEGIN Console.Int(x, digits);
   END LogWNum;
-  
+
   PROCEDURE LogWHex*(x : LONGINT);
   BEGIN Console.Hex(x);
   END LogWHex;
@@ -113,11 +116,11 @@ IMPORT
     END ;
     IF n = 255 THEN HALT(132) END
   END Mark;
-  
+
   PROCEDURE err*(n: INTEGER; VAR noerr : BOOLEAN);
   BEGIN Mark(n, CFI.curpos, noerr)
   END err;
-  
+
   PROCEDURE SetSourceTextPos*(pos : LONGINT);
   BEGIN CFI.curpos := pos;
   END SetSourceTextPos;
@@ -129,8 +132,10 @@ IMPORT
   END Get;
 
   PROCEDURE OpenSource*(VAR FileInfo : SourceInfo; VAR noerr : BOOLEAN);
-  BEGIN noerr := TRUE;
-    Texts.OpenReader(CFI.ModF, FileInfo.source, FileInfo.beg); CFI.curpos := Texts.Pos(CFI.ModF);
+  BEGIN
+    noerr := TRUE;
+    Texts.OpenReader(CFI.ModF, FileInfo.source, FileInfo.beg);
+    CFI.curpos := Texts.Pos(CFI.ModF);
     CFI.lastpos := CFI.curpos - 10;
   END OpenSource;
 
@@ -146,7 +151,7 @@ IMPORT
   PROCEDURE RefWNum*(i: LONGINT);
   BEGIN Files.WriteNum(CFI.RefF, i);
   END RefWNum;
-  
+
   PROCEDURE ObjW*(ch: CHAR);
   BEGIN Files.Write(CFI.ObjF, ch);
   END ObjW;
@@ -163,21 +168,54 @@ IMPORT
   BEGIN Files.WriteBytes(CFI.ObjF, bytes, n);
   END ObjWBytes;
 
-  PROCEDURE NewRefObj*(VAR modName (* r/o *) : ARRAY OF CHAR; OFext, RFext : ARRAY OF CHAR; OFtag, OFversion : LONGINT; VAR noerr : BOOLEAN);
-    VAR objName, refName: FileDir.Filename;
+
+  PROCEDURE NewObj(VAR (* R/O *) modName : ARRAY OF CHAR;
+                   OFext : ARRAY OF CHAR;
+                   OFtag, OFversion : LONGINT;
+                   VAR noerr : BOOLEAN);
+    VAR
+      objName: FileDir.Filename;
   BEGIN
-    MakeFilename(modName, objName, OFext); MakeFilename(modName, refName, RFext);
+    MakeFilename(modName, OFext, objName);
     CFI.ObjFile := Files.New(objName);
     IF CFI.ObjFile # NIL THEN
-      Files.Set(CFI.ObjF, CFI.ObjFile, 0); Files.WriteLInt(CFI.ObjF, OFtag); Files.WriteLInt(CFI.ObjF, OFversion);
-    ELSE err(EL.CannotOpenObjFile, noerr);
+      Files.Set(CFI.ObjF, CFI.ObjFile, 0);
+      Files.WriteLInt(CFI.ObjF, OFtag);
+      Files.WriteLInt(CFI.ObjF, OFversion);
+    ELSE
+      err(EL.CannotOpenObjFile, noerr);
     END;
-    
+
+  END NewObj;
+
+  PROCEDURE NewRef(VAR (* R/O *) modName : ARRAY OF CHAR;
+                   RFext : ARRAY OF CHAR;
+                   VAR noerr : BOOLEAN);
+    VAR
+      refName: FileDir.Filename;
+  BEGIN
+    MakeFilename(modName, RFext, refName);
     CFI.RefFile := Files.New(refName);
-    IF CFI.RefFile # NIL THEN Files.Set(CFI.RefF, CFI.RefFile, 0);
-    ELSE err(EL.CannotOpenRefFile, noerr);
+    IF CFI.RefFile # NIL THEN
+      Files.Set(CFI.RefF, CFI.RefFile, 0);
+    ELSE
+      err(EL.CannotOpenRefFile, noerr);
+    END;
+  END NewRef;
+
+
+  PROCEDURE NewRefObj*(VAR modName (* r/o *) : ARRAY OF CHAR;
+                       OFext, RFext : ARRAY OF CHAR;
+                       OFtag, OFversion : LONGINT;
+                       VAR noerr : BOOLEAN);
+  BEGIN
+    NewObj(modName, OFext, OFtag, OFversion, noerr);
+
+    IF noerr THEN
+      NewRef(modName, RFext, noerr);
     END;
   END NewRefObj;
+
 
   PROCEDURE DeleteRefObj*;
   BEGIN Files.Purge(CFI.RefFile); Files.Purge(CFI.ObjFile);
@@ -242,17 +280,27 @@ IMPORT
   PROCEDURE DeleteNewSym*;
   BEGIN Files.Purge(CFI.SymFile); CFI.SymFile := NIL;
   END DeleteNewSym;
-  
+
   PROCEDURE DiscardNewSym*;
   BEGIN Files.Purge(CFI.SymFile); CFI.SymFile := NIL;
   END DiscardNewSym;
 
-  PROCEDURE NewSym*(modName : ARRAY OF CHAR; SFext : ARRAY OF CHAR; SFtag, SFversion : CHAR; VAR noerr : BOOLEAN);
-    VAR symName : FileDir.Filename;
-  BEGIN ASSERT(CFI.SymFile = NIL, 200); (* cannot occur when a symfile is already open *)
-    MakeFilename(modName, symName, SFext); CFI.SymFile := Files.New(symName);
-    IF CFI.SymFile # NIL THEN Files.Set(CFI.SymF, CFI.SymFile, 0); SymWCh(SFtag); SymWCh(SFversion);
-    ELSE err(EL.CannotOpenSymfile, noerr);
+  PROCEDURE NewSym*(VAR (* R/O *) modName : ARRAY OF CHAR;
+                    SFext : ARRAY OF CHAR;
+                    SFtag, SFversion : CHAR;
+                    VAR noerr : BOOLEAN);
+    VAR
+      symName : FileDir.Filename;
+  BEGIN
+    ASSERT(CFI.SymFile = NIL, 200); (* Must not occur when a symfile is open. *)
+    MakeFilename(modName, SFext, symName);
+    CFI.SymFile := Files.New(symName);
+    IF CFI.SymFile # NIL THEN
+      Files.Set(CFI.SymF, CFI.SymFile, 0);
+      SymWCh(SFtag);
+      SymWCh(SFversion);
+    ELSE
+      err(EL.CannotOpenSymfile, noerr);
     END;
   END NewSym;
 
@@ -276,13 +324,38 @@ IMPORT
   BEGIN Files.ReadBytes(CFI.SymF, x, SIZE(LONGREAL)); eofSF := CFI.SymF.eof;
   END SymRLReal;
 
-  PROCEDURE OldSym*(modName : ARRAY OF CHAR; SFext : ARRAY OF CHAR; SFtag, SFversion : CHAR; VAR done : BOOLEAN);
-    VAR tag, vers : CHAR; symName : FileDir.Filename; eof : BOOLEAN;
-  BEGIN ASSERT(CFI.SymFile = NIL); (* cannot occur when a symfile is already open *)
-    MakeFilename(modName, symName, SFext);
-    done := FALSE; CFI.SymFile := Files.Old(symName);
-    IF CFI.SymFile # NIL THEN Files.Set(CFI.SymF, CFI.SymFile, 0); SymRCh(tag, eof);
-      SymRCh(vers, eof); done := ~eof & (tag = SFtag) & (vers = SFversion);
+  PROCEDURE OldSym*(modName : ARRAY OF CHAR;
+                    SFext : ARRAY OF CHAR;
+                    SFtag, SFversion : CHAR;
+                    VAR done : BOOLEAN);
+    VAR
+      tag, vers : CHAR;
+      symName : FileDir.Filename;
+      eof : BOOLEAN;
+  BEGIN
+    (* This procedure is used to load imported module's symbol files.
+     * It is also used to import the current module's symbol file to
+     * check fingerprints.  However, in some cases, the directory of
+     * the source file may not be in the search path.  As a result,
+     * the symbol file for the module may not be found during the self-
+     * import, and the compiler will state that a new symbol file has
+     * been created.  To avoid this, first look for the symbol file directly,
+     * and then search for the symbol file.
+     *)
+
+    ASSERT(CFI.SymFile = NIL); (* Must not occur when a Sym is already open. *)
+    done := FALSE;
+
+    MakeFilename(modName, SFext, symName);
+    CFI.SymFile := Files.Old(symName);
+    IF CFI.SymFile = NIL THEN
+      CFI.SymFile := FileUtils.FindAndOpenFile(SearchPath, symName);
+    END;
+    IF CFI.SymFile # NIL THEN
+      Files.Set(CFI.SymF, CFI.SymFile, 0);
+      SymRCh(tag, eof);
+      SymRCh(vers, eof);
+      done := ~eof & (tag = SFtag) & (vers = SFversion);
     END;
   END OldSym;
 
@@ -297,16 +370,15 @@ IMPORT
   PROCEDURE InitSourceInfoOptions*(VAR info : SourceInfo);
   BEGIN info.options := DefaultOptions;
   END InitSourceInfoOptions;
-  
+
   PROCEDURE InitSourceInfo(VAR info : SourceInfo);
   BEGIN
     info.pc := 0;
     info.beg := 0;
     info.source := NIL;
-    info.name[0] := 0X;
     info.filename[0] := 0X;
   END InitSourceInfo;
-  
+
   PROCEDURE InitializeOptions;
     PROCEDURE AddOption(h      : GetOpt.Handle;
                         value  : INTEGER; (* Option value when matched *)
@@ -466,9 +538,9 @@ IMPORT
 
   (* command line parsing
       Compiler command line syntax:
-      
+
       Compiler.Compile [-{option}]... filename
-      
+
       inv: Compiler.Compile <=> CommandLine.GetArg(1)
   *)
   PROCEDURE GetSourceInfo*(VAR FileInfo : SourceInfo; VAR noerr : BOOLEAN);
@@ -491,7 +563,6 @@ IMPORT
 
         | GetOpt.ValueArgument:
           COPY(arg.argument^, FileInfo.filename);
-          COPY(arg.argument^, FileInfo.name);
           Texts.New;
           FileInfo.source := Objects.NewObj(Texts.Text);
           Texts.Open(FileInfo.source, FileInfo.filename);
@@ -569,10 +640,15 @@ IMPORT
   END ModuleBegin;
 
   PROCEDURE ModuleEnd*;
-  BEGIN CFI.SymFile := NIL; CFI.RefFile := NIL; CFI.ObjFile := NIL; CFI.FileInfo.source := NIL;
+  BEGIN
+    CFI.SymFile := NIL;
+    CFI.RefFile := NIL;
+    CFI.ObjFile := NIL;
+    CFI.FileInfo.source := NIL;
   END ModuleEnd;
-  
+
+
 BEGIN
   InitializeOptions;
-  CurrentArg := 1;
+  SearchPath  := FileDir.GetEnvironmentPaths("SKL_SEARCH_PATH");
 END SKLCMDIO.

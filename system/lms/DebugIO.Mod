@@ -1,3 +1,4 @@
+(* Copyright (c) 2000 Logic Magicians Software *)
 MODULE DebugIO;
   IMPORT Kernel, Reals, Files, Console;
 

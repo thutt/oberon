@@ -91,7 +91,7 @@ Usage:
       SKL_BUILD_TYPE   : 'release'
       SKL_BUILD_OPTIONS: ''
       SKL_BUILD_DIR    : '/tmp/skl/skl-o2'
-      SKL_OBJ_PATH     : '/nas/homes/thutt/skl/skl-o2/system'
+      SKL_SEARCH_PATH  : '/nas/homes/thutt/skl/skl-o2/system'
 
 
     SKL_DIR is used by the shell functions, and is the root of the

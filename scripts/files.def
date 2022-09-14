@@ -6,21 +6,25 @@
 #
 
 # The base Oberon operating system.
+#
+# This list must be kept in 'import order' so
+# that each module can be compiled.
 declare -a OS;
-OS=(SKLKernel.Mod                               \
-    SKLHostOS.Mod                               \
+OS=(lms/Kernel.Mod                              \
+    lms/HostOS.Mod                              \
     Reals.Mod                                   \
-    SKLConsole.Mod                              \
-    SKLEnvironment.Mod                          \
-    Pathnames.Mod                               \
-    GetOpt.Mod                                  \
-    SKLFileDir.Mod                              \
+    lms/Console.Mod                             \
+    lms/Environment.Mod                         \
+    lms/Pathnames.Mod                           \
+    lms/GetOpt.Mod                              \
+    lms/FileDir.Mod                             \
     Files.Mod                                   \
-    DebugIO.Mod                                 \
-    SKLModuleInspector.Mod                      \
-    SKLTrap.Mod                                 \
-    CommandLine.Mod                             \
-    SKLModules.Mod                              \
+    lms/FileUtils.Mod                           \
+    lms/DebugIO.Mod                             \
+    lms/ModuleInspector.Mod                     \
+    lms/Trap.Mod                                \
+    lms/CommandLine.Mod                         \
+    lms/Modules.Mod                             \
     Types.Mod                                   \
     Objects.Mod                                 \
     Input.Mod                                   \
@@ -33,7 +37,7 @@ OS=(SKLKernel.Mod                               \
     MenuViewers.Mod                             \
     TextFrames.Mod                              \
     s3.System.Mod                               \
-    KernelTD.Mod);
+    lms/KernelTD.Mod);
 
 
 # The SKL compiler.

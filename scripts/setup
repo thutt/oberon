@@ -76,7 +76,7 @@ function main()
         echo "Build output directory (-o) has not been set.";
     else
         export SKL_BUILD_DIR="${bod}";
-        export SKL_OBJ_PATH="${SKL_DIR}/system";
+        export SKL_SEARCH_PATH="${SKL_DIR}/system:${SKL_DIR}/system/lms";
         export SKL_BUILD_OPTIONS="";
         export SKL_ARCHITECTURE="${architecture}";
 

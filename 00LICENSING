@@ -21,8 +21,6 @@ The files contained here are provided under the corresponding software license.
   system/Edit.Mod
   system/Elektra.Pr3.Fnt
   system/Elektra.Scn.Fnt
-  system/Environment.Obj
-  system/Environment.Sym
   system/Files.Mod
   system/Files.Obj
   system/Files.Sym
@@ -72,11 +70,7 @@ The files contained here are provided under the corresponding software license.
   system/MenuViewers.Mod
   system/MenuViewers.Obj
   system/MenuViewers.Sym
-  system/ModuleInspector.Obj
-  system/ModuleInspector.Sym
   system/Modules.Mod
-  system/Modules.Obj
-  system/Modules.Sym
   system/Oberon.Mod
   system/Oberon.Obj
   system/Oberon.Sym
@@ -89,9 +83,6 @@ The files contained here are provided under the corresponding software license.
   system/Reals.Obj
   system/Reals.Sym
   system/Rectangles.Mod
-  system/SKLModuleInspector.Mod
-  system/SKLModules.Mod
-  system/SKLTrap.Mod
   system/Script.Mod
   system/ScriptFrames.Mod
   system/Styles.Mod
@@ -196,8 +187,6 @@ The files contained here are provided under the corresponding software license.
   system/Times8i.Pr3.Fnt
   system/Times8i.Scn.Fnt
   system/Trap.Mod
-  system/Trap.Obj
-  system/Trap.Sym
   system/Types.Mod
   system/Types.Obj
   system/Types.Sym
@@ -242,6 +231,8 @@ The files contained here are provided under the corresponding software license.
   doc/style-macros/lms-style-macros.tex
   include/buildenv.h
   licenses/gpl-3.0.text
+  loader/fileutils.cpp
+  loader/fileutils.h
   make/config.mk
   scripts/execute.py
   scripts/files.def
@@ -366,29 +357,6 @@ The files contained here are provided under the corresponding software license.
   system/CTTypeDesc.Sym
   system/CTVMT.Mod
   system/CTVMT.Obj
-  system/CommandLine.Mod
-  system/CommandLine.Obj
-  system/CommandLine.Sym
-  system/Console.Obj
-  system/Console.Sym
-  system/DebugIO.Mod
-  system/DebugIO.Obj
-  system/DebugIO.Sym
-  system/FileDir.Obj
-  system/FileDir.Sym
-  system/GetOpt.Mod
-  system/GetOpt.Obj
-  system/GetOpt.Sym
-  system/HostOS.Obj
-  system/HostOS.Sym
-  system/Kernel.Obj
-  system/Kernel.Sym
-  system/KernelTD.Mod
-  system/KernelTD.Obj
-  system/KernelTD.Sym
-  system/Pathnames.Mod
-  system/Pathnames.Obj
-  system/Pathnames.Sym
   system/Prime.Mod
   system/Prime.Obj
   system/Prime.Sym
@@ -404,7 +372,6 @@ The files contained here are provided under the corresponding software license.
   system/SKLCMDIO.Mod
   system/SKLCMDIO.Obj
   system/SKLCMDIO.Sym
-  system/SKLConsole.Mod
   system/SKLDN.Mod
   system/SKLDN.Obj
   system/SKLDN.Sym
@@ -417,14 +384,9 @@ The files contained here are provided under the corresponding software license.
   system/SKLERR.Mod
   system/SKLERR.Obj
   system/SKLERR.Sym
-  system/SKLEnvironment.Mod
-  system/SKLFileDir.Mod
-  system/SKLHostOS.Mod
   system/SKLIE.Mod
   system/SKLIE.Obj
   system/SKLIE.Sym
-  system/SKLKernel.Debug.Mod
-  system/SKLKernel.Mod
   system/SKLMD.Mod
   system/SKLMD.Obj
   system/SKLMD.Sym
@@ -459,6 +421,49 @@ The files contained here are provided under the corresponding software license.
   system/SKLTU.Mod
   system/SKLTU.Obj
   system/SKLTU.Sym
+  system/lms/CommandLine.Mod
+  system/lms/CommandLine.Obj
+  system/lms/CommandLine.Sym
+  system/lms/Console.Mod
+  system/lms/Console.Obj
+  system/lms/Console.Sym
+  system/lms/DebugIO.Mod
+  system/lms/DebugIO.Obj
+  system/lms/DebugIO.Sym
+  system/lms/Environment.Mod
+  system/lms/Environment.Obj
+  system/lms/Environment.Sym
+  system/lms/FileDir.Mod
+  system/lms/FileDir.Obj
+  system/lms/FileDir.Sym
+  system/lms/FileUtils.Mod
+  system/lms/FileUtils.Obj
+  system/lms/FileUtils.Sym
+  system/lms/GetOpt.Mod
+  system/lms/GetOpt.Obj
+  system/lms/GetOpt.Sym
+  system/lms/HostOS.Mod
+  system/lms/HostOS.Obj
+  system/lms/HostOS.Sym
+  system/lms/Kernel.Debug.Mod
+  system/lms/Kernel.Mod
+  system/lms/Kernel.Obj
+  system/lms/Kernel.Sym
+  system/lms/KernelTD.Mod
+  system/lms/KernelTD.Obj
+  system/lms/KernelTD.Sym
+  system/lms/ModuleInspector.Mod
+  system/lms/ModuleInspector.Obj
+  system/lms/ModuleInspector.Sym
+  system/lms/Modules.Mod
+  system/lms/Modules.Obj
+  system/lms/Modules.Sym
+  system/lms/Pathnames.Mod
+  system/lms/Pathnames.Obj
+  system/lms/Pathnames.Sym
+  system/lms/Trap.Mod
+  system/lms/Trap.Obj
+  system/lms/Trap.Sym
 
 
 **** licenses/lgpl-3.0.text

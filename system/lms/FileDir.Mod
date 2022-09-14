@@ -1,6 +1,10 @@
 (* Copyright (c) 2022 Logic Magicians Software *)
 MODULE FileDir;
-  IMPORT SYSTEM, Kernel, HostOS;
+IMPORT
+  SYSTEM,
+  Kernel,
+  Environment,
+  HostOS;
 
   CONST
     InitialYear = 1900; (* Initial year of Oberon-2 date system *)
@@ -1006,6 +1010,54 @@ MODULE FileDir;
       finish(h);
     END;
   END terminate;
+
+
+  (* GetEnvironmentPaths
+   *
+   *  This procedure looks up the environment variable specified
+   *  in 'env'.  If the environment variable has a value, that value
+   *  is assumed to be a ':'-separated list of absolute paths.  The
+   *  value is split on ':' and the array of pathnames is returned.
+   *  The contents of the array are in the same order as the environment
+   *  variable.
+   *
+   *  If any of the paths specified do not end in '/', it will be
+   *  automatically added.
+   *
+   *  If the environment variable has no value, NIL is returned.
+   *)
+  PROCEDURE GetEnvironmentPaths*(env : ARRAY OF CHAR) : Environment.Elements;
+    VAR
+      varval : Environment.Text;
+      s      : Environment.Text;
+      paths  : Environment.Elements;
+      i      : INTEGER;
+      l      : LONGINT;
+  BEGIN
+    paths  := NIL;
+    varval := Environment.Lookup(env);
+    IF varval # NIL THEN
+      paths := Environment.Split(varval, ':');
+      IF paths # NIL THEN
+        i := 0;
+        WHILE i < LEN(paths^) DO
+          (* If the path does not end in '/', append for use with Join(). *)
+          l := LEN(paths[i]^);
+          IF paths[i][l - 2] # '/' THEN (* 0X is at paths[l - 1]. *)
+            NEW(s, l + 1);
+            COPY(paths[i]^, s^);
+            s[l - 1] := '/';
+            s[l]     := 0X; (* s is one character larger. *)
+            paths[i] := s;
+          END;
+          INC(i);
+        END;
+      END;
+      RETURN paths;
+    ELSE
+      RETURN NIL;
+    END;
+  END GetEnvironmentPaths;
 
 BEGIN
   (* Dummy list header (for ease of list handling). *)

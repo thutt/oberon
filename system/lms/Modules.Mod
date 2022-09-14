@@ -1,5 +1,14 @@
 MODULE Modules;
-  IMPORT SYSTEM, Kernel, HostOS, FileDir, Files, CommandLine, Console;
+IMPORT
+  SYSTEM,
+  Kernel,
+  HostOS,
+  FileDir,
+  Files,
+  FileUtils,
+  CommandLine,
+  Environment,
+  Console;
 
   CONST
     dsFingerprint = 0;
@@ -121,6 +130,9 @@ MODULE Modules;
     indent : INTEGER; (* debug only *)
     EmptyString : Name;
     OberonName, LoopName : Name;
+
+  VAR
+    SearchPath : Environment.Elements;
 
   PROCEDURE ^ ThisCommand*(mod: Module; name: ARRAY OF CHAR): Command;
   PROCEDURE ^ Load(VAR (* R/O *) name: ARRAY OF CHAR; VAR mod : Module);
@@ -890,12 +902,25 @@ MODULE Modules;
     uses := NIL;
   END LoadModule;
 
+  PROCEDURE FindObjFile(VAR (* R/O *) name : ARRAY OF CHAR) : Files.File;
+    VAR
+      info  : FileDir.PathInfo;
+      fname : FileDir.Filename;
+      f     : Files.File;
+      i     : INTEGER;
+      len   : LONGINT;
+      path  : FileDir.Filename;
+  BEGIN
+    FileDir.Split(name, info);
+    FileDir.SetFileComponent('.Obj', FileDir.piExtension, info);
+    FileDir.Join(info, fname);
+    RETURN FileUtils.FindAndOpenFile(SearchPath, fname);
+  END FindObjFile;
+
   PROCEDURE Load(VAR (* R/O *) name: ARRAY OF CHAR; VAR mod : Module);
     VAR
       f : Files.File;
       R : Files.Rider;
-      fname : FileDir.Filename;
-      info : FileDir.PathInfo;
       ch : CHAR;
       tag, version : LONGINT;
 
@@ -908,19 +933,15 @@ MODULE Modules;
     END;
 
     IF mod = NIL THEN
-      FileDir.Split(name, info);
-
-      FileDir.SetFileComponent('.Obj', FileDir.piExtension, info);
-      FileDir.Join(info, fname);
-      IF dsDiskLoad IN DiagSet THEN
-        Indent;
-        Console.Str('---disk<');
-        Console.Str(fname);
-        Console.Str('>');
-        Console.Ln;
-      END;
-      f := Files.Old(fname);
+      f := FindObjFile(name);
       IF f # NIL THEN
+        IF dsDiskLoad IN DiagSet THEN
+          Indent;
+          Console.Str('---disk<');
+          Console.Str(f.name);
+          Console.Str('>');
+          Console.Ln;
+        END;
         Files.Set(R, f, 0);
         Files.ReadLInt(R, tag);
         IF tag = OFtag THEN
@@ -930,7 +951,7 @@ MODULE Modules;
             IF dsDiskLoad IN DiagSet THEN
               Indent;
               Console.Str('---from disk<');
-              Console.Str(fname);
+              Console.Str(f.name);
               Console.Str('>');
               Console.Str(' adr=');
               Console.Hex(SYSTEM.VAL(LONGINT, mod));
@@ -1147,6 +1168,7 @@ MODULE Modules;
     Console.Ln;
   END Reason;
 
+
   PROCEDURE Init;
     VAR
       b : BOOLEAN;
@@ -1154,9 +1176,10 @@ MODULE Modules;
       loop : Command;
       m, c : Name;
   BEGIN
+    SearchPath  := FileDir.GetEnvironmentPaths("SKL_SEARCH_PATH");
     EmptyString := NewName('');
-    OberonName := NewName('Oberon');
-    LoopName := NewName('Loop');
+    OberonName  := NewName('Oberon');
+    LoopName    := NewName('Loop');
 
     indent := 0;
     ExportUseMap[ORD(Uconst) - 1] := Econst;

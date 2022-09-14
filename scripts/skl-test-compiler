@@ -54,7 +54,7 @@ function main()
 {
     local module;
 
-    SKL_OBJ_PATH="${SKL_DIR}/system/test:${SKL_OBJ_PATH}";
+    SKL_SEARCH_PATH="${SKL_DIR}/system/test:${SKL_SEARCH_PATH}";
 
     cd ${SKL_DIR}/system;
 

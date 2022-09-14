@@ -104,41 +104,10 @@ MODULE SKL;
       OPM.LogWLn;
     END Do;
 
-    PROCEDURE OnOff(b : BOOLEAN);
-    BEGIN
-      OPM.LogWStr(' (');
-      IF b THEN
-        OPM.LogWStr('on');
-      ELSE
-        OPM.LogWStr('off');
-      END;
-      OPM.LogW(')');
-    END OnOff;
-    
-    PROCEDURE Banner;
-    BEGIN
-      OPM.LogWStr('A: assertion evaluation'); OnOff(OPM.Assert IN source.options); OPM.LogWLn;
-      OPM.LogWStr('C: NIL pointer check'); OnOff(OPM.OptPtrChk IN source.options); OPM.LogWLn;
-      OPM.LogWStr('D: dump nodes'); OnOff(OPM.OptDumpNode IN source.options); OPM.LogWLn;
-      OPM.LogWStr('E: symbol file extension'); OnOff(OPM.ExtSF IN source.options); OPM.LogWLn;
-      OPM.LogWStr('H: hash table stats'); OnOff(OPM.OptHashStats IN source.options); OPM.LogWLn;
-      OPM.LogWStr('I: index checking'); OnOff(OPM.InxChk IN source.options); OPM.LogWLn;
-      OPM.LogWStr('N: new symbol file'); OnOff(OPM.NewSF IN source.options); OPM.LogWLn;
-      OPM.LogWStr('O: overflow check'); OnOff(OPM.OvflChk IN source.options); OPM.LogWLn;
-      OPM.LogWStr('P: pointer initialization'); OnOff(OPM.PtrInit IN source.options); OPM.LogWLn;
-      OPM.LogWStr('R: range checking'); OnOff(OPM.RanChk IN source.options); OPM.LogWLn;
-      OPM.LogWStr('T: type checking'); OnOff(OPM.TypChk IN source.options); OPM.LogWLn;
-      OPM.LogWStr('?: print this banner'); OPM.LogWLn;
-    END Banner;
-
   BEGIN
     OPM.InitSourceInfoOptions(source);
     LOOP
       OPM.GetSourceInfo(source); (* post: noerr <=> success or not *)
-      IF OPM.OptBanner IN source.options THEN
-        Banner;
-        EXIT;
-      END;
       IF OPM.noerr THEN
         Do(source);
       END;

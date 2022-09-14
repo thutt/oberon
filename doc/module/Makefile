@@ -18,7 +18,7 @@ TEX_OPTS	:= \
 
 module__:		module.pdf
 	$(PROLOG);				\
-	echo "All targets built.";
+	echo "Module Docs: All targets built.";
 
 
 module.pdf:	$(TEX) \

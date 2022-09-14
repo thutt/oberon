@@ -239,7 +239,7 @@ function oberon-show-config ()
     echo "SKL_BUILD_TYPE   : '${SKL_BUILD_TYPE}'";
     echo "SKL_BUILD_OPTIONS: '${SKL_BUILD_OPTIONS}'";
     echo "SKL_BUILD_DIR    : '${SKL_BUILD_DIR}'";
-    echo "SKL_OBJ_PATH     : '${SKL_OBJ_PATH}'";
+    echo "SKL_SEARCH_PATH  : '${SKL_SEARCH_PATH}'";
 }
 export -f oberon-show-config;
 

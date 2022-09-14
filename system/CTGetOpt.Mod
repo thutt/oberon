@@ -44,7 +44,7 @@ VAR
 BEGIN
   h := GetOpt.Create();
   AddOption(TRUE, h, 64, { GetOpt.ValueNeeded },
-            0X, "symbols", 
+            0X, "symbols",
             "Add a directory to search for Sym files.");
   AddOption(TRUE, h, 65, { GetOpt.ValueNeeded },
             0X, "no-nil-check",
@@ -68,7 +68,7 @@ BEGIN
         Console.Str(arg.argument^);
         Console.Str("'");
         Console.Ln;
-        
+
       | 64:
         Console.Str("--symbols: '");
         Console.Str(arg.argument^);
@@ -78,7 +78,7 @@ BEGIN
       | 65:
         Console.Str("--no-nil-check");
         Console.Ln;
-        
+
       | 66:
         Console.Str("Verbosity enabled");
         Console.Ln;
