@@ -1,4 +1,4 @@
-(* Copyright (c) 2021 Logic Magicians Software
+(* Copyright (c) 2021, 2022 Logic Magicians Software
  *
  * Test code generation for string cmoparisons.
  *)
@@ -6,6 +6,7 @@ MODULE CTString;
 IMPORT Console;
 
 TYPE
+  String = POINTER TO ARRAY OF CHAR;
   CompareFn = PROCEDURE(VAR l, r : ARRAY OF CHAR) : BOOLEAN;
 
 
@@ -77,8 +78,12 @@ END InvokeTest;
 
 PROCEDURE Test*;
   VAR
-    VAR l, r : ARRAY 20 OF CHAR;
+    l, r : ARRAY 20 OF CHAR;
+    byte : String;
 BEGIN
+  NEW(byte, 5);
+  COPY("BYTE", byte^);
+  InvokeTest("ADR", byte^);
   InvokeTest("", "FileDesc");
   InvokeTest("File", "");
   InvokeTest("File", "FileDesc");

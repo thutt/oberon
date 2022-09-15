@@ -1,4 +1,4 @@
-(* Copyright (c) 2021 Logic Magicians Software
+(* Copyright (c) 2021, 2022 Logic Magicians Software
  *
  * Test code around Files.Mod.
  *)
@@ -84,7 +84,7 @@ BEGIN
    *   + 4096 '3'
    *   + 4096 '4'
    *)
-  f := Files.Old("CTFileIO.data");
+  f := Files.Old("compiler/skl/tests/CTFileIO.data");
   ASSERT(f # NIL);
   SingleByte(f);
   BlockRead(f);
