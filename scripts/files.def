@@ -42,26 +42,26 @@ OS=(lms/Kernel.Mod                              \
 
 # The SKL compiler.
 declare -a SKL;
-SKL=(SKLERR.Mod                                 \
-     SKLCMDIO.Mod                               \
-     SKLMD.Mod                                  \
-     SKLOS.Mod                                  \
-     SKLST.Mod                                  \
-     SKLIE.Mod                                  \
-     SKLT.Mod                                   \
-     SKLTB.Mod                                  \
-     SKLDN.Mod                                  \
-     SKLDS.Mod                                  \
-     SKLCGL.Mod                                 \
-     SKLCGH.Mod                                 \
-     SKLTH.Mod                                  \
-     SKLTT.Mod                                  \
-     SKLPU.Mod                                  \
-     SKLTU.Mod                                  \
-     SKLSTP.Mod                                 \
-     SKLE.Mod                                   \
-     SKLSP.Mod                                  \
-     SKL.Mod);
+SKL=(compiler/skl/SKLERR.Mod                    \
+     compiler/skl/SKLCMDIO.Mod                  \
+     compiler/skl/SKLMD.Mod                     \
+     compiler/skl/SKLOS.Mod                     \
+     compiler/skl/SKLST.Mod                     \
+     compiler/skl/SKLIE.Mod                     \
+     compiler/skl/SKLT.Mod                      \
+     compiler/skl/SKLTB.Mod                     \
+     compiler/skl/SKLDN.Mod                     \
+     compiler/skl/SKLDS.Mod                     \
+     compiler/skl/SKLCGL.Mod                    \
+     compiler/skl/SKLCGH.Mod                    \
+     compiler/skl/SKLTH.Mod                     \
+     compiler/skl/SKLTT.Mod                     \
+     compiler/skl/SKLPU.Mod                     \
+     compiler/skl/SKLTU.Mod                     \
+     compiler/skl/SKLSTP.Mod                    \
+     compiler/skl/SKLE.Mod                      \
+     compiler/skl/SKLSP.Mod                     \
+     compiler/skl/SKL.Mod);
 
 # The compiler called O3
 

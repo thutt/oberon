@@ -211,8 +211,10 @@ IMPORT
     BEGIN
       OPS.Get(PU.token); ptype := ST.NewProcedureType(); CheckSysFlag(ptype.sysflag, 0);
       IF PU.token = OPS.lparen THEN
-        OPS.Get(PU.token); ST.OpenProcedureScope(PU.level, NIL);
-        FormalParameters(ptype.parms, ptype.result); dummy := ST.CloseScope();
+        OPS.Get(PU.token);
+        ST.OpenProcedureScope(PU.level, NIL);
+        FormalParameters(ptype.parms, ptype.result);
+        dummy := ST.CloseScope();
       ELSE ptype.result := ST.notyp; ptype.parms := NIL;
       END;
       RETURN ptype;
@@ -675,17 +677,33 @@ IMPORT
           recTyp(ST.Record).scope := ST.CloseScope();
         END ;
 
-        INC(PU.level); ST.OpenProcedureScope(PU.level, proc);
-        self := ST.NewBasicSym(objMode); self.type := objTyp; ST.Insert(selfName, self);
+        INC(PU.level);
+        ST.OpenProcedureScope(PU.level, proc);
+        self := ST.NewBasicSym(objMode);
+        self.type := objTyp;
+        ST.Insert(selfName, self);
         GetParams;
         IF baseProc # NIL THEN (* override base procedure *)
-          oldSelf := baseProc.type(ST.Procedure).parms; baseSelfType := oldSelf.type;
-          IF (objMode # oldSelf.kind) OR ~ST.Extends(objTyp, baseSelfType) THEN err(EL.ParmMismatch); END ;
+          oldSelf := baseProc.type(ST.Procedure).parms;
+          baseSelfType := oldSelf.type;
+          IF (objMode # oldSelf.kind) OR
+             ~ST.Extends(objTyp, baseSelfType) THEN
+            err(EL.ParmMismatch);
+          END ;
           baseParms := ST.FirstParm(baseProc.type(ST.Procedure));
           ovrrideParms := ST.FirstParm(proc.type(ST.Procedure));
-          E.CheckParamMatch(ST.NextParm(ovrrideParms), ST.NextParm(baseParms), FALSE);
-          IF proc.type(ST.Procedure).result # baseProc.type(ST.Procedure).result THEN err(EL.ResultMismatch) END ;
-          IF (baseProc.vis = ST.export) & (proc.vis = ST.internal) & (recTyp.sym # NIL) & (recTyp.sym.vis = ST.export) THEN err(EL.ExportOverride) END ;
+          E.CheckParamMatch(ST.NextParm(ovrrideParms),
+                            ST.NextParm(baseParms),
+                            FALSE);
+          IF proc.type(ST.Procedure).result # baseProc.type(ST.Procedure).result THEN
+            err(EL.ResultMismatch)
+          END;
+          IF (baseProc.vis = ST.export) &
+             (proc.vis = ST.internal) &
+             (recTyp.sym # NIL) &
+             (recTyp.sym.vis = ST.export) THEN
+            err(EL.ExportOverride)
+          END ;
           INCL(proc.flags, ST.redef);
         END;
         proc.type(ST.Procedure).parms := ST.FirstScopeVar(ST.topScope);
@@ -693,7 +711,8 @@ IMPORT
         IF ~forward THEN Body END ;
         DEC(PU.level);
         proc.scope := ST.CloseScope();
-      ELSE err(EL.IdentExpected);
+      ELSE
+        err(EL.IdentExpected);
       END;
     END TProcDecl;
 
@@ -734,16 +753,22 @@ IMPORT
       END;
       IF (mode # ST.lproc) & (PU.level > 0) THEN err(EL.MustBeGlobalProc) (* incorrect mark *) END ;
 
-      INC(PU.level); ST.OpenProcedureScope(PU.level, proc);
-      ST.LinkSymbol(proc, NIL); GetParams;
+      INC(PU.level);
+      ST.OpenProcedureScope(PU.level, proc);
+      ST.LinkSymbol(proc, NIL);
+      GetParams;
 
       proc.type(ST.Procedure).parms := ST.FirstScopeVar(ST.topScope);
-      IF mode = ST.cproc THEN GetCode;
-      ELSIF ~forward THEN Body;
+      IF mode = ST.cproc THEN
+        GetCode;
+      ELSIF ~forward THEN
+        Body;
       END;
       DEC(PU.level);
-      proc.scope := ST.CloseScope(); proc.type(ST.Procedure).sysflag := sysflag;
-    ELSE err(EL.IdentExpected);
+      proc.scope := ST.CloseScope();
+      proc.type(ST.Procedure).sysflag := sysflag;
+    ELSE
+      err(EL.IdentExpected);
     END;
   END ProcDecl;
 

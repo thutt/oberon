@@ -44,17 +44,23 @@ IMPORT
    PROCEDURE CountTBProcs(type : ST.Type);
       VAR ancestor, rec : ST.Record; scope : CountTBProcInfo;
 
-   BEGIN rec := type(ST.Record);
-      IF rec.nofmeth = -1 THEN ASSERT(~(ST.methodcounted IN rec.flags));
-         (* !! inconsistency w/ methodcounted and nofmeth = -1 *)
-         (* this assertion is very specific to the incosistent condition; noted in Pilot 1998.12.18 *)
-         (* nofmeth = -1 => ~(methodcounted in flags) *)
-         (* ~(~(methodcounted in flags) => nofmeth = -1)  *)
+   BEGIN
+     rec := type(ST.Record);
+     IF rec.nofmeth = -1 THEN
+       ASSERT(~(ST.methodcounted IN rec.flags));
+       (* nofmeth = -1 => ~(methodcounted in flags) *)
+       (* ~(~(methodcounted in flags) => nofmeth = -1)  *)
 
-         rec.nofmeth := 0; ancestor := rec.ancestor;
-         IF ancestor # NIL THEN CountTBProcs(ancestor); rec.nofmeth := ancestor.nofmeth; END;
-         scope.rec := rec; ST.ProcessScope(rec.scope, ScopeCountTBProcs, scope); INCL(rec.flags, ST.methodcounted);
-      END;
+       rec.nofmeth := 0;
+       ancestor := rec.ancestor;
+       IF ancestor # NIL THEN
+         CountTBProcs(ancestor);
+         rec.nofmeth := ancestor.nofmeth;
+       END;
+       scope.rec := rec;
+       ST.ProcessScope(rec.scope, ScopeCountTBProcs, scope);
+       INCL(rec.flags, ST.methodcounted);
+     END;
    END CountTBProcs;
 
    PROCEDURE ^ TBProcedures(scope : ST.SymbolScope);
