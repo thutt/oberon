@@ -127,16 +127,6 @@ function debug-disable ()
 export -f debug-disable;
 
 
-function remove-diagnostics ()
-{
-    local path="${SKL_DIR:?SKL_DIR not set.}/system/.DiagnosticOutput";
-    if [ -e "${path}" ] ; then
-        rm -f ${path};
-    fi;
-}
-export -f remove-diagnostics;
-
-
 # Produces the root of the current build output.
 function skl-build-path ()
 {
@@ -154,7 +144,6 @@ function skl-build-path ()
 export -f skl-build-path;
 
 
-
 function skl-oberon-path ()
 {
     # This pathname construction must match the pathname construction
@@ -165,6 +154,7 @@ function skl-oberon-path ()
     echo "${oberon_path}";
 }
 export -f skl-oberon-path;
+
 
 function skl-oberon
 {
