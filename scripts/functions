@@ -171,7 +171,6 @@ function skl-oberon
             # Before every run, remove .DiagnosticsOuput.
             # It is removed because it is configured to be appended.
             # In most cases, append is not desired.
-            remove-diagnostics;
             export LMS_OBERON_HEAP_SIZE="${heap_size}";
             export LMS_OBERON_STACK_SIZE="${stack_size}";
             "${op}" "${@}";
