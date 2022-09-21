@@ -12,8 +12,9 @@ source ${SKL_DIR}/scripts/functions;
 
 function compile()
 {
-    local module="${1}";
-    local cmd="skl-skl-oc ${module}.Mod";
+    local pathname="${1}";
+    local module="$(basename ${pathname})";
+    local cmd="skl-skl-oc ${pathname}";
     local output="$(skl-build-path)/${module}.compile.out"
 
     echo "Executing: ${cmd}";
@@ -27,7 +28,8 @@ function compile()
 
 function run()
 {
-    local module="${1}";
+    local pathname="${1}";
+    local module="$(basename ${pathname})";
     local value="${2}";        # Value of dictionary for '${1}'.
     local cmd="skl-oberon ${module}.Test";
     local output="$(skl-build-path)/${module}.out"
@@ -53,17 +55,17 @@ function run()
 function main()
 {
     local module;
+    local test_dir="${SKL_DIR}/system/compiler/skl/tests"
 
-    SKL_OBJ_PATH="${SKL_DIR}/system/test:${SKL_OBJ_PATH}";
+    export SKL_SEARCH_PATH="${SKL_SEARCH_PATH}:${test_dir}";
 
     cd ${SKL_DIR}/system;
 
     # All keys: ${!COMPILER_TESTS[@]}
     for test in ${!COMPILER_TESTS[@]}; do
         local module=$(basename ${test} .Mod);
-        local obj="${SKL_DIR}/system/${module}.Obj";
 
-        if compile ${module}; then
+        if compile ${test}; then
             run "${module}" "${COMPILER_TESTS[${test}]}";
         fi;
     done;

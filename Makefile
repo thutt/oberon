@@ -12,7 +12,7 @@ include $(SKL_DIR)/make/config.mk
 .PHONY:	all disasm loader clean doc show-preprocessor-symbols
 all:	loader disasm doc
 	$(PROLOG);					\
-	echo "All targets built.";
+	echo "Master: All targets built.";
 
 disasm loader doc:	build-directories
 	$(PROLOG);					\

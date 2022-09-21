@@ -5,6 +5,7 @@ TEX	=	module.tex			\
 		macros.tex			\
 		intro.tex			\
 		environment.tex			\
+		getopt.tex			\
 		pathnames.tex
 
 PKG_DIR		:= $(SKL_DIR)/doc/packages
@@ -17,7 +18,7 @@ TEX_OPTS	:= \
 
 module__:		module.pdf
 	$(PROLOG);				\
-	echo "All targets built.";
+	echo "Module Docs: All targets built.";
 
 
 module.pdf:	$(TEX) \

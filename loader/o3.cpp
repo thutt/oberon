@@ -1,6 +1,7 @@
 /* Copyright (c) 2000, 2021, 2022 Logic Magicians Software */
 #include <string.h>
 
+#include "fileutils.h"
 #include "heap.h"
 #include "objinfo.h"
 #include "o3.h"
@@ -1746,7 +1747,8 @@ namespace O3
         fname = new char[strlen(module_name) + sizeof(suffix) / sizeof(suffix[0])];
         strcpy(fname, module_name);
         strcat(fname, suffix);
-        fp = fopen(fname, "rb");
+        fp = fileutils::find_file_and_open(fname);
+        assert(fp != NULL);
         delete [] fname;
         return fp;
     }

@@ -12,6 +12,7 @@ SOURCE :=					\
 		config.cpp			\
 		dialog.cpp			\
 		dump.cpp			\
+		fileutils.cpp			\
 		heap.cpp			\
 		kernintf.cpp			\
 		loader.cpp			\

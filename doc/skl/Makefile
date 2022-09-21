@@ -22,7 +22,7 @@ TEX_OPTS	:= \
 
 skl__:		skl.pdf
 	$(PROLOG);				\
-	echo "All targets built.";
+	echo "SKL Docs: All targets built.";
 
 
 skl.pdf:	$(TEX) \

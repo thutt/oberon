@@ -97,6 +97,7 @@ namespace bootstrap
         load("Environment");
         load("FileDir");
         load("Files");
+        load("FileUtils");
         load("DebugIO");
         load("ModuleInspector");
         load("Trap");

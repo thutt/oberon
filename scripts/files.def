@@ -6,19 +6,25 @@
 #
 
 # The base Oberon operating system.
+#
+# This list must be kept in 'import order' so
+# that each module can be compiled.
 declare -a OS;
-OS=(SKLKernel.Mod                               \
-    SKLHostOS.Mod                               \
+OS=(lms/Kernel.Mod                              \
+    lms/HostOS.Mod                              \
     Reals.Mod                                   \
-    SKLConsole.Mod                              \
-    SKLEnvironment.Mod                          \
-    SKLFileDir.Mod                              \
+    lms/Console.Mod                             \
+    lms/Environment.Mod                         \
+    lms/Pathnames.Mod                           \
+    lms/GetOpt.Mod                              \
+    lms/FileDir.Mod                             \
     Files.Mod                                   \
-    DebugIO.Mod                                 \
-    SKLModuleInspector.Mod                      \
-    SKLTrap.Mod                                 \
-    CommandLine.Mod                             \
-    SKLModules.Mod                              \
+    lms/FileUtils.Mod                           \
+    lms/DebugIO.Mod                             \
+    lms/ModuleInspector.Mod                     \
+    lms/Trap.Mod                                \
+    lms/CommandLine.Mod                         \
+    lms/Modules.Mod                             \
     Types.Mod                                   \
     Objects.Mod                                 \
     Input.Mod                                   \
@@ -31,68 +37,68 @@ OS=(SKLKernel.Mod                               \
     MenuViewers.Mod                             \
     TextFrames.Mod                              \
     s3.System.Mod                               \
-    KernelTD.Mod);
+    lms/KernelTD.Mod);
 
 
 # The SKL compiler.
 declare -a SKL;
-SKL=(SKLERR.Mod                                 \
-     SKLCMDIO.Mod                               \
-     SKLMD.Mod                                  \
-     SKLOS.Mod                                  \
-     SKLST.Mod                                  \
-     SKLIE.Mod                                  \
-     SKLT.Mod                                   \
-     SKLTB.Mod                                  \
-     SKLDN.Mod                                  \
-     SKLDS.Mod                                  \
-     SKLCGL.Mod                                 \
-     SKLCGH.Mod                                 \
-     SKLTH.Mod                                  \
-     SKLTT.Mod                                  \
-     SKLPU.Mod                                  \
-     SKLTU.Mod                                  \
-     SKLSTP.Mod                                 \
-     SKLE.Mod                                   \
-     SKLSP.Mod                                  \
-     SKL.Mod);
+SKL=(compiler/skl/SKLERR.Mod                    \
+     compiler/skl/SKLCMDIO.Mod                  \
+     compiler/skl/SKLMD.Mod                     \
+     compiler/skl/SKLOS.Mod                     \
+     compiler/skl/SKLST.Mod                     \
+     compiler/skl/SKLIE.Mod                     \
+     compiler/skl/SKLT.Mod                      \
+     compiler/skl/SKLTB.Mod                     \
+     compiler/skl/SKLDN.Mod                     \
+     compiler/skl/SKLDS.Mod                     \
+     compiler/skl/SKLCGL.Mod                    \
+     compiler/skl/SKLCGH.Mod                    \
+     compiler/skl/SKLTH.Mod                     \
+     compiler/skl/SKLTT.Mod                     \
+     compiler/skl/SKLPU.Mod                     \
+     compiler/skl/SKLTU.Mod                     \
+     compiler/skl/SKLSTP.Mod                    \
+     compiler/skl/SKLE.Mod                      \
+     compiler/skl/SKLSP.Mod                     \
+     compiler/skl/SKL.Mod);
 
 # The compiler called O3
 
-declare -a O3;
-O3=(O3Errors.Mod                                \
-    O3Config.Mod                                \
-    O3MachineDep.Mod                            \
-    O3Scanner.Mod                               \
-    O3Symtab.Mod                                \
-    O3Fingerprint.Mod                           \
-    O3SymFile.Mod                               \
-    O3TreeNode.Mod                              \
-    O3TreeHelper.Mod                            \
-    O3Semantics.Mod                             \
-    O3ConstExpression.Mod                       \
-    O3TypeAllocate.Mod                          \
-    O3StdProc.Mod                               \
-    O3Expression.Mod                            \
-    O3Parser.Mod                                \
-    O3.Mod                                      \
-    O3IOCommand.Mod                             \
-    O3FileIO.Mod                                \
-    O3GSAOpcode.Mod                             \
-    O3GSAData.Mod                               \
-    O3GSANames.Mod                              \
-    O3GSADump.Mod                               \
-    O3GSACanon.Mod                              \
-    O3GSADeadCode.Mod                           \
-    O3GSAValueNumber.Mod                        \
-    O3GSAConstPropagate.Mod                     \
-    O3GSAAliasAnalysis.Mod                      \
-    O3GSACopyPropagate.Mod                      \
-    O3GSASimpleSchedule.Mod                     \
-    O3GSAImprove.Mod                            \
-    O3MGSA.Mod                                  \
-    O3Mi386.Mod                                 \
-    O3MTreeDumper.Mod);
+declare -a O3;                                  \
+O3=(compiler/o3/O3Errors.Mod                    \
+    compiler/o3/O3Config.Mod                    \
+    compiler/o3/O3MachineDep.Mod                \
+    compiler/o3/O3Scanner.Mod                   \
+    compiler/o3/O3Symtab.Mod                    \
+    compiler/o3/O3Fingerprint.Mod               \
+    compiler/o3/O3SymFile.Mod                   \
+    compiler/o3/O3TreeNode.Mod                  \
+    compiler/o3/O3TreeHelper.Mod                \
+    compiler/o3/O3Semantics.Mod                 \
+    compiler/o3/O3ConstExpression.Mod           \
+    compiler/o3/O3TypeAllocate.Mod              \
+    compiler/o3/O3StdProc.Mod                   \
+    compiler/o3/O3Expression.Mod                \
+    compiler/o3/O3Parser.Mod                    \
+    compiler/o3/O3.Mod                          \
+    compiler/o3/O3IOCommand.Mod                 \
+    compiler/o3/O3FileIO.Mod                    \
+    compiler/o3/O3GSAOpcode.Mod                 \
+    compiler/o3/O3GSAData.Mod                   \
+    compiler/o3/O3GSANames.Mod                  \
+    compiler/o3/O3GSADump.Mod                   \
+    compiler/o3/O3GSACanon.Mod                  \
+    compiler/o3/O3GSADeadCode.Mod               \
+    compiler/o3/O3GSAValueNumber.Mod            \
+    compiler/o3/O3GSAConstPropagate.Mod         \
+    compiler/o3/O3GSAAliasAnalysis.Mod          \
+    compiler/o3/O3GSACopyPropagate.Mod          \
+    compiler/o3/O3GSASimpleSchedule.Mod         \
+    compiler/o3/O3GSAImprove.Mod                \
+    compiler/o3/O3MGSA.Mod                      \
+    compiler/o3/O3Mi386.Mod                     \
+    compiler/o3/O3MTreeDumper.Mod);
 
 
 
@@ -110,40 +116,41 @@ O3=(O3Errors.Mod                                \
 #   o 'manual' means the test is only run manually (due to long runtimes).
 #
 declare -A COMPILER_TESTS;
-COMPILER_TESTS=(                                \
-    [CTArrayTrap.Mod]="pass"                    \
-    [CTAssertTrap.Mod]="fail"                   \
-    [CTBitsetRangeFail.Mod]="fail"              \
-    [CTConditionCode.Mod]="pass"                \
-    [CTDivZero.Mod]="fail"                      \
-    [CTDumpHeap.Mod]="pass,manual"              \
-    [CTDynArrLength.Mod]="fail"                 \
-    [CTEmpty.Mod]="pass,manual"                 \
-    [CTEnvironment.Mod]="pass"                  \
-    [CTExclude.Mod]="pass"                      \
-    [CTFileIO.Mod]="pass"                       \
-    [CTFingerprint.Mod]="pass"                  \
-    [CTFor.Mod]="pass"                          \
-    [CTGC.Mod]="pass,manual"                    \
-    [CTImport.Mod]="pass"                       \
-    [CTIncDec.Mod]="pass"                       \
-    [CTInstructionCount.Mod]="pass"             \
-    [CTInvalidOpcode.Mod]="fail"                \
-    [CTMissingMethod.Mod]="fail"                \
-    [CTNest.Mod]="pass"                         \
-    [CTOOBRead.Mod]="fail"                      \
-    [CTOOBWrite.Mod]="fail"                     \
-    [CTOpenArray.Mod]="pass"                    \
-    [CTPathnames.Mod]="pass"                    \
-    [CTProcedure.Mod]="pass"                    \
-    [CTRange.Mod]="fail"                        \
-    [CTReal.Mod]="pass"                         \
-    [CTReturn.Mod]="pass"                       \
-    [CTRotate.Mod]="pass"                       \
-    [CTSET.Mod]="pass"                          \
-    [CTSetCtor.Mod]="pass"                      \
-    [CTString.Mod]="pass"                       \
-    [CTTDCodeGen.Mod]="pass"                    \
-    [CTTrapNil.Mod]="fail"                      \
-    [CTTypeDesc.Mod]="pass,manual"              \
+COMPILER_TESTS=(                                        \
+    [compiler/skl/tests/CTArrayTrap.Mod]="pass"         \
+    [compiler/skl/tests/CTAssertTrap.Mod]="fail"        \
+    [compiler/skl/tests/CTBitsetRangeFail.Mod]="fail"   \
+    [compiler/skl/tests/CTConditionCode.Mod]="pass"     \
+    [compiler/skl/tests/CTDivZero.Mod]="fail"           \
+    [compiler/skl/tests/CTDumpHeap.Mod]="pass,manual"   \
+    [compiler/skl/tests/CTDynArrLength.Mod]="fail"      \
+    [compiler/skl/tests/CTEmpty.Mod]="pass,manual"      \
+    [compiler/skl/tests/CTEnvironment.Mod]="pass"       \
+    [compiler/skl/tests/CTExclude.Mod]="pass"           \
+    [compiler/skl/tests/CTFileIO.Mod]="pass"            \
+    [compiler/skl/tests/CTFingerprint.Mod]="pass"       \
+    [compiler/skl/tests/CTFor.Mod]="pass"               \
+    [compiler/skl/tests/CTGC.Mod]="pass,manual"         \
+    [compiler/skl/tests/CTGetOpt.Mod]="pass,manual"     \
+    [compiler/skl/tests/CTImport.Mod]="pass"            \
+    [compiler/skl/tests/CTIncDec.Mod]="pass"            \
+    [compiler/skl/tests/CTInstructionCount.Mod]="pass"  \
+    [compiler/skl/tests/CTInvalidOpcode.Mod]="fail"     \
+    [compiler/skl/tests/CTMissingMethod.Mod]="fail"     \
+    [compiler/skl/tests/CTNest.Mod]="pass"              \
+    [compiler/skl/tests/CTOOBRead.Mod]="fail"           \
+    [compiler/skl/tests/CTOOBWrite.Mod]="fail"          \
+    [compiler/skl/tests/CTOpenArray.Mod]="pass"         \
+    [compiler/skl/tests/CTPathnames.Mod]="pass"         \
+    [compiler/skl/tests/CTProcedure.Mod]="pass"         \
+    [compiler/skl/tests/CTRange.Mod]="fail"             \
+    [compiler/skl/tests/CTReal.Mod]="pass"              \
+    [compiler/skl/tests/CTReturn.Mod]="pass"            \
+    [compiler/skl/tests/CTRotate.Mod]="pass"            \
+    [compiler/skl/tests/CTSET.Mod]="pass"               \
+    [compiler/skl/tests/CTSetCtor.Mod]="pass"           \
+    [compiler/skl/tests/CTString.Mod]="pass"            \
+    [compiler/skl/tests/CTTDCodeGen.Mod]="pass"         \
+    [compiler/skl/tests/CTTrapNil.Mod]="fail"           \
+    [compiler/skl/tests/CTTypeDesc.Mod]="pass,manual"   \
 );

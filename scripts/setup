@@ -9,12 +9,67 @@ SRC_DIR=$(dirname "${BASH_SOURCE[0]}");
 source $(readlink -f "${SRC_DIR}/functions");
 
 
+function process_args ()
+{
+    while true ; do
+        case "$1" in
+            -a|--architecture)
+                ARCHITECTURE=$(eval echo ${2});
+                case "${ARCHITECTURE}" in
+                    Intel-x86-64 | Arm64)
+                        # Architecture is ok.
+                        ;;
+
+                    *)
+                        echo "Invalid architecture '${ARCHITECTURE}'.";
+                        return 1;
+                        ;;
+                esac;
+                shift 2;
+                ;;
+
+            -b|--build-type)
+                BUILD=$(eval echo ${2});
+                case "${BUILD}" in
+                    alpha|beta|release)
+                        # Build type is ok.
+                        ;;
+
+                    *)
+                        echo "Invalid build type '${BUILD}'.";
+                        return 1;
+                        ;;
+                esac;
+                shift 2;
+                ;;
+
+            -o|--bod)
+                BOD=$(eval echo ${2});
+                shift 2;
+                ;;
+
+
+            --)                 # End of arguments
+                shift;
+                break;
+                ;;
+
+            *)
+                echo "Unknown option '${1}'";
+                return 1;
+                ;;
+        esac
+    done
+
+    return 0;
+}
+
+
 function main()
 {
-    local OPTION;
-    local architecture="Intel-x86-64";
-    local build="alpha";
-    local bod="";
+    ARCHITECTURE="Intel-x86-64";
+    BUILD="alpha";
+    BOD="";
 
     export SKL_DIR=$(readlink -f $(dirname ${BASH_SOURCE})/..);
 
@@ -27,63 +82,26 @@ function main()
             ;;
     esac;
 
-    OPTIND=1;
-    OPTERR=1;
-    while getopts :a:b:o: OPTION; do
-        case "${OPTION}" in
-            a)                  # Architecture.
-                case "${OPTARG}" in
-                    Intel-x86-64 | Arm64)
-                        architecture="${OPTARG}";
-                        ;;
+    if process_args ${@} ; then
+        if [ -z "${BOD}" ] ; then
+            echo "Build output directory (-o) has not been set.";
+        else
+            local system="${SKL_DIR}/system"
+            export SKL_BUILD_DIR="${BOD}";
+            export SKL_SEARCH_PATH="${system}:${system}/lms:${system}/compiler/skl";
+            export SKL_BUILD_OPTIONS="";
+            export SKL_ARCHITECTURE="${ARCHITECTURE}";
 
-                    *)
-                        echo "Invalid architecture '${OPTARG}' ignored.";
-                        ;;
-                esac;
-                ;;
-
-            b)                  # Build type.
-                case "${OPTARG}" in
-                    alpha | beta | release)
-                        build="${OPTARG}";
-                        ;;
-
-                    *)
-                        echo "Invalid build type '${OPTARG}' ignored.";
-                        ;;
-                esac;
-                ;;
-
-            o)                  # Build output directory.
-                bod="${OPTARG}";
-                ;;
-
-
-            :)
-                echo "Option '${OPTARG}' requires an argument.";
-                break;
-                ;;
-
-            *)
-                echo "Unknown option '${OPTARG}'";
-                break;
-                ;;
-        esac;
-    done;
-
-    if [ -z "${bod}" ] ; then
-        echo "Build output directory (-o) has not been set.";
+            build-set-type "${BUILD}";
+            oberon-show-config;
+        fi;
     else
-        export SKL_BUILD_DIR="${bod}";
-        export SKL_OBJ_PATH="${SKL_DIR}/system";
-        export SKL_BUILD_OPTIONS="";
-        export SKL_ARCHITECTURE="${architecture}";
-
-        build-set-type "${build}";
-        oberon-show-config;
+        echo "Local work environment configuration failed."
     fi;
 }
 
+args=$(/usr/bin/getopt -o a:b:o: --longoptions architecture:,bod:,build-type: -- "${@}")
+set -- "${args}"            # Set postional args to ${args}.
+unset args;
 
-main "${@}";
+main ${@};

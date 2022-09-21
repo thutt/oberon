@@ -3,7 +3,7 @@ include $(SKL_DIR)/make/config.mk
 
 doc__:	skl module
 	$(PROLOG);					\
-	echo "All targets built.";
+	echo "Docs: All targets built.";
 
 
 module skl:	build-directories

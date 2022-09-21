@@ -1,0 +1,367 @@
+\chap{GetOpt}
+
+The \texttt{GetOpt} module provides a uniform interface for processing
+command line arguments with this Oberon implementation.
+
+There are three types of command line arguments, shown in
+\figref{GetOpt:options-example}, that can occur:
+
+\begin{enumerate}
+\item Program Option
+
+  A \emph{program option} is a command line argument that is supplied
+  by the user to modify the default behavior of a program.  For
+  example, the interpreter of this Oberon system allows \emph{program
+    options} to control, for example, \emph{diagnostic output}
+  (\texttt{--diagnostic}) and printing the number of instructions
+  executed at the end of a run (\texttt{--instruction-count}).
+
+  There are two types of \emph{program options} that are allowed:
+
+  \begin{enumerate}
+  \item Short\label{getopt:short-option}
+
+    A \emph{short} option is a single '-', followed by a single
+    character.  For example, \texttt{-l}.
+
+  \item Long
+
+    A \emph{long} option is two (2) '-', followed by two (2) or more
+    characters.  For example, \texttt{--instruction-count}.
+
+    The maximum number of characters is limited by the maximal array
+    index of this implementation of Oberon.
+
+  \end{enumerate}
+
+\item Program Option Argument
+
+  Sometimes a \emph{program option}, like the specification of an
+  output file pathname, will require an argument of its own.  A
+  \emph{program options}'s argument is referred to as a \emph{program
+    option argument}.
+
+\item Program Argument
+
+  The final type of argument is, a \emph{program argument}, is defined
+  as not being a \emph{program option} nor being a \emph{program
+    option argument}.  In the case of this Oberon system, an example
+  of a \emph{program argument} is the name of command to execute on
+  the command line.
+\end{enumerate}
+
+Here is a sample that shows all of the types of supported arguments.
+
+\begin{figure}[h]
+  \begin{alltt}
+    skl-oberon --  \allttbackslash
+    CTGetOpt.Test  \allttbackslash    # Program argument
+    --symbols /tmp \allttbackslash    # Long option & argument
+    alpha          \allttbackslash    # Program argument
+    -v             \allttbackslash    # Short option
+    beta           \allttbackslash    # Program argument
+    gamma               # Program argument
+  \end{alltt}
+  \caption{Different types of program arguments}\label{fig:GetOpt:options-example}
+\end{figure}
+
+
+
+
+\section{Constants}
+\subsection{Status Values}\label{GetOpt:status-values}
+The symbols documented in this section to denote the \emph{status} for
+each command line argument processed by \xrefsym{GetOpt}{Parse}.
+
+\begin{tabularx}{\linewidth}{l|X}
+  Symbol & Meaning \\
+  \hline
+
+  \texttt{Done} & The \texttt{Done} status indicates that there are no
+  more command line arguments to process. \\
+
+
+  \texttt{Error} & The \texttt{Error} status indicates that an generic
+  error occurred processing the next command line argument.  In some
+  cases, a message will be written to the console that describes the
+  error. \\
+
+
+  \texttt{NotFound} & The \texttt{NotFound} status indicates that a
+  properly formed option was found on the command line, but the option
+  has not been configured in the current \xrefsym{GetOpt}{Handle}. \\
+
+
+  \texttt{Success}\label{GetOpt:Success} & The \texttt{Success} status
+  indicates that \texttt{Parse} has successfully processed a command
+  line argument.
+\end{tabularx}
+
+\subsection{Option Creation Flags}\label{GetOpt:flags}
+
+The flags described in this section are used when creating a command
+line argument with \xrefsym{GetOpt}{AddOption}.
+
+
+\begin{tabularx}{\linewidth}{l|X}\label{GetOpt:ValueNeeded}
+  Symbol & Meaning \\
+  \hline
+
+  \texttt{ValueNeeded} & This flag indicates that the option requires
+  an argument.  At runtime, the immediately following command line
+  argument follow will be used.
+
+  If an option that specifies \texttt{ValueNeeded} is not followed by
+  an argument, an error will result.
+
+\end{tabularx}
+
+
+\subsection{Argument Creation}\label{GetOpt:creation}
+
+Each option added with \xrefsym{GetOpt}{AddOption} must be assigned a
+numerical value to differentiate it from all other options.  The
+constants described below parameterize the creation, and processing of
+options provided to a program.
+
+\begin{tabularx}{\linewidth}{l|X}
+  Symbol & Meaning \\
+  \hline
+
+  \texttt{ValueArgument} & This symbol signifies that the command line
+  argument recognized by \xrefsym{GetOpt}{Parse} is a \emph{program
+    argument}.
+
+  A successfully parsed argument with this value set is a regular
+  program argument, not an option.
+
+  See \xrefsym{GetOpt}{ArgumentDesc} and \xrefsym{GetOpt}{Parse}. \\
+
+
+  \texttt{ValueHelp}\label{GetOpt:ValueHelp} & The \texttt{ValueHelp}
+  symbol is reserved for use by the \texttt{GetOpt} module.  It is
+  used to identify the programmatic value of the automatically-added
+  \texttt{--help} (and \texttt{-h}) argument.
+
+  If this is used when creating an option with
+  \xrefsym{GetOpt}{AddOption}, an error will result. \\
+
+  \texttt{ValueMin} & Each option must be assigned a unique numerical
+  value for greater or equal to \texttt{ValueMin}. \\
+
+  \texttt{ValueMax} & Each option must be assigned a unique numerical
+  value for identification less than or equal to \texttt{ValueMax}.
+\end{tabularx}
+
+\section{Types}
+
+\subsection{\texttt{ArgumentDesc}}\label{GetOpt:ArgumentDesc}
+\begin{alltt}
+  ArgumentDesc* = RECORD
+    value-    : INTEGER;
+    argument- : CommandLine.Parameter;
+  END;
+\end{alltt}
+
+This type describes a fully parsed command line argument when
+\xrefsym{GetOpt}{Parse} returns \xrefsym{GetOpt}{Success}.
+
+\begin{tabularx}{\linewidth}{l|X}
+  Field & Description \\
+
+  \hline \texttt{value} & This field holds the \texttt{value} argument
+  provided to \xrefsym{GetOpt}{AddOption} for the matched command line
+  option. \\
+
+  \texttt{argument} & This will contain the option's argument value
+  when \xrefsym{GetOpt}{ValueNeeded} was specified in the call to
+  \xrefsym{GetOpt}{AddOption}. \\
+\end{tabularx}
+
+\begin{invariant}
+  (\texttt{value} = \texttt{ValueHelp}) \logicalor
+  (\texttt{value} >= \texttt{ValueMin} \logicaland \texttt{value} <= \texttt{ValueMax})
+  \logicaland \\
+  ((\texttt{argument} = \nil) \logicalor \validfn{argument\deref})
+\end{invariant}
+
+
+\subsection{\texttt{Handle}}\label{GetOpt:Handle}
+\begin{alltt}
+  Handle* = POINTER TO HandleDesc;
+\end{alltt}
+
+\texttt{Handle} is a pointer to an opaque type that implements the
+data structure maintaining the state of a program's command line
+options.
+
+\subsection{\texttt{Status}}\label{GetOpt:Status}
+\begin{alltt}
+  Status* = SHORTINT;
+\end{alltt}
+
+A \emph{status} value is returned by \xrefsym{GetOpt}{Parse}, and it
+can obtain one of the values described in
+\xref{GetOpt}{status-values}.
+
+
+\section{Procedures}
+\subsection{\texttt{AddOption}}\label{GetOpt:AddOption}
+\begin{alltt}
+PROCEDURE AddOption*(h     : Handle;
+                     value : INTEGER;
+                     flags : SET;
+                     short : CHAR;
+                     name  : ARRAY OF CHAR;
+                     help  : ARRAY OF CHAR) : BOOLEAN;
+\end{alltt}
+
+\begin{semantics}
+This procedure is used to add options to the \texttt{Handle},
+\texttt{h}.
+
+The \texttt{value} argument sets the numerical value when the option
+is matched by \xrefsym{GetOpt}{Parse}.
+
+The \texttt{flags} argument allows specialization of the option.
+Including the \texttt{ValueNeeded} flag causes the option to require
+an argument.  If the argument is not supplied following the option,
+then \texttt{Parse} will return an error for that option.  If
+\texttt{ValueNeeded} is not included, then option may not have an
+argument.
+
+The \texttt{short} argument specifies the \ascii character to be used
+for the short name of this option.  If no short argument is desired,
+use \texttt{0X}.  See \xref{getopt:short-option} on
+\xpageref{getopt:short-option}.
+
+The \texttt{name} argument specifies the long name of this argument.
+A long name is required.
+
+The \texttt{help} argument contains the \emph{help} text that will
+displayed when \xrefsym{GetOpt}{Help} is invoked.
+
+All of \texttt{value}, \texttt{short}, and \texttt{name} must be
+unique to \texttt{h}.
+
+If no \emph{short option} is desired, \texttt{short} should be set to
+\texttt{0X}.
+
+\end{semantics}
+
+\begin{precondition}
+(\texttt{h} \neq \nil \logicaland \validfn{\texttt{h}\deref} \logicaland \\
+  (\texttt{value} \geq \texttt{ValueMin}) \logicaland \\
+  (\texttt{value} \leq \texttt{ValueMax}) \logicaland \\
+  (\texttt{value} \textrm{ not already used by another option}) \logicaland \\
+  (flags - \{\texttt{ValueNeeded}\} = \{\}) \logicaland \\
+  (\texttt{LEN(name)} > 2 \logicaland
+  \texttt{name[0]} \neq \texttt{'-'} \logicaland
+  \texttt{name[1]} \neq \texttt{'-'}) \logicaland \\
+  (\exists i: 0 <= i < \texttt{LEN(name)}: \texttt{name[}i\texttt{] = 0X}) \logicaland \\
+  (\exists i: 0 <= i < \texttt{LEN(help)}: \texttt{help[}i\texttt{] = 0X})  \logicaland \\
+  (\texttt{short} = \texttt{0X} \logicalor \texttt{short} \textrm{ not
+    already used by another option}) \logicaland \\
+  (\texttt{name} \textrm{ not already used by another option})
+\end{precondition}
+
+\begin{postcondition}
+  (\result \implies \textrm{Option added}) \logicalor \\
+  (\logicalnot \result \implies \textrm{Option not added})
+\end{postcondition}
+
+\subsection{\texttt{Create}}\label{GetOpt:Create}
+\begin{alltt}
+PROCEDURE Create*() : Handle;
+\end{alltt}
+
+\begin{semantics}
+This procedure creates and initializes a xrefsym{GetOpt}{Handle} that
+can be used by other procedures in this module.
+\end{semantics}
+
+\begin{precondition}
+\texttt{None}
+\end{precondition}
+
+\begin{postcondition}
+  \result = \nil \logicalor \validfn{\result\deref}
+\end{postcondition}
+
+\subsection{\texttt{Help}}\label{GetOpt:Help}
+\begin{alltt}
+PROCEDURE Help*(h : Handle);
+\end{alltt}
+
+\begin{semantics}
+When invoked, this procedure writes the set of all arguments and their
+help strings to the console.  It is the responsibility of the user of
+this module to invoke this procedure when the
+\xrefsym{GetOpt}{ValueHelp} \emph{status} is returned by
+\xrefsym{GetOpt}{Parse}.
+\end{semantics}
+
+\begin{precondition}
+\texttt{h} \neq \nil \logicaland \valid(\texttt{h}\deref)
+\end{precondition}
+
+\begin{postcondition}
+\texttt{None}
+\end{postcondition}
+
+\subsection{\texttt{}}\label{GetOpt:Parse}
+\begin{alltt}
+PROCEDURE Parse*(    h        : Handle;
+                 VAR argument : ArgumentDesc) : Status;
+\end{alltt}
+
+\begin{semantics}
+This procedure is called repeatedly to process all command line
+arguments in order of appearance on the command line.  It returns
+a \emph{status} value indicating the state of the procedure call.  See
+table \figref{GetOpt:Parse} for semantics of each result.
+
+\begin{figure}[h]
+  \begin{tabularx}{\linewidth}{lX}
+    \texttt{Status} & Semantics \\
+    \hline
+
+    \texttt{Success} & A command line argument has been successfully
+    found.  The contents of \texttt{argument}
+    (\xrefsym{GetOpt}{ArgumentDesc}) describe the argument that was
+    recognized. \\
+
+    \texttt{NotFound} & A short or long form command line option was
+    found on the command line that did not match any of the options
+    added to the \xrefsym{GetOpt}{Handle}.
+
+    \xrefsym{GetOpt}{AddOption} can be used to add options to the
+    \xrefsym{GetOpt}{Handle}. \\
+
+    \texttt{Error} & An error occurred processing a command line
+    argument. When this value is returned, a brief message describing
+    the error will also be written to the console.  It is up to the
+    user to fix the erroneous command line.  \\
+
+    \texttt{Done} & All command line arguments have been processed. \\
+  \end{tabularx}
+  \caption{Semantics of \texttt{Parse} result}\label{fig:GetOpt:Parse}
+\end{figure}
+
+\end{semantics}
+
+\begin{precondition}
+\texttt{h} \neq \nil \logicaland \valid(\texttt{h}\deref)
+\end{precondition}
+
+\begin{postcondition}
+(\result \in \{ \texttt{Success}, \texttt{NotFound}, \texttt{Error},
+  \texttt{Done} \} \logicaland \\
+  (\result  = \texttt{Success} \implies \validfn{argument})
+  \logicaland \\
+  (\result  = \texttt{NotFound} \implies \logicalnot \validfn{argument})
+  \logicaland \\
+  (\result  = \texttt{Error} \implies \logicalnot \validfn{argument})
+  \logicaland \\
+  (\result  = \texttt{Done} \implies \logicalnot \validfn{argument}))
+\end{postcondition}
