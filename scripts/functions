@@ -160,32 +160,20 @@ function skl-oberon
 {
     local heap_size=${LMS_OBERON_HEAP_SIZE:-64}; # Match interpreter default.
     local stack_size=${LMS_OBERON_STACK_SIZE:-2}
+    local op=$(skl-oberon-path);
 
-    if [ ! -z "${SKL_DIR:?SKL_DIR not set.}" ] ; then
-        local op=$(skl-oberon-path);
-
-        if [ -f "${op}" ] ; then
-            local res;
-
-            pushd "${SKL_DIR:?SKL_DIR not set.}/system" >/dev/null;
-            # Before every run, remove .DiagnosticsOuput.
-            # It is removed because it is configured to be appended.
-            # In most cases, append is not desired.
-            export LMS_OBERON_HEAP_SIZE="${heap_size}";
-            export LMS_OBERON_STACK_SIZE="${stack_size}";
-            "${op}" "${@}";
-            res=$?;
-            if [ ${res} != 0 ] ; then
-                echo "Oberon interpreter returned: ${res}";
-            fi;
-            popd >/dev/null;
-            return ${res};
-        else
-            echo "'${op}' does not exist.";
-            false;
+    if [ -f "${op}" ] ; then
+        local res;
+        export LMS_OBERON_HEAP_SIZE="${heap_size}";
+        export LMS_OBERON_STACK_SIZE="${stack_size}";
+        "${op}" "${@}";
+        res=$?;
+        if [ ${res} != 0 ] ; then
+            echo "Oberon interpreter returned: ${res}";
         fi;
+        return ${res};
     else
-        echo "SKL_DIR is not set";
+        echo "'${op}' does not exist.";
         false;
     fi;
     return $?;

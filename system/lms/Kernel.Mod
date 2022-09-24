@@ -1274,11 +1274,13 @@
     END; (* smallest non-empty list *)
     last := SYSTEM.ADR(heap.blocks[i]);
     SYSTEM.GET(last, ptr); (* address & pointer to free block *)
-    sizetmp := GetBlockSize(ptr);
-    WHILE (ptr # 0) & (sizetmp < size) DO
-      last := ptr + bfLinkOffs;
-      SYSTEM.GET(last, ptr); (* next block on list; first fit, if i = hmHeapChains *)
+    IF ptr # 0 THEN
       sizetmp := GetBlockSize(ptr);
+      WHILE (ptr # 0) & (sizetmp < size) DO
+        last := ptr + bfLinkOffs;
+        SYSTEM.GET(last, ptr); (* next block on list; first fit, if i = hmHeapChains *)
+        sizetmp := GetBlockSize(ptr);
+      END;
     END;
 
     IF ptr # 0 THEN
@@ -1317,8 +1319,12 @@
     SYSTEM.GETREG(2, size); (* R2 is block size *)
     size := AlignHeapSize(size);
     Allocate(blkadr, size);
-    SYSTEM.PUT(blkadr, SYSTEM.VAL(SET, size) + {BlkSyst});
-    SYSTEM.PUT(adr, blkadr + hmTagSize);
+    IF blkadr # 0 THEN
+      SYSTEM.PUT(blkadr, SYSTEM.VAL(SET, size) + {BlkSyst});
+      SYSTEM.PUT(adr, blkadr + hmTagSize);
+    ELSE
+      SYSTEM.PUT(adr, 0);
+    END;
   END NewBlock;
 
   (* R1 contains the address of the record pointer being allocated,
@@ -1332,9 +1338,13 @@
     SYSTEM.MEMR(tdptr, rtdRecSize, size);
     size := AlignHeapSize(size);
     Allocate(blkadr, size);
-    SYSTEM.MEMW(tdptr, rtdBlockSize, size); (* fixup the block size entry *)
-    SYSTEM.PUT(blkadr, tdptr);
-    SYSTEM.PUT(adr, blkadr + hmTagSize);
+    IF blkadr # 0 THEN
+      SYSTEM.MEMW(tdptr, rtdBlockSize, size); (* fixup the block size entry *)
+      SYSTEM.PUT(blkadr, tdptr);
+      SYSTEM.PUT(adr, blkadr + hmTagSize);
+    ELSE
+      SYSTEM.PUT(adr, 0);
+    END;
   END NewRecord;
 
   (* calculate the size of the requested array, in bytes *)
@@ -1459,9 +1469,13 @@
 
     IF size # 0 THEN
       Allocate(blkadr, size);
-      SYSTEM.GETREG(SFP, sfp); (* inv: sp holds the frame pointer *)
-      SetDynArrInfo(adr, blkadr, BlockKind, td, size, nofElem,
-                    nofDim, sfp + Dim0StackOffs, alpha);
+      IF blkadr # 0 THEN
+        SYSTEM.GETREG(SFP, sfp); (* inv: sp holds the frame pointer *)
+        SetDynArrInfo(adr, blkadr, BlockKind, td, size, nofElem,
+                      nofDim, sfp + Dim0StackOffs, alpha);
+      ELSE
+        SYSTEM.PUT(adr, 0); (* out-of-memory. *)
+      END;
     ELSE
       SYSTEM.PUT(adr, 0); (* attempt to allocate 0-length array *)
     END;
@@ -1495,8 +1509,12 @@
                   nofElem, size, alpha);
     IF size # 0 THEN
       Allocate(blkadr, size);
-      SetDynArrInfo(adr, blkadr, BlockKind, td, size,
-                    nofElem, nofDim, td + saDim0, alpha);
+      IF blkadr # 0 THEN
+        SetDynArrInfo(adr, blkadr, BlockKind, td, size,
+                      nofElem, nofDim, td + saDim0, alpha);
+      ELSE
+        SYSTEM.PUT(adr, 0); (* out-of-memory. *)
+      END;
     ELSE
       SYSTEM.PUT(adr, 0); (* Attempt to allocate 0-length array. *)
     END;
