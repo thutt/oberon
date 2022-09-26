@@ -38,6 +38,7 @@ SOURCE :=					\
 		skl_vmsvc_bootstrap.cpp		\
 		skl_vmsvc_console.cpp		\
 		skl_vmsvc_debug_log.cpp		\
+		skl_vmsvc_directory.cpp		\
 		skl_vmsvc_early_hwdtrap.cpp	\
 		skl_vmsvc_early_systrap.cpp	\
 		skl_vmsvc_environment.cpp	\

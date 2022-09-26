@@ -247,6 +247,7 @@ The files contained here are provided under the corresponding software license.
   scripts/skl-size
   scripts/skl-size.py
   scripts/skl-test-compiler
+  scripts/skl-test-modules
   system/Prime.Mod
   system/Prime.Obj
   system/Prime.Sym
@@ -464,6 +465,9 @@ The files contained here are provided under the corresponding software license.
   system/lms/Trap.Mod
   system/lms/Trap.Obj
   system/lms/Trap.Sym
+  system/lms/tests/MkTree.Mod
+  system/lms/tests/MkTree.Obj
+  system/lms/tests/MkTree.Sym
 
 
 **** licenses/lgpl-3.0.text
@@ -536,6 +540,7 @@ The files contained here are provided under the corresponding software license.
   loader/skl_vmsvc_bootstrap.cpp
   loader/skl_vmsvc_console.cpp
   loader/skl_vmsvc_debug_log.cpp
+  loader/skl_vmsvc_directory.cpp
   loader/skl_vmsvc_early_hwdtrap.cpp
   loader/skl_vmsvc_early_systrap.cpp
   loader/skl_vmsvc_environment.cpp

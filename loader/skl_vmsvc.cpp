@@ -74,7 +74,7 @@ namespace skl {
                 break;
 
             case VMSVC_DIRECTORY:
-                dialog::not_implemented("%s: directory", __func__);
+                vmsvc_directory(adr);
                 break;
 
             case VMSVC_FILE:

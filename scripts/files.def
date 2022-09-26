@@ -154,3 +154,20 @@ COMPILER_TESTS=(                                        \
     [compiler/skl/tests/CTTrapNil.Mod]="fail"           \
     [compiler/skl/tests/CTTypeDesc.Mod]="pass,manual"   \
 );
+
+# Tests for modules.
+#
+# The key is the name of the test module.
+#
+# The value of each element in the dictionary contains attributes about the test:
+#
+#   o 'pass' means the test succeeds to 'pass'. Mutually exclusive with 'fail'.
+#
+#   o 'fail' means the test fails to 'pass'.  Mutually exclusive with 'pass'.
+#
+#   o 'manual' means the test is only run manually (due to long runtimes).
+#
+declare -A MODULE_TESTS;
+MODULE_TESTS=(                                  \
+    [lms/tests/MkTree.Mod]="pass"               \
+);

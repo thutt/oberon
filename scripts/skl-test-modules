@@ -1,0 +1,73 @@
+#!/bin/bash
+# Copyright (c) 2021, 2022 Logic Magicians Software
+#
+# Compile OS using x86-based SKL-targeting compiler.
+#
+set -o errexit;
+set -o pipefail;
+set -o nounset;
+
+source ${SKL_DIR}/scripts/files.def;
+source ${SKL_DIR}/scripts/functions;
+
+function compile()
+{
+    local pathname="${1}";
+    local module="$(basename ${pathname})";
+    local cmd="skl-skl-oc ${pathname}";
+    local output="$(skl-build-path)/${module}.compile.out"
+
+    echo "Executing: ${cmd}";
+    if ! ${cmd} 2>&1 >"${output}"; then
+        echo "**** Compiling '${module} failed";
+        return 1;
+    fi;
+    return 0;
+}
+
+
+function run()
+{
+    local pathname="${1}";
+    local module="$(basename ${pathname})";
+    local value="${2}";        # Value of dictionary for '${1}'.
+    local cmd="skl-oberon ${module}.Test";
+    local output="$(skl-build-path)/${module}.out"
+
+    echo "Executing: ${cmd}";
+    if [[ ${value} == *manual* ]] ; then # Substring check
+        echo "**** Module '${module} is only run manually";
+    elif [[ "${value}" == *pass* ]] ; then
+        if ! ${cmd} 2>&1 >"${output}"; then
+            echo "**** $?: Module '${module} expected to pass, but did not.";
+        fi;
+    elif [[ "${value}" == *fail* ]] ; then
+        if ${cmd} 2>&1 >"${output}"; then
+            echo "**** $?: Module '${module} expected to fail, but did not.";
+        fi;
+    else
+        echo "No recognizable arguments for '${module}' in '${value}'";
+        false;
+    fi;
+}
+
+
+function main()
+{
+    local module;
+    local test_dir="${SKL_DIR}/system/lms/tests"
+
+    export SKL_SEARCH_PATH="${SKL_SEARCH_PATH}:${test_dir}";
+
+    cd ${SKL_DIR}/system;
+
+    # All keys: ${!MODULE_TESTS[@]}
+    for test in ${!MODULE_TESTS[@]}; do
+        local module=$(basename ${test} .Mod);
+
+        if compile ${test}; then
+            run "${module}" "${MODULE_TESTS[${test}]}";
+        fi;
+    done;
+}
+main "${@}";

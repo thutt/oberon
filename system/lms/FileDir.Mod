@@ -43,9 +43,11 @@ IMPORT
 
   CONST (* VMServiceDesc.service = Kernel.VMSVCDirectory, SVCFileDesc op *)
 
-    svcOpenDir    = 1;   (* SVCDirectoryDesc *)
-    svcReadDir    = 2;   (* SVCDirectoryDesc *)
-    svcCloseDir   = 3;   (* SVCDirectoryDesc *)
+    svcOpenDir    = 0;   (* SVCDirectoryDesc *)
+    svcReadDir    = 1;   (* SVCDirectoryDesc *)
+    svcCloseDir   = 2;   (* SVCDirectoryDesc *)
+    svcMkTree     = 3;   (* SVCDirectoryMkTreeDesc *)
+    svcRmTree     = 4;   (* SVCDirectoryRmTreeDesc *)
 
   TYPE
     SVCFileDesc = RECORD (Kernel.VMServiceDesc)
@@ -125,6 +127,14 @@ IMPORT
     END;
 
 
+  TYPE
+    SVCMkRmTreeDesc = RECORD (SVCFileDesc)
+      path   : LONGINT;         (* in : ASCIIZ template address. *)
+      mode   : SET;             (* in : mkdir 'mode' argument. *)
+      result : LONGINT;         (* out: Host OS: mkdir() result. *)
+    END;
+
+
   CONST (* res values *)
     NoError* = 0; (* must match Files.NoError *)
     FileNotFound* = -1;
@@ -150,11 +160,15 @@ IMPORT
   CONST (* OpenFileProc modes (POSIX open()) *)
     sRUSR = 8;                  (* S_IRUSR (0400 / 0x100) *)
     sWUSR = 7;                  (* S_IWUSR (0200 /  0x80) *)
+    sXUSR = 6;                  (* S_IXUSR (0100 /  0x40) *)
+
     sRGRP = 5;                  (* S_IRGRP ( 040 /  0x20) *)
     sWGRP = 4;                  (* S_IWGRP ( 020 /  0x10) *)
+    sXGRP = 3;                  (* S_IXGRP ( 010 /   0x8) *)
+
     sROTH = 3;                  (* S_IROTH (  04 /   0x4) *)
     sWOTH = 1;                  (* S_IWOTH (  02 /   0x2) *)
-
+    sXOTH = 0;                  (* S_IXOTH (  01 /   0x1) *)
 
   CONST (* Handle flags *)
     hfOpen = 0; (* file is currently open; open IN flags => c.name # NIL  *)
@@ -1058,6 +1072,33 @@ IMPORT
       RETURN NIL;
     END;
   END GetEnvironmentPaths;
+
+
+  (* Make an empty directory tree. *)
+  PROCEDURE MkTree*(path : ARRAY OF CHAR) : BOOLEAN;
+    VAR
+      svc : SVCMkRmTreeDesc;
+  BEGIN
+    svc.op   := svcMkTree;
+    svc.path := SYSTEM.ADR(path);
+    svc.mode := { sRUSR, sWUSR, sXUSR, sRGRP, sXGRP };
+    Kernel.VMService(Kernel.VMSVCDirectory, svc);
+    RETURN svc.result = 0;      (* 0 is success. *)
+  END MkTree;
+
+
+  (* Remove a directory tree and all files in it. *)
+  PROCEDURE RmTree*(path : ARRAY OF CHAR) : BOOLEAN;
+    VAR
+      svc : SVCMkRmTreeDesc;
+  BEGIN
+    svc.op   := svcRmTree;
+    svc.path := SYSTEM.ADR(path);
+    svc.mode := -{};
+    Kernel.VMService(Kernel.VMSVCDirectory, svc);
+    RETURN svc.result = 0;      (* 0 is success. *)
+  END RmTree;
+
 
 BEGIN
   (* Dummy list header (for ease of list handling). *)
