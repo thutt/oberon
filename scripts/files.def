@@ -10,95 +10,95 @@
 # This list must be kept in 'import order' so
 # that each module can be compiled.
 declare -a OS;
-OS=(lms/Kernel.Mod                              \
-    lms/HostOS.Mod                              \
-    Reals.Mod                                   \
-    lms/Console.Mod                             \
-    lms/Environment.Mod                         \
-    lms/Pathnames.Mod                           \
-    lms/GetOpt.Mod                              \
-    lms/FileDir.Mod                             \
-    Files.Mod                                   \
-    lms/FileUtils.Mod                           \
-    lms/DebugIO.Mod                             \
-    lms/ModuleInspector.Mod                     \
-    lms/Trap.Mod                                \
-    lms/CommandLine.Mod                         \
-    lms/Modules.Mod                             \
-    Types.Mod                                   \
-    Objects.Mod                                 \
-    Input.Mod                                   \
-    Display.Mod                                 \
-    DisplayFrame.Mod                            \
-    Fonts.Mod                                   \
-    Texts.Mod                                   \
-    Viewers.Mod                                 \
-    Oberon.Mod                                  \
-    MenuViewers.Mod                             \
-    TextFrames.Mod                              \
-    s3.System.Mod                               \
-    lms/KernelTD.Mod);
+OS=(${SKL_DIR}/system/lms/Kernel.Mod            \
+    ${SKL_DIR}/system/lms/HostOS.Mod            \
+    ${SKL_DIR}/system/Reals.Mod                 \
+    ${SKL_DIR}/system/lms/Console.Mod           \
+    ${SKL_DIR}/system/lms/Environment.Mod       \
+    ${SKL_DIR}/system/lms/Pathnames.Mod         \
+    ${SKL_DIR}/system/lms/GetOpt.Mod            \
+    ${SKL_DIR}/system/lms/FileDir.Mod           \
+    ${SKL_DIR}/system/Files.Mod                 \
+    ${SKL_DIR}/system/lms/FileUtils.Mod         \
+    ${SKL_DIR}/system/lms/DebugIO.Mod           \
+    ${SKL_DIR}/system/lms/ModuleInspector.Mod   \
+    ${SKL_DIR}/system/lms/Trap.Mod              \
+    ${SKL_DIR}/system/lms/CommandLine.Mod       \
+    ${SKL_DIR}/system/lms/Modules.Mod           \
+    ${SKL_DIR}/system/Types.Mod                 \
+    ${SKL_DIR}/system/Objects.Mod               \
+    ${SKL_DIR}/system/Input.Mod                 \
+    ${SKL_DIR}/system/Display.Mod               \
+    ${SKL_DIR}/system/DisplayFrame.Mod          \
+    ${SKL_DIR}/system/Fonts.Mod                 \
+    ${SKL_DIR}/system/Texts.Mod                 \
+    ${SKL_DIR}/system/Viewers.Mod               \
+    ${SKL_DIR}/system/Oberon.Mod                \
+    ${SKL_DIR}/system/MenuViewers.Mod           \
+    ${SKL_DIR}/system/TextFrames.Mod            \
+    ${SKL_DIR}/system/s3.System.Mod             \
+    ${SKL_DIR}/system/lms/KernelTD.Mod);
 
 
 # The SKL compiler.
 declare -a SKL;
-SKL=(compiler/skl/SKLERR.Mod                    \
-     compiler/skl/SKLCMDIO.Mod                  \
-     compiler/skl/SKLMD.Mod                     \
-     compiler/skl/SKLOS.Mod                     \
-     compiler/skl/SKLST.Mod                     \
-     compiler/skl/SKLIE.Mod                     \
-     compiler/skl/SKLT.Mod                      \
-     compiler/skl/SKLTB.Mod                     \
-     compiler/skl/SKLDN.Mod                     \
-     compiler/skl/SKLDS.Mod                     \
-     compiler/skl/SKLCGL.Mod                    \
-     compiler/skl/SKLCGH.Mod                    \
-     compiler/skl/SKLTH.Mod                     \
-     compiler/skl/SKLTT.Mod                     \
-     compiler/skl/SKLPU.Mod                     \
-     compiler/skl/SKLTU.Mod                     \
-     compiler/skl/SKLSTP.Mod                    \
-     compiler/skl/SKLE.Mod                      \
-     compiler/skl/SKLSP.Mod                     \
-     compiler/skl/SKL.Mod);
+SKL=(${SKL_DIR}/system/compiler/skl/SKLERR.Mod          \
+     ${SKL_DIR}/system/compiler/skl/SKLCMDIO.Mod        \
+     ${SKL_DIR}/system/compiler/skl/SKLMD.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLOS.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLST.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLIE.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLT.Mod            \
+     ${SKL_DIR}/system/compiler/skl/SKLTB.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLDN.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLDS.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLCGL.Mod          \
+     ${SKL_DIR}/system/compiler/skl/SKLCGH.Mod          \
+     ${SKL_DIR}/system/compiler/skl/SKLTH.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLTT.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLPU.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLTU.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLSTP.Mod          \
+     ${SKL_DIR}/system/compiler/skl/SKLE.Mod            \
+     ${SKL_DIR}/system/compiler/skl/SKLSP.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKL.Mod);
 
 # The compiler called O3
 
-declare -a O3;                                  \
-O3=(compiler/o3/O3Errors.Mod                    \
-    compiler/o3/O3Config.Mod                    \
-    compiler/o3/O3MachineDep.Mod                \
-    compiler/o3/O3Scanner.Mod                   \
-    compiler/o3/O3Symtab.Mod                    \
-    compiler/o3/O3Fingerprint.Mod               \
-    compiler/o3/O3SymFile.Mod                   \
-    compiler/o3/O3TreeNode.Mod                  \
-    compiler/o3/O3TreeHelper.Mod                \
-    compiler/o3/O3Semantics.Mod                 \
-    compiler/o3/O3ConstExpression.Mod           \
-    compiler/o3/O3TypeAllocate.Mod              \
-    compiler/o3/O3StdProc.Mod                   \
-    compiler/o3/O3Expression.Mod                \
-    compiler/o3/O3Parser.Mod                    \
-    compiler/o3/O3.Mod                          \
-    compiler/o3/O3IOCommand.Mod                 \
-    compiler/o3/O3FileIO.Mod                    \
-    compiler/o3/O3GSAOpcode.Mod                 \
-    compiler/o3/O3GSAData.Mod                   \
-    compiler/o3/O3GSANames.Mod                  \
-    compiler/o3/O3GSADump.Mod                   \
-    compiler/o3/O3GSACanon.Mod                  \
-    compiler/o3/O3GSADeadCode.Mod               \
-    compiler/o3/O3GSAValueNumber.Mod            \
-    compiler/o3/O3GSAConstPropagate.Mod         \
-    compiler/o3/O3GSAAliasAnalysis.Mod          \
-    compiler/o3/O3GSACopyPropagate.Mod          \
-    compiler/o3/O3GSASimpleSchedule.Mod         \
-    compiler/o3/O3GSAImprove.Mod                \
-    compiler/o3/O3MGSA.Mod                      \
-    compiler/o3/O3Mi386.Mod                     \
-    compiler/o3/O3MTreeDumper.Mod);
+declare -a O3;
+O3=(${SKL_DIR}/system/compiler/o3/O3Errors.Mod                  \
+    ${SKL_DIR}/system/compiler/o3/O3Config.Mod                  \
+    ${SKL_DIR}/system/compiler/o3/O3MachineDep.Mod              \
+    ${SKL_DIR}/system/compiler/o3/O3Scanner.Mod                 \
+    ${SKL_DIR}/system/compiler/o3/O3Symtab.Mod                  \
+    ${SKL_DIR}/system/compiler/o3/O3Fingerprint.Mod             \
+    ${SKL_DIR}/system/compiler/o3/O3SymFile.Mod                 \
+    ${SKL_DIR}/system/compiler/o3/O3TreeNode.Mod                \
+    ${SKL_DIR}/system/compiler/o3/O3TreeHelper.Mod              \
+    ${SKL_DIR}/system/compiler/o3/O3Semantics.Mod               \
+    ${SKL_DIR}/system/compiler/o3/O3ConstExpression.Mod         \
+    ${SKL_DIR}/system/compiler/o3/O3TypeAllocate.Mod            \
+    ${SKL_DIR}/system/compiler/o3/O3StdProc.Mod                 \
+    ${SKL_DIR}/system/compiler/o3/O3Expression.Mod              \
+    ${SKL_DIR}/system/compiler/o3/O3Parser.Mod                  \
+    ${SKL_DIR}/system/compiler/o3/O3.Mod                        \
+    ${SKL_DIR}/system/compiler/o3/O3IOCommand.Mod               \
+    ${SKL_DIR}/system/compiler/o3/O3FileIO.Mod                  \
+    ${SKL_DIR}/system/compiler/o3/O3GSAOpcode.Mod               \
+    ${SKL_DIR}/system/compiler/o3/O3GSAData.Mod                 \
+    ${SKL_DIR}/system/compiler/o3/O3GSANames.Mod                \
+    ${SKL_DIR}/system/compiler/o3/O3GSADump.Mod                 \
+    ${SKL_DIR}/system/compiler/o3/O3GSACanon.Mod                \
+    ${SKL_DIR}/system/compiler/o3/O3GSADeadCode.Mod             \
+    ${SKL_DIR}/system/compiler/o3/O3GSAValueNumber.Mod          \
+    ${SKL_DIR}/system/compiler/o3/O3GSAConstPropagate.Mod       \
+    ${SKL_DIR}/system/compiler/o3/O3GSAAliasAnalysis.Mod        \
+    ${SKL_DIR}/system/compiler/o3/O3GSACopyPropagate.Mod        \
+    ${SKL_DIR}/system/compiler/o3/O3GSASimpleSchedule.Mod       \
+    ${SKL_DIR}/system/compiler/o3/O3GSAImprove.Mod              \
+    ${SKL_DIR}/system/compiler/o3/O3MGSA.Mod                    \
+    ${SKL_DIR}/system/compiler/o3/O3Mi386.Mod                   \
+    ${SKL_DIR}/system/compiler/o3/O3MTreeDumper.Mod);
 
 
 
@@ -116,43 +116,43 @@ O3=(compiler/o3/O3Errors.Mod                    \
 #   o 'manual' means the test is only run manually (due to long runtimes).
 #
 declare -A COMPILER_TESTS;
-COMPILER_TESTS=(                                        \
-    [compiler/skl/tests/CTArrayTrap.Mod]="pass"         \
-    [compiler/skl/tests/CTAssertTrap.Mod]="fail"        \
-    [compiler/skl/tests/CTBitsetRangeFail.Mod]="fail"   \
-    [compiler/skl/tests/CTConditionCode.Mod]="pass"     \
-    [compiler/skl/tests/CTDivZero.Mod]="fail"           \
-    [compiler/skl/tests/CTDumpHeap.Mod]="pass,manual"   \
-    [compiler/skl/tests/CTDynArrLength.Mod]="fail"      \
-    [compiler/skl/tests/CTEmpty.Mod]="pass,manual"      \
-    [compiler/skl/tests/CTEnvironment.Mod]="pass"       \
-    [compiler/skl/tests/CTExclude.Mod]="pass"           \
-    [compiler/skl/tests/CTFileIO.Mod]="pass"            \
-    [compiler/skl/tests/CTFingerprint.Mod]="pass"       \
-    [compiler/skl/tests/CTFor.Mod]="pass"               \
-    [compiler/skl/tests/CTGC.Mod]="pass,manual"         \
-    [compiler/skl/tests/CTGetOpt.Mod]="pass,manual"     \
-    [compiler/skl/tests/CTImport.Mod]="pass"            \
-    [compiler/skl/tests/CTIncDec.Mod]="pass"            \
-    [compiler/skl/tests/CTInstructionCount.Mod]="pass"  \
-    [compiler/skl/tests/CTInvalidOpcode.Mod]="fail"     \
-    [compiler/skl/tests/CTMissingMethod.Mod]="fail"     \
-    [compiler/skl/tests/CTNest.Mod]="pass"              \
-    [compiler/skl/tests/CTOOBRead.Mod]="fail"           \
-    [compiler/skl/tests/CTOOBWrite.Mod]="fail"          \
-    [compiler/skl/tests/CTOpenArray.Mod]="pass"         \
-    [compiler/skl/tests/CTPathnames.Mod]="pass"         \
-    [compiler/skl/tests/CTProcedure.Mod]="pass"         \
-    [compiler/skl/tests/CTRange.Mod]="fail"             \
-    [compiler/skl/tests/CTReal.Mod]="pass"              \
-    [compiler/skl/tests/CTReturn.Mod]="pass"            \
-    [compiler/skl/tests/CTRotate.Mod]="pass"            \
-    [compiler/skl/tests/CTSET.Mod]="pass"               \
-    [compiler/skl/tests/CTSetCtor.Mod]="pass"           \
-    [compiler/skl/tests/CTString.Mod]="pass"            \
-    [compiler/skl/tests/CTTDCodeGen.Mod]="pass"         \
-    [compiler/skl/tests/CTTrapNil.Mod]="fail"           \
-    [compiler/skl/tests/CTTypeDesc.Mod]="pass,manual"   \
+COMPILER_TESTS=(                                                        \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTArrayTrap.Mod]="pass"        \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTAssertTrap.Mod]="fail"       \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTBitsetRangeFail.Mod]="fail"  \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTConditionCode.Mod]="pass"    \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTDivZero.Mod]="fail"          \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTDumpHeap.Mod]="pass,manual"  \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTDynArrLength.Mod]="fail"     \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTEmpty.Mod]="pass,manual"     \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTEnvironment.Mod]="pass"      \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTExclude.Mod]="pass"          \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTFileIO.Mod]="pass"           \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTFingerprint.Mod]="pass"      \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTFor.Mod]="pass"              \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTGC.Mod]="pass,manual"        \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTGetOpt.Mod]="pass,manual"    \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTImport.Mod]="pass"           \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTIncDec.Mod]="pass"           \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTInstructionCount.Mod]="pass" \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTInvalidOpcode.Mod]="fail"    \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTMissingMethod.Mod]="fail"    \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTNest.Mod]="pass"             \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTOOBRead.Mod]="fail"          \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTOOBWrite.Mod]="fail"         \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTOpenArray.Mod]="pass"        \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTPathnames.Mod]="pass"        \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTProcedure.Mod]="pass"        \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTRange.Mod]="fail"            \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTReal.Mod]="pass"             \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTReturn.Mod]="pass"           \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTRotate.Mod]="pass"           \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTSET.Mod]="pass"              \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTSetCtor.Mod]="pass"          \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTString.Mod]="pass"           \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTTDCodeGen.Mod]="pass"        \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTTrapNil.Mod]="fail"          \
+    [${SKL_DIR}/systemcompiler/skl/tests/CTTypeDesc.Mod]="pass,manual"  \
 );
 
 # Tests for modules.
@@ -168,6 +168,7 @@ COMPILER_TESTS=(                                        \
 #   o 'manual' means the test is only run manually (due to long runtimes).
 #
 declare -A MODULE_TESTS;
-MODULE_TESTS=(                                  \
-    [lms/tests/MkTree.Mod]="pass"               \
+MODULE_TESTS=(                                                  \
+    [${SKL_DIR}/system/lms/tests/MkTree.Mod]="pass"             \
+    [${SKL_DIR}/system/lms/tests/MemoryExhaust.Mod]="pass"      \
 );

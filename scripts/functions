@@ -189,6 +189,14 @@ function skl-skl-oc ()
 export -f skl-skl-oc;
 
 
+function o3c ()
+{
+    # SKL-based compiler, targeting SKL.
+    skl-oberon -- "O3.Compile -c GSA ${@}";
+}
+export -f o3c;
+
+
 function disasm () # oberon disassembler invocation
 {
     # This pathname construction must match the pathname construction

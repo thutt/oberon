@@ -88,7 +88,7 @@ function main()
         else
             local system="${SKL_DIR}/system"
             export SKL_BUILD_DIR="${BOD}";
-            export SKL_SEARCH_PATH="${system}:${system}/lms:${system}/compiler/skl";
+            export SKL_SEARCH_PATH="${system}:${system}/lms:${system}/compiler/skl:${system}/compiler/o3";
             export SKL_BUILD_OPTIONS="";
             export SKL_ARCHITECTURE="${ARCHITECTURE}";
 

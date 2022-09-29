@@ -1,3 +1,4 @@
+(* Copyright (c) 2022 Logic Magicians Software *)
 MODULE MkTree;
 IMPORT Console, FileDir;
 
