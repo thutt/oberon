@@ -1,19 +1,20 @@
 MODULE SKL;
 
-  IMPORT FileDir, Texts,
-    ST := SKLST,
-    SP := SKLSP,
-    OPS:=SKLOS,
-    TT := SKLTT,
-    T := SKLT,
-    CGL := SKLCGL,
-    CGH := SKLCGH,
-    OPM := SKLMD,
-    TU:=SKLTU,
-    IE:=SKLIE,
-    DN:=SKLDN,
-    TH:=SKLTH,
-    Kernel;
+IMPORT
+  FileDir, Texts,
+  ST := SKLST,
+  SP := SKLSP,
+  OPS:=SKLOS,
+  TT := SKLTT,
+  T := SKLT,
+  CGL := SKLCGL,
+  CGH := SKLCGH,
+  OPM := SKLMD,
+  TU:=SKLTU,
+  IE:=SKLIE,
+  DN:=SKLDN,
+  TH:=SKLTH,
+  Kernel;
   
   CONST
     SignOnMessage = "LMSO SKL Compiler  TWH 2022.02.09";
@@ -111,7 +112,9 @@ MODULE SKL;
       IF OPM.noerr THEN
         Do(source);
       END;
-      IF err OR ~OPM.noerr THEN
+      IF err THEN
+        Kernel.Terminate(1);   (* Module compilation failed. *)
+      ELSIF ~OPM.noerr THEN
         EXIT;
       END;
     END;
