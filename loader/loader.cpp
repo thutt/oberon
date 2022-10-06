@@ -42,10 +42,9 @@ help(const char *program_name)
                   "[--help | "
                   "--version | "
                   " --verbose | "
+                  "--instruction-count |\n"
                   "--dump-heap | "
                   "--diagnostic | "
-                  "--instruction-count |\n"
-                  " --stack <stack-size-in-megabytes> | "
                   "--trace]..."
                   "\n", program_name);
 }
@@ -54,8 +53,8 @@ help(const char *program_name)
 static void
 version(void)
 {
-    dialog::print("SKL Oberon-2 Loader 1.0\n"
-                  "Copyright (c) 2021 Logic Magicians\n"
+    dialog::print("SKL Oberon-2 Loader\n"
+                  "Copyright (c) 2021-2022 Logic Magicians\n"
                   "For non-commerical distribution only\n");
     dialog::print("Heap: %d bytes\n", heap::default_heap_size_in_bytes);
 }
