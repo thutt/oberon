@@ -574,6 +574,9 @@
 
 
   PROCEDURE DumpHeap*;
+    CONST
+      MB = 1024 * 1024;
+
     VAR
       q, bs, arrdat, tdadr, nameadr, len : LONGINT;
       tag : SET;
@@ -589,7 +592,7 @@
     DebugStr(', ');
     DebugHex(heap.region.end);
     DebugStr(']  (Size: ');
-    DebugInt(heap.region.size DIV (1024 * 1024));
+    DebugInt(heap.region.size DIV MB);
     DebugStr(' MiB)');
     DebugLn;
 
@@ -598,7 +601,7 @@
     DebugStr(', ');
     DebugHex(stack.end);
     DebugStr(')  (Size: ');
-    DebugInt((stack.end - stack.beg) DIV (1024 * 1024));
+    DebugInt((stack.end - stack.beg) DIV MB);
     DebugStr('  Mib)  [Stack grows down.]');
     DebugLn;
     DebugLn;
