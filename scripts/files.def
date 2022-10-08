@@ -101,8 +101,6 @@ O3=(${SKL_DIR}/system/compiler/o3/O3Errors.Mod                  \
     ${SKL_DIR}/system/compiler/o3/O3MTreeDumper.Mod);
 
 
-
-
 # The tests for the SKL compiler code generator.
 #
 # The key is the name of the test module.
@@ -155,6 +153,7 @@ COMPILER_TESTS=(                                                        \
     [${SKL_DIR}/system/compiler/skl/tests/CTTypeDesc.Mod]="pass,manual"  \
 );
 
+
 # Tests for modules.
 #
 # The key is the name of the test module.
@@ -171,4 +170,22 @@ declare -A MODULE_TESTS;
 MODULE_TESTS=(                                                  \
     [${SKL_DIR}/system/lms/tests/MkTree.Mod]="pass"             \
     [${SKL_DIR}/system/lms/tests/MemoryExhaust.Mod]="pass"      \
+);
+
+
+# Tests for the Oberon System.
+#
+# The key is the name of the test module.
+#
+# The value of each element in the dictionary contains attributes about the test:
+#
+#   o 'pass' means the test succeeds to 'pass'. Mutually exclusive with 'fail'.
+#
+#   o 'fail' means the test fails to 'pass'.  Mutually exclusive with 'pass'.
+#
+#   o 'manual' means the test is only run manually (due to long runtimes).
+#
+declare -A SYSTEM_TESTS;
+SYSTEM_TESTS=(                                                  \
+    [${SKL_DIR}/system/lms/tests/StackOverflow.Mod]="fail"      \
 );

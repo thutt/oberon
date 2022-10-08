@@ -248,6 +248,7 @@ The files contained here are provided under the corresponding software license.
   scripts/skl-size.py
   scripts/skl-test-compiler
   scripts/skl-test-modules
+  scripts/skl-test-system
   system/Prime.Mod
   system/Prime.Obj
   system/Prime.Sym
@@ -471,6 +472,9 @@ The files contained here are provided under the corresponding software license.
   system/lms/tests/MkTree.Mod
   system/lms/tests/MkTree.Obj
   system/lms/tests/MkTree.Sym
+  system/lms/tests/StackOverflow.Mod
+  system/lms/tests/StackOverflow.Obj
+  system/lms/tests/StackOverflow.Sym
 
 
 **** licenses/lgpl-3.0.text
