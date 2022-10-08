@@ -97,8 +97,8 @@ namespace skl
     /* The bootstrap loader sets the stack information here.  It is
      * used bound stack dumping when printing the CPU state.
      */
-    extern md::OADDR initial_stack_bot;
-    extern md::OADDR initial_stack_top;
+    extern memory_t    initial_stack;
+
 
     void initialize_memory(md::OADDR membeg, int n_bytes);
     void initialize_stack(void);

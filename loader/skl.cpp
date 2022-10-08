@@ -28,8 +28,7 @@ namespace skl {
         N_OPCODE_CLASSES
     } opcode_class_t;
 
-    md::OADDR initial_stack_bot;
-    md::OADDR initial_stack_top;
+    memory_t initial_stack;
 
     const char *reg_bank[2] = {
         "R",
@@ -62,20 +61,21 @@ namespace skl {
         int             stack_words         = default_stack_words;
         md::uint32      next_sfp            = sfp;
 
-        if (sp >= initial_stack_top - sizeof(md::uint32)) {
+        if (sp >= initial_stack.end - sizeof(md::uint32)) {
             /* At startup, with an empty stack, SP will be one word
              * above the topmost stack element, because the SP is
              * predecrement.
              */
             stack_words = 0;
         } else {
-            stack_words = static_cast<int>((initial_stack_top - sp) /
+            stack_words = static_cast<int>((initial_stack.end - sp) /
                                            static_cast<int>(sizeof(md::uint32)));
         }
 
         if (stack_words > 0) {
             dialog::cpu("Stack [%xH..%xH) [%xH words]\n",
-                        initial_stack_bot, initial_stack_top, stack_words);
+                        initial_stack.beg, initial_stack.end, /* [beg..end) */
+                        stack_words);
             i = 0;
             do {
                 p = sp + static_cast<md::uint32>(i * static_cast<int>(sizeof(md::uint32)));
@@ -408,8 +408,8 @@ namespace skl {
          * the end of the stack; it does at the end of heap
          * initialization.
          */
-        skl::initial_stack_top = stack_top;
-        skl::initial_stack_bot = heap::heap_address(heap::oberon_stack);
+        skl::initial_stack.end = stack_top;
+        skl::initial_stack.beg = heap::heap_address(heap::oberon_stack);
 
         /* It's important to give { SP, SFP } the same value so that
          * the stack dumping logic can terminate easily in

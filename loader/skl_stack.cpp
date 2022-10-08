@@ -23,10 +23,15 @@ namespace skl {
     };
 
     static inline bool
-    stack_access_ok(int n_words, bool push)
+    stack_access_ok(skl::cpu_t *cpu, int n_words, bool push)
     {
-        return true;        // Stack bounds disabled.
+        if (push) {
+            return true;        // Stack bounds checking disabled.
+        } else {
+            return true;        // Stack bounds checking disabled.
+        }
     }
+
 
     struct stack_frame_t  : skl::instruction_t {
         int Rd;
@@ -59,7 +64,7 @@ namespace skl {
         {
             dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, Rd, words);
 
-            if (stack_access_ok(this->n_words, true)) {
+            if (stack_access_ok(cpu, n_words, true)) {
                 md::uint32 sp0 = read_integer_register(cpu, SP);
                 md::uint32 r31 = read_integer_register(cpu, RETADR);
                 md::uint32 rd0 = read_integer_register(cpu, Rd);
@@ -117,7 +122,7 @@ namespace skl {
         {
             dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, Rd, words);
 
-            if (stack_access_ok(n_words, false)) {
+            if (stack_access_ok(cpu, n_words, false)) {
                 md::uint32 rd0 = read_integer_register(cpu, Rd);
                 md::uint32 sp0 = read_integer_register(cpu, SP);
                 md::uint32 rd1;
@@ -201,7 +206,7 @@ namespace skl {
         virtual void interpret(void)
         {
             dialog::trace("%s: %s  R%u", decoded_pc, mne, Rd);
-            if (stack_access_ok(1, true)) {
+            if (stack_access_ok(cpu, 1, true)) {
                 md::uint32 sp;
                 md::uint32 val = read_integer_register(cpu, Rd);
 
@@ -228,7 +233,7 @@ namespace skl {
         virtual void interpret(void)
         {
             dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
-            if (LIKELY(stack_access_ok(1, true))) {
+            if (LIKELY(stack_access_ok(cpu, 1, true))) {
                 union {
                     md::uint32 i;
                     float f;
@@ -263,7 +268,7 @@ namespace skl {
         virtual void interpret(void)
         {
             dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
-            if (LIKELY(stack_access_ok(2, true))) {
+            if (LIKELY(stack_access_ok(cpu, 2, true))) {
                 md::uint32 sp;
                 md::uint32 lo;
                 md::uint32 hi;
@@ -299,7 +304,7 @@ namespace skl {
             md::uint32      value;
 
             dialog::trace("%s: %s  R%u", decoded_pc, mne, Rd);
-            if (stack_access_ok(1, true)) {
+            if (stack_access_ok(cpu, 1, true)) {
                 md::uint32 sp;
                 value = pop_word(cpu, sp);
                 dialog::trace("[ea: %xH  val: %xH]\n", sp, value);
@@ -340,7 +345,7 @@ namespace skl {
         virtual void interpret(void)
         {
             dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
-            if (LIKELY(stack_access_ok(2, true))) {
+            if (LIKELY(stack_access_ok(cpu, 2, true))) {
                 md::uint32 lo;
                 md::uint32 hi;
                 md::uint32 sp_lo;
