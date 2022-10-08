@@ -31,14 +31,14 @@ namespace skl
         CR2,                    // CPU Status.
         CR3_RESVERVED,
         CR4_RESVERVED,
-        CR5,                    // Kernel.SysTrap address (set by SKLKernel.Mod)
+        CR5,                    // Kernel.SysTrap address (set by Kernel.Mod)
         N_CONTROL_REGISTERS
     } control_registers_t;
 
     typedef enum control_register_2_t {
         CR2_CAUSE                = (1 << 0),
 
-        CR2_INTERRUPT            = (1 << 1),
+        CR2_RESERVED_2           = (1 << 1), /* Reserved for interrupts. */
 
         CR2_INVALID_OPCODE       = (0 << 2),
         CR2_BREAK                = (1 << 2),

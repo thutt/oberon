@@ -8,7 +8,7 @@
 namespace skl {
 
     typedef struct vmsvc_early_systrap_desc_t : vmsvc_desc_t {
-        /* SKLKernel.VMServiceSysTrapDesc */
+        /* Kernel.VMServiceSysTrapDesc */
         md::uint32 ip;
         md::uint32 sfp;
         md::uint32 trap;

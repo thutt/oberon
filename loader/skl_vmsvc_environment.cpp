@@ -17,7 +17,7 @@ namespace skl {
 
 
     typedef struct vmsvc_env_desc_t : vmsvc_desc_t {
-        /* SKLKernel.VMServiceHwdTrapDesc */
+        /* Kernel.VMServiceHwdTrapDesc */
         md::uint32 op;
         md::uint32 key;  // Address of ASCIIZ string in Oberon memory.
     } vmsvc_env_desc_t;

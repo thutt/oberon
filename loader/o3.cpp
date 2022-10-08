@@ -269,8 +269,8 @@ namespace O3
 
     /* These type descriptors are found by modifying
      * LMSTH.NewTypeDesc() to print 'type.sym.name^' and 'descName^',
-     * and then looking at SKLKernel.ModuleDesc and associating the
-     * type descriptors for each field in the table below.
+     * and then looking at Kernel.ModuleDesc and associating the type
+     * descriptors for each field in the table below.
      */
     static typedesc_info_t td_info[n_td_names] = { /* Not visible to Oberon. */
         { 0, ".ModuleDesc", validate_record_td, tdesc_moduledesc }, /* record */

@@ -34,11 +34,10 @@ namespace kernintf
         skl::write_integer_register(&skl::cpu, skl::RETADR, 0xdeadbeef);
 
         /* Set R28 to the module initialization function, and invoke
-         * SKLKernel.BootstrapModuleInit.  That function will invoke
-         * it the module initialization through R28.  When control
-         * returns to SKLKernel.BootstrapModuleInit, a VMSVC
-         * 'Bootstrap' operation will return control to the bootstrap
-         * system.
+         * Kernel.BootstrapModuleInit.  That function will invoke it
+         * the module initialization through R28.  When control
+         * returns to Kernel.BootstrapModuleInit, a VMSVC 'Bootstrap'
+         * operation will return control to the bootstrap system.
          */
         skl::write_integer_register(&skl::cpu, 28, init_fn);
 

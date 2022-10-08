@@ -8,7 +8,7 @@
 
 namespace skl {
 
-    typedef struct vmsvc_desc_t { // SKLKernel.VMServiceDesc
+    typedef struct vmsvc_desc_t { // Kernel.VMServiceDesc
         md::uint32 service;
     } vmsvc_desc_t;
 
