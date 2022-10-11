@@ -1,0 +1,51 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\documentclass[10pt]{book}
+
+%\listfiles
+\title {GSA Reference}
+
+\author{Taylor Hutt}
+
+\date{12 Aug 2001}
+
+\usepackage{tabularx}
+\usepackage{acronym}
+\usepackage{times}
+\usepackage{epic}
+\usepackage{calc}
+\usepackage{xspace}
+\usepackage{bytefield}
+\usepackage{graphics}
+\usepackage[boxed,chapter]{algorithm}
+\usepackage{algorithmic}
+\usepackage{xypic}
+\usepackage{multirow}
+
+% FIXME(twh): It is highly desirable to have no indentation on paragraphs,
+% but this causes them to be too close together.  Changing \parskip
+% makes spacing bad; must fix.
+
+%\setlength{\parindent}{0pt}
+%\setlength{\parskip}{.9\baselineskip}
+
+%\includeonly{gsa-macros,gsa-const-propagation}
+
+\makeindex
+\begin{document}
+\include{gsa-macros}
+\maketitle
+\tableofcontents
+\listoffigures
+\listoftables
+\listofalgorithms
+\include{gsa-acronyms}
+\include{gsa-hierarchy}
+\include{gsa-variables}
+\include{gsa-structure}
+\include{gsa-copy-propagation}
+\include{gsa-value-numbering}
+\include{gsa-const-propagation}
+\include{gsa-alias-analysis}
+\include{gsa-notes}
+\end{document}
+

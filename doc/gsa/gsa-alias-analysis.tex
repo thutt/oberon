@@ -1,0 +1,53 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\chapter{Alias Analysis}
+
+\ac{aa} is a process to determine if access to memory through two or
+more different data paths yields the same memory location.  For a
+compiler which does not invoke any \ac{cia}, this is generally not a
+problem since all access to data will directly access memory.
+However, for a compiler which does perform \ac{cia}, it may turn out
+that the value of an aliased memory be held in a register - in which
+case access to the physical memory can yield the wrong data.
+
+Consider, for example:
+
+\begin{verbatim}
+PROCEDURE P0(VAR x, y : INTEGER);
+BEGIN
+  y := 10;
+  INC(x);
+  IF y = 10 THEN x := 0;
+  ELSE x := 1;
+  END;
+END P0;
+
+PROCEDURE P1;
+  VAR z : INTEGER;
+BEGIN z := 0; P0(z, z); ASSERT(z = 1);
+END P1;
+\end{verbatim}
+
+A non-\ac{ci} compiler would produce correct code because all access
+to both \code{x} and \code{y} would be directly to memory.  However,
+if a \ac{ci} compiler, without \ac{aa}, placed \code{y} into a
+register then the output value of \code{x} will be the, incorrect,
+value \code{0}.
+
+\section{Definition of Terms}
+\begin{description}
+\item[alias] An \emph{alias} occurs when two accesses to memory definitely
+  refer to the same memory location.
+\item[may alias] A \emph{may alias} occurs when two memory references
+  \emph{might} refer to the same memory location.
+\item[no alias] A \emph{no alias} indicates that two memory references
+  definitely do not refer to the same memory location.
+\end{description}
+
+\section{Definition of Work}
+
+\ac{aa} must ensure that access to memory always yields the current
+value of that memory.
+
+\section{Description of Work}
+
+

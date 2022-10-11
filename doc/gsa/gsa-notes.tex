@@ -1,0 +1,75 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\chapter{Notes}
+
+\section{Initialization of Local Variables}
+The translation to gsa will implicitly set all local variables to the
+value binary 0.  This can cause the generated code to be different
+than expected, if those variables are, in fact, not initialized by the
+program source due to dce.
+
+Consider:
+
+\begin{verbatim}
+b : BOOLEAN;
+
+IF b THEN PerformSomethingAmazing(); END;
+\end{verbatim}
+
+The initialization also is done in the module initialization code for
+module variables.
+
+\section{Assginment to Procedure Variable}
+When taking the address of a global procedure for assignment to a
+procedure variable, the AST should explicitly take the address of the
+procedure.  This make conversion to gsa a bit easier since it removes
+a special case of procedure variable assignments (the difference
+between assigning a procedure variable to another procedure variable
+-vs- assigning a procedure to procedure variable).  This also impacts
+the code generation for assignments from the AST - which is a
+simplification as well.
+
+A good solution to this problem is to make the AST more explicit: when
+assigning a global procedure to a procedure variable, insert a 'take
+address' node.  This removes any special case in any type of backend
+which will traverse the tree.
+
+I'm ambivilent about doing the same for by-reference parameters, however.
+
+\section{Open Array}
+The syntax tree should explicitly indicate the array length parameter
+to simplify the backend - especially O3MGSA.Enter: no special case
+would be needed for processing parameters (to add open array lengths
+and record descriptors) since they would be explicit in the AST.
+
+\section{indirect instruction}
+
+I think an instruction for providing access to indirect memory is
+necessary, and could possibly simplify some constructions into lower
+level items.  For example, \$tbpadr could be turned into several
+lower-level instructions which model more closely any target cpu.
+
+\%mem := indirect.asU4  \%mem, base-address, offset-in-bytes
+
+As a start, this would load an unsigned 4 byte value indirectly from
+'base-address + offset-in-bytes'.
+
+A model for writing memory in the same fashion would be needed.
+
+\section{AST generation}
+
+It may be useful to have a flag set on \emph{compiler generated} nodes
+in the AST.  For example, the Oberon compiler generates halt
+nodes when the ELSE clasue is not present on CASE and WITH
+statements... to be able to distinguish such compiler-generated code
+can be useful: color coding in a debugger, code generation phases
+could use this information to disable compiler generated code.  Or,
+different code sequences can be emitted (translating a hard halt call
+into a \$trap instruction, for example).
+
+\subsection{Standard Procedures}
+Standard procedures should be mapped into function calls if a result
+is returned.  For example, \code{NEW(p)} should become \code{p :=
+  new-record(type-descriptor)}.  This allows the conversion to the
+\ac{gsa} form can easily leverage all the other infrastructure to
+handle the assignment.
+

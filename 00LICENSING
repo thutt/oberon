@@ -208,6 +208,24 @@ The files contained here are provided under the corresponding software license.
   disasm/skl.cpp
   disasm/skl.h
   doc/Makefile
+  doc/gsa/Makefile
+  doc/gsa/gsa-acronyms.tex
+  doc/gsa/gsa-alias-analysis.tex
+  doc/gsa/gsa-const-propagation.tex
+  doc/gsa/gsa-copy-propagation.tex
+  doc/gsa/gsa-hierarchy-orig.mp
+  doc/gsa/gsa-hierarchy.tex
+  doc/gsa/gsa-instruction-epilogue-orig.mp
+  doc/gsa/gsa-instruction-prologue-orig.mp
+  doc/gsa/gsa-instruction-simple-orig.mp
+  doc/gsa/gsa-instruction.py
+  doc/gsa/gsa-instruction.template
+  doc/gsa/gsa-macros.tex
+  doc/gsa/gsa-notes.tex
+  doc/gsa/gsa-structure.tex
+  doc/gsa/gsa-value-numbering.tex
+  doc/gsa/gsa-variables.tex
+  doc/gsa/gsa.tex
   doc/module/Makefile
   doc/module/environment.tex
   doc/module/getopt.tex

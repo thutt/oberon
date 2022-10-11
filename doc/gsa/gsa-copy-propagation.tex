@@ -1,0 +1,44 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\chapter{Copy Propagation}
+
+\begin{quote}
+  \ac{cp} replaces all uses of \gsainst{copy} by uses of the operand
+  of the \gsainst{copy}.  This reduces the unnecessary movement of
+  data from one location to another.
+
+  See \refgsainst{copy}{Gmisc}.
+\end{quote}
+
+The translation phase from the \ac{ast} to the \ac{gsa} \ac{ir}, the
+translator will introduce a \gsainst{copy} when a constant or variable
+is assigned to another variable.  Since \ac{gsa} has a \emph{single
+  assignment} property, the left-hand-side of a \gsainst{copy} cannot
+be directly overwritten, so all uses of this \gsainst{copy} can be
+replaced with direct use of the operand of the instruction.
+
+The \ac{cp} algorithm operates by examining a \emph{global region} for
+\gsainst{copy} instructions.  When found it replaces these
+instructions with the source of the copy.
+
+\begin{algorithm}[h!]
+  \caption{Copy Propagation}
+  \begin{algorithmic}[1]
+    \REQUIRE{greg $\neq$ nil}
+
+    \ENSURE{\FORALL{inst: inst $\in$ greg}
+      \STATE{inst $\neq$ \gsainst{copy}}
+      \ENDFOR}
+    \STATE
+    \FORALL{region: region $\in$ greg}
+    \FORALL{inst: inst $\in$ region}
+    \IF{inst $=$ \gsainst{copy}}
+    \STATE replace-use-of inst with inst.operand
+    \ENDIF
+    \ENDFOR
+    \ENDFOR
+  \end{algorithmic}
+\end{algorithm}
+
+Since \gsainst{copy} can only be introduced during the translation to
+\ac{gsa}, once all have been removed, the \ac{cp} algorithm never has
+to be run again.

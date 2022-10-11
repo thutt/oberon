@@ -1,0 +1,181 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\newcommand{\vnopclass}[1] {\emph{opcode}[#1]\xspace}
+\chapter{Value Numbering}
+\begin{quote}
+  \ac{vn}, also known as \ac{cse}, is an algorithm which assigns each
+  instruction in a region a \emph{number} based on the \emph{value} it
+  computes.
+
+  By design, expressions which compute the same \emph{value} receive
+  the same \emph{number}.
+
+  Following the calculation of \emph{value numbers}, the algorithm
+  replaces all uses of the same \emph{value number} by the result of
+  the first instruction which computes that value; all other
+  instructions which compute the same value become \emph{dead} and
+  will be removed by the \ac{dce} algorithm.
+\end{quote}
+
+This compiler uses an \emph{optimistic} \ac{vn} algorithm which is
+designed to find two instructions to be congruent until it can be
+proven that they are not congruent.
+
+\begin{algorithm}[h!]
+  \caption{Value Numbering (core)}
+  \begin{algorithmic}[1]
+    \REQUIRE{greg $\neq$ nil}
+
+    \STATE{worklist $=$ nil}
+    \FORALL{i: i is an opcode}
+      \STATE create parition \vnopclass{i}
+      \STATE add \vnopclass{i} to worklist
+    \ENDFOR
+
+    \FORALL{region: region $\in$ greg}
+      \FORALL{inst: inst $\in$ region}
+      \STATE add inst to partition \vnopclass{inst}
+      \ENDFOR
+    \ENDFOR
+
+    \FORALL{i: i is an opcode}
+      \STATE split \vnopclass{i} by \emph{unique result}
+      \STATE split \vnopclass{i} by \emph{loops}
+      \STATE split \vnopclass{i} by \emph{const}
+      \STATE split \vnopclass{i} by \emph{addressable}
+    \ENDFOR
+
+    \FORALL{p: p $\in$ worklist}
+    \STATE split p by \emph{results} and \emph{operands}
+    \ENDFOR
+
+    \STATE coalesce \ac{vn}
+  \end{algorithmic}
+\end{algorithm}
+
+In basic terms, the algorithm functions by iteratively splitting the
+instructions in a region into partitions, based on the opcode and the
+operands, until all instructions in a given partition have the same
+opcode and all the operands are equivalent.
+
+Partitioning of a region occurs based on the results and operands of
+each instruction.  When complete, each partition will only contain
+instructions with the same \emph{opcode}, \emph{results} and congruent
+\emph{operands} in the same position.
+
+\section{Special Splitting Criteria}
+
+The algorithm must take a few special features into consideration, or
+the value numbering which is produced will be incorrect.
+
+First, instructions, such as \gsainst{newrecord}, can be marked as
+\emph{always returning a unique result}.  Instructions marked in this
+manner must be split into their own partitions so that the scenario
+shown in figure \ref{fig:unique-results} will not have all uses of
+these instructions collapsed into the first.
+
+\begin{figure}[h!]
+\begin{verbatim}
+   NEW(p);
+   p.x := 0;
+   NEW(p);
+\end{verbatim}
+  \caption{Partitioning \emph{unique results}}\label{fig:unique-results}
+\end{figure}
+
+Further, since this compiler only has one \gsainst{loop} type, all
+looping constructs must be explicitly partitioned into their own
+partitions to prevent all loops from being considered congruent.
+
+\section{Partitioning by Operands}
+It can be observed that the operands of any instruction are going to
+fall into three (3) categories which make it easy to split partitions
+based on operands.
+
+\todo{Diagrams or better descriptions would be nice here.}
+\begin{enumerate}
+\item The result of an instruction
+
+  An instruction which is not used as an operand of another
+  instruction is \emph{dead}, and not interesting for \ac{vn}.
+
+  An instruction which is used will appear as the operand of at least
+  one other instruction.  The algorithm is designed to traverse the
+  \emph{uses} of an instruction and split each use based on the
+  operand position.  In other words, all \emph{uses} as ${operand}_0$
+  will be split, all \emph{uses} as ${operand}_1$ will be split, and
+  so forth.
+
+\item An addressable item which is not a constant
+
+  The compiler keeps a list of all \emph{addressable} items used in
+  each global region, which are in turned linked through the
+  \emph{def-uses} chain.  This chain is traversed and the partitions
+  are split in the same way as for \emph{instruction results}.
+
+\item A constant value
+
+  The compiler keeps a list of all \emph{constant} items used in each
+  global region, which are in turned linked through the \emph{uses}
+  chain.  This chain is traversed and the partitions are split in the
+  same way as for \emph{instruction results}.
+
+\end{enumerate}
+
+\section{Operand Replacement}
+
+\begin{algorithm}[h!]
+  \caption{Value Numbering (coalesce)}
+  \begin{algorithmic}[1]
+    \REQUIRE greg $\neq$ nil
+    \FORALL{region: region $\in$ greg}
+      \FORALL{inst: inst $\in$ region}
+        \IF{$\neg$ (\emph{partition-replacement} of \emph{partition}(inst))}
+          \STATE \emph{partition-replacement} $=$ inst
+        \ELSE
+          \FORALL{result: result $\in$ \emph{results-of}(inst)}
+             \FORALL{use-of result}
+               \STATE replace result by \emph{partition-replacement}
+             \ENDFOR
+          \ENDFOR
+        \ENDIF
+      \ENDFOR
+    \ENDFOR
+  \end{algorithmic}
+\end{algorithm}
+
+Since the core of the algorithm matches operands in a particular
+position, it is assumed that operands have been be normalized to
+ensure that all opportunities for finding congruence are available.
+For example, the core algorithm will not find the following
+instructions to be congruent:
+
+\begin{figure}
+\begin{verbatim}
+  i := j + 5;
+  k := 5 + j;
+\end{verbatim}
+\caption{Congruence will not be found}
+\end{figure}
+
+However it will find congruence if the operands are normalized, such
+as the following:
+
+\begin{figure}
+\begin{verbatim}
+  i := j + 5;
+  k := j + 5;
+\end{verbatim}
+\caption{Congruence will be found}
+\end{figure}
+
+This \ac{vn} system does not normalize the operands of the
+instructions.
+
+An instruction which produces a \emph{unique result}, such as
+\code{NEW}, can never be considered congruent with any other
+instruction.  Consequently, a pass over all the partitions is required
+to ensure that \emph{unique result} instructions are placed into their
+own partition.
+
+Similarly, \gsainst{loop} can never be congruent with any other
+instruction, so they are placed into unique paritions.

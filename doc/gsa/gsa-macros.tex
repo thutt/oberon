@@ -1,0 +1,35 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\newcommand{\code}[1] {\texttt{#1}\xspace}
+\newcommand{\gsainst}[1] {\texttt{\$#1}\xspace}
+\newcommand{\gsavar}[1] {\texttt{\%#1}\xspace}
+\newcommand{\byref} {by-reference\xspace}
+\newcommand{\byval} {by-value\xspace}
+
+%\refgsainst{instruction-name}{instruction-class}
+\newcommand{\refgsainst}[2] {\gsainst{#1} (\S\ref{inst:#2-#1})\xspace}
+\newcommand{\refgsaclass}[2] {#1 (\S\ref{class:#2})\xspace}
+\newcommand{\refgsavar}[1] {\S\ref{var:#1}\xspace}
+\newlength{\veelen}
+\settowidth{\veelen}{\ensuremath{\vee}}
+\newcommand{\xor}{\makebox[\width]{\ensuremath{\vee\hspace{-\veelen}}\rule[-.5pt]{\veelen}{.5pt}}}
+\newcommand{\todo}[1] {\marginpar{#1}}
+
+%\duc: def-use chain
+\newcommand{\duc} {\emph{def-use} chain\xspace}
+
+\newtheorem{observation}{Observation}[chapter]
+\newtheorem{invariant}{Invariant}[chapter]
+
+% \refobs: reference an observation
+% \Refobs: reference an Observation
+% \[Rr]efobs{observation-label}
+\newcommand{\refobs}[1] {observation \ref{#1}\xspace}
+\newcommand{\Refobs}[1] {Observation \ref{#1}\xspace}
+\newcommand{\tableref}[1]{table \ref{#1}\xspace}
+\newcommand{\Tableref}[1]{Table \ref{#1}\xspace}
+
+% FIXME(2001.12.15; twh): algorithms are not properly labeled in an xref.  Instead
+% of giving the algorithm number, it gives the section number.  See
+% CCP for an example.
+\newcommand{\algoref}[1]{algorithm \ref{algo:#1}\xspace}
+\newcommand{\Algoref}[1]{Algorithm \ref{algo:#1}\xspace}

@@ -1,12 +1,12 @@
 # Copyright (c) 2022 Logic Magicians Software
 include $(SKL_DIR)/make/config.mk
 
-doc__:	skl module
+doc__:	gsa module skl
 	$(PROLOG);					\
 	echo "Docs: All targets built.";
 
 
-module skl:	build-directories
+gsa module skl:	build-directories
 	$(PROLOG);					\
 	$(MAKE)						\
 	    -C $(_BUILD_DIR)/$@				\
@@ -21,10 +21,11 @@ clean:
 	$(PROLOG);	\
 	rm -rf $(_BUILD_DIR);
 
-$(addprefix $(_BUILD_DIR)/,module skl):
+$(addprefix $(_BUILD_DIR)/,gsa module skl):
 	$(PROLOG);	\
 	mkdir -p $@;
 
 build-directories: |				\
+	$(_BUILD_DIR)/gsa			\
 	$(_BUILD_DIR)/module			\
 	$(_BUILD_DIR)/skl

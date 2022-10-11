@@ -1,0 +1,791 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\chapter{Constant Propagation}
+\todo{Document which algorithm is implemented and give a bib ref}
+
+Frequently a program will calculate the same value in different
+sections of code, and while these extra expressions may not have been
+intentional, recomputing them reduces the efficiency of the generated
+code.  However, if the computed expressions yield constant values, the
+constant, rather than the result, can be propagated to all uses of the
+expression.  Very often this process of \ac{ccp} will cause further
+computations to become constant, which will iteratively improve the
+quality of the code produced by the compiler.
+
+When the condition controlling a region evaluates to a constant value,
+it can be determined at compile time if the region will \emph{always
+  execute} or \emph{never execute}.  These properties can be derived
+from the output of the algorithm described in this chapter.
+
+Surprisingly, many of the opportunities for \ac{ccp} are produced by
+the compiler as by-products of other transformation and improvement
+algorithms, and it is the reason that this improvement algorithm is
+included.
+
+This chapter describes an algorithm which propagates constants and
+identifies code which is not reached through any control path through
+the region.
+
+\section{Basic Algorithm}
+
+\ac{ccp} iteratively examines the operands of each instruction in a
+region, and when all the operands of an instruction can be proven to
+evaluate to a constant value, the instruction will be marked as
+\emph{constant}.  All uses of the newly produced result will be
+propagated throughout the region.  This process is iterated until a
+fix point is reached.
+
+\subsection{Instruction State}\label{ccp:classification}
+
+To easily determine the status of an instruction, it will be
+classified into one of the basic categories shown in
+\tableref{table:const-prop-class}.
+
+\begin{table}[h!]
+  \begin{tabularx}{\linewidth}{|l|X|}
+    \hline State & Description \\
+
+    \hline unclassified & This annotation indicates that nothing has
+    yet been determined about the \emph{constness} of the instruction
+    or its operands.  \\
+
+    \hline constant & This annotation indicates that an instruction
+    will always produce a constant value.  Each unique constant value
+    will have a unique lattice node which contains the computed
+    value. \\
+
+    \hline non-constant & This annotation indicates that an
+    instruction will never produce a constant value. \\
+
+    \hline unreachable & This annotation indicates that the
+    instruction is unreachable through any control path of the
+    program.  It will not be set for \emph{regions}; they will instead
+    be marked as \emph{false}. \\
+    \hline
+  \end{tabularx}
+  \caption{Instruction Categories}\label{table:const-prop-class}
+\end{table}
+
+\begin{observation}
+  These categories can be considered hierarchical: \emph{unclassified}
+  is the highest category and \emph{unreachable} is the lowest.  In
+  this implementation an instruction can only be reclassified with an
+  equal or lower hierarachy classification.  For example, a value
+  classified as \emph{constant} will never be reclassified as
+  \emph{unclassified}, but it could be reclassified as
+  \emph{unreachable}.  If this invariant is not satisfied, it cannot
+  be shown that the algorithm will reach a fix point.
+\end{observation}
+
+The basic categories will be more fully described when applied to
+specific instruction types.
+
+\section{Initialization}
+
+Initialization of the global region for this algorithm is fairly
+simple, consisting of setting the \emph{backend data field} of the
+\ac{ir} to an initial value.  Initializing the constant values used in
+the global region is simplified since these constants are stored in a
+list accessible through the global region; without this list, each
+operand of all instructions would have to be examined and initialized
+if constant.
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-initialization}
+  \caption{CCP (initialization)}
+  \begin{algorithmic}[1]
+    \REQUIRE{greg $\neq$ nil}
+
+    \STATE{greg $\leftarrow$ \emph{non-constant}}
+    \FORALL{i: i $\in$ \{result of \gsainst{enter}, access of data structure\}}
+      \STATE i $\leftarrow$ \emph{non-constant}
+    \ENDFOR
+
+    \FORALL{i: i $\in$ \{constant literal used in greg\}}
+      \STATE i $\leftarrow$ \emph{constant}
+    \ENDFOR
+
+    \FORALL{i: i $\in$ \{instructions not initialized already\})}
+      \STATE i $\leftarrow$ \emph{unclassified}
+    \ENDFOR
+
+    \STATE{worklist $\leftarrow$ instructions in greg}
+  \end{algorithmic}
+\end{algorithm}
+
+\section{Propagation}
+Following initialization, the core of the algorithm is executed
+iteratively until a fixpoint is reached.  \Algoref{ccp-propagation}
+shows the basic steps for the core of \ac{ccp}, while further
+subsections will show greater detail.
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-propagation}
+  \caption{CCP (core)}
+  \begin{algorithmic}[1]
+    \REQUIRE{greg $\neq$ nil}
+
+    \WHILE{worklist $\neq$ nil}
+      \STATE{inst = worklist head}
+      \STATE{lattice = NewLattice(inst)}
+
+      \COMMENT{inv: lattice.classification $\leq$ inst.classification}
+      \IF{lattice.classification $<$ inst.classification}
+      \STATE{inst.classifcation $\leftarrow$ lattice.classification}
+      \COMMENT{instruction is now \emph{more} classified}
+      \IF{(instruction is Region) and (lattice.classification $=$
+      false)}
+        \STATE{mark code in region as unreachable}
+        \COMMENT{Region is never executed}
+      \ENDIF
+      \ELSIF{lattice.classficiation = unclassified}
+      \STATE{}
+      \COMMENT{instruction has not yet been classified; put it back on
+      the worklist}
+      \ENDIF
+    \ENDWHILE
+    \STATE{}
+    \COMMENT{All instructions have been classified.  Now replace all
+      constant values}
+    \STATE{ReplaceWithConstants(greg);}
+  \end{algorithmic}
+\end{algorithm}
+
+Since the transition from state to state can only progress in one
+direction (\S\ref{ccp:classification}), iterating until a fix point is
+reached is trivial.  The difficult portion of the algorithm,
+classifying an \ac{ir} node, is abstracted through
+\texttt{NewLattice}.
+
+Once the fixpoint has been reached, instructions which yield a
+constant value can be replaced with the actual value of the constant,
+and that is abstracted by \texttt{ReplaceWithConstants}.
+
+%-----------------------------------------------------------------------------
+\section{Classfication}
+
+The most complex portion of the \ac{ccp} algorithm is the
+classification of each instruction in a region.  Since the task
+encompasses all types of instructions which can be present in a
+region, it will be approached with a \emph{divide \& conquer}
+technique.  To that end, the basic classification algorithm will be
+presented, and then the algorithm will be tailored to each type of
+instruction which can be present.
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-classification}
+  \caption{CCP (classficiation)}
+  \begin{algorithmic}[1]
+    \REQUIRE{inst $\neq$ nil}
+    \IF{inst.classification $=$ unreachable}
+    \STATE{result is unreachable}
+    \ELSIF{inst.classification $=$ non-constant}
+    \STATE{result is non-constant}
+    \ELSIF{inst is Gate}
+    \STATE{result is classification-of-gate (\S\ref{const-prop:classification-of-gate})}
+    \ELSIF{inst is Merge}
+    \STATE{result is classification-of-merge (\S\ref{const-prop:classification-of-merge})}
+    \ELSIF{inst is Guard}
+    \STATE{result is classification-of-guard (\S\ref{const-prop:classification-of-guard})}
+    \ELSIF{inst is Case}
+    \STATE{result is classification-of-case (\S\ref{const-prop:classification-of-case})}
+    \ELSE
+    \STATE{}
+    \COMMENT{This is a normal instruction, with one (1) or, at most,
+    two (2) operands}
+    \STATE{o0 $\leftarrow$ zeroth operand}
+    \STATE{o1 $\leftarrow$ first operand}
+    \STATE{}
+    \COMMENT{inv: o0 $\neq$ nil}
+    \COMMENT{inv: o1 $=$ nil or defined(o1)}
+    \IF{o0.classification $=$ constant and o1.classification $\in$ \{nil,constant\}}
+      \STATE{result $\leftarrow$ calculate-constant}
+    \ELSIF{o0.classfication $=$ unreachable or o1.classfication $=$
+    unreachable}
+      \STATE{result $\leftarrow$ unreachable}
+    \ELSIF{o0.classfication $=$ non-constant or o1.classfication $=$
+    non-constant}
+      \STATE{result $\leftarrow$ non-constant}
+    \ELSE
+      \STATE{result $\leftarrow$ unclassified}
+    \ENDIF
+    \ENDIF
+    \STATE{result = non-constant}
+  \end{algorithmic}
+\end{algorithm}
+
+Processing a normal instruction involves looking at each of its
+operands, and when all are constant the constant value can be
+calcualted by interpretting the instruction opcode.  Fortunately this
+compiler has at most two (2) operands for all normal instructions, so
+this process is fairly easy.
+
+One bit of caution should be heeded before blindly folding all
+instructions with constant operands: floating point instructions are
+susecptible to the settings of the \ac{fpu} at runtime.  Consequently,
+any interpretation of floating point instructions must produce the
+same result as if the code to perform the calculation was produced by
+the compiler.  Further caution is warranted when interpretting
+instructions which are produced from \texttt{SYSTEM} module procedures
+or functions.
+
+%-----------------------------------------------------------------------------
+\subsection{Guard}\label{const-prop:classification-of-guard}
+
+The value determined for \refgsaclass{guards}{guard} is directly
+related to the value calculated for the conditional which controls the
+guard.  The controlling expression can evaluate to one of its
+operands, or \emph{non-constant}.  Likewise, a guard will select from
+one of its operands or become \emph{non-constant}\footnote{It is
+  possible for a guard to also obtain the value \emph{unreachable}
+  when it is contained in a reqion that is marekd as
+  \emph{unrechable}.}
+
+At the completion of this algorithm, all guards will have evaluated to
+one of three lattice values: \emph{true}, \emph{false} and
+\emph{non-constant}; these values directly correspond to
+\emph{execute}, \emph{do not execute} and \emph{may execute}.
+
+A guard which evaluates to \emph{false} will have all the instructions
+in the guarded region set to \emph{unreachable}; such a region can be
+deleted from the \ac{ir}.
+
+\subsubsection{\gsainst{true}}
+
+To evaluate the lattice value of \refgsainst{true}{Gguard}, the final
+lattice value of the controlling condition must already have been
+calculated.
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-true-classification}
+  \caption{\gsainst{true} (classficiation)}
+  \begin{algorithmic}[1]
+    \REQUIRE{inst $\neq$ nil $\wedge$ inst is \gsainst{true}}
+    \STATE{op $\leftarrow$ zero-th operand}
+    \IF{op.state $=$ constant}
+    \STATE{}
+    \COMMENT{op is true or false}
+    \STATE{inst.state $\leftarrow$ op.state}
+    \ELSIF{op.state $=$ operand}
+    \STATE{}
+    \COMMENT{inv: op is \gsainst{gate}}
+    \STATE{}
+    \COMMENT{inv: gate evaluates to \emph{operand-0} or \emph{operand-1}}
+    \STATE{gate $\leftarrow$ definition of op}
+    \STATE{op $\leftarrow$ \emph{operand-0} or \emph{operand-1} of gate}
+    \STATE{inst.state $\leftarrow$ op.state}
+    \ELSE
+    \STATE{inst.state $\leftarrow$ non-constant}
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{observation}\label{obs:ccp-true-guard}
+  The constness of \gsainst{true} is directly tied to the condition
+  which controls the region.
+\end{observation}
+
+As shown in algorithm \ref{algo:ccp-true-classification},
+\gsainst{true} is directly dependent upon the conditional expression
+which dominates it.
+
+Interestingly, if the conditional has not yet been fully classified,
+the \gsainst{true} will evaluate to \emph{non-constant}.  This
+actually turns out to be the correct action to take, as the dominating
+conditional expression has only a limited set of lattice states it can
+obtain, and the important ones are already covered in this algorithm;
+only \emph{unclassified} and \emph{unreachable} are not handled.
+
+A dominating conditional which is unreachable implies that the
+\gsainst{true} is also unreachable, and so \emph{non-constant} is a
+suitable value because the instruction will be deleted.  If the
+dominating conditional is \emph{unclassified}, then all \ac{ir} nodes
+which rely on the result will be scheduled for reclassification; once
+the conditional is no longer \emph{unclassified}, it will be
+appropriately handled by the algorithm.
+
+\subsubsection{\gsainst{false}}
+To evaluate the lattice value of \refgsainst{false}{Gguard}, the final
+lattice value of the controlling condition must already have been
+calculated.
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-false-classification}
+  \caption{\gsainst{false} (classficiation)}
+  \begin{algorithmic}[1]
+    \REQUIRE{inst $\neq$ nil $\wedge$ inst is \gsainst{false}}
+    \STATE{op $\leftarrow$ zero-th operand}
+    \IF{op.state $=$ constant}
+    \STATE{}
+    \COMMENT{op is true or false}
+    \STATE{inst.state $\leftarrow$ $\neg$ op.state}
+    \ELSIF{op.state $=$ operand}
+    \STATE{}
+    \COMMENT{inv: op is \gsainst{gate}}
+    \STATE{}
+    \COMMENT{inv: gate evaluates to \emph{operand-0} or \emph{operand-1}}
+    \STATE{gate $\leftarrow$ definition of op}
+    \STATE{op $\leftarrow$ \emph{operand-0} or \emph{operand-1} of gate}
+    \STATE{inst.state $\leftarrow$ $\neg$ op.state}
+    \ELSE
+    \STATE{inst.state $\leftarrow$ non-constant}
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{observation}\label{obs:ccp-false-guard}
+  The constness of \gsainst{false} is directly tied to the condition
+  which controls the region.
+\end{observation}
+
+As shown in algorithm \ref{algo:ccp-false-classification},
+\gsainst{false} is directly dependent upon the conditional expression
+which dominates it.
+
+Interestingly, if the conditional has not yet been fully classified,
+the \gsainst{false} will evaluate to \emph{non-constant}.  This
+actually turns out to be the correct action, as the dominating
+conditional expression has only a limited set of lattice states it can
+obtain, and the important ones are already covered in this algorithm;
+only \emph{unclassified} and \emph{unreachable} are not handled.
+
+A dominating conditional which is unreachable implies that the
+\gsainst{false} is also unreachable, and so \emph{non-constant} is a
+suitable value because the instruction will be deleted.  If the
+dominating conditional is \emph{unclassified}, then all \ac{ir} nodes
+which rely on the result will be scheduled for reclassification; once
+the conditional is no longer \emph{unclassified}, it will be
+appropriately handled by the algorithm.
+
+\subsubsection{\gsainst{casesgl}}
+To evaluate the lattice value of \refgsainst{casesgl}{Gguard}, the
+final lattice value of the controlling \refgsainst{casereg}{Mregion}
+must already have been calculated.
+
+\begin{observation}\label{obs:ccp-casesgl-guard}
+  When the \gsainst{casereg} evaluates to a constant, and the value
+  matches one of the elements guarded by the \gsainst{casesgl}, the
+  code in the region will be executed; the code in the
+  \gsainst{casesgl} can be moved to the enclosing region and the
+  \gsainst{casereg} can be deleted.
+\end{observation}
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-casesgl-classification}
+  \caption{\gsainst{casesgl} (classficiation)}
+  \begin{algorithmic}[1]
+    \REQUIRE{inst $\neq$ nil $\wedge$ inst is \gsainst{casesgl}}
+    \STATE{selector $\leftarrow$ zero-th operand}
+    \STATE{inst.state $\leftarrow$ non-constant}
+    \IF{selector $=$ constant}
+      \STATE{inst.state $\leftarrow$ false}
+      \STATE{value $\leftarrow$ selector.value}
+      \FORALL{op: op $\in$ operands of inst}
+        \IF{op is integer}
+          \IF{op.value $=$ value}
+            \STATE{inst.state $\leftarrow$ true}
+          \ENDIF
+        \ELSE
+          \STATE{}
+          \COMMENT{inv: op is an integer range}
+          \IF{value.lo $<=$ op.value $\wedge$ op.value $<=$ value.hi}
+            \STATE{inst.state $\leftarrow$ true}
+          \ENDIF
+        \ENDIF
+      \ENDFOR
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+Determining the final state of a \gsainst{casereg} requires
+examination of each of its \gsainst{casesgl} and possibly its
+\gsainst{caseelse}.  While the processing of the \gsainst{casesgl} and
+\gsainst{caseelse} are inextricably linked, it's handy to consider
+them separately.
+
+The \ac{fe} of the compiler, which ensures the source language rules,
+guarantees that there will be no duplicate values in the
+\gsainst{casesgl} entries; this, in turn, guarantees that, at most,
+one \gsainst{casesgl} will evaluate to a constant value.  If the
+controlling \gsainst{casereg} evaluates to a constant, but no
+\gsainst{casesgl} instructions match the value, then the
+\gsainst{caseelse} will be used.
+
+\subsubsection{\gsainst{caseelse}}
+To evaluate the lattice value of \refgsainst{caseelse}{Gguard}, the
+final lattice value of the controlling \refgsainst{casereg}{Mregion}
+must not match any \gsainst{casesgl} items contained in the region.
+
+\begin{observation}\label{obs:ccp-casesgl-guard}
+  When the \gsainst{casereg} evaluates to a constant, and the value
+  matches none of the elements guarded by the \gsainst{casesgl}
+  instructions, the code in the \gsainst{caseelse} region will be
+  executed.
+\end{observation}
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-caseelse-classification}
+  \caption{\gsainst{caseelse} (classficiation)}
+  \begin{algorithmic}[1]
+    \REQUIRE{inst $\neq$ nil $\wedge$ inst is \gsainst{caseelse}}
+    \STATE{selector $\leftarrow$ zero-th operand}
+    \STATE{inst.state $\leftarrow$ non-constant}
+    \IF{region of inst is unclassified}
+      \STATE{inst.state $\leftarrow$ true}
+      \FORALL{reg: reg $\in$ instruction of \gsainst{casereg}}
+        \STATE{}
+        \COMMENT{Any \gsainst{casesgl} being true $\rightarrow$
+    \gsainst{caseelse} is false}
+        \IF{reg $=$ true}
+          \STATE{inst.state $\leftarrow$ false}
+        \ENDIF
+      \ENDFOR
+    \ELSE
+      \STATE{}
+      \COMMENT{\gsainst{casereg} already classified; this instruction
+    also classified.}
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+The final state \gsainst{caseelse} can only be determined after all
+the \gsainst{casesgl} instructions in the \gsainst{casereg} have been
+fully processed.
+
+
+%-----------------------------------------------------------------------------
+\subsection{Merge}\label{const-prop:classification-of-merge}
+Merges join control flow which was split by a conditional instruction.
+When a merge is found to be controlled by a conditional that evaluates
+to a constant value, the merge can be simplified to use only the
+control path that will actually be executed, while all other paths
+being merged will be considered \emph{unreachable}.
+
+%    \hline $\textrm{const-op}_i$ & This annotation, used for
+%    \emph{merge regions} and \emph{gates}, indicates that operand
+%    \emph{i} ($0 \leq i < n$) has been selected as the only output
+%    from the controlled
+%    region. \\
+
+\subsubsection{\gsainst{if}}
+
+\begin{observation}\label{obs:ccp-if-merge}
+  If the guard controlling the two (2) paths merged by
+  \refgsainst{if}{Gif} evaluates to a constant value, one path will be
+  taken and one path will not be taken.  However, if the guard does
+  not evaluate to a constant, then it cannot be determined which path
+  will be taken.
+\end{observation}
+
+\Refobs{obs:ccp-if-merge} lays the foundation for the possible lattice
+values for an \gsainst{if} shown in table
+\ref{table:const-prop-if-merge-lattice}.
+
+\begin{table}[h!]
+  \begin{tabularx}{\linewidth}{|l|X|}
+    \hline Lattice Value & Description \\
+    \hline unclassified & The initial value, but at the completion of
+    the algorithm, all merges will have been more precisely classified
+    into one of the remaining three classificiations. \\
+
+    \hline $\textrm{const-op}_0$ & The conditional used to split the
+    control flow has evaluated to a constant and that constant causes
+    the \refgsainst{true}{Gguard} region to be executed; consequently
+    the merge needs to only produce values associated with its first
+    operand. \\
+
+    \hline $\textrm{const-op}_1$ & The conditional used to split the
+    control flow has evaluated to a constant and that constant causes
+    the \refgsainst{false}{Gguard} region to be executed; consequently
+    the merge needs to only produce values associated with its second
+    operand.\\
+
+    \hline non-constant & The conditional used to split the control flow
+    has not evaluated to a constant; consequently the merge cannot be
+    treated as a constant value. \\
+
+    \hline unreachable & The merge is contained in a region which is
+    \emph{unreachable}. \\
+  \hline
+  \end{tabularx}
+  \caption{\gsainst{if} Lattice Values}\label{table:const-prop-if-merge-lattice}
+\end{table}
+
+\subsubsection{\gsainst{condmerge}}
+\todo{Need more explanation here}
+\begin{observation}
+  When either of the operands of a \gsainst{condmerge} are
+  \code{TRUE}, the code in the region will be executed.  If both
+  operands evaluate to \code{FALSE}, the code in the region is
+  unreachable.  Otherwise, the region is non-constant.
+\end{observation}
+
+\subsubsection{\gsainst{merge-loop}}
+
+\todo{Need more explanation here}
+
+A \gsainst{merge-loop} will always terminate in the
+\emph{non-constant} state.  However, the loop body can be executed a
+finite number of times\footnote{For the purposes of constant
+  propagation, finite is one (1) or $\inf$.  Other analysis phases
+  dealing with looping constructs may calculate the runtime
+  characteristics of the looping construct.}.
+
+\begin{table}[h!]
+  \begin{tabularx}{\linewidth}{|l|l|X|}
+    \hline top & backedge & Semantic \\
+    \hline \code{FALSE} & \code{FALSE} & Internal compiler error \\
+    \hline \code{FALSE} & \code{TRUE} & Internal compiler error \\
+    \hline \code{TRUE} & \code{FALSE} & Loop executes only once \\
+    \hline \code{TRUE} & \code{TRUE} & Infinite Loop \\
+    \hline
+  \end{tabularx}
+  \caption{\gsainst{merge-loop} Constant Operand Semantics}\label{table:const-prop-loop-merge-lattice}
+\end{table}
+
+Table \ref{table:const-prop-loop-merge-lattice} shows the relationship
+between constant operands of \gsainst{merge-loop} and the number of
+iterations of the loop.
+
+\begin{observation}
+  A loop which only executes once can have the loop body moved to the
+  region containing the \gsainst{merge-loop}.
+\end{observation}
+
+
+\begin{algorithm}[h!]
+  \label{algo:ccp-merge-loop-once}
+  \caption{\gsainst{merge-loop} (propagation)}
+  \begin{algorithmic}[1]
+    \REQUIRE{merge $\neq$ nil $\wedge$ merge is \gsainst{merge-loop}}
+    \STATE{}
+    \COMMENT{The first operand will always be true.}
+    \STATE{}
+    \COMMENT{The second operand indicates if the loop will continue executing.}
+    \STATE{}
+    \STATE{def $\leftarrow$ definition of second operand}
+    \IF{def is ConstBool}
+      \IF{def.value}
+        \STATE{}
+        \COMMENT{Infinite loop}
+      \ELSE
+        \STATE{}
+        \COMMENT{Single iteration loop}
+        \FORALL{inst: inst $\in$ instruction of \gsainst{merge}}
+          \IF{inst is Gate}
+            \STATE{op1 $\leftarrow$ first operand of inst}
+            \STATE{op2 $\leftarrow$ second operand of inst}
+            \STATE{Replace uses of inst \emph{in} merge with
+    definition of op1.}
+            \STATE{Replace uses of inst \emph{outside} merge with definition
+    of op2.}
+          \ENDIF
+        \ENDFOR
+      \ENDIF
+    \ELSE
+      \STATE{}
+      \COMMENT{The loop is not constant.}
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+\subsubsection{\gsainst{case}}
+\begin{observation}\label{obs:ccp-case-merge}
+  If the selector controlling the \refgsainst{casesgl}{Gguard} and
+  \refgsainst{caseelse}{Gguard} regions evaluates to a constant value,
+  then only one of those regions will be executed.  If the selector
+  does not evaluate to a constant value, then it cannot be determined,
+  at compile time, which code path will be executed.
+
+  When a constant selector is used, since only one region in a
+  \code{CASE} statement can be active, the merge correspondingly will
+  use only the results output from the active region.
+\end{observation}
+
+\Refobs{obs:ccp-case-merge} lays the foundation for the possible lattice
+values for an \gsainst{case} shown in table
+\ref{table:const-prop-case-merge-lattice}.
+
+\begin{table}[h!]
+  \begin{tabularx}{\linewidth}{|l|X|}
+    \hline Lattice Value & Description \\
+    \hline unclassified & The initial value, but at the completion of
+    the algorithm, all merges will have been more precisely classified
+    into one of the remaining three classificiations. \\
+
+    \hline $\textrm{const-op}_n$ & The selector used has evaluated to
+    a constant and that constant causes the \emph{n}-th region to be
+    executed; consequently the merge needs to only produce values
+    associated with its \emph{n}-th operand. \\
+
+    \hline non-constant & The selector used has not evaluated to a
+    constant; consequently the merge cannot be
+    treated as a constant value. \\
+
+    \hline unreachable & The merge is contained in a region which is
+    \emph{unreachable}. \\
+  \hline
+  \end{tabularx}
+  \caption{\gsainst{case} Lattice Values}\label{table:const-prop-case-merge-lattice}
+\end{table}
+
+%-----------------------------------------------------------------------------
+\subsection{Gate}\label{const-prop:classification-of-gate}
+
+Since gates only appear in merge regions, it is safe to say that the
+classification produced for a gate is directly affected by the merge
+region which immediately dominates the gate.  This property implies
+that the final classification of a gate cannot be determined until the
+final classification for the merge containing it has been computed.
+
+However, once the classification of the merge has been determined, a
+gate can easily be classified.
+
+As can be seen from \refgsainst{gate}{Gmisc}, a gate has one operand
+for each guarded region dominating the merge region and an operand
+indicating the dominating merge region.
+
+While there is only one real \refgsainst{gate}{Gmisc} instruction, the
+number of operands which are present depends on the type of the
+controlling merge instruction: \refgsainst{if}{Gmerge},
+\refgsainst{case}{Gmerge}, \refgsainst{loop}{Gmerge},
+\refgsainst{condmerge}{Gmerge}.  Because of this, each specialization of
+the \gsainst{gate} will be treated separately in the following
+sections.
+
+\subsubsection{\gsainst{if}}
+
+\begin{observation}
+  An \refgsainst{if}{Gif} merge has two (2) operands: one for the true
+  region and one for the false region being merged.
+\end{observation}
+
+\begin{observation}
+  A gate controlled by an \refgsainst{if}{Gif} merge has three (3)
+  operands: one referencing the controlling merge, one for the true
+  region and one for the false region.
+\end{observation}
+
+Once all nodes in the \ac{ir} have been classified by this algorithm,
+an \gsainst{if} merge can only have three (3) values:
+\emph{non-constant}, \emph{$\textrm{const-op}_0$}, or
+\emph{$\textrm{const-op}_1$}; knowing this, it is easy to show what a
+gate controlled by an \gsainst{if} merge will produce.
+\Tableref{table:const-prop-gate-if-lattice} shows the values which can
+be produced.
+
+\begin{table}[h!]
+  \begin{tabularx}{\linewidth}{|l|l|X|}
+    \hline Merge Value & Lattice Value & Description \\
+
+    \hline $\textrm{const-op}_0$ & $\textrm{const-op}_0$ & When the
+    controlling merge evaluates to its first operand, the gate
+    also evaluates to its first operand. \\
+
+    \hline $\textrm{const-op}_1$ & $\textrm{const-op}_1$ & When the
+    controlling merge evaluates to its second operand, the gate also
+    evaluates to its second operand. \\
+
+    \hline non-constant & $\textrm{const-op}_0$ & If the merge does not
+    evaluate to a constant value, but both operands of the gate are
+    constant, \emph{and the same value}, the gate can be replaced with
+    that constant value. \\
+
+    \hline non-constant & non-constant & If the merge does not
+    evaluate to a constant, and the gate is not constant, then it will
+    be marked as non-constant. \\
+    \hline
+  \end{tabularx}
+  \caption{Gate Controlled By \gsainst{if} Lattice Values}\label{table:const-prop-gate-if-lattice}
+\end{table}
+
+\todo{Provide three four (4) examples here which demonstrate all
+  conditions of the if-gate.  Should the examples be graphic or just a
+  gsa dump?}
+
+\subsubsection{\gsainst{condmerge}}
+
+A \gsainst{condmerge} instruction does not dominate gates the way that
+other merge regions do; since there are no gates contained in such a
+region, there is nothing requiring discussion.
+
+\subsubsection{\gsainst{merge-loop}}
+
+\begin{observation}
+  \gsainst{merge-loop} handles the special needs of a loop's front-
+  and back-edges.  It does not immediately dominate any gates, but
+  does dominate the gates in the back-edge of the loop.
+\end{observation}
+
+\refgsainst{merge-loop}{Gmerge} is a special merge instruction which never
+evaluates to a constant value.  Gates which are controlled by this
+merge will never directly evaluate to a constant value during
+\ac{ccp}.
+
+\todo{This section (gates for \gsainst{loop}) is incomplete.}
+
+\subsubsection{\gsainst{case}}
+
+\subsection{Case}\label{const-prop:classification-of-case}
+
+\refgsainst{casereg}{Mregion} is unique in the \ac{gsa} \ac{ir}
+because one, and only one, control path will be executed each time the
+construct is entered.  If the \emph{selector} evaluates to a constant,
+then the control path can be selected at compile time and all other
+control paths can be removed from the program.
+
+
+\begin{table}[h!]
+  \begin{tabularx}{\linewidth}{|l|X|}
+    \hline Lattice Value & Description \\
+
+    \hline unclassified & The initial state for the gate.  By the end
+    of the execution of the algorithm, no guards will have this
+    value. \\
+
+    \hline $\textrm{const-op}_{n-1}$ & If the \emph{selector} evaluates to
+    a constant, the \gsainst{casereg} construct will maintain an
+    \emph{unclassified} state until the executed region has been
+    determined.  Once the region to be executed has been determined,
+    the \gsainst{casereg} construct will be attributed with this
+    lattice value - which indicates which control region is to be
+    executed.  A value of 0 indicates the first control region, while
+    a value of \emph{n-1} indicates the \refgsainst{caseelse}{Gguard}
+    region. \\
+
+    \hline non-constant & If the selectore does not evaluate to a
+    constant, the entire structure is considered to be
+    non-constant.  In this case, none of the control paths can be
+    removed from the program. \\
+
+    \hline unreachable & The guard resides in a region that has
+    evaluated to \emph{unreachable}. \\
+    \hline
+  \end{tabularx}
+  \caption{\gsainst{casereg} Lattice Values}\label{table:const-prop-guard-casereg-lattice}
+\end{table}
+
+\begin{invariant}
+  At the completion of the algorithm, no region in the
+  \gsainst{casereg} will have the unclassified lattice value.
+\end{invariant}
+
+\begin{invariant}
+  When the \gsainst{casereg} is reachable, and when the selector
+  evaluates to a constant, a single region within the
+  \gsainst{casereg} will have the true lattice value.  All other
+  regions will have the false lattice value.
+\end{invariant}
+
+\begin{invariant}
+  When the \gsainst{casereg} is reachable, and when the selector does
+  not evaluate to a constant, every region in the \gsainst{casereg}
+  will have the non-constant lattice value.
+\end{invariant}
+
+\begin{invariant}
+  When the \gsainst{casereg} is not reachable, the \gsainst{casereg}
+  and all regions contained in it will be attributed unreachable.
+\end{invariant}
+
+%-----------------------------------------------------------------------------
+\subsection{Instruction}

@@ -1,0 +1,274 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\chapter{Type Hierarchy}
+
+The implementation of \ac{gsa} for in this compiler uses type
+extension to enable an easy-to-use and simple-to-understand framework
+of data structures.  
+
+\begin{figure}[h!]
+% 2000.07.20: There is a metapost equivalent of this diagram (which
+% looks  much better), but a defect in the NEC SuperScript 1800N
+% printer - or in metapost - causes the metapost diagram to hang the
+% printer.  So, instead this xypic version will have to be used for
+% now. 
+\begin{tiny}
+  \xymatrix@R=23pt@C=5pt{
+  *+[F]{ConstSet} & *+[F]{ConstIntRange} & *+[F]{ConstInt} &
+  *+[F]{ConstBool} & *+[F]{ConstReal} & *+[F]{ConstLReal} &
+  *+[F]{ConstString} \\
+  *+[F]{Type} & *+[F]{Temporary} & *+[F]{Const} \ar[ull]\ar[ul]\ar[u]\ar[ur]\ar[urr]\ar[urrr]\ar[urrrr]   &         & *+[F]{CondMerge} \\
+  & &                   & *+[F]{Guard}       & *+[F]{Merge}\ar[u]      &
+  *+[F]{GlobalRegion} & *+[F]{Case}\\
+  & *+[F]{Symbol}\ar[uu] &                    &                    & *+[F]{Region}\ar[ul]\ar[u]\ar[ur]\ar[urr]    \\
+  & &                    & *+[F]{Gate}     \\
+  & &                    & *+[F]{Instruction}\ar[u]\ar[uur]                   &  &  \\
+  & *+[F]{Addressable}\ar[uuuuul]\ar[uuu]\ar[uuuuur] & & *+[F]{Result}\ar[u]                       &               &  \\
+  & & *+[F]{Usable}\ar[ul]\ar[ur]      &                    & *+[F]{Operand}
+  & *+[F]{SymLocation} \\
+  &                    &                    & *+[F]{Node}\ar[ul]\ar[ur]              &              & *+[F]{Location}\ar[u] \\
+  &                    &                    &                   & *+[F]{Info}\ar[ul]\ar[ur]
+}
+\end{tiny}
+\caption{\ac{gsa} Type Hierarchy}\label{fig:typehierarchy}
+\end{figure}
+
+Figure~\ref{fig:typehierarchy} shows this, and the following sections
+will touch briefly on how each of these sturctures functions in a
+\ac{gsa}-based compiler.
+
+\section{GSA Type Hierarchy}
+\subsection{Info}
+
+As the root of the entire type tree, the \code{Info} record ties
+everything together and makes the system work seamlessly.  This type
+allows any node in a graph to reference any other node in a graph; it
+is quite beneficial to be able to do this for certain \ac{cia}.
+
+For example, it becomes possible for a \code{Symbol} node to reference
+a \code{Result} node to designate the symbol's \emph{current value}.
+
+\subsection{Location}
+
+The \code{Location} record is used to store information about the
+\emph{location} of a definition of a node in the \ac{gsa} graph.
+
+\subsection{SymLocation}
+
+The \code{SymLocation} record is used to store information the
+\emph{location} of a definition of a Symbol in the \ac{gsa} graph.
+
+\subsection{Node}
+
+The \code{Node} type is the root of items which can be placed, at
+various positions, into a \ac{gsa} graph.  Each node has a symbol
+table type and an \code{Info} field.  The \code{Info} field is to be
+considered volatile over different \ac{cia} executions; in other
+words, this field is available for use by a \ac{cia}.
+
+\subsection{Operand}
+
+An \code{Operand} type defines an \emph{operand} of an
+\code{Instruction}.  Operands have the following attributes:
+
+\begin{itemize}
+\item Operands are joined to an instruction via a doubly-linked list of
+  operands, with a dummy head.
+\item Operands have a doubly linked list of \emph{uses}.  This
+  implements a \emph{use chain}.
+
+\item Operands refer back to the instruction that contains them.
+  
+\item Operands contain a field which indicates the definition of the
+  operand's value.
+\end{itemize}
+
+\subsection{Usable}
+
+Type \code{Usable} is the root of a tree of records which can be
+\emph{used} by other records as operands or results.
+
+\subsection{Addressable}
+
+The \code{Addressable} tree describes things which can be
+\emph{addressed} by the generated software.
+
+The \code{Addressable} hierarchy introduces some complications for the
+\acp{cia} since the hierarchy extended from \code{Addressable} is not
+of the same lineage as those extended from \code{Result}; this would
+naively result in a requirement of many special cases to distinguish
+different nodes in the \ac{ir}.
+
+This is important because the improvement algorithms work from the
+assumption that an \code{Instruction} produces a \code{Result}, and
+these \code{Instruction}/\code{Result} pairs are used to establish
+\emph{code scheduling}, \emph{code live-ness}, and many other
+details of \acp{cia}.
+
+Consequently, the following rules must be applied uniformly when
+working with \code{Addressable} items.
+
+\begin{enumerate}
+\item When used as an lvalue, the Addressable object (\code{Symbol},
+  \code{Temporary}, \code{Const}) will be directly placed into the
+  \code{Result.lhs} field.
+  
+\item When used as an rvalue, an \code{Addressable} must be rendered
+  into a \code{Result}.  This will happen naturally through the use of
+  the \code{Addressable.currvalue} field in all cases except the first
+  rvalue use of an \code{Addressable} prior to its being set (this
+  should only occur on uninitialized local variables (module variables
+  are modeled through the \gsainst{enter} result
+  list).\footnote{Maybe all local variables should be modeled on the
+    \gsainst{enter} result list to prevent this breakdown?}
+\end{enumerate}
+
+\subsection{Type}
+
+The \code{Type} record is used to model \emph{source language
+  type-related} type symbols.
+
+For example, the \ac{td} associated with a user-defined type would be
+assigned a \code{Type} node.
+
+\subsection{Symbol}
+The \code{Symbol} record is used to model \emph{source language}
+symbols.
+
+For example, a user-defined procedure would be assigned a
+\code{Symbol} node.
+
+\subsection{Temporary}
+The \code{Temporary} record is used to model \emph{compiler-generated}
+temporaries.
+
+\subsection{Const}
+
+The \code{Const} type roots the class of constants used by the
+compiler.  Each specific type of constant which can be used in the
+\ac{be} will be represented by a type extended from \code{Const}.
+
+\subsection{ConstSet}
+
+\code{ConstSet} represents a set constant of the source langauge.
+
+\subsection{ConstIntRange}
+
+\code{ConstIntRange} represents a
+\subsection{ConstInt}
+\code{ConstInt} represents an integer constant of the source langauge.
+The \code{type} field provides the information pertaining to size and
+range of the constant value.
+\subsection{ConstBool}
+\code{ConstBool} represents a boolean constant of the source language.
+\subsection{ConstReal}
+\code{ConstReal} represents a real constant of the source language.
+\subsection{ConstLReal}
+\code{ConstLReal} represents a long real constant of the source language.
+\subsection{ConstString}
+\code{ConstString} represents a string literal of the source language.
+
+\subsection{Result}
+The \code{Result} record represents the \emph{result} of some
+operation.  Normally, this takes the form of the \emph{result of an
+  instruction}, but every \code{Result} is not an \code{Instruction}.
+
+Each \code{Record} has the following properties:
+
+\begin{itemize}
+\item Each is maintained on a doubly-linked list rooted in the
+  \code{Instruction} record.
+
+\item A reference to the \code{Instruction} which produced the result.
+
+\item A set of attributes which can be used by \acp{cia}.
+\end{itemize}
+
+\subsection{Instruction}
+
+An \code{Instruction} record represents an \ac{ir} \emph{instruction}.
+Each \code{Instruction} has the following attributes:
+
+\begin{itemize}
+\item Each is kept on a doubly-linked list.
+\item An synthesizes one or more \code{Result}
+  values\footnote{Consider a \emph{divide} instruction which produces
+    both the \emph{quotient} and \emph{remainder}}.  The
+  \code{Instruction} itself is considered a \code{Result}.
+\item Each can be placed on a second doubly-linked list; this is
+  intended for use by \acp{cia}.
+\item Each can have zero or more operands on a doubly-linked list with
+  a dummy head.
+\item Each has a reference to the \code{Region} which contains it.
+  \item Each can be numbered using a \emph{value numbering} scheme. 
+\end{itemize}
+
+\subsection{Gate}
+The \code{Gate} record implements the so-called $\phi$ nodes of
+\ac{gsa}.  These nodes join values which are set through different
+control paths in the program.
+
+Each \code{Gate}, which is a specialized \code{Instruction}, has the
+following attributes in addition to those of an \code{Instruction}:
+
+\begin{itemize}
+\item The \code{Addressable} item which is controlled by the gate.
+\item The original value of the \code{Addressable} prior to the split
+  of the control path; this allows the compiler to reset the value so
+  that all control paths can be processed under the same starting conditions.
+\end{itemize}
+
+\subsection{Region}
+
+A \code{Region} record is used to hold a sequence of instructions.
+For example, the \code{THEN} and \code{ELSE} sections of an \code{IF}
+statement would each be implemented as a \code{Region}.
+
+Since a \code{Region} is also an \code{Instruction}, it has all the
+attributes of an \code{Instruction}.  It also has the following
+attributes:
+
+Each \code{Region} references the \code{Region} in which it is
+contained, but this relationship is not established until the region
+is actually appended to the instruction stream.
+
+\begin{itemize}
+\item Each is held on a doubly-linked list.
+\item Each has a reference to the \code{Instruction} items it
+  contains.
+\item Each has a reference to its \code{Merge} region.
+\end{itemize}
+
+\subsection{Merge}
+
+A \code{Merge} region is used to bring split control flow back into a
+single control path.  This is a base type for handling specific types
+of merge control regions.
+
+\subsection{Guard}
+
+A \code{Guard} region is a specialization of the \code{Region} type
+which controls access to a particular code path.  \code{Instruction}
+items which are contained in the \code{Guard} region are executed
+based on the truth value of the first operand.
+
+\subsection{CondMerge}
+
+The \code{CondMerge} is not currently used.
+
+\subsection{GlobalRegion}
+The \code{GlobalRegion} type is used to contain the instructions
+generated for a source-level procedure.  It is essentially a
+\code{Region} with the following additional attributes:
+
+\begin{itemize}
+\item The symbol table entry for the procedure.
+\item A reference to \gsainst{enter} for the procdure.
+\item A reference to \gsainst{exit} for the procedure.
+\item A list of \code{Const} items used by the procedure.
+\item A list of \code{Addressable} items used by the procedure.
+\end{itemize}
+
+\subsection{Case}
+The \code{Case} type is used to model the source-level \code{CASE}
+statement.  It contains zero or more regions which process the
+individually coded sections of the \code{CASE} statement.vm

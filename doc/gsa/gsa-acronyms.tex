@@ -1,0 +1,100 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\chapter{Acronyms}
+
+\begin{acronym}
+  \acro{ci}[CI]{Code Improvement}
+
+  \acro{cia}[CIA]{Code Improvement Algorithm}
+
+  A \acs{cia} is most commonly called an \emph{optimization} by many
+  other compiler textbooks and papers, however it is actually a
+  misnomber because no \emph{optimization} algorithm will actually
+  produce the optimal code for any given input.
+
+  Instead, this document will use the more correct term \ac{cia}.
+  
+  \acro{ast}[AST]{Abstract Symbol Tree}
+  \acro{gsa}[GSA]{Guarded Static Assignment}
+  \acro{ir}[IR]{Intermediate Representation}
+  \acro{mr}[MR]{Machine Representation}
+  
+  This intermediate form is a direct represention of the instructions
+  which the target machine supports.  It is only amenable to peephole
+  optimizations.
+
+  \acro{tbp}[TBP]{Type Bound Procedure}
+  
+  \acro{mt}[MT]{Method Table}
+  
+  \acro{td}[TD]{Type Descriptor}
+  \acro{fe}[FE]{Compiler Frontend}
+  \acro{be}[BE]{Compiler Backend}
+
+  \acro{lv}[lvalue]{left-hand-side value}
+  
+  An \emph{lvalue} is an expression which appears on the
+  left-hand-side of an assignment statement.  It must evaluate,
+  ultimately, to a memory location, rather than a value.
+
+  \acro{rv}[rvalue]{right-hand-side value}
+  An \emph{rvalue} is any expression which does not appear on the
+  left-hand-side of an assignment statement, or cannot be evaluated to
+  a memory address.  For example, \code{SYSTEM.ADR(v) := 10;} is an
+  illegal statement because \code{SYSTEM.ADR} returns a \code{LONGINT}
+  value, and a value cannot appear on th left-hand-side of an
+  assignment.
+
+  \acro{cse}[CSE]{Common Subexpression Elimination}
+  The compiler contains algorithms which will determine if two
+  calculations are congruent\footnote{produce the same value}.  Two or
+  more values which compute the same value are called \emph{common
+    subexpressions}; the compiler also contains algorithms which
+  remove such common subexpressions that are executed under the same
+  control path.
+
+  \acro{greg}[greg]{Global Region}
+
+  \acro{rmld}[rmld]{Runtime Memory Layout Document}
+
+  This document describes the layout of process memory.
+
+  \acro{olid}[olid]{Oberon Language Implementation Document}
+
+  This document describes the method used to implement an Oberon compiler.
+
+  \acro{phi}[$\phi$]{$\phi$}
+\marginpar{A better explanation here would be nice.}  
+  In \ac{gsa}, a \emph{gate}.  A method of assigning a single value to
+  a variable which is set to different values in different control
+  paths.  Consider:
+
+\begin{verbatim}
+  IF k < 10 THEN q := 151;
+  ELSE q := 191;
+  END;
+\end{verbatim}
+
+  When translated to \ac{gsa}, there will be a \emph{gate} following
+  the \code{IF} which sets \code{q} to either \code{151} or
+  \code{191} - depending on the control path taken through the
+  executable code.  See \S\ref{class:merge}.
+
+  \acro{dce}[DCE]{Dead Code Elimination}
+
+  \acro{cp}[CP] {Copy Propagation}
+
+  \acro{ccp}[CCP] {Conditional Constant Propagation \& Unreachable
+  Code Elimination}
+  
+  This is a \ac{cia} in which copies of values are propogated
+  throughout the \ac{ir}.  The result is a direct use of the original
+  value rather than a copy of it.
+
+  \acro{gc}[GC]{Garbage Collection}
+
+  \acro{aa}[AA]{Alias Analysis}
+
+  \acro{vn}[VN]{Value Numbering}
+
+  \acro{fpu}[FPU]{Floating Point Unit}
+\end{acronym}

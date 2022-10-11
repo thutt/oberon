@@ -1,0 +1,84 @@
+% Copyright (c) 2001-2022 Logic Magicians Software
+\newenvironment{variable}[1]{\clearpage\section{\gsavar{#1}\label{var:#1}}\vspace{-\baselineskip}\rule{\textwidth}{.5pt}}{\clearpage}
+
+\chapter{GSA Variables}
+
+The \ac{gsa} \ac{ir} ses several \emph{pseudo-variables} internally.
+Some of the variables are actually associated with the generation of
+code, and others are simply used as a notational convenience to
+simplify the obtaining a consistent view of memory at all times.
+
+While none of these variables are directly accessible through a user
+program, they are directly related to the original source code through
+the process of translation.
+
+The sections in this chapter describe the variable types created by
+the compiler and their purpose.
+
+\begin{variable}{nlm}
+  \gsavar{nlm} is used to create a consistent view of non-local
+  memory.  From a scoping view of the Oberon lanuage, \emph{non-local
+    memory} means:
+  \begin{enumerate}
+  \item global variables
+  \item variables from an outer procedure
+  \item \byref parameters
+  \end{enumerate}.
+
+  Any instruction which accesses or modifies non-local memory will be
+  provided a copy of \gsavar{nlm}.  The purpose of this is to enable
+  simple algorithms to ensure that all non-local memory is written to
+  their home memory locations at appropriate times.
+
+  Further, since updates to nonlocal memory are modeled through the
+  operand list of \gsainst{exit} (see \refgsainst{exit}{Mregion}), it
+  is quite simple to handle alias analysis.  Also, the instructions
+  which update non-local memory produce a new value for
+  \gsavar{nlm}, which consequently links all access and updates to
+  non-local memory through the \duc of \gsavar{nlm}.
+
+  \gsainst{createnlm} (see \refgsainst{createnlm}{Mmemory})
+  creates the initial value for the variable.
+
+  \gsainst{deletenlm} (see \refgsainst{deletenlm}{Mmemory})
+  finalizes \gsavar{nlm} at the end of the procedure.
+\end{variable}
+
+\begin{variable}{mem}
+  This variable has not yet been implemented.
+\end{variable}
+
+\begin{variable}{result}
+  \gsavar{result} is assigned the value of the \code{RETURN}
+  instruction.
+
+  This variable used used to model the actual return value through an
+  operand of \gsainst{exit} (see \refgsainst{exit}{Mregion}).
+\end{variable}
+
+\begin{variable}{return}
+  This variable is used in conjuntion with \gsavar{result} to model
+  the \code{RETURN} instruction.  Since \ac{gsa} does not handle
+  unstructured control flow, it is necessary to model \code{RETURN}
+  statements specially.
+
+  Each \code{RETURN} statement in a procedure body assigns to
+  \gsavar{return}, and all statements following the \code{RETURN}
+  statement are guarded by checking if the variable has been
+  assigned.
+
+  \todo{More description is required here}.
+
+\end{variable}
+
+\begin{variable}{exit}
+  \gsavar{exit} is used to model the \code{EXIT} instruction.  Each
+  \code{LOOP} strucutre is assigned a \gsavar{exit}, and each
+  \code{EXIT} assigns to that variable.
+
+  All instructions in the loop, following the \code{EXIT}, are guarded
+  by the value of the appropriate \gsavar{exit}; if it is not true,
+  then the \code{EXIT} statement has not been executed.
+
+  \todo{Need a better description}
+\end{variable}
