@@ -97,9 +97,9 @@ the following sections.
     \hline \gsainst{varparm} & Models access to \code{VAR} parameters.\\
     \hline \gsainst{mem} & Provides direct access to memory through
     the \code{SYSTEM} module.\footnote{Not implemented.}\\
-    \hline \gsainst{deletenlm} & Finalizes the pseudo-variable
+    \hline \gsainst{nlmdtor} & Finalizes the pseudo-variable
     \gsavar{nlm}. \\
-    \hline \gsainst{createnlm} & Creates the pseudo-variable \gsavar{nlm}.\\
+    \hline \gsainst{nlmctor} & Creates the pseudo-variable \gsavar{nlm}.\\
     \hline \gsainst{adr} & Synthesizes the address of data.\\
     \hline \gsainst{tbpadr} & Synthesizes the address of an Oberon
     \ac{tbp}.\\
@@ -137,7 +137,7 @@ the following sections.
     The \emph{variable} is required by analysis phases, such as
     \ac{cse}.  The \emph{offset} value is helpful in distinguishing
     between accesses to different fields.
-    
+
     Since the \emph{address} of the field must be calculated at some
     point to provide physical access, associating tightly it with the
     instruction which will eventually require it provides for better
@@ -171,7 +171,7 @@ the following sections.
     The \emph{variable} is required by several analysis steps.  The
     \emph{offset} value is helpful in distinguishing between accesses
     to different fields.
-    
+
     Since the \emph{address} of the field must be calculated at some
     point to provide physical access, associating tightly it with the
     instruction which will eventually require it provides for better
@@ -207,7 +207,7 @@ the following sections.
     The \emph{variable} is required by several analysis steps.  The
     \emph{index} value is helpful in distinguishing between accesses
     to different elements.
-    
+
     Since the \emph{address} of the index must be calculated at some
     point to provide physical access, associating tightly it with the
     instruction which will eventually require it provides for better
@@ -238,7 +238,7 @@ the following sections.
     The \emph{variable} is required by several analysis steps.  The
     \emph{index} value is helpful in distinguishing between accesses
     to different elements.
-    
+
     Since the \emph{address} of the index must be calculated at some
     point to provide physical access, associating tightly it with the
     instruction which will eventually require it provides for better
@@ -267,10 +267,10 @@ the following sections.
     pointer variables.}{Mheap.Mod}{access-deref}{Maccess}
 
   \begin{notes}
-    The \gsainst{createnlm} operand allows a consistent view of
+    The \gsainst{nlmctor} operand allows a consistent view of
     memory: it becomes possible to easily ensure that variables are
     written to their home memory locations when necessary.
-    
+
     Since this deference deals with variables, the address returned is
     that of the first byte of program-accessible memory.  Accessing
     the type tag should be performed through
@@ -284,14 +284,14 @@ the following sections.
   \begin{dyntype}
   \item The type of the instruction will be set to the type of the
     data which was dereferenced.
-    
+
     For example, dereferencing a \emph{pointer to an array} will cause
     the instruction to have an \emph{array} type.  Similarly
     dereferencing a \emph{pointer to a record} will cause the
     instruction to have a \emph{record} type.
   \end{dyntype}
     \todo{The dynamic type of each instruction must be documented.}
-    
+
   \begin{operands}
   \item \operand{Usable}{The current value of the variable being accessed.}
   \item \operand{Usable}{The address of the variable to dereference.}
@@ -309,7 +309,7 @@ the following sections.
     values.}{Mheap.Mod}{update-deref}{Mupdate}
 
   \begin{notes}
-    The addition of \gsainst{createnlm} as an operand allows a
+    The addition of \gsainst{nlmctor} as an operand allows a
     consistent view of memory: it becomes possible to easily ensure
     that variables are written to their home memory locations when
     necessary.
@@ -318,7 +318,7 @@ the following sections.
   \begin{results}
   \item A new value for \gsavar{nlm}.
   \end{results}
-    
+
   \begin{operands}
   \item \operand{Usable}{The current value of the variable being accessed.}
   \item \operand{Usable}{The address of the variable to dereference.}
@@ -341,7 +341,7 @@ the following sections.
     Each access to a nonlocal variable will generate a
     \gsainst{nonlocal} instruction.  \ac{cse} will later find most of
     them to be redundant and eliminate most of them.
-    
+
     \gsavar{nlm} is present in the operand list so that a consistent
     view of non-local memory can be used.  This enables data to be
     written to the home memory location of non-local variables at
@@ -388,7 +388,7 @@ BEGIN
   global := 10;
 END P;
 \end{verbatim}
-  
+
   In this case, even with \gsavar{nlm}, these instructions would be
   considered congruent because \gsavar{nlm} is not changed between the
   two assignments.  However, consider:
@@ -404,7 +404,7 @@ BEGIN
   global := 10;
 END P;
 \end{verbatim}
-  
+
   If the two assignments to \code{global} are determined to be
   congruent, the second assignment will be superflous and removed.
   But, if \code{x} aliases \code{global}, the improved code produced
@@ -442,11 +442,11 @@ END P;
     parameters so that a consistent view of non-local memory is
     maintained throughout the compilation of a procedure body.
   \end{notes}
-  
+
   \begin{results}
   \item The current value of the accessed \byref variable.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The current value of the  variable being accessed.}
   \item \operand{Usable}{The address of the variable being accessed.}
@@ -468,7 +468,7 @@ END P;
     parameters so that a consistent view of non-local memory is
     maintained throughout the compilation of a procedure body.
   \end{notes}
-  
+
   \begin{results}
   \item A new value for \gsavar{nlm}.
   \end{results}
@@ -486,23 +486,23 @@ END P;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{deletenlm}
-  \info{Instruction}{Mmemory}{Mdeletenlm}{Ensures that all non-local
+\begin{instruction}{nlmdtor}
+  \info{Instruction}{Mmemory}{Mnlmdtor}{Ensures that all non-local
     variables are written back to their home memory
-   location}{Mdeletenlm.Mod}{deletenlm}{Mmemory}
+   location}{Mnlmdtor.Mod}{nlmdtor}{Mmemory}
 
   \begin{notes}
     \todo{The semantics of this instruction have not yet been
       implemented.}
 
-    In conjunction with \refgsainst{createnlm}{Mmemory}, this
+    In conjunction with \refgsainst{nlmctor}{Mmemory}, this
     instruction ensures that non-local variables are written back to
     their home memory location at appropriate times.
-    
-    Every \ac{greg} will have a \gsainst{deletenlm} in the
+
+    Every \ac{greg} will have a \gsainst{nlmdtor} in the
     \gsainst{exit} region; each such instruction will be marked as
     \emph{always live}.
-    
+
   \end{notes}
 
   \begin{results}
@@ -513,25 +513,25 @@ END P;
   \noperands
 
   \begin{seealso}
-    \refgsainst{createnlm}{Mmemory}, \refgsavar{nlm},
+    \refgsainst{nlmctor}{Mmemory}, \refgsavar{nlm},
     \refgsainst{exit}{Mregion}
   \end{seealso}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{createnlm}
-  \info{Instruction}{Mmemory}{Mcreatenlm}{Models read and write
+\begin{instruction}{nlmctor}
+  \info{Instruction}{Mmemory}{Mnlmctor}{Models read and write
     access to non-local
-    variables.}{Mcreatenlm.Mod}{createnlm}{Mmemory}
+    variables.}{Mnlmctor.Mod}{nlmctor}{Mmemory}
 
   \begin{notes}
     \gsavar{nlm} models \emph{nonlocal variables}, \emph{\byref
       parameters} and \emph{heap-based objects}.  This instruction,
-    coupled with \refgsainst{deletenlm}{Mmemory} ensures that all
+    coupled with \refgsainst{nlmdtor}{Mmemory} ensures that all
     such items are written back to their home memory location at the
     appropriate times.
-    
-    Every \ac{greg} will have a \gsainst{createnlm} instruction as
+
+    Every \ac{greg} will have a \gsainst{nlmctor} instruction as
     part of the \gsainst{enter} region.
   \end{notes}
 
@@ -543,7 +543,7 @@ END P;
   \noperands
 
   \begin{seealso}
-    \refgsainst{deletenlm}{Mmemory}, \refgsavar{nlm},
+    \refgsainst{nlmdtor}{Mmemory}, \refgsavar{nlm},
     \refgsainst{enter}{Mregion}
   \end{seealso}
 \end{instruction}
@@ -560,7 +560,7 @@ END P;
 
     This instruction does not synthesize the address of a \ac{tbp}.
   \end{notes}
-  
+
   \todo{Results should have their physical attributes denoted.  For
     example, this instruction produces a signed 4-byte value.}
   \begin{results}
@@ -604,7 +604,7 @@ TYPE
   Ext1 = POINTER TO Ext1Desc;
   Ext1Desc = RECORD (BaseDesc) END;
 
-PROCEDURE (x : Ext0) Method(y : INTEGER); 
+PROCEDURE (x : Ext0) Method(y : INTEGER);
 BEGIN END Method;
 
 PROCEDURE (x : Ext1) Method(y : INTEGER);
@@ -626,28 +626,28 @@ END NotCongruent;
   \item The result of this instruction is the address of the specified
     \ac{tbp}.
   \end{results}
-  
+
   \todo{Ensure the fact that the static type descriptor symbol and the
     output of \gsainst{heaptag} are identical in layout.}
 
   \begin{operands}
   \item \operand{Usable}{The address of the \ac{td} for record which
       owns the specified method.
-    
+
       This instruction will be synthesized from either
       \refgsainst{heaptag}{Mmemory}, or, in the case of statically
       typed method references, by a direct reference to the address of
       the \ac{td} symbol.}
-    
+
   \item The static type of the \emph{self} symbol being referenced.
-    
+
   \item The global symbol of the method; the compiler-generated symbol
     which is used for relocations involving the method.  This can be
     used to transform some method invocations into direct procedure
     calls\todo{2001.08.03: The Oberon compiler does not generate
       global symbols for methods; as of now, the symbol is only the
       method symbol}.
-    
+
   \item The ordinal number of the method.
   \item The physical offset, in bytes, from the beginning of the
     \ac{mt} for the method.
@@ -666,18 +666,18 @@ END NotCongruent;
     array}{Mdynarrlen.Mod}{dynarrlen}{Mmemory}
 
   \begin{notes}
-    
+
     In terms of the generation of code, there are three different
     types of array length requests in the Oberon language:
 
     \begin{itemize}
     \item Statically-sized
-      
+
       The length of the statically-sized array is known at compile
       time, and therefore requires no code to be generated.
 
     \item Open array parameter
-      
+
       The open array parameter provides access to the length of each
       dimension through the result list of \gsainst{enter} (see
       \refgsainst{enter}{Mregion}.
@@ -685,10 +685,10 @@ END NotCongruent;
     \item Heap-based open array
 
       A heap-based open array, when created with
-    
+
       $$\code{NEW}(\textrm{array}, \textrm{dim}_0, \textrm{dim}_1,
       \ldots, \textrm{dim}_{n-1})$$
-    
+
       is allocated space on the heap and the allocator stores the
       specified dimension lengths into the \emph{array block preamble}
       which is part of the allocated memory (see \ac{rmld}).
@@ -710,7 +710,7 @@ END NotCongruent;
       be calculated.}
   \item \operand{ConstInt}{The offset into the heap block of the array
       length for the specified dimension.}
-    
+
     This offset is calculated based on the static type of the array;
     it can be determined by examining the \ac{rmld} document.
   \end{operands}
@@ -726,7 +726,7 @@ END NotCongruent;
     performing runtime type checks.  Because the value synthesized by
     this instruction resides in read-only memory, it is not necessary
     to include \gsavar{nlm} as an operand.
-    
+
     It is not necessary to have a special instruction to access the
     tag of static records because the \ac{td} symbol can be determined
     directly from the static type of the variable.  It is also not
@@ -758,19 +758,19 @@ END NotCongruent;
     field of the instruction to determine how many bytes need
     initialization, and if the code should be emitted inline or if a
     helper function should be called.
-    
+
     When presented a \code{RECORD} with no fields, the \ac{fe} will
     create \code{RECORD} and \code{ARRAY} types which are zero (0)
     bytes in size; in this case the parameter indicating the number of
     bytes to intialize will, of course, be zero (0).
-    
+
     This initializes data to binary zero (0); this may not be
     \emph{zero} as reflected by the type of the data\footnote{It could
       be possible to have a floating point value for zero which does
       not correspond to binary 0.  \texttt{NIL} may also not
       correspond to binary zero.}.  A properly functioning program
     should initialize all data to a known value before use.
-    
+
     Initializing pointers in records and arrays to the runtime value
     of \texttt{NIL} is not supported by this instruction\footnote{In
       fact, it would require another instruction, additional
@@ -808,7 +808,7 @@ END NotCongruent;
   \begin{notes}
     \gsainst{stringcopy} is only generated when the standard procedure
     \code{COPY} is used.
-  
+
     \gsainst{stringcopy} is a high level enough instruction that it
     can be implemented with hardware constructs such as string
     instructions, or small loops; the actual selection of machine
@@ -820,7 +820,7 @@ END NotCongruent;
   \item The result is a copy of the source.  The current value of the
     destination will be assigned the copy of the source.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The current value of the destination
       variable.}
@@ -844,7 +844,7 @@ END NotCongruent;
   \begin{notes}
     The \ac{fe} ensures that the arrays are of the same size and are
     assignment compatible.
-    
+
     When presented a \code{RECORD} with no fields, the \ac{fe} will
     create \code{RECORD} and \code{ARRAY} types which are zero (0)
     bytes in size; in this case the parameter indicating the number of
@@ -953,7 +953,7 @@ END NotCongruent;
   \begin{results}
   \item The result is the address of the newly allocated record.
   \end{results}
-    
+
   \begin{operands}
   \item \operand{Usable}{The address of the \ac{td} for the record.}
   \end{operands}
@@ -970,7 +970,7 @@ END NotCongruent;
       instruction does not take the address of the pointer being
       allocated.  This requires a change in the allocators in
       \code{Kernel}.}
-    
+
     When presented a \code{RECORD} with no fields, the \ac{fe} will
     create \code{RECORD} and \code{ARRAY} types which are zero (0)
     bytes in size.  The memory allocator must ensure that each
@@ -1070,7 +1070,7 @@ original source.
     \hline Instruction & Description \\
     \hline \gsainst{greg} & Global region; all code of every procedure
     is ultimately contained in a global region. \\
-    
+
     \hline \gsainst{reg} & A region in which instructions can be emitted. \\
 
     \hline \gsainst{casereg} & A region which models Oberon
@@ -1100,7 +1100,7 @@ are regions.
     references to the procedure prologue (\gsainst{enter}) and
     epilogue (\gsainst{exit}) regions.  However, in all other aspects
     it is identical to \gsainst{reg}.
-  
+
     \gsainst{greg} models the entire body of each Oberon procedure
     emitted by the compiler.
   \end{notes}
@@ -1130,7 +1130,7 @@ are regions.
   \end{notes}
 
   \nresults
-  
+
   \begin{operands}
   \item There are no operands for \gsainst{reg}.
   \end{operands}
@@ -1149,7 +1149,7 @@ are regions.
     regions for a \code{CASE} statement.  It will contain
     \refgsainst{casesgl}{Gguard}, \refgsainst{caseelse}{Gguard} and
     \refgsainst{case}{Gmerge} instructions.
-      
+
     No other instructions are allowed to appear in the body of a
     \gsainst{casereg}.
   \end{notes}
@@ -1177,13 +1177,13 @@ are regions.
     parameters, nonlocal and local variables through the list of
     results.  The code generator can easily provide initial values for
     local variables by a traversal of the result list.
-  
-    The \gsainst{createnlm} is modeled as an operand for two main
+
+    The \gsainst{nlmctor} is modeled as an operand for two main
     reasons:
     \begin{enumerate}
     \item It is \emph{bad} to place the result of an instruction onto
       the result list of another instruction.  In this case, the
-      \gsainst{createnlm} would appear on two result lists.
+      \gsainst{nlmctor} would appear on two result lists.
     \item It provides a fast and reliable method to determine if a
       procedure which is to be call actually requires nonlocal
       variables to be placed back into their home memory locations.
@@ -1191,18 +1191,18 @@ are regions.
       \gsainst{enter} operand list, then nonlocals must be written to
       their home memory locations.
     \end{enumerate}
-  
+
     Modeling all initial values of variables through the
     \gsainst{enter} instruction happens to be a convenient way of
     ensuring that most \code{Addressable} items are converted into
     \code{Result} values prior to their first use.
-  
+
     It is convenient to say that \gsainst{enter} produces all the
     result values.
-  
+
     All instructions which are part of the procedure prologue will be
     placed into the \gsainst{enter} region.
-  
+
     The results are in no particular order.
   \end{notes}
 
@@ -1211,14 +1211,14 @@ are regions.
     \begin{enumerate}
     \item A result for each by-value integral parameter.
     \end{enumerate}
-  
+
   \item By-reference Integral Parameter
     \begin{enumerate}
     \item A result modeling the current value of each \byref formal
       parameter.
     \item A result modeling the address of the formal parameter.
     \end{enumerate}
-  
+
   \item By-reference Record Parameter
     \begin{enumerate}
     \item A result modeling the value of the formal parameter.
@@ -1228,7 +1228,7 @@ are regions.
     \item A result modeling the address of the type descriptor for the
       formal parameter.
     \end{enumerate}
-  
+
   \item Open Array Parameter
     \begin{enumerate}
     \item A result modeling the value of the formal parameter
@@ -1266,7 +1266,7 @@ are regions.
     The instructions contained in \gsainst{exit} model the procedure
     epilogue, and with no exceptions, are always to be considered
     live.
-    
+
     The operands of the \gsainst{exit} instruction model assignments
     to items which have \emph{non-local effect}, such as globals,
     \byref paramters and non-local variables.  The code generated for
@@ -1275,14 +1275,14 @@ are regions.
     \todo{There is no code which adds NLE operands to the exit
       instruction.}
   \end{notes}
-  
+
   \nresults
 
   \voperands{
     \begin{enumerate}
-    \item The result of \refgsainst{deletenlm}{Mmemory}.
+    \item The result of \refgsainst{nlmdtor}{Mmemory}.
     \end{enumerate}
-    
+
     The remaining number of operands for \gsainst{exit} varies with
     the number of assignments which have non-local effect.}
 
@@ -1324,7 +1324,7 @@ guard evalutes to false, the instructions are not executed.
     When the condition specified by the operand list evaluates to
     \code{TRUE}, then the code in this region is executed.  When it
     evalutes to \code{FALSE}, the code is not executed.
-    
+
     This region goes hand-in-hand with \refgsainst{false}{Gguard}: when
     the \gsainst{true} region is executed, the \gsainst{false} region
     is not and when the \gsainst{true} region is not executed, the
@@ -1359,7 +1359,7 @@ guard evalutes to false, the instructions are not executed.
     If the condition specified by the operand list evaluates to
     \code{FALSE}, then the code in this region is executed.  When the
     condition evalutes to \code{TRUE}, the code is not executed.
-    
+
     This region goes hand-in-hand with \refgsainst{true}{Gguard}: when
     the \gsainst{true} region is executed, the \gsainst{false} region
     is not and when the \gsainst{true} region is not executed, the
@@ -1390,7 +1390,7 @@ guard evalutes to false, the instructions are not executed.
     in the \gsainst{casereg} region.  If no match is found for all the
     \gsainst{casesgl} guards in the region, then control transfers to
     the \gsainst{caseelse} region.
-    
+
     Integer \code{CASE} statements can have \emph{integer range}
     operands.
   \end{notes}
@@ -1421,7 +1421,7 @@ guard evalutes to false, the instructions are not executed.
     If no match for the \emph{selection} expression for a \code{CASE}
     statement is found in the \gsainst{casesgl} regions, then the
     control flow passes to the \gsainst{caseelse} region.
-    
+
     The \ac{fe} ensures that all trees generated for \code{CASE}
     statements will have an \code{ELSE} clause.  In the absence of a
     user-supplied \code{ELSE} clause, the compiler will insert a
@@ -1481,7 +1481,7 @@ disjunctive control into a single region, it contains actual code.
     \refgsainst{false}{Gguard}, and with conjunctive and disjunctive
     conditional, an additional \refgsainst{condmerge}{Gmerge} can be
     present.
-    
+
     Instructions placed into this region are executed through all
     control paths merged by this instruction.
 
@@ -1525,7 +1525,7 @@ IF a & b THEN (* do something *)
 ELSE (* do something else *)
 END;
 \end{verbatim}
-    
+
     In this example, the conditional merge region will contain the
     code corresponding to \code{(* do something else *)}.  In this
     sense, the \gsainst{condmerge} is different than other merge
@@ -1570,7 +1570,7 @@ END;
     REPEAT <body> UNTIL ~condition;
   END;
 \end{verbatim}
-    
+
     This translation is done so that loop-invariant code for
     \code{WHILE} statements can be hoisted out of the loop to the
     containing region (the \code{IF} condition region); without the
@@ -1809,7 +1809,7 @@ type increases.
     The \ac{fe} guarantees the two operands are of the size
     represented by the instruction subclass.
   \end{notes}
-  
+
   \begin{results}
   \item $\textrm{dividend}_0 \div \textrm{divisor}_1$.
   \end{results}
@@ -1844,7 +1844,7 @@ type increases.
   \item \operand{Usable}{The value of the first multiplicand.}
   \item \operand{Usable}{The value of the second multiplicand.}
   \end{operands}
-  
+
   \todo{There is no discussion about out-of-range values or results,
     but there should be.}
 
@@ -1862,12 +1862,12 @@ type increases.
   \begin{notes}
     The \ac{fe} guarantees the two operands are of the size
     represented by the instruction subclass.
-    
+
     The code generated for \gsainst{mod} must conform to the following
     relations:
-    
+
     \[ x \bmod y \equiv x - y \lfloor {x \div y} \rfloor \]
-    
+
 \todo{This equation needs to be cleaned up}
     \[x \bmod y = \left\{
       \begin{array}{l|l}
@@ -1912,14 +1912,14 @@ type increases.
   \info{Instruction}{Aconvert}{\multisubcl{asS1, asU1, asS2, asU2,
       asS4, asU4, asR8, asR4}}{Models a checked type
     conversion.}{Aconvert.Mod}{convert}{arithmetic}
-  
+
   \todo{There is something wrong with the typesetting of the
     subclasses of this instruction.}
   \begin{notes}
     The \ac{fe} guarantees that the conversion specified is legal with
     respect to the \ac{olid}\todo{Econvert in
       O3ImplementationDetails.tex}.
-      
+
     It would be nice to institute a rule that \gsainst{convert} never
     has a constant as its operand, and to enforce this rule by
     applying it stringently to the \ac{fe} such that no \ac{ast} will
@@ -1937,7 +1937,7 @@ type increases.
       and the target, then it is not possible to correctly create
       floating point constants from expressions, and therefore the
       compiler is a broken cross compiler.}.
-      
+
     However, even if the \ac{fe} ensures that the \ac{ast} does not
     create nonconformant convert nodes, the \ac{be} is an entirely
     different beast.  Consider the following code:
@@ -1950,19 +1950,19 @@ VAR
 i := 10;
 j := 5 + i;
 \end{verbatim}
-  
+
     The \ac{fe} is not written to determine that the result of the
     addition is a constant value, but the \ac{be} will detect that.
     Consequently, what seems like a good idea to simplify the work of
     the compiler actually ends up making more work and causing more
     potential problems due to other parts of the compiler naively
     violating the data structure rules.
-  
+
     The bottom line is that if an operand must be a constant value,
     the processing for that operand must be prepared to process
     \gsainst{convert}, or special care must be taken to avoid convert
     nodes when building the \ac{ast}.
-    
+
     The method used to perform the conversion must conform to the type
     inclusion rules of Oberon.
   \end{notes}
@@ -1970,7 +1970,7 @@ j := 5 + i;
   \begin{results}
   \item The value of the input operand converted to the destination type.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The operand is the value to be converted.}
   \end{operands}
@@ -1985,7 +1985,7 @@ j := 5 + i;
   \item The result of this instruction is the boolean converse of the
     operand.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The operand is a boolean value which is to be
       negated.}
@@ -2011,7 +2011,7 @@ j := 5 + i;
       left.}}{Arol.Mod}{rol}{logical}
 
   \begin{notes}
-    
+
     This instruction shifts the value of the first operand such that
     bits shifted out of \bit{31} will appear in \bit{0}.  Consider the
     following bit pattern:
@@ -2020,14 +2020,14 @@ j := 5 + i;
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb} \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
     \end{bytefield}
-    
+
     Executing a rotate left of three (3) bits would produce:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaabbb} \bitbox{8}{bbbbbccc} \bitbox{8}{cccccddd} \bitbox{8}{dddddaaa}
     \end{bytefield}
-    
+
     \todo{Ensure this only works with unsigned values}
   \end{notes}
 
@@ -2039,7 +2039,7 @@ j := 5 + i;
   \begin{operands}
   \item \operand{Usable}{The value to be rotated.}
   \item \operand{Usable}{The number of bits to rotate.
-      
+
       \inv{$\textrm{operand} \in \{0..31\}$}}
   \end{operands}
 \end{instruction}
@@ -2053,21 +2053,21 @@ j := 5 + i;
     This instruction shifts the value of the first operand such that
     bits shifted out of \bit{0} will appear in \bit{31}.  Consider the
     following bit pattern:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
       \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
     \end{bytefield}
-    
+
     Executing a rotate right of three (3) bits would produce:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{dddaaaaa} \bitbox{8}{aaabbbbb}
       \bitbox{8}{bbbccccc} \bitbox{8}{cccddddd}
     \end{bytefield}
-    
+
     \todo{Ensure this only works with unsigned values}
   \end{notes}
 
@@ -2088,24 +2088,24 @@ j := 5 + i;
 \begin{instruction}{lsl}
   \info{Instruction}{Llsl}{asU4}{Models
   \emph{logical shift left}}{Alsl.Mod}{lsl}{logical}
-  
+
   \begin{notes}
     Consider the following bit pattern:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
       \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
     \end{bytefield}
-    
+
     Executing a shift left of three (3) bits would produce:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaabbb} \bitbox{8}{bbbbbccc}
       \bitbox{8}{cccccddd} \bitbox{8}{ddddd000}
     \end{bytefield}
-    
+
     \todo{Ensure this only works with unsigned values}
   \end{notes}
 
@@ -2113,11 +2113,11 @@ j := 5 + i;
   \item The result of this instruction is the value obtained after
     performing the shift.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value to be shifted.}
   \item \operand{Usable}{The number of bits to shift.
-    
+
     \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
   \end{operands}
 \end{instruction}
@@ -2129,15 +2129,15 @@ j := 5 + i;
 
   \begin{notes}
     Consider the following bit pattern:
-  
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
       \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
     \end{bytefield}
-    
+
     Executing a shift right of three (3) bits would produce:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{000aaaaa} \bitbox{8}{aaabbbbb}
@@ -2148,11 +2148,11 @@ j := 5 + i;
   \begin{results}
   \item The result is the value produced by the shift.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value to be shifted.}
   \item \operand{Usable}{The number of bits to shift.
-  
+
     \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
   \end{operands}
 \end{instruction}
@@ -2164,15 +2164,15 @@ j := 5 + i;
 
   \begin{notes}
     Consider the following bit pattern:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
       \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
     \end{bytefield}
-    
+
     Executing a shift left of three (3) bits would produce:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{aaaaabbb} \bitbox{8}{bbbbbccc}
@@ -2184,11 +2184,11 @@ j := 5 + i;
   \item The result of this instruction is the value obtained after
     performing the shift.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value to be shifted.}
   \item \operand{Usable}{The number of bits to shift.
-    
+
     \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
   \end{operands}
 \end{instruction}
@@ -2200,7 +2200,7 @@ j := 5 + i;
 
   \begin{notes}
     Consider the following bit patterns:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{1aaaaaaa} \bitbox{8}{bbbbbbbb} \bitbox{8}{cccccccc}
@@ -2208,9 +2208,9 @@ j := 5 + i;
       \bitbox{8}{0aaaaaaa} \bitbox{8}{bbbbbbbb} \bitbox{8}{cccccccc}
       \bitbox{8}{dddddddd}
     \end{bytefield}
-    
+
     Executing a shift right of three (3) bits would produce:
-    
+
     \begin{bytefield}{32}
       \bitheader[b]{0,8,16,24,31} \\
       \bitbox{8}{111aaaaa} \bitbox{8}{aaabbbbb} \bitbox{8}{bbbccccc}
@@ -2223,7 +2223,7 @@ j := 5 + i;
   \item The result of this instruction is the value obtained after
     performing the shift.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value to be shifted.}
   \item \operand{Usable}{The number of bits to shift.
@@ -2245,7 +2245,7 @@ j := 5 + i;
       instruction subclass.  The \ac{fe} guarantees that the generated
       \ac{ast} is type-correct so that mismatches between \ac{gsa}
       instructions will not occur.}
-    
+
     \inv{This instruction cannot be moved to a different region.}
     \inv{This instruction cannot be removed.}
   \end{notes}
@@ -2254,7 +2254,7 @@ j := 5 + i;
   \item The result of this instruction is the value contained in the
     specified memory location.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The operand is a value which represents the
       memory address to read.}
@@ -2272,14 +2272,14 @@ j := 5 + i;
       instruction subclass.  The \ac{fe} guarantees that the generated
       \ac{ast} is type-correct so that mismatches between \ac{gsa}
       instructions will not occur.}
-    
+
     \inv{This instruction cannot be moved to a different region.}
 
     \inv{This instruction cannot be removed.}
   \end{notes}
 
   \nresults
-  
+
   \begin{operands}
   \item \operand{Usable}{The address to which data should be written.}
   \item \operand{Usable}{The value which should be written to memory.}
@@ -2296,16 +2296,16 @@ j := 5 + i;
       instruction subclass.  The \ac{fe} guarantees that the generated
       \ac{ast} is type-correct so that mismatches between \ac{gsa}
       instructions will not occur.}
-    
+
     \inv{This instruction cannot be moved to a different region.}
-    
+
     \inv{This instruction cannot be removed.}
   \end{notes}
 
   \begin{results}
   \item The result is the value contained in the requested register.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The operand is the number of the physical cpu
       register which should be read.}
@@ -2322,14 +2322,14 @@ j := 5 + i;
       instruction subclass.  The \ac{fe} guarantees that the generated
       \ac{ast} is type-correct so that mismatches between \ac{gsa}
       instructions will not occur.}
-    
+
     \inv{This instruction cannot be moved to a different region.}
-    
+
     \inv{This instruction cannot be removed.}
   \end{notes}
 
   \nresults
-  
+
   \begin{operands}
   \item \operand{Usable}{The number of the physical cpu register which
       should be written.}
@@ -2345,14 +2345,14 @@ j := 5 + i;
   \begin{notes}
     This instruction reads memory at $\textrm{base-memory} +
     \textrm{offset}$ and returns the appropriately sized value.
-      
+
     \inv{The result of the instruction is of the size specified by the
       instruction subclass.  The \ac{fe} guarantees that the generated
       \ac{ast} is type-correct so that mismatches between \ac{gsa}
       instructions will not occur.}
-      
+
     \inv{This instruction cannot be moved to a different region.}
-      
+
     \inv{This instruction cannot be removed.}
   \end{notes}
 
@@ -2365,7 +2365,7 @@ j := 5 + i;
   \item \operand{Usable}{An integer representing the value of the base
       memory location.}
   \item \operand{Usable}{A constant offset.
-      
+
       Although this value is constant, it may be contain
       \gsainst{convert} instructions.}
   \end{operands}
@@ -2379,24 +2379,24 @@ j := 5 + i;
   \begin{notes}
     This instruction writes the value specified to memory at
     $\textrm{base-memory} + \textrm{offset}$.
-      
+
     \inv{The result of the instruction is of the size specified by the
       instruction subclass.  The \ac{fe} guarantees that the generated
       \ac{ast} is type-correct so that mismatches between \ac{gsa}
       instructions will not occur.}
-      
+
     \inv{This instruction cannot be moved to a different region.}
-      
+
     \inv{This instruction cannot be removed.}
   \end{notes}
 
   \nresults
-    
+
   \begin{operands}
   \item \operand{Usable}{An integer representing the value of the base
       memory location.}
   \item \operand{Usable}{A constant offset.
-      
+
       Although this value is constant, it may be contain
       \gsainst{convert} instructions.}
   \item \operand{Usable}{The value which should be written to memory.}
@@ -2538,7 +2538,7 @@ conditional instructs supported.
   \begin{results}
   \item ${op}_0 \leq {op}_1$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value of the left operand from the source.}
   \item \operand{Usable}{The value of the right operand from the source.}
@@ -2569,7 +2569,7 @@ conditional instructs supported.
   \begin{results}
   \item ${op}_0 > {op}_1$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value of the left operand from the source.}
   \item \operand{Usable}{The value of the right operand from the source.}
@@ -2600,7 +2600,7 @@ conditional instructs supported.
   \begin{results}
   \item ${op}_0 \geq {op}_1$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value of the left operand from the source.}
   \item \operand{Usable}{The value of the right operand from the source.}
@@ -2624,7 +2624,7 @@ consists of bitwise operations.  For Oberon, this entails only 32-bit
 unsigned quantities.
 
 \note{
-    (* 2000.09.22: 
+    (* 2000.09.22:
      * SET-specific instructions
      * On machines without bit instructions, these are too
      * high level to be useful, since it involves shifting 1 left
@@ -2632,11 +2632,11 @@ unsigned quantities.
      * to operate on that particular bit.
      * Further, if bitsets are extended to be larger than the wordsize
      * of the machine, these two instructions can hide other instructions
-     * (through their high-level-ness) which the improvement algorithms 
+     * (through their high-level-ness) which the improvement algorithms
      * may be able to improve (by finding congruent instructions elsewhere)
      *
      * For now, the instruction sequence will assume the precense of bit
-     * instructions, and if it is ported to another architecture or if 
+     * instructions, and if it is ported to another architecture or if
      * SET sizes altered, then these code sequences should be revisited.
      *)
 }
@@ -2690,7 +2690,7 @@ unsigned quantities.
 \begin{instruction}{union}
   \info{Instruction}{Sunion}{asU4}{Models \emph{set
       union}.}{Sunion.Mod}{set-union}{sarithmetic}
-  
+
   \begin{notes}
     $$\code{a * b} \equiv (a \cup b) \equiv (a \vee b)$$
   \end{notes}
@@ -2717,7 +2717,7 @@ unsigned quantities.
 \begin{instruction}{sub}
   \info{Instruction}{Ssub}{asU4}{Models \emph{set
       difference}.}{Ssub.Mod}{set-sub}{sarithmetic}
-  
+
   \begin{notes}
     $$\code{a - b} \equiv (a \cap (-b)) \equiv (a \wedge (-b))$$
   \end{notes}
@@ -2744,7 +2744,7 @@ unsigned quantities.
 \begin{instruction}{intersection}
   \info{Instruction}{Sintersection}{asU4}{Models \emph{set
       intersection}.}{Sintersection.Mod}{set-intersection}{sarithmetic}
-  
+
   \begin{notes}
     $$\code{a * b} \equiv (a \cap b) \equiv (a \wedge b)$$
   \end{notes}
@@ -2773,7 +2773,7 @@ unsigned quantities.
   \begin{results}
   \item $\neg \textrm{op}$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value which should be negated.}
   \end{operands}
@@ -2796,7 +2796,7 @@ unsigned quantities.
   \begin{results}
   \item $\textrm{set} \vee {2}^\textrm{value}$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The set which is to be modified.}
   \item \operand{Usable}{The element number which should be included
@@ -2818,7 +2818,7 @@ unsigned quantities.
   \begin{results}
   \item $\textrm{set} \wedge \neg (2^\textrm{value})$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The set value which should be modified.}
   \item \operand{Usable}{The element number which should be removed
@@ -2840,18 +2840,18 @@ unsigned quantities.
 
   \begin{notes}
     This instruction will construct a set low..high.
-    
+
     \inv{$\textrm{low} <= \textrm{high}$}
-    
+
     \inv{$\textrm{low} \in \{0..31\}$}
-    
+
     \inv{$\textrm{high} \in \{0..31\}$}
   \end{notes}
 
   \begin{results}
   \item $\{2^\textrm{low}..2^\textrm{high}\}$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The low bound of the range to construct.}
   \item \operand{Usable}{The high bound of the range to construct.}
@@ -2887,15 +2887,15 @@ unsigned quantities.
 \begin{instruction}{convert}
   \info{Instruction}{Sconvert}{asU4}{Models set construction from a
     single integer value.}{Sconvert.Mod}{set-convert}{sarithmetic}
-  
+
   \begin{notes}
     \inv{$bit \in \{0..31\}$}
   \end{notes}
-  
+
   \begin{results}
   \item $2^\textrm{bit}$
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The integer to convert into a \code{SET} value.}
   \end{operands}
@@ -3048,12 +3048,12 @@ Traps are implemented as simple \code{Instruction} records in the
 \begin{instruction}{call}
   \info{Instruction}{Gmisc}{Gcall}{Models the invocation of a
     procedure or a \ac{tbp}}{Gcall.Mod}{call}{Gmisc}
-  
+
   \begin{results}
   \item The results of this instruction are modeled by the
     \emph{result list} of the instruction.
   \end{results}
-  
+
   \todo{The results of the call instruction are dependent upon several
     things: 1) the declared/defined result type, 2) the global
     variables which are known to be modified and 3) by-reference
@@ -3071,14 +3071,14 @@ Traps are implemented as simple \code{Instruction} records in the
       \emph{formal parameters} declared in the source.  For each
       operand provided to the callee, there are two semantic classes
       which must be handled:
-    
+
     \todo{Better description of all types of parameters: open array,
       record, integral, \byval, \byref needed.}
     \begin{description}
     \item[by-value] The current value of the expression is used.
     \item[by-reference] The address of the parameter is passed, followed
       immediately by the current value of the parameter.
-    
+
       If the current value of the parameter is not used in
       \gsainst{call}, the algorithms may determine that an assignment
       to that variable is not used and subsequently delete it.  Or,
@@ -3100,7 +3100,7 @@ Traps are implemented as simple \code{Instruction} records in the
   \begin{results}
   \item The result is a copy of the input operand.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The value to be copied.}
   \end{operands}
@@ -3128,11 +3128,11 @@ Traps are implemented as simple \code{Instruction} records in the
       \end{array}
     \right.
     $
-    
+
     The result is the uppercase ASCII value of the character.  The
     result of using this on a non-lowercase character is undefined.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The character value to capitalize.}
   \end{operands}
@@ -3145,7 +3145,7 @@ Traps are implemented as simple \code{Instruction} records in the
     module.}{Gimport.Mod}{import}{Gmisc}
 
   \nresults
-  
+
   \begin{operands}
   \item \operand{Symbol}{The module which should be initialized.}
   \end{operands}
@@ -3165,65 +3165,65 @@ Traps are implemented as simple \code{Instruction} records in the
     \begin{table}[h!]
       \begin{tabularx}{\linewidth}{|l|X|}
         \hline Merge Region & Operand Information \\
-        
+
         \hline \gsainst{merge-if} & The second and third operands
         correspond to the \emph{true} and \emph{false} control paths
         of the controlling conditional expression.\\
-  
+
         \hline \gsainst{merge-cond} & A gate will never be controlled
         by a condition merge.  This is because a condition merge
         region splits the control path for a compound conditional of
         an \code{IF} statement.  Since the control path is not
         merging, there is no possibility of a gate. \\
-  
+
         \hline \gsainst{merge-loop} & A gate will never be controlled
         by a loop merge. This is because a loop merge region simply
         models the entry point of the loop (the loop top and the
         backedge) for a looping construct.  Since the control path is
         not merging, there is no possibility of a gate. \\
-  
+
         \hline \gsainst{merge-case} & A gate controlled by this type
         of merge will have an operand for each selection block of the
         \code{CASE} statement. \\
-        
+
         \hline
       \end{tabularx}
       \caption{Gate Operands}\label{tab:gate-operands}
     \end{table}
-    
+
     During GSA construction the operands of a gate controlled by an if
     are as follows:
-      
+
     inv: operand-1 IS Instruction
 
     inv: operand-2 IS Instruction
-    
+
     The reason for this is that during if-gate creation the compiler
     needs to know the Region of the operand and some things from the
     Usable hierarchy do not have a 'region' field.
-    
+
     The invariant that the second and third operands are instructions
     can be enforced by having the compiler introduce 'copy'
     instructions for the cases where constants and variables are
     assigned directly (i.e.  things which are not expressions) to
     other variables.
-    
+
     This restriction only applies when the GSA is being created.
     After the entire structure is created, copy-propogation is free to
     replace these instructions with direct variable references.
-    
+
     After the gate is constructed, it should be noted that nothing
     prohibits the operands of a \gsainst{gate} from being the result
     of a \gsainst{gate}.  This can have implications on the \ac{cia},
     \ac{ccp} for example.
-    
+
   \end{notes}
 
   \begin{results}
   \item The result is the new value for the variable, coalesced over
     the output from several control paths.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Merge}{The merge which controls the gate.}
   \item \operand{Usable}{An operand for each region controlled by the
@@ -3306,7 +3306,7 @@ Traps are implemented as simple \code{Instruction} records in the
   \info{Instruction}{Gtypedesc}{Ginitdarr}{Models the initialization
     of fields in a statically-sized array
     \ac{td}.}{Ginitdarr.Mod}{initdarr}{Gtypedesc}
-    
+
   \begin{notes}
     If no initialization is required a runtime, then this instruction
     is a \emph{nop}, and it is assumed that the type descriptor is
@@ -3367,7 +3367,7 @@ Traps are implemented as simple \code{Instruction} records in the
 
   \begin{notes}
     This instruction always returns a unique result.
-    
+
     The number of bytes to allocate will be a \code{LONGINT} value.
   \end{notes}
 
@@ -3375,7 +3375,7 @@ Traps are implemented as simple \code{Instruction} records in the
   \item The result is the address of a newly allocated block which
     will not participate in \ac{gc}.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{Usable}{The number of bytes to allocate.}
   \end{operands}
@@ -3393,7 +3393,7 @@ Traps are implemented as simple \code{Instruction} records in the
   \end{notes}
 
   \nresults
-  
+
   \begin{operands}
   \item \operand{Usable}{The source address.}
   \item \operand{Usable}{The destination address.}
@@ -3407,7 +3407,7 @@ Traps are implemented as simple \code{Instruction} records in the
     \code{SYSTEM.BITR}}{Gresetbit.Mod}{resetbit}{Gsystem}
 
   \nresults
-  
+
   \begin{operands}
   \item \operand{Usable}{The address of the memory containing the bit to reset.}
   \item \operand{Usable}{The constant value of the bit to reset.
@@ -3421,7 +3421,7 @@ Traps are implemented as simple \code{Instruction} records in the
     \code{SYSTEM.BITS}}{Gsetbit.Mod}{setbit}{Gsystem}
 
   \nresults
-  
+
   \begin{operands}
   \item \operand{Usable}{The address of the memory containing the bit to set.}
   \item \operand{Usable}{The constant value of the bit to set.
@@ -3435,7 +3435,7 @@ Traps are implemented as simple \code{Instruction} records in the
     \code{SYSTEM.FINALIZE}}{Gfinalize.Mod}{finalize}{Gsystem}
 
   \nresults
-  
+
   \begin{operands}
   \item \operand{Symbol}{The \ac{td} for the record type in which a
       finalization procedure is being installed.}
@@ -3451,7 +3451,7 @@ Traps are implemented as simple \code{Instruction} records in the
   \begin{results}
   \item The result is the value of the specified condition code.
   \end{results}
-  
+
   \begin{operands}
   \item \operand{ConstInt}{The hardware condition code which is to be
       tested.}

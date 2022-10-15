@@ -26,13 +26,13 @@ condcode|condcode|code|
 convert|convert|value|
 condmerge|condmerge|lfalse,rfalse|
 copy|copy|value|
-createnlm|createnlm||
-deletenlm|deletenlm|\%nlm|
+nlmctor|nlmctor||
+nlmdtor|nlmdtor|\%nlm|
 div|div|dividend,divisor|
 dynarrlen|dynarrlen|deref,dim,offs|
 enter|enter|\%nlm|{res}_0,\ldots,{res}_{n-1}|
 eql|eql|{op}_{0},{op}_{1}|
-exit|exit|\$deletenlm,{op}_1,\ldots,{op}_{n-1}|
+exit|exit|\$nlmdtor,{op}_1,\ldots,{op}_{n-1}|
 false|false|conditional|
 finalize|finalize|td,proc|
 gate|gate|{op}_0,\ldots,{op}_{n-1}|
