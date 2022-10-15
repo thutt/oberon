@@ -13,7 +13,7 @@ The translation phase from the \ac{ast} to the \ac{gsa} \ac{ir}, the
 translator will introduce a \gsainst{copy} when a constant or variable
 is assigned to another variable.  Since \ac{gsa} has a \emph{single
   assignment} property, the left-hand-side of a \gsainst{copy} cannot
-be directly overwritten, so all uses of this \gsainst{copy} can be
+be directly overwritten, so most uses of this \gsainst{copy} can be
 replaced with direct use of the operand of the instruction.
 
 The \ac{cp} algorithm operates by examining a \emph{global region} for
@@ -30,11 +30,15 @@ instructions with the source of the copy.
       \ENDFOR}
     \STATE
     \FORALL{region: region $\in$ greg}
-    \FORALL{inst: inst $\in$ region}
-    \IF{inst $=$ \gsainst{copy}}
-    \STATE replace-use-of inst with inst.operand
-    \ENDIF
-    \ENDFOR
+      \FORALL{inst: inst $\in$ region}
+        \IF{inst $=$ \gsainst{copy}}
+          \FORALL{use: inst uses}
+            \IF{use $\neq$ Mmemory}
+              \STATE replace-use-of inst with inst.operand
+            \ENDIF
+          \ENDFOR
+        \ENDIF
+      \ENDFOR
     \ENDFOR
   \end{algorithmic}
 \end{algorithm}
@@ -42,3 +46,60 @@ instructions with the source of the copy.
 Since \gsainst{copy} can only be introduced during the translation to
 \ac{gsa}, once all have been removed, the \ac{cp} algorithm never has
 to be run again.
+
+The algorithm must be careful to not replace instructions that operate
+on the address of a object with a copied value.  The following
+procedure is translated
+
+\begin{alltt}
+PROCEDURE Read(VAR x : CHAR);
+END Read;
+
+PROCEDURE P0000;
+  VAR
+    kind : CHAR;
+BEGIN
+  kind := 0FFX;
+  Read(kind);
+END P0000;
+\end{alltt}
+
+\begin{small}
+\todo{Either change O3GSADump to not use curly braces, or make them print.}
+\begin{alltt}
+Initial GSA
+
+0.0 (0)  greg: P0000 range=[-32768, -32759)
+  0.1 (9)  enter %nlm  range=[-32768, -32760) uses={}
+   0.2 (10)  %nlm := nlmctor  range=[-32762, -32761) uses={(8)}
+   0.4 (11)  %return-2 := copy const{FALSE}  range=[-32762, -32762) uses={}
+  0.5 (2)  kind := copy const{0}  range=[-32768, -32763) uses={}
+  0.6 (3)  kind := copy const{255}  range=[-32768, -32764) uses={(5) (4)}
+  0.8 (4)  adr result[(3)]  range=[-32768, -32765) uses={(5)}
+  0.7 (5)  call Read , result[(4)] , result[(3)]  range=[-32768, -32766) uses={(7)}
+  0.9 (7)  exit result[(5)] , result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  nlmdtor result[(10)]  range=[-32768, -32768) uses={(7)}
+\end{alltt}
+\end{small}
+
+
+For example, notice how the operand of the \texttt{adr} instruction
+would be replaced with a constant if the algorithm is not carefully
+written.
+
+\begin{small}
+\begin{alltt}
+Copy Propagation
+
+0.0 (0)  greg: P0000 range=[-32768, -32759)
+  0.1 (9)  enter %nlm  range=[-32768, -32760) uses={}
+   0.2 (10)  %nlm := nlmctor  range=[-32762, -32761) uses={(8)}
+   0.4 (11)  %return-2 := copy const{FALSE}  range=[-32762, -32762) uses={}
+  0.5 (2)  kind := copy const{0}  range=[-32768, -32763) uses={}
+  0.6 (3)  kind := copy const{255}  range=[-32768, -32764) uses={}
+  0.7 (4)  adr const{255}  range=[-32768, -32765) uses={(5)}
+  0.8 (5)  call Read , result[(4)] , const{255}  range=[-32768, -32766) uses={(7)}
+  0.9 (7)  exit result[(5)] , result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  nlmdtor result[(10)]  range=[-32768, -32768) uses={(7)}
+\end{alltt}
+\end{small}
