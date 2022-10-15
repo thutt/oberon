@@ -92,6 +92,7 @@ gsa.dvi:	$(TEX)							\
 
 
 gsa-mp:		$(GSAMP:.mp=.1)
+	touch $@;
 
 $(GSAMP:.mp=.1):	$(SENTINEL)
 
