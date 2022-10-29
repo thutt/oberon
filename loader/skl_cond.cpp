@@ -43,7 +43,7 @@ namespace skl {
             value = relation[opc](R0v);
             write_integer_register(cpu, Rd, value);
             increment_pc(cpu, 1);
-            dialog::trace("%xH: %s  R%u, R%u  [%xH, %u]",
+            dialog::trace("%xH: %s  R%u, R%u  [%xH, %u]\n",
                           cpu->pc, mne, R0, Rd, R0v, value);
         }
     };

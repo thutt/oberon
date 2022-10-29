@@ -133,7 +133,7 @@ namespace dialog
             }
             label = fmt[strlen(fmt) - 1] == '\n';
             n_char = vfprintf(stderr, fmt, args);
-            if (col1) {
+            if (col1 && !label) {
                 /* Pad column 1 so column 2 is always at same offset */
                 const int col1_width = 50;
                 if (n_char >= col1_width) {

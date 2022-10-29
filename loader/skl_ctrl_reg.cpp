@@ -41,7 +41,7 @@ namespace skl {
 
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
-            dialog::trace("%xH: %s  CR%u, R%u", pc, mne, R0, Rd);
+            dialog::trace("%xH: %s  CR%u, R%u\n", pc, mne, R0, Rd);
         }
     };
 
@@ -67,7 +67,7 @@ namespace skl {
 
             write_control_register(cpu, cr, r0);
             increment_pc(cpu, 1);
-            dialog::trace("%xH: %s  R%u, CR%u", pc, mne, R0, cr);
+            dialog::trace("%xH: %s  R%u, CR%u\n", pc, mne, R0, cr);
         }
     };
 

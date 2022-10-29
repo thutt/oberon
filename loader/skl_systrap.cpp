@@ -36,6 +36,7 @@ namespace skl {
              * than the rest of the instructions.
              */
             opc = field(inst, 15,  8);
+            mne = mne_[opc];
         }
 
         virtual bool interpret_(void) = 0;

@@ -236,6 +236,8 @@ namespace skl {
             lbits = right_shift(l, bits);
             rbits = left_shift(l, n_bits - bits);
         }
+        dialog::trace("[%xH | %xH -> %xH]\n",
+                      lbits, rbits, lbits | rbits);
         return lbits | rbits;
     }
 

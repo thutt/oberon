@@ -53,11 +53,12 @@ namespace skl {
         {
             const md::uint32 r0 = read_integer_register(cpu, R0);
             const md::uint32 r1 = read_integer_register(cpu, R1);
-            unsigned         b  = bit_test(r1, static_cast<int>(r0));
+            unsigned         b;
 
+            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
+            b = bit_test(r1, static_cast<int>(r0));
             write_integer_register(cpu, Rd, b);
             increment_pc(cpu, 1);
-            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
         }
     };
 
@@ -81,11 +82,12 @@ namespace skl {
         virtual void interpret(void)
         {
             const md::uint32 v = read_integer_register(cpu, R1);
-            md::uint32       b = bit_test(v, C);
+            md::uint32       b;
 
+            dialog::trace("%s: %s  %xH, R%u, R%u", decoded_pc, mne, C, R1, Rd);
+            b = bit_test(v, C);
             write_integer_register(cpu, Rd, b);
             increment_pc(cpu, 1);
-            dialog::trace("%s: %s  %xH, R%u, R%u", decoded_pc, mne, C, R1, Rd);
         }
     };
 
@@ -144,14 +146,14 @@ namespace skl {
         {
             const md::uint32 bit  = read_integer_register(cpu, R0) & md::MaxSet;
             const md::OADDR  addr = read_integer_register(cpu, R1);
-            unsigned         b    = bit_test_memory(addr,
-                                                    static_cast<int>(bit), op);
+            unsigned         b;
 
+            dialog::trace("%s: %s  R%u, (R%u), R%u", decoded_pc, mne, R0, R1, Rd);
+            b = bit_test_memory(addr, static_cast<int>(bit), op);
             if (!cpu->exception_raised) {
                 write_integer_register(cpu, Rd, b);
                 increment_pc(cpu, 1);
             }
-            dialog::trace("%s: %s  R%u, (R%u), R%u", decoded_pc, mne, R0, R1, Rd);
         }
     };
 
@@ -183,7 +185,7 @@ namespace skl {
                 write_integer_register(cpu, Rd, b);
                 increment_pc(cpu, 1);
             }
-            dialog::trace("%s: %s  %xH, (R%u), R%u", decoded_pc, mne, C, R1, Rd);
+            dialog::trace("%s: %s  %xH, (R%u), R%u\n", decoded_pc, mne, C, R1, Rd);
         }
     };
 
