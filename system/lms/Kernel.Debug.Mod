@@ -347,6 +347,15 @@
     AFS : AllocationFailStrategy;
 
 
+  PROCEDURE - InstCount 02H, 00H, 20H, 10H;
+  PROCEDURE InstructionCount*() : LONGINT;
+    VAR result : LONGINT;
+  BEGIN
+    InstCount;
+    SYSTEM.GETREG(1, result);
+    RETURN result;
+  END InstructionCount;
+
   PROCEDURE - VMSVC 03H, 00H, 01H, 14H;
 
   (* No function using VMService should be ever allocate memory.
@@ -575,6 +584,9 @@
 
 
   PROCEDURE DumpHeap*;
+    CONST
+      MB = 1024 * 1024;
+
     VAR
       q, bs, arrdat, tdadr, nameadr, len : LONGINT;
       tag : SET;
@@ -590,7 +602,7 @@
     DebugStr(', ');
     DebugHex(heap.region.end);
     DebugStr(']  (Size: ');
-    DebugInt(heap.region.size DIV (1024 * 1024));
+    DebugInt(heap.region.size DIV MB);
     DebugStr(' MiB)');
     DebugLn;
 
@@ -599,7 +611,7 @@
     DebugStr(', ');
     DebugHex(stack.end);
     DebugStr(')  (Size: ');
-    DebugInt((stack.end - stack.beg) DIV (1024 * 1024));
+    DebugInt((stack.end - stack.beg) DIV MB);
     DebugStr('  Mib)  [Stack grows down.]');
     DebugLn;
     DebugLn;
@@ -1134,6 +1146,7 @@
             (* inv: elemSize <=> array element size *)
             tmp.addr := tos + array.arrpos * array.elemSize; (* tos.data + arrpos * ElemSize(tos); *)
           END;
+
           IF GCTrace THEN
             DEC(GCindent);
           END;
@@ -1162,6 +1175,7 @@
             SYSTEM.MEMR(nb.addr, hmPtrTagOffs, q.tag);
             q.tag := SYSTEM.VAL(ADDRESS, SYSTEM.VAL(SET, q.tag) * (-BlkFlags));
             SYSTEM.MEMR(q.tag, hmDescFlagsOffs, q.flags);
+
             IF GCTrace THEN
               Indent('pop6');
               Tag('tbc', tmp.class);
@@ -1196,6 +1210,7 @@
         END;
         IF nb.addr # 0 THEN
           SYSTEM.MEMR(nb.addr, hmPtrTagOffs, nb.tag);
+
           IF GCTrace THEN
             Indent('nxt2');
             DebugStr(' ntag='); DebugHex(nb.tag);
@@ -1208,6 +1223,7 @@
                                  SYSTEM.VAL(SET, nb.tag) * (-BlkFlags)); (* ntag <=> TD(n) *)
             SYSTEM.MEMR(nb.tag, hmDescFlagsOffs, nb.flags);
             nb.class := BlockClass[nb.flags MOD 100H]; (* BlockKind(n) *)
+
             IF GCTrace THEN
               Indent('nxt3');
               Tag('nbc', nb.class);
@@ -1269,6 +1285,7 @@
               q.addr    := nb.addr;
               q.class   := nb.class;
               q.tag     := nb.tag;
+
               IF GCTrace THEN
                 Indent('psh2');
                 Tag('tbc', tmp.class);
@@ -1517,11 +1534,13 @@
     END; (* smallest non-empty list *)
     last := SYSTEM.ADR(heap.blocks[i]);
     SYSTEM.GET(last, ptr); (* address & pointer to free block *)
-    sizetmp := GetBlockSize(ptr);
-    WHILE (ptr # 0) & (sizetmp < size) DO
-      last := ptr + bfLinkOffs;
-      SYSTEM.GET(last, ptr); (* next block on list; first fit, if i = hmHeapChains *)
+    IF ptr # 0 THEN
       sizetmp := GetBlockSize(ptr);
+      WHILE (ptr # 0) & (sizetmp < size) DO
+        last := ptr + bfLinkOffs;
+        SYSTEM.GET(last, ptr); (* next block on list; first fit, if i = hmHeapChains *)
+        sizetmp := GetBlockSize(ptr);
+      END;
     END;
 
     IF ptr # 0 THEN
@@ -1567,8 +1586,12 @@
       DebugHex(size);
       DebugLn;
     END;
-    SYSTEM.PUT(blkadr, SYSTEM.VAL(SET, size) + {BlkSyst});
-    SYSTEM.PUT(adr, blkadr + hmTagSize);
+    IF blkadr # 0 THEN
+      SYSTEM.PUT(blkadr, SYSTEM.VAL(SET, size) + {BlkSyst});
+      SYSTEM.PUT(adr, blkadr + hmTagSize);
+    ELSE
+      SYSTEM.PUT(adr, 0);
+    END;
   END NewBlock;
 
   (* R1 contains the address of the record pointer being allocated,
@@ -1591,9 +1614,13 @@
       DebugHex(tdptr);
       DebugLn;
     END;
-    SYSTEM.MEMW(tdptr, rtdBlockSize, size); (* fixup the block size entry *)
-    SYSTEM.PUT(blkadr, tdptr);
-    SYSTEM.PUT(adr, blkadr + hmTagSize);
+    IF blkadr # 0 THEN
+      SYSTEM.MEMW(tdptr, rtdBlockSize, size); (* fixup the block size entry *)
+      SYSTEM.PUT(blkadr, tdptr);
+      SYSTEM.PUT(adr, blkadr + hmTagSize);
+    ELSE
+      SYSTEM.PUT(adr, 0);
+    END;
   END NewRecord;
 
   (* calculate the size of the requested array, in bytes *)
@@ -1718,9 +1745,13 @@
 
     IF size # 0 THEN
       Allocate(blkadr, size);
-      SYSTEM.GETREG(SFP, sfp); (* inv: sp holds the frame pointer *)
-      SetDynArrInfo(adr, blkadr, BlockKind, td, size, nofElem,
-                    nofDim, sfp + Dim0StackOffs, alpha);
+      IF blkadr # 0 THEN
+        SYSTEM.GETREG(SFP, sfp); (* inv: sp holds the frame pointer *)
+        SetDynArrInfo(adr, blkadr, BlockKind, td, size, nofElem,
+                      nofDim, sfp + Dim0StackOffs, alpha);
+      ELSE
+        SYSTEM.PUT(adr, 0); (* out-of-memory. *)
+      END;
       IF TraceAllocation THEN
         DebugStr("NewDynArr| adr: ");
         DebugHex(blkadr);
@@ -1761,8 +1792,12 @@
                   nofElem, size, alpha);
     IF size # 0 THEN
       Allocate(blkadr, size);
-      SetDynArrInfo(adr, blkadr, BlockKind, td, size,
-                    nofElem, nofDim, td + saDim0, alpha);
+      IF blkadr # 0 THEN
+        SetDynArrInfo(adr, blkadr, BlockKind, td, size,
+                      nofElem, nofDim, td + saDim0, alpha);
+      ELSE
+        SYSTEM.PUT(adr, 0); (* out-of-memory. *)
+      END;
       IF TraceAllocation THEN
         DebugStr("NewArr| adr: ");
         DebugHex(blkadr);
@@ -1951,8 +1986,33 @@
     END;
   END GetClock;
 
+  (* Returns length of command line, including 0X *)
+  PROCEDURE GetCommandLineLength*() : INTEGER;
+    VAR
+      adr : ADDRESS;
+      l   : INTEGER;
+      ch  : CHAR;
+  BEGIN
+    adr := CmdLine;
+    l   := 0;
+    IF adr # 0 THEN
+      LOOP
+        SYSTEM.GET(adr, ch);
+        INC(l);
+        INC(adr);
+        IF ch = 0X THEN (* inv: Block must be 0X terminated. *)
+          EXIT;
+        END;
+      END;
+    END;
+    RETURN l;
+  END GetCommandLineLength;
+
   PROCEDURE GetCommandLine*(VAR l : ARRAY OF CHAR);
-    VAR i, len : LONGINT; ch : CHAR; adr : ADDRESS;
+    VAR
+      i, len : LONGINT;
+      ch : CHAR;
+      adr : ADDRESS;
   BEGIN
     adr := CmdLine;
     IF adr # 0 THEN
@@ -2027,7 +2087,7 @@
     IF TerminationProc # NIL THEN
       TerminationProc(code);
     ELSE
-      HALT(200);
+      HALT(1200);
     END;
   END Terminate;
 
