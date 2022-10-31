@@ -269,7 +269,6 @@ The files contained here are provided under the corresponding software license.
   scripts/skl-test-system
   system/Prime.Mod
   system/Prime.Obj
-  system/Prime.Sym
   system/compiler/skl/SKL.Mod
   system/compiler/skl/SKL.Obj
   system/compiler/skl/SKL.Sym
@@ -333,112 +332,77 @@ The files contained here are provided under the corresponding software license.
   system/compiler/skl/SKLTU.Sym
   system/compiler/skl/tests/CTArrayTrap.Mod
   system/compiler/skl/tests/CTArrayTrap.Obj
-  system/compiler/skl/tests/CTArrayTrap.Sym
   system/compiler/skl/tests/CTAssertTrap.Mod
   system/compiler/skl/tests/CTAssertTrap.Obj
-  system/compiler/skl/tests/CTAssertTrap.Sym
   system/compiler/skl/tests/CTBitsetRangeFail.Mod
   system/compiler/skl/tests/CTBitsetRangeFail.Obj
-  system/compiler/skl/tests/CTBitsetRangeFail.Sym
   system/compiler/skl/tests/CTConditionCode.Mod
   system/compiler/skl/tests/CTConditionCode.Obj
-  system/compiler/skl/tests/CTConditionCode.Sym
   system/compiler/skl/tests/CTDivZero.Mod
   system/compiler/skl/tests/CTDivZero.Obj
-  system/compiler/skl/tests/CTDivZero.Sym
   system/compiler/skl/tests/CTDumpHeap.Mod
   system/compiler/skl/tests/CTDumpHeap.Obj
-  system/compiler/skl/tests/CTDumpHeap.Sym
   system/compiler/skl/tests/CTDynArrLength.Mod
   system/compiler/skl/tests/CTDynArrLength.Obj
-  system/compiler/skl/tests/CTDynArrLength.Sym
   system/compiler/skl/tests/CTDynArrNew.Mod
   system/compiler/skl/tests/CTEmpty.Mod
   system/compiler/skl/tests/CTEmpty.Obj
-  system/compiler/skl/tests/CTEmpty.Sym
   system/compiler/skl/tests/CTEnvironment.Mod
   system/compiler/skl/tests/CTEnvironment.Obj
-  system/compiler/skl/tests/CTEnvironment.Sym
   system/compiler/skl/tests/CTExclude.Mod
   system/compiler/skl/tests/CTExclude.Obj
-  system/compiler/skl/tests/CTExclude.Sym
   system/compiler/skl/tests/CTFileIO.Mod
   system/compiler/skl/tests/CTFileIO.Obj
-  system/compiler/skl/tests/CTFileIO.Sym
   system/compiler/skl/tests/CTFileIO.data
   system/compiler/skl/tests/CTFingerprint.Mod
   system/compiler/skl/tests/CTFingerprint.Obj
-  system/compiler/skl/tests/CTFingerprint.Sym
   system/compiler/skl/tests/CTFor.Mod
   system/compiler/skl/tests/CTFor.Obj
-  system/compiler/skl/tests/CTFor.Sym
   system/compiler/skl/tests/CTGC.Mod
   system/compiler/skl/tests/CTGC.Obj
-  system/compiler/skl/tests/CTGC.Sym
   system/compiler/skl/tests/CTGetOpt.Mod
   system/compiler/skl/tests/CTGetOpt.Obj
-  system/compiler/skl/tests/CTGetOpt.Sym
   system/compiler/skl/tests/CTImport.Mod
   system/compiler/skl/tests/CTImport.Obj
-  system/compiler/skl/tests/CTImport.Sym
   system/compiler/skl/tests/CTIncDec.Mod
   system/compiler/skl/tests/CTIncDec.Obj
-  system/compiler/skl/tests/CTIncDec.Sym
   system/compiler/skl/tests/CTInstructionCount.Mod
   system/compiler/skl/tests/CTInstructionCount.Obj
-  system/compiler/skl/tests/CTInstructionCount.Sym
   system/compiler/skl/tests/CTInvalidOpcode.Mod
   system/compiler/skl/tests/CTInvalidOpcode.Obj
-  system/compiler/skl/tests/CTInvalidOpcode.Sym
   system/compiler/skl/tests/CTMissingMethod.Mod
   system/compiler/skl/tests/CTNest.Mod
   system/compiler/skl/tests/CTNest.Obj
-  system/compiler/skl/tests/CTNest.Sym
   system/compiler/skl/tests/CTOOBRead.Mod
   system/compiler/skl/tests/CTOOBRead.Obj
-  system/compiler/skl/tests/CTOOBRead.Sym
   system/compiler/skl/tests/CTOOBWrite.Mod
   system/compiler/skl/tests/CTOOBWrite.Obj
-  system/compiler/skl/tests/CTOOBWrite.Sym
   system/compiler/skl/tests/CTOpenArray.Mod
   system/compiler/skl/tests/CTOpenArray.Obj
-  system/compiler/skl/tests/CTOpenArray.Sym
   system/compiler/skl/tests/CTPathnames.Mod
   system/compiler/skl/tests/CTPathnames.Obj
-  system/compiler/skl/tests/CTPathnames.Sym
   system/compiler/skl/tests/CTProcedure.Mod
   system/compiler/skl/tests/CTProcedure.Obj
-  system/compiler/skl/tests/CTProcedure.Sym
   system/compiler/skl/tests/CTRange.Mod
   system/compiler/skl/tests/CTRange.Obj
-  system/compiler/skl/tests/CTRange.Sym
   system/compiler/skl/tests/CTReal.Mod
   system/compiler/skl/tests/CTReal.Obj
-  system/compiler/skl/tests/CTReal.Sym
   system/compiler/skl/tests/CTReturn.Mod
   system/compiler/skl/tests/CTReturn.Obj
-  system/compiler/skl/tests/CTReturn.Sym
   system/compiler/skl/tests/CTRotate.Mod
   system/compiler/skl/tests/CTRotate.Obj
-  system/compiler/skl/tests/CTRotate.Sym
   system/compiler/skl/tests/CTSET.Mod
   system/compiler/skl/tests/CTSET.Obj
-  system/compiler/skl/tests/CTSET.Sym
   system/compiler/skl/tests/CTSetCtor.Mod
   system/compiler/skl/tests/CTSetCtor.Obj
-  system/compiler/skl/tests/CTSetCtor.Sym
   system/compiler/skl/tests/CTString.Mod
   system/compiler/skl/tests/CTString.Obj
-  system/compiler/skl/tests/CTString.Sym
   system/compiler/skl/tests/CTTDCodeGen.Mod
   system/compiler/skl/tests/CTTDCodeGen.Obj
-  system/compiler/skl/tests/CTTDCodeGen.Sym
   system/compiler/skl/tests/CTTrapNil.Mod
   system/compiler/skl/tests/CTTrapNil.Obj
-  system/compiler/skl/tests/CTTrapNil.Sym
   system/compiler/skl/tests/CTTypeDesc.Mod
   system/compiler/skl/tests/CTTypeDesc.Obj
-  system/compiler/skl/tests/CTTypeDesc.Sym
   system/compiler/skl/tests/CTVMT.Mod
   system/compiler/skl/tests/CTVMT.Obj
   system/lms/CommandLine.Mod
@@ -486,13 +450,10 @@ The files contained here are provided under the corresponding software license.
   system/lms/Trap.Sym
   system/lms/tests/MemoryExhaust.Mod
   system/lms/tests/MemoryExhaust.Obj
-  system/lms/tests/MemoryExhaust.Sym
   system/lms/tests/MkTree.Mod
   system/lms/tests/MkTree.Obj
-  system/lms/tests/MkTree.Sym
   system/lms/tests/StackOverflow.Mod
   system/lms/tests/StackOverflow.Obj
-  system/lms/tests/StackOverflow.Sym
 
 
 **** licenses/lgpl-3.0.text
