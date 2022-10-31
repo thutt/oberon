@@ -191,7 +191,7 @@ export -f skl-skl-oc;
 
 function o3c ()
 {
-    # SKL-based compiler, targeting SKL.
+    # GSA-based compiler, targeting SKL.
     skl-oberon -- "O3.Compile -c GSA ${@}";
 }
 export -f o3c;

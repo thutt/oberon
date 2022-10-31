@@ -8,6 +8,7 @@ MODULE SKLST; (* Symbol Table Binary Tree *)
 IMPORT
   OPM:=SKLMD,
   OPS:=SKLOS,
+  ST:=SKLST,
   EL:=SKLERR;
 
   CONST
@@ -60,8 +61,8 @@ IMPORT
     *)
     allocated* = 4;
     method* = 5;
-    typCommonFlags* = {04..15};
-    typSpecificFlags* = {16..27};
+    typCommonFlags = {06..15};
+    typSpecificFlags = {18..27};
     typGenericFlags* = {28..31};
     typPersistentFlags* = (typCommonFlags +
                            typSpecificFlags +
@@ -304,7 +305,7 @@ IMPORT
     ProcessScopeProc* = PROCEDURE (VAR info : ProcessScopeInfo);
 
   VAR
-    GlbMod* : ARRAY OPM.MaxImports OF ModuleScope;
+    GlbMod* : ARRAY ST.MaxImports OF ModuleScope;
     SelfName* : OPS.Name;
     topScope* : SymbolScope;
     SYSimported* : BOOLEAN;

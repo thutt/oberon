@@ -195,9 +195,6 @@ MODULE SKLMD; (* Machine Description *)
     OptHashStats* = IO.OptHashStats; (* HashStats IN options => print hash table statistics *)
     DefaultOptions* = IO.DefaultOptions;
 
-  CONST (* Symbol File Imports *)
-    MaxImports*      = 31;
-
   CONST
     DefaultFP*      = 0;        (* default finger print seed *)
     MaxHdFld*        = 512;      (* max hidden fields in a single module *)
@@ -459,26 +456,6 @@ MODULE SKLMD; (* Machine Description *)
     END;
   END ConvertReal;
 
-  (* ------------------ Fingerprinting ------------------ *)
-
-  PROCEDURE FPrint*(VAR fp : LONGINT; val : LONGINT);
-  BEGIN
-    fp := SYSTEM.ROT(SYSTEM.VAL(LONGINT, SYSTEM.VAL(SET, fp) / SYSTEM.VAL(SET, val)), 1);
-  END FPrint;
-
-  PROCEDURE  FPrintSet*(VAR fp : LONGINT; val : SET);
-  BEGIN FPrint(fp, SYSTEM.VAL(LONGINT, val))
-  END FPrintSet;
-
-  PROCEDURE  FPrintReal*(VAR fp : LONGINT; val : REAL);
-  BEGIN FPrint(fp, SYSTEM.VAL(LONGINT, val))
-  END FPrintReal;
-
-  PROCEDURE  FPrintLReal*(VAR fp : LONGINT; val : LONGREAL);
-    VAR l, h: LONGINT;
-  BEGIN SYSTEM.GET(SYSTEM.ADR(val), l); SYSTEM.GET(SYSTEM.ADR(val)+4, h); FPrint(fp, l); FPrint(fp, h)
-  END FPrintLReal;
-
   (* ------------------ Address/Value alignment ------------------ *)
 
   PROCEDURE Align*(VAR offset: LONGINT; align: LONGINT);
@@ -511,7 +488,7 @@ MODULE SKLMD; (* Machine Description *)
   PROCEDURE Hash*(name : ARRAY OF CHAR) : LONGINT;
     VAR i, val : LONGINT; ch : CHAR;
 
-    PROCEDURE FPrint(VAR fp : LONGINT; val : LONGINT);
+    PROCEDURE fprint(VAR fp : LONGINT; val : LONGINT);
       VAR x : LONGINT;
     BEGIN
       IF ODD(val) THEN
@@ -521,14 +498,14 @@ MODULE SKLMD; (* Machine Description *)
       END;
       fp := SYSTEM.VAL(LONGINT, SYSTEM.VAL(SET, SYSTEM.ROT(x, -1)) /
                                 SYSTEM.VAL(SET, val));
-    END FPrint;
+    END fprint;
 
   BEGIN
     val := 0;
     i := 0;
     ch := name[0];
     WHILE (ch # HiddenNameSentinel) & (ch # 0X) DO
-      FPrint(val, ORD(ch));
+      fprint(val, ORD(ch));
       INC(i);
       ch := name[i];
     END;

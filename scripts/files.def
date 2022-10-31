@@ -16,7 +16,6 @@ OS=(${SKL_DIR}/system/lms/Kernel.Mod            \
     ${SKL_DIR}/system/lms/Console.Mod           \
     ${SKL_DIR}/system/lms/Environment.Mod       \
     ${SKL_DIR}/system/lms/Pathnames.Mod         \
-    ${SKL_DIR}/system/lms/GetOpt.Mod            \
     ${SKL_DIR}/system/lms/FileDir.Mod           \
     ${SKL_DIR}/system/Files.Mod                 \
     ${SKL_DIR}/system/lms/FileUtils.Mod         \
@@ -24,6 +23,7 @@ OS=(${SKL_DIR}/system/lms/Kernel.Mod            \
     ${SKL_DIR}/system/lms/ModuleInspector.Mod   \
     ${SKL_DIR}/system/lms/Trap.Mod              \
     ${SKL_DIR}/system/lms/CommandLine.Mod       \
+    ${SKL_DIR}/system/lms/GetOpt.Mod            \
     ${SKL_DIR}/system/lms/Modules.Mod           \
     ${SKL_DIR}/system/Types.Mod                 \
     ${SKL_DIR}/system/Objects.Mod               \
@@ -45,6 +45,7 @@ declare -a SKL;
 SKL=(${SKL_DIR}/system/compiler/skl/SKLERR.Mod          \
      ${SKL_DIR}/system/compiler/skl/SKLCMDIO.Mod        \
      ${SKL_DIR}/system/compiler/skl/SKLMD.Mod           \
+     ${SKL_DIR}/system/compiler/skl/SKLFP.Mod           \
      ${SKL_DIR}/system/compiler/skl/SKLOS.Mod           \
      ${SKL_DIR}/system/compiler/skl/SKLST.Mod           \
      ${SKL_DIR}/system/compiler/skl/SKLIE.Mod           \
@@ -188,4 +189,16 @@ MODULE_TESTS=(                                                  \
 declare -A SYSTEM_TESTS;
 SYSTEM_TESTS=(                                                  \
     [${SKL_DIR}/system/lms/tests/StackOverflow.Mod]="fail"      \
+);
+
+
+# Regression tests for the GSA-based compiler.
+#
+#  These are not tests of correct behavior, they are tests that caused
+#  the compiler to fail at one point.  These tests ensure that the
+#  original defect does not return.
+#
+declare -A O3_REGRESSION_TESTS;
+O3_REGRESSION_TESTS=(                                                   \
+    [${SKL_DIR}/compiler/o3/regression/ConstPropCase.Mod]="pass"        \
 );

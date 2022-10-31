@@ -2,7 +2,7 @@ MODULE SKLST; (* Symbol Table Hash Table *)
 (* XXX document: SYSTEM is always given level 0.
  * If it is given another level, the GlbMod array needs to be modified so
  * range errors do not occur when things like fingerprinting access the
- *  array based on the declaration level of the symbol
+ * array based on the declaration level of the symbol.
  *)
 
 IMPORT
@@ -10,32 +10,40 @@ IMPORT
   OPS:=SKLOS,
   EL:=SKLERR;
 
+  TYPE
+    BEData* = POINTER TO BEDataDesc; (* back-end data record *)
+    BEDataDesc* = RECORD END;
+
+  CONST
+    MaxImports* = 31;
+
   CONST
     IntrinsicLevel = 0; (* declaration level of standard identifiers *)
     UndefMnolev = MIN(SHORTINT); (* Used so that if the mnolev is
                                   * initialized outside this module, do not reset
-                                  * it here when inserting *)
+                                  * it here when inserting. *)
 
   CONST (* type structure *)
-    undef*      = 0; (* indicates an error occurred during declaration; used for continuation *)
-    bool*        = 1;
-    byte*        = 2;
-    char*        = 3;
-    sint*        = 4;
-    int*        = 5;
-    lint*        = 6;
-    real*        = 7;
-    lreal*      = 8;
-    set*        = 9;
-    string*      = 10;
-    nil*        = 11;
-    void*        = 12;
-    pointer*    = 13;
-    procedure*  = 14;
-    array*      = 15;
-    dynarr*      = 16;
-    record*      = 17;
-    nofTypes* = 18;
+    undef*     = 0; (* Indicates an error occurred during declaration; used for continuation. *)
+    bool*      = 1;
+    byte*      = 2;
+    char*      = 3;
+    sint*      = 4;
+    int*       = 5;
+    lint*      = 6;
+    real*      = 7;
+    lreal*     = 8;
+    set*       = 9;
+    string*    = 10;
+    nil*       = 11;
+    void*      = 12;
+    pointer*   = 13;
+    procedure* = 14;
+    array*     = 15;
+    dynarr*    = 16;
+    record*    = 17;
+    openarr*   = 18;
+    nofTypes*  = 19;
 
     IntSet* = {sint..lint};
     RealSet* = {real, lreal};
@@ -43,13 +51,20 @@ IMPORT
     BasicSet* = {bool, byte, char, sint, int, lint, real,
                  lreal, set, nil, pointer, procedure}; (* Types that can fit into a register. *)
     ReturnSet* = BasicSet; (* allowed in a RETURN statement *)
-    AggregateSet* = {array, dynarr, record};
+    ArraySet* = {array, openarr, dynarr};
+    AggregateSet* = {array, openarr, dynarr, record}; (* aggregate collections; things
+                                                       * passed by-reference *)
 
   CONST
     FPrintSet* = {0..3}; (* flags reserved for fingerprinting *)
 
   CONST (* fingerprinting flags; used in Type & Symbol *)
-    pbused* = 0; pvused* = 1; typfpdone* = 2; idfpdone* = 3;
+    pbused* = 0;
+    pvused* = 1;
+    typfpdone* = 2;
+    idfpdone* = 3;
+    idfpresv0 = 4;
+    idfpresv1 = 5; (* reserved fingerprint slots *)
 
   CONST
     (* type flags XXX document changes to type flags 97.01.01
@@ -58,15 +73,21 @@ IMPORT
       16..27 for Type specific use
       28..31 generic use (can be used outside of this module)
     *)
-    allocated* = 4;
-    method* = 5;
-    typCommonFlags* = {04..15};
-    typSpecificFlags* = {16..27};
-    typGenericFlags* = {28..31};
+    typFingerprintFlags = {00..05};  (* flags which are reserved for the fingerprinting mechanism (see symFingerprintFlags) *)
+    typCommonFlags = {06..17}; (* flags which are shared amongst all Type extensions *)
+    typSpecificFlags = {18..27};  (* each Type extension may use these
+                                    *  flags w/o conflicting with other Types
+                                    *)
+    typGenericFlags* = {28..31};  (* flags which can be used generically
+                                   * outside this module *)
     typPersistentFlags* = (typCommonFlags +
                            typSpecificFlags +
                            typGenericFlags); (* flags which will be written to Sym *)
 
+  CONST (* Symbol type flags *)
+    allocated* = 4;
+    method* = 5;
+    
   TYPE
     Symbol* = POINTER TO SymbolDesc;
     SymbolScope* = POINTER TO SymbolScopeDesc;  (* scope, module *)
@@ -75,9 +96,11 @@ IMPORT
     TypeDesc* = RECORD
       form*, mno* : SHORTINT;
       flags* : SET;
-      ref*, sysflag* : INTEGER;
+      ref* : INTEGER;
+      sysflag* : INTEGER;
       size*, pos*, idfp*, pbfp*, pvfp* : LONGINT;
       sym* : Symbol;
+      bedata* : BEData;
     END;
 
   CONST
@@ -86,10 +109,13 @@ IMPORT
   TYPE
     Array* = POINTER TO ArrayDesc;
     ArrayDesc* = RECORD (TypeDesc)
-      n* : LONGINT;  (* form = array => n = elems; form = dynarr => n = dims (0 based) *)
+      n* : LONGINT;  (* form = array => n = elems; form IN {openarr, dynarr} => n = dims (0 based) *)
       of* : Type;
-      td* : SymbolTypeDesc; (* type descriptor (97.07.19: use GetTD to read) *)
-      offset* : LONGINT;  (* form = array => 0; form = dynarr => offset of LEN() in descriptor *)
+      td* : SymbolTypeDesc; (* type descriptor (use GetTD to read) *)
+      offset* : LONGINT;  (* form = array => 0;
+                           * form = dynarr => offset of LEN() in descriptor;
+                           * form = openarr = offset of LEN() on stack
+                           *)
     END;
 
     ArrayInfoDesc* = RECORD
@@ -104,15 +130,17 @@ IMPORT
     END;
 
   CONST
-    methodcounted* = 16;    (* methodcounted IN flags => methods are numbered *)
+    methodcounted* = 16;    (* methodcounted IN flags => methods are numbered
+                             * for VMT slot assignment. *)
 
   TYPE
     Record* = POINTER TO RecordDesc;
     RecordDesc* = RECORD (TypeDesc)
       ancestor* : Record;
       scope* : SymbolScope;
-      td* : SymbolTypeDesc;  (* type descriptor & vmt (97.07.19: use GetTD to read) *)
-      nofmeth*, align* : LONGINT;
+      td* : SymbolTypeDesc;  (* type descriptor & vmt (use GetTD to read) *)
+      nofmeth* : LONGINT; (* nofmeth < 0 -> methods have not been counted *)
+      align* : LONGINT;
       extlev* : SHORTINT;
     END;
 
@@ -126,18 +154,20 @@ IMPORT
     ConstExt* = POINTER TO OPS.String;
     Const* = POINTER TO ConstValDesc;
     ConstValDesc* = RECORD
-      type : Type;
+      type* : Type;
       ext* : ConstExt;
-      i0*, i1* : LONGINT;
+      i0* : LONGINT; (* character value, integer value; lo bound of range, string length (including 0X) *)
+      i1* : LONGINT; (* hi bound of range; address for constant *)
+      bool* : BOOLEAN; (* boolean constants *)
       set* : SET;
       real* : LONGREAL;
     END;
 
   CONST (**** symbol kinds ****)
-    anon*        = 0;
+    anon*       = 0;
     var*        = 1;
     par*        = 2;
-    varpar*      = 3;
+    varpar*     = 3;
     const*      = 4;
     stdproc*    = 5;
     fwdproc*    = 6;
@@ -147,10 +177,10 @@ IMPORT
     iproc*      = 10;           (* interrupt procedure *)
     tproc*      = 11;
     field*      = 12;
-    type*        = 13;
-    module*      = 14; (* can only be a SymbolScope *)
+    type*       = 13;
+    module*     = 14; (* can only be a SymbolScope *)
     scope*      = 15;
-    darrdesc*    = 16;
+    darrdesc*   = 16;
     arrdesc*    = 17; (* array descriptor for 'pointer to static array' only *)
     recdesc*    = 18;
     nofSymbols* = 19;
@@ -168,13 +198,14 @@ IMPORT
       [16..27] <=> specific symbol usage
   *)
   CONST
-    symCommonFlags* = {04..15}; symSpecificFlags* = {16..27};
+    symCommonFlags* = {04..15};
+    symSpecificFlags* = {16..27};
     symGenericFlags* = {28..31}; (* can be used by other units freely *)
 
   CONST (* common flags *)
-    leaf* = 4; (* internal vis, address not taken *)
-    used* = 5; (* XXX document new used flag; indicates an imported symbol is used (symbol flag) *)
-    invisible* = 6; (* symbol is imported but not visible to the importing unit (hidden pointers, procedures & methods) *)
+    leaf* = 6; (* internal visibility, address not taken *)
+    used* = 7; (* indicates a symbol has been looked up in the symbol table *)
+    invisible* = 8; (* symbol is imported but not visible to the importing unit (hidden pointers, procedures & methods) *)
 
   CONST
     (* leaf & used status are not persistent *)
@@ -196,8 +227,10 @@ IMPORT
 
     SymbolDesc* = RECORD (SymtabEntryDesc)
       kind* : SHORTINT;
-      mnolev*, vis*, history* : SHORTINT; (* mnolev <= 0 => mno = -mnolev;
-                                           * mnolev > 0 => nesting level *)
+      mnolev* : SHORTINT;      (* inv: mnolev <= 0 => module number = -mnolev;
+                                * inv: mnolev > 0 => nesting level
+                                *)
+      vis*, history* : SHORTINT;
       flags* : SET;
       type* : Type;
       ref*  : INTEGER;
@@ -264,7 +297,8 @@ IMPORT
     END;
 
   CONST (* procedure flags *)
-    body* = 16; redef* = 17;
+    body* = 16;
+    redef* = 17;
     modinit* = 18; (* XXX document; indicates a procedure symbol is actually module init code *)
     (* XXX document intrinsic flag:
       affects symbol export qualities.  A symbol with this flag set is owned by the compiler and not a true symbol in the
@@ -276,20 +310,47 @@ IMPORT
   TYPE
     SymbolProc* = POINTER TO SymbolProcDesc;
     SymbolProcDesc* = RECORD (SymbolDesc)
-      parsize*, varsize*, methno* : LONGINT;
+      parsize*, varsize* : LONGINT;
+      methno* : LONGINT;
       scope* : SymbolScope;
     END;
 
   CONST (* standard proc types *)
     SPbegin* = 0;
-    absfn* = 0; capfn* = 1; oddfn* = 2; adrfn* = 3;
-    ashfn* = 4; lshfn* = 5; rotfn* = 6; lenfn* = 7; bitfn* = 8;
-    newfn* = 9; getfn* = 10; putfn* = 11; getrfn* = 12; putrfn* = 13;
-    valfn* = 14; sysnewfn* = 15; movefn* = 16; haltfn* = 17; assertfn* = 18;
-    ordfn* = 19; entierfn* = 20; minfn* = 21; maxfn* = 22; chrfn* = 23;
-    shortfn* = 24; longfn* = 25; sizefn* = 26; incfn* = 27; decfn* = 28;
-    inclfn* = 29; exclfn* = 30; copyfn* = 31;
-    memrfn* = 32; memwfn* = 33;
+    absfn* = 0;
+    capfn* = 1;
+    oddfn* = 2;
+    adrfn* = 3;
+    ashfn* = 4;
+    lshfn* = 5;
+    rotfn* = 6;
+    lenfn* = 7;
+    bitfn* = 8;
+    newfn* = 9;
+    getfn* = 10;
+    putfn* = 11;
+    getrfn* = 12;
+    putrfn* = 13;
+    valfn* = 14;
+    sysnewfn* = 15;
+    movefn* = 16;
+    haltfn* = 17;
+    assertfn* = 18;
+    ordfn* = 19;
+    entierfn* = 20;
+    minfn* = 21;
+    maxfn* = 22;
+    chrfn* = 23;
+    shortfn* = 24;
+    longfn* = 25;
+    sizefn* = 26;
+    incfn* = 27;
+    decfn* = 28;
+    inclfn* = 29;
+    exclfn* = 30;
+    copyfn* = 31;
+    memrfn* = 32;
+    memwfn* = 33;
     finalizefn* = 34; (* 97.07.05: not documented yet XXX *)
     bitrfn* = 35; (* Reset Bit. 97.07.05: not documented yet XXX: operates on DWORD only *)
     bitsfn* = 36; (* Set Bit.  97.07.05: not documented yet XXX: operates on DWORD only *)
@@ -317,15 +378,28 @@ IMPORT
     ProcessScopeProc* = PROCEDURE (VAR info : ProcessScopeInfo);
 
   VAR
-    GlbMod* : ARRAY OPM.MaxImports OF ModuleScope;
+    GlbMod* : ARRAY MaxImports OF ModuleScope;
     SelfName* : OPS.Name;
     topScope* : SymbolScope;
     SYSimported* : BOOLEAN;
     nofGmod* : SHORTINT;
 
   VAR (* types *)
-    undftyp-, bytetyp-, booltyp-, chartyp-, sinttyp-, inttyp-, linttyp-,
-    realtyp-, lrltyp-, settyp-, stringtyp-, niltyp-, notyp-, sysptrtyp-, proctyp-: Type;
+    undftyp- : Type;
+    bytetyp- : Type;
+    booltyp- : Type;
+    chartyp- : Type;
+    sinttyp- : Type;
+    inttyp- : Type;
+    linttyp- : Type;
+    realtyp- : Type;
+    lrltyp- : Type;
+    settyp- : Type;
+    stringtyp- : Type;
+    niltyp- : Type;
+    notyp- : Type;
+    sysptrtyp- : Type;
+    proctyp-: Type;
 
   VAR
     nofTD : INTEGER;
@@ -349,7 +423,9 @@ IMPORT
                               VAR nofGenNames : INTEGER) : SymbolName;
     VAR
       name, symName : SymbolName;
-      i, j, len : LONGINT;
+      i : LONGINT;
+      j : LONGINT;
+      len : LONGINT;
       ch : CHAR;
       number : OPS.Name;
 
@@ -364,13 +440,15 @@ IMPORT
         ch : CHAR;
     BEGIN
       val := nofGenNames;
-      INC(nofGenNames); i := 0;
+      INC(nofGenNames);
+      i := 0;
       REPEAT
         ch := CHR(val MOD 10 + ORD('0'));
         val := val DIV 10;
         temp[i] := ch;
         INC(i);
       UNTIL (val <= 0) OR (i >= LEN(temp) - 1);
+
       dest[i] := 0X;
       len := i;
       j := 0;
@@ -393,6 +471,7 @@ IMPORT
         ch := prefix[i];
         name[1 + i] := ch;
       UNTIL ch = 0X;
+
       j := 0;
       REPEAT
         ch := number[j];
@@ -466,6 +545,7 @@ IMPORT
   END InitBasicSymbol;
 
   (*** Type Constructors ***)
+
   PROCEDURE NewBasicType*() : Type;
     VAR
       t : Type;
@@ -690,12 +770,15 @@ IMPORT
     END;
   END SetTD;
 
-  PROCEDURE  HasTD*(type : Type) : BOOLEAN ; (* TRUE => type has a TD; FALSE => no TD associated *)
+  (* post: result = TRUE => type has a TD; FALSE => no TD associated *)
+  PROCEDURE HasTD*(type : Type) : BOOLEAN;
   BEGIN
-    (* named global exported static arrays are given type descriptors because an importing module
-      can declare a pointer to that array type -- at which point a TD is required.  It's best to err on the side
-      of not needing a TD and creating one rather than needing one and creating it in many different modules.
-    *)
+    (* named global exported static arrays are given type descriptors
+     * because an importing module can declare a pointer to that array
+     * type -- at which point a TD is required.  It's best to err on
+     * the side of not needing a TD and creating one rather than needing
+     * one and creating it in many different modules.
+     *)
     RETURN ((type.form = record) OR
             (type.form = pointer) &
             (type(Pointer).to.form IN {record, dynarr, array}) OR
@@ -710,7 +793,10 @@ IMPORT
     works with records, pointer to records & pointer to dynarr
   *)
   PROCEDURE GetTD*(type : Type) : SymbolTypeDesc;
-    VAR tf : SHORTINT; to : Type; td : SymbolTypeDesc;
+    VAR
+      tf : SHORTINT;
+      to : Type;
+      td : SymbolTypeDesc;
 
     PROCEDURE GlobalScope() : SymbolScope;
       VAR
@@ -747,6 +833,7 @@ IMPORT
         ELSE
           td := NewDynArrayTD(describedType);
         END;
+
         describedType(Array).td := td;
         element := describedType;
 
@@ -775,7 +862,6 @@ IMPORT
       | pointer:
         to := type(Pointer).to;
         tf := to.form;
-
         CASE tf OF
         | record:
           td := to(Record).td;
@@ -790,8 +876,8 @@ IMPORT
       END;
 
       IF td = NIL THEN
-        ASSERT(type.form IN {record, array}, 142);
-        ASSERT(type.mno = 0, 143);
+        ASSERT(type.form IN {record, array}, 1042);
+        ASSERT(type.mno = 0, 1043);
         td := NewTypeDesc(type);
       END;
 
@@ -1009,13 +1095,14 @@ IMPORT
   END InsertScope;
 
   (* InsertImport: attempts to insert 'sym' into 'scope'
-    If 'sym' is not found in scope, it is inserted.
-    If 'sym' already exists in 'scope' then it is not inserted
-    and the original symbol is returned in 'old'.
-
-    Symbols inserted in this fashion are kept in declaration order.
-    This should not be a problem because they are all dealing with imported symbols
-    and as such are not important to the current compilation.
+   * If 'sym' is not found in scope, it is inserted.
+   * If 'sym' already exists in 'scope' then it is not inserted
+   * and the original symbol is returned in 'old'.
+   *
+   * Symbols inserted in this fashion are kept in declaration order.
+   * This should not be a problem because they are all dealing with
+   * imported symbols and as such are not important to the current
+   * compilation.
   *)
   PROCEDURE InsertImport*(scope : SymbolScope; sym : Symbol; VAR old : Symbol);
     VAR
@@ -1160,6 +1247,8 @@ IMPORT
     END;
   END PreviousScope;
 
+  (** List Handling *)
+
   PROCEDURE FirstScopeVar*(scope : SymbolScope) : Symbol;
   BEGIN
     IF scope # NIL THEN
@@ -1255,6 +1344,8 @@ IMPORT
     cur.link := next;
   END LinkSymbol;
 
+  (** Symbol Lookup *)
+
   PROCEDURE FindInThisScope*(scope : SymbolScope; name : ARRAY OF CHAR) : Symbol;
     VAR
       sym : Symbol;
@@ -1286,12 +1377,13 @@ IMPORT
     RETURN sym;
   END FindInOpenScopes;
 
-  (* FindField: looks for a field of name 'name' in the 'rec' and its ancestors
-    pre: ASCIIZ(name)
-    pre: (rec = NIL) OR defined(rec^)
-    post: result = NIL -> no field found
-    post: result # NIL -> defined(result^)
-  *)
+  (* FindField:
+   * looks for a field of name 'name' in the 'rec' and its ancestors
+   * pre: ASCIIZ(name)
+   * pre: (rec = NIL) OR defined(rec^)
+   * post: result = NIL -> no field found
+   * post: result # NIL -> defined(result^)
+   *)
   PROCEDURE FindField*(name : ARRAY OF CHAR; rec : Record) : Symbol;
     VAR
       sym : Symbol;
@@ -1301,8 +1393,9 @@ IMPORT
         sym := FindInThisScope(rec.scope, name);
         rec := rec.ancestor;
       UNTIL (rec = NIL) OR (sym # NIL);
-      ASSERT((rec = NIL) OR (sym # NIL));  (* if scopes have not run out,
-                                            * a symbol must have been found *)
+
+      (* if scopes have not run out, a symbol must have been found *)
+      ASSERT((rec = NIL) OR (sym # NIL));
       RETURN sym;
     ELSE
       RETURN NIL;
@@ -1322,7 +1415,8 @@ IMPORT
     sym := FindInThisScope(module.scope, name);
     IF (sym # NIL) & (sym.vis IN {export, exportR}) THEN
       INCL(sym.flags, used);
-      td := GetTD(sym.type);  (* Ensure type descriptors for types also get imported. *)
+      td := GetTD(sym.type);          (* Ensure type descriptors for
+                                       * types also get imported. *)
       RETURN sym;
     ELSE
       RETURN NIL;
@@ -1468,7 +1562,8 @@ IMPORT
   END GetFullProcedureName;
 
   (* returns element type of array and dynamic arrays;
-   * element type is when the type form is not the same as the input type form
+   * element type is when the type form is not the same as
+   * the input type form
    *)
   PROCEDURE ElemType*(arr : Array) : Type;
     VAR
@@ -1627,7 +1722,9 @@ IMPORT
     mod.module := sym;
   END SetModuleSymbol;
 
-  (* Number of "open" dimensions of `type'.  Zero if `type' isn't an open array (or no array at all).  *)
+  (* Number of "open" dimensions of `type'.
+   * Zero if `type' isn't an open array (or no array at all).
+   *)
   PROCEDURE OpenDimensions*(type: Type): INTEGER;
   BEGIN
     IF type.form # dynarr THEN
