@@ -188,9 +188,15 @@ IMPORT
   END CodeSeg;
 
   PROCEDURE AddModule(mod : Module);
-    VAR m : Module;
-  BEGIN (* inv: modules # NIL *) m := modules; WHILE m.next # NIL DO m := m.next; END;
-    mod.next := NIL; m.next := mod;
+    VAR
+      m : Module;
+  BEGIN
+    m := modules;               (* inv: modules # NIL *)
+    WHILE m.next # NIL DO
+      m := m.next;
+    END;
+    mod.next := NIL;
+    m.next := mod;
   END AddModule;
 
   PROCEDURE Fixup(target, fixkind, dest : LONGINT);
@@ -291,9 +297,16 @@ IMPORT
     (* post: TRUE -> cyclic import (name is on list of modules which have been loaded already) *)
     (* post: FALSE -> not a cyclic import *)
     PROCEDURE CyclicImport(name : Name) : BOOLEAN;
-      VAR mod : Module;
-    BEGIN mod := modules; WHILE (mod # NIL) & (mod.name^ # name^) DO mod := mod.next; END;
-      IF mod # NIL THEN res := cyclicImport; END;
+      VAR
+        mod : Module;
+    BEGIN
+      mod := modules;
+      WHILE (mod # NIL) & (mod.name^ # name^) DO
+        mod := mod.next;
+      END;
+      IF mod # NIL THEN
+        res := cyclicImport;
+      END;
       RETURN res = cyclicImport;
     END CyclicImport;
 
@@ -1046,9 +1059,12 @@ IMPORT
         res := done
       END ;
       m1 := modules;  (* recursive call may change list structure *)
-      IF m1 = m THEN modules := m.next
+      IF m1 = m THEN
+        modules := m.next
       ELSE
-        WHILE m1.next # m DO m1 := m1.next END ;
+        WHILE m1.next # m DO
+          m1 := m1.next
+        END;
         m1.next := m.next
       END;
       Kernel.mlist := SYSTEM.VAL(ADDRESS, modules);
@@ -1056,11 +1072,18 @@ IMPORT
   END Free;
 
   PROCEDURE SetFinalize*(name : ARRAY OF CHAR; finalize : PROCEDURE) : BOOLEAN;
-    VAR mod : Module;
-  BEGIN mod := modules;
+    VAR
+      mod : Module;
+  BEGIN
+    mod := modules;
     LOOP
-      IF mod = NIL THEN RETURN FALSE; END;
-      IF mod.name^ = name THEN mod.finalize := finalize; RETURN TRUE; END;
+      IF mod = NIL THEN
+        RETURN FALSE;
+      END;
+      IF mod.name^ = name THEN
+        mod.finalize := finalize;
+        RETURN TRUE;
+      END;
       mod := mod.next;
     END;
   END SetFinalize;

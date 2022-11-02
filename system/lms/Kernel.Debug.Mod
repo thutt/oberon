@@ -771,7 +771,9 @@
 
 
   PROCEDURE Available*() : LONGINT;
-    VAR i, avail, blockSize : LONGINT; ptr : ADDRESS;
+    VAR
+      i, avail, blockSize : LONGINT;
+      ptr : ADDRESS;
   BEGIN
     avail := 0; i := hmHeapChains;
     WHILE i >= 0 DO
@@ -788,7 +790,9 @@
 
 
   PROCEDURE LargestAvailable*() : LONGINT;
-    VAR i, blockSize : LONGINT; ptr : ADDRESS;
+    VAR
+      i, blockSize : LONGINT;
+      ptr : ADDRESS;
   BEGIN
     i := hmHeapChains;
     WHILE (i >= 0) & (heap.blocks[i] = 0) DO
@@ -813,7 +817,9 @@
 
   (* Insert a free block at adr (adr points to tag) into the list for size *)
   PROCEDURE Insert(adr : ADDRESS; size : LONGINT);
-    VAR i : INTEGER; ptr : ADDRESS;
+    VAR
+      i : INTEGER;
+      ptr : ADDRESS;
   BEGIN
     i := min((size DIV hmBlockSize) - 1, hmHeapChains);
     ptr := adr;
