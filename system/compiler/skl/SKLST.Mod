@@ -40,9 +40,9 @@ IMPORT
     pointer*   = 13;
     procedure* = 14;
     array*     = 15;
-    dynarr*    = 16;
-    record*    = 17;
-    openarr*   = 18;
+    openarr*   = 16;
+    dynarr*    = 17;
+    record*    = 18;
     nofTypes*  = 19;
 
     IntSet* = {sint..lint};
@@ -73,13 +73,16 @@ IMPORT
       16..27 for Type specific use
       28..31 generic use (can be used outside of this module)
     *)
-    typFingerprintFlags = {00..05};  (* flags which are reserved for the fingerprinting mechanism (see symFingerprintFlags) *)
-    typCommonFlags = {06..17}; (* flags which are shared amongst all Type extensions *)
-    typSpecificFlags = {18..27};  (* each Type extension may use these
-                                    *  flags w/o conflicting with other Types
-                                    *)
-    typGenericFlags* = {28..31};  (* flags which can be used generically
-                                   * outside this module *)
+    typFingerprintFlags = {00..05};  (* flags which are reserved for the
+                                      * fingerprinting mechanism (see
+                                      * symFingerprintFlags) *)
+    typCommonFlags = {06..17};       (* flags which are shared amongst all Type
+                                      * extensions *)
+    typSpecificFlags = {18..27};     (* each Type extension may use these
+                                      * flags w/o conflicting with other
+                                      * Types *)
+    typGenericFlags = {28..31};      (* flags which can be used generically
+                                      * outside this module *)
     typPersistentFlags* = (typCommonFlags +
                            typSpecificFlags +
                            typGenericFlags); (* flags which will be written to Sym *)
@@ -87,7 +90,7 @@ IMPORT
   CONST (* Symbol type flags *)
     allocated* = 4;
     method* = 5;
-    
+
   TYPE
     Symbol* = POINTER TO SymbolDesc;
     SymbolScope* = POINTER TO SymbolScopeDesc;  (* scope, module *)
@@ -198,9 +201,9 @@ IMPORT
       [16..27] <=> specific symbol usage
   *)
   CONST
-    symCommonFlags* = {04..15};
+    symCommonFlags*   = {04..15};
     symSpecificFlags* = {16..27};
-    symGenericFlags* = {28..31}; (* can be used by other units freely *)
+    symGenericFlags*  = {28..31}; (* can be used by other units freely *)
 
   CONST (* common flags *)
     leaf* = 6; (* internal visibility, address not taken *)
@@ -209,9 +212,9 @@ IMPORT
 
   CONST
     (* leaf & used status are not persistent *)
-    symPersistentFlags* = ((symCommonFlags - {leaf, used, invisible}) +
-                           symSpecificFlags +
-                           symGenericFlags); (* flags which will be written to Sym *)
+    symPersistentFlags* = (symCommonFlags - {leaf, used, invisible}) +
+                          symSpecificFlags +
+                          symGenericFlags; (* flags which will be written to Sym *)
 
   TYPE
     SymbolName* = POINTER TO ARRAY OF CHAR;
@@ -297,15 +300,17 @@ IMPORT
     END;
 
   CONST (* procedure flags *)
-    body* = 16;
-    redef* = 17;
+    body*    = 16;
+    redef*   = 17;
     modinit* = 18; (* XXX document; indicates a procedure symbol is actually module init code *)
     (* XXX document intrinsic flag:
       affects symbol export qualities.  A symbol with this flag set is owned by the compiler and not a true symbol in the
       sense of code generation and address assignment.  A symbol w/ this flag should not be written to the symbol
       file or the export block of the object file
     *)
-    intrinsic* = 19; (* compiler-owned symbol; has no real address (eg: SYSTEM init code) should not be exported *)
+    intrinsic* = 19; (* compiler-owned symbol;
+                      * has no real address (eg: SYSTEM init code)
+                      * should not be exported *)
 
   TYPE
     SymbolProc* = POINTER TO SymbolProcDesc;
@@ -316,45 +321,47 @@ IMPORT
     END;
 
   CONST (* standard proc types *)
-    SPbegin* = 0;
-    absfn* = 0;
-    capfn* = 1;
-    oddfn* = 2;
-    adrfn* = 3;
-    ashfn* = 4;
-    lshfn* = 5;
-    rotfn* = 6;
-    lenfn* = 7;
-    bitfn* = 8;
-    newfn* = 9;
-    getfn* = 10;
-    putfn* = 11;
-    getrfn* = 12;
-    putrfn* = 13;
-    valfn* = 14;
-    sysnewfn* = 15;
-    movefn* = 16;
-    haltfn* = 17;
-    assertfn* = 18;
-    ordfn* = 19;
-    entierfn* = 20;
-    minfn* = 21;
-    maxfn* = 22;
-    chrfn* = 23;
-    shortfn* = 24;
-    longfn* = 25;
-    sizefn* = 26;
-    incfn* = 27;
-    decfn* = 28;
-    inclfn* = 29;
-    exclfn* = 30;
-    copyfn* = 31;
-    memrfn* = 32;
-    memwfn* = 33;
+    SPbegin*    = 0;
+    absfn*      = 0;
+    capfn*      = 1;
+    oddfn*      = 2;
+    adrfn*      = 3;
+    ashfn*      = 4;
+    lshfn*      = 5;
+    rotfn*      = 6;
+    lenfn*      = 7;
+    bitfn*      = 8;
+    newfn*      = 9;
+    getfn*      = 10;
+    putfn*      = 11;
+    getrfn*     = 12;
+    putrfn*     = 13;
+    valfn*      = 14;
+    sysnewfn*   = 15;
+    movefn*     = 16;
+    haltfn*     = 17;
+    assertfn*   = 18;
+    ordfn*      = 19;
+    entierfn*   = 20;
+    minfn*      = 21;
+    maxfn*      = 22;
+    chrfn*      = 23;
+    shortfn*    = 24;
+    longfn*     = 25;
+    sizefn*     = 26;
+    incfn*      = 27;
+    decfn*      = 28;
+    inclfn*     = 29;
+    exclfn*     = 30;
+    copyfn*     = 31;
+    memrfn*     = 32;
+    memwfn*     = 33;
     finalizefn* = 34; (* 97.07.05: not documented yet XXX *)
-    bitrfn* = 35; (* Reset Bit. 97.07.05: not documented yet XXX: operates on DWORD only *)
-    bitsfn* = 36; (* Set Bit.  97.07.05: not documented yet XXX: operates on DWORD only *)
-    SPlast* = 37;
+    bitrfn*     = 35; (* Reset Bit. 97.07.05: not documented yet
+                       * XXX: operates on DWORD only *)
+    bitsfn*     = 36; (* Set Bit.  97.07.05: not documented yet
+                       * XXX: operates on DWORD only *)
+    SPlast*     = 37;
 
   TYPE
     SymbolStdProc* = POINTER TO SymbolStdProcDesc;

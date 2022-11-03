@@ -177,7 +177,7 @@ IMPORT
           FP.FPrint(idfp, base.idfp);
         END;
 
-      | ST.dynarr:
+      | ST.dynarr, ST.openarr:
         base := type(ST.Array).of;
         FPrintId(base);
         FP.FPrint(idfp, base.idfp);
@@ -320,7 +320,7 @@ IMPORT
 
       | ST.procedure: (* used idfp as pbfp and pvfp *)
 
-      | ST.array, ST.dynarr: (* td read & fingerprinted by InSymbol *)
+      | ST.array, ST.dynarr, ST.openarr: (* td read & fingerprinted by InSymbol *)
         baseT := type(ST.Array).of;
         FPrintType(baseT);
         FP.FPrint(fpinfo.pbfp, baseT.pvfp);
@@ -874,7 +874,7 @@ IMPORT
       InType(t(ST.Pointer).to);
       t.size := OPM.PointerSize;
 
-    | sftARR, sftDARR:
+    | sftARR, sftDARR, sftOARR:
       InType(t(ST.Array).of);
       OPM.SymRInt(t(ST.Array).n);
       OPM.SymRInt(t(ST.Array).offset);
