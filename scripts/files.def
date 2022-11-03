@@ -37,7 +37,8 @@ OS=(${SKL_DIR}/system/lms/Kernel.Mod            \
     ${SKL_DIR}/system/MenuViewers.Mod           \
     ${SKL_DIR}/system/TextFrames.Mod            \
     ${SKL_DIR}/system/s3.System.Mod             \
-    ${SKL_DIR}/system/lms/KernelTD.Mod);
+    ${SKL_DIR}/system/lms/KernelTD.Mod          \
+    ${SKL_DIR}/system/Prime.Mod);
 
 
 # The SKL compiler.
