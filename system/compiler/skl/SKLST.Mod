@@ -425,6 +425,55 @@ IMPORT
     RETURN OPM.Hash(name);
   END Hash;
 
+  PROCEDURE ReverseSymbolList*(VAR head : Symbol);
+    VAR
+      p, l, h : Symbol;
+  BEGIN
+    IF head # NIL THEN
+      h := head;
+      p := h;
+      l := h.link;
+      p.link := NIL;
+
+      WHILE l # NIL DO
+        h := l;
+        l := l.link;
+        h.link := p;
+        p := h;
+      END;
+      head := h;
+    END;
+  END ReverseSymbolList;
+
+  (* if stdcall allowed on methods, make sure 'self' is passed corretly *)
+  (*
+   * 97.09.17: Parameters and local variables being stored on the same
+   * list makes the implementation of SYSTEM.STDCALL a bit more challenging.
+   * Simply reversing the list has the affect of the procedure seeming
+   * to have no parameters. Until the symbol table is redesigned to have two
+   * lists (parameters & locals) for procedure types, the compiler is stuck
+   * with this special reversal routine.
+   *)
+  PROCEDURE ReverseParmList*(proc: Procedure);
+    VAR
+      f, c, p, q : Symbol;
+  BEGIN
+    f := NIL;
+    p := NIL;
+    c := proc.parms;
+    WHILE (c # NIL) & (c.kind IN {par, varpar}) DO
+      IF f = NIL THEN
+        f := c;
+      END;
+      q := c.link;
+      c.link := p;
+      p := c;
+      c := q;
+    END;
+    f.link := c;
+    proc.parms := p;
+  END ReverseParmList;
+
   PROCEDURE MakeGeneratedName(described : Symbol;
                               prefix : ARRAY OF CHAR;
                               VAR nofGenNames : INTEGER) : SymbolName;
@@ -796,8 +845,9 @@ IMPORT
             (type.sym.mnolev = 0));
   END HasTD;
 
-  (* returns: NIL => no TD associated with type; ~NIL => type descriptor symbol
-    works with records, pointer to records & pointer to dynarr
+  (* returns: NIL => no TD associated with type;
+   * ~NIL => type descriptor symbol
+   * Works with records, pointer to records & pointer to dynarr.
   *)
   PROCEDURE GetTD*(type : Type) : SymbolTypeDesc;
     VAR
@@ -889,8 +939,8 @@ IMPORT
       END;
 
       (* inv: td # NIL *)
-      INCL(td.flags, used); (* getting a type descriptor implicitly uses it;
-                             * even if it is just created *)
+      INCL(td.flags, used); (* Getting a type descriptor implicitly uses it;
+                             * even if it is just created. *)
       RETURN td;
     ELSE
       RETURN NIL;
@@ -1045,7 +1095,7 @@ IMPORT
       curr, prev : Symbol;
   BEGIN
     len := LEN(scope.table^);
-    hash := OPM.Hash(sym.name^) MOD len;
+    hash := Hash(sym.name^) MOD len;
 
     (* Insert in alphabetical order.
      *
@@ -1087,7 +1137,9 @@ IMPORT
     sym.owner := scope;
   END InsertHash;
 
-  PROCEDURE InsertScope*(scope : SymbolScope; name : ARRAY OF CHAR; sym : Symbol);
+  PROCEDURE InsertScope*(scope : SymbolScope;
+                         name : ARRAY OF CHAR;
+                         sym : Symbol);
   BEGIN
     IF FindInThisScope(scope, name) = NIL THEN
       INCL(sym.flags, leaf);
@@ -1110,8 +1162,10 @@ IMPORT
    * This should not be a problem because they are all dealing with
    * imported symbols and as such are not important to the current
    * compilation.
-  *)
-  PROCEDURE InsertImport*(scope : SymbolScope; sym : Symbol; VAR old : Symbol);
+   *)
+  PROCEDURE InsertImport*(scope : SymbolScope;
+                          sym : Symbol;
+                          VAR old : Symbol);
     VAR
       hash, len : LONGINT;
   BEGIN
@@ -1125,25 +1179,6 @@ IMPORT
   BEGIN
     InsertScope(topScope, name, sym);
   END Insert;
-
-  PROCEDURE ReverseSymbolList*(VAR head : Symbol);
-    VAR
-      p, l, h : Symbol;
-  BEGIN
-    IF head # NIL THEN
-      h := head;
-      p := h;
-      l := h.link;
-      p.link := NIL;
-      WHILE l # NIL DO
-        h := l;
-        l := l.link;
-        h.link := p;
-        p := h;
-      END;
-      head := h;
-    END;
-  END ReverseSymbolList;
 
   PROCEDURE OpenScope(s : SymbolScope; level: SHORTINT; owner: Symbol);
   BEGIN
@@ -1296,33 +1331,6 @@ IMPORT
     END;
   END NextParm;
 
-  (* if stdcall allowed on methods, make sure 'self' is passed corretly *)
-  (*
-    97.09.17: Parameters and local variables being stored on the same list makes the implementation of
-    SYSTEM.STDCALL a bit more challenging.  Simply reversing the list has the affect of the procedure seeming
-    to have no parameters. Until the symbol table is redesigned to have two lists (parameters & locals) for procedure types,
-    the compiler is stuck with this special reversal routine.
-  *)
-  PROCEDURE ReverseParmList*(proc: Procedure);
-    VAR
-      f, c, p, q : Symbol;
-  BEGIN
-    f := NIL;
-    p := NIL;
-    c := proc.parms;
-    WHILE (c # NIL) & (c.kind IN {par, varpar}) DO
-      IF f = NIL THEN
-        f := c;
-      END;
-      q := c.link;
-      c.link := p;
-      p := c;
-      c := q;
-    END;
-    f.link := c;
-    proc.parms := p;
-  END ReverseParmList;
-
   PROCEDURE FirstField*(rec : Record) : Symbol;
   BEGIN
     RETURN rec.scope.first;
@@ -1353,21 +1361,24 @@ IMPORT
 
   (** Symbol Lookup *)
 
-  PROCEDURE FindInThisScope*(scope : SymbolScope; name : ARRAY OF CHAR) : Symbol;
+  PROCEDURE FindInThisScope*(scope : SymbolScope;
+                             name : ARRAY OF CHAR) : Symbol;
     VAR
       sym : Symbol;
       hash, len : LONGINT;
   BEGIN
     len := LEN(scope.table^);
-    hash := OPM.Hash(name) MOD len;
+    hash := Hash(name) MOD len;
     sym := scope.table[hash];
+
     WHILE (sym # NIL) & (sym.name^ # name) DO
       sym := sym.hash;
     END;
     RETURN sym;
   END FindInThisScope;
 
-  PROCEDURE FindInOpenScopes*(scope : SymbolScope; name : ARRAY OF CHAR) : Symbol;
+  PROCEDURE FindInOpenScopes*(scope : SymbolScope;
+                              name : ARRAY OF CHAR) : Symbol;
     VAR
       sym : Symbol;
   BEGIN
@@ -1379,8 +1390,9 @@ IMPORT
         scope := NIL;
       END;
     UNTIL (sym # NIL) OR (scope = NIL);
-    ASSERT((scope = NIL) OR (sym # NIL)); (* if scopes have not run out,
-                                           * a symbol must have been found *)
+    ASSERT((scope = NIL) OR (sym # NIL)); (* If scopes have not run out,
+                                           * a symbol must have been found.
+                                           *)
     RETURN sym;
   END FindInOpenScopes;
 
@@ -1401,7 +1413,7 @@ IMPORT
         rec := rec.ancestor;
       UNTIL (rec = NIL) OR (sym # NIL);
 
-      (* if scopes have not run out, a symbol must have been found *)
+      (* If scopes have not run out, a symbol must have been found. *)
       ASSERT((rec = NIL) OR (sym # NIL));
       RETURN sym;
     ELSE
@@ -1546,16 +1558,19 @@ IMPORT
       symname := sym.name;
       i := 1;
       ch := symname[0];
+
       WHILE ch # 0X DO
         name[i] := ch;
         ch := symname[i];
         INC(i);
       END;
+
       name[i] := ')';
       INC(i);
       j := 0;
       symname := proc.name;
       ch := symname[0];
+
       WHILE (ch # 0X) & (i < LEN(name) - 1) DO
         name[i] := ch;
         INC(i);
@@ -1568,9 +1583,8 @@ IMPORT
     END;
   END GetFullProcedureName;
 
-  (* returns element type of array and dynamic arrays;
-   * element type is when the type form is not the same as
-   * the input type form
+  (* Returns element type of array and dynamic arrays; element type
+   * is when the type form is not the same as the input type form.
    *)
   PROCEDURE ElemType*(arr : Array) : Type;
     VAR
@@ -1716,9 +1730,10 @@ IMPORT
     END;
   END Size;
 
-  (* TRUE => sym is a module identifier; FALSE => sym is not a module identifier
-    pre: sym # NIL
-  *)
+  (* TRUE => sym is a module identifier;
+   * FALSE => sym is not a module identifier
+   * pre: sym # NIL
+   *)
   PROCEDURE IsModule*(sym : Symbol) : BOOLEAN;
   BEGIN
     RETURN (sym.kind = xproc) & (modinit IN sym.flags);
@@ -1729,25 +1744,26 @@ IMPORT
     mod.module := sym;
   END SetModuleSymbol;
 
-  (* Number of "open" dimensions of `type'.
-   * Zero if `type' isn't an open array (or no array at all).
+  (* Number of "open" dimensions of 'type'.
+   * Zero if 'type' isn't an open array (or no array at all).
    *)
   PROCEDURE OpenDimensions*(type: Type): INTEGER;
   BEGIN
-    IF type.form # dynarr THEN
+    IF ~(type.form IN {openarr, dynarr}) THEN
       RETURN 0;
     ELSE
       RETURN OpenDimensions(type(Array).of) + 1;
     END;
   END OpenDimensions;
 
-  (* Number of dimensions of `type'.  Zero if `type' isn't an array, 1 if `type'
-     is a one-dimensioned array (of fixed size or open), increasing by 1 for
-     every nested array type.
+  (* Number of dimensions of 'type'.
+   * Zero if 'type' isn't an array, 1 if 'type'
+   * is a one-dimensioned array (of fixed size or open), increasing by 1 for
+   * every nested array type.
   *)
   PROCEDURE Dimensions*(type: Type): INTEGER;
   BEGIN
-    IF ~(type.form IN {array, dynarr}) THEN
+    IF ~(type.form IN {array, openarr, dynarr}) THEN
       RETURN 0;
     ELSE
       RETURN Dimensions(type(Array).of) + 1;
@@ -1795,7 +1811,8 @@ IMPORT
 
   PROCEDURE SymtabInit;
     VAR
-      c, stdcall : Symbol;
+      cdecl : Symbol;
+      stdcall : Symbol;
   BEGIN
     MakeIntrinsicType(undftyp, undef);
     MakeIntrinsicType(notyp, void);
@@ -1825,7 +1842,7 @@ IMPORT
     EnterProc("BITR", bitrfn, notyp);
     EnterProc("BITS", bitsfn, notyp);
 
-    c := EnterIntConst("C", OPM.CCallVal);
+    cdecl := EnterIntConst("C", OPM.CCallVal);
     stdcall := EnterIntConst("STDCALL", OPM.StdCallVal);
 
     sysScope := topScope;
@@ -1844,7 +1861,7 @@ IMPORT
     EnterTyp("SET", set, OPM.SetSize, settyp);
 
     (* init things which need a real type which are in the SYSTEM unit *)
-    c.type := inttyp;
+    cdecl.type := inttyp;
     stdcall.type := inttyp;
 
     EnterBoolConst("FALSE", OPM.FalseVal);
