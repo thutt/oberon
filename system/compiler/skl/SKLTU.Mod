@@ -46,10 +46,10 @@ IMPORT
 
    BEGIN
      rec := type(ST.Record);
-     IF rec.nofmeth = -1 THEN
+     IF rec.nofmeth = MIN(LONGINT) THEN
        ASSERT(~(ST.methodcounted IN rec.flags));
-       (* nofmeth = -1 => ~(methodcounted in flags) *)
-       (* ~(~(methodcounted in flags) => nofmeth = -1)  *)
+       (* nofmeth = MIN(LONGINT) => ~(methodcounted in flags) *)
+       (* ~(~(methodcounted in flags) => nofmeth = MIN(LONGINT))  *)
 
        rec.nofmeth := 0;
        ancestor := rec.ancestor;

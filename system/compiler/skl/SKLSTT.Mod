@@ -494,7 +494,7 @@ IMPORT
     t.ancestor := NIL;
     t.scope := NIL;
     t.td := NIL;
-    t.nofmeth := -1; (* methods not counted yet *)
+    t.nofmeth := MIN(LONGINT); (* methods not counted yet *)
     t.align := 0;
     t.extlev := 0;
     RETURN t;

@@ -58,38 +58,34 @@ IMPORT
   CONST
     FPrintSet* = {0..3}; (* flags reserved for fingerprinting *)
 
-  CONST (* fingerprinting flags; used in Type & Symbol *)
-    pbused* = 0;
-    pvused* = 1;
+  CONST (* Fingerprinting Flags; used in Type & Symbol *)
+    pbused*    = 0;
+    pvused*    = 1;
     typfpdone* = 2;
-    idfpdone* = 3;
-    idfpresv0 = 4;
-    idfpresv1 = 5; (* reserved fingerprint slots *)
+    idfpdone*  = 3;
+    idfpresv0  = 4;
+    idfpresv1  = 5; (* reserved fingerprint slots *)
 
   CONST
-    (* type flags XXX document changes to type flags 97.01.01
-      00..03 reserved for fingerprinting
-      04..15 reserved for common Type use
-      16..27 for Type specific use
-      28..31 generic use (can be used outside of this module)
-    *)
-    typFingerprintFlags = {00..05};  (* flags which are reserved for the
-                                      * fingerprinting mechanism (see
-                                      * symFingerprintFlags) *)
-    typCommonFlags = {06..17};       (* flags which are shared amongst all Type
-                                      * extensions *)
-    typSpecificFlags = {18..27};     (* each Type extension may use these
+    typFingerprintFlags = {00..05};  (* Flags which are reserved for the
+                                      * fingerprinting mechanism.
+                                      * See:
+                                      *   'Fingerprinting Flags'
+                                      *   symFingerprintFlags). *)
+    typCommonFlags = {06..17};       (* Flags which are shared amongst all
+                                      * Type extensions. *)
+    typSpecificFlags = {18..27};     (* Each Type extension may use these
                                       * flags w/o conflicting with other
-                                      * Types *)
-    typGenericFlags = {28..31};      (* flags which can be used generically
-                                      * outside this module *)
+                                      * Types. *)
+    typGenericFlags = {28..31};      (* Flags which can be used generically
+                                      * outside this module. *)
     typPersistentFlags* = (typCommonFlags +
                            typSpecificFlags +
                            typGenericFlags); (* flags which will be written to Sym *)
 
   CONST (* Symbol type flags *)
-    allocated* = 4;
-    method* = 5;
+    allocated* = 6;  (* indicates if a type has been sized,
+                      * fields allocated offsets & methods counted *)
 
   TYPE
     Symbol* = POINTER TO SymbolDesc;
@@ -107,7 +103,9 @@ IMPORT
     END;
 
   CONST
-    typDynArrParm* = 16; (* dynamic array type a parameter, not heap-based; size calculated diferently *)
+    typDynArrParm* = 16; (* Dynamic array type a parameter, not heap-based;
+                          * size calculated diferently.
+                          * (openarr in GSA compiler) *)
 
   TYPE
     Array* = POINTER TO ArrayDesc;
@@ -176,15 +174,16 @@ IMPORT
     fwdproc*    = 6;
     lproc*      = 7;
     xproc*      = 8;
-    cproc*      = 9;            (* code procedure *)
-    iproc*      = 10;           (* interrupt procedure *)
+    cproc*      = 9;   (* Code PROCEDURE *)
+    iproc*      = 10;  (* Interrupt PROCEDURE *)
     tproc*      = 11;
     field*      = 12;
     type*       = 13;
-    module*     = 14; (* can only be a SymbolScope *)
+    module*     = 14;  (* Can only be a SymbolScope. *)
     scope*      = 15;
     darrdesc*   = 16;
-    arrdesc*    = 17; (* array descriptor for 'pointer to static array' only *)
+    arrdesc*    = 17;  (* Array descriptor for
+                        * 'pointer to static array' only. *)
     recdesc*    = 18;
     nofSymbols* = 19;
 
@@ -195,26 +194,32 @@ IMPORT
   CONST (* fingerprint history *)
     inserted* = 1; same* = 2; pbmodified* = 3; pvmodified* = 4; removed* = 5; inconsistent* = 6;
 
-  (* symbol flags  XXX document change in the flag ranges
-      [00..03] reserved for fingerprinting
-      [04..15] <=> basic symbol usage
-      [16..27] <=> specific symbol usage
-  *)
   CONST
-    symCommonFlags*   = {04..15};
-    symSpecificFlags* = {16..27};
-    symGenericFlags*  = {28..31}; (* can be used by other units freely *)
+    symFingerprintFlags* = {0..5};   (* Flags which are reserved for the
+                                      * fingerprinting mechanism
+                                      * See:
+                                      *   'Fingerprinting Flags'
+                                      *   typFingerprintFlags. *)
+    symCommonFlags*      = {06..17}; (* Flags which are shared amongst
+                                      * all Symbol extensions *)
+    symSpecificFlags*    = {18..27}; (* Each Symbol extension may use these
+                                      * flags w/o conflicting with
+                                      * other Symbols. *)
+    symGenericFlags*     = {28..31}; (* Can be used by other modules freely. *)
 
   CONST (* common flags *)
-    leaf* = 6; (* internal visibility, address not taken *)
-    used* = 7; (* indicates a symbol has been looked up in the symbol table *)
-    invisible* = 8; (* symbol is imported but not visible to the importing unit (hidden pointers, procedures & methods) *)
+    leaf*      = 6; (* Internal visibility, address not taken. *)
+    used*      = 7; (* Indicates a symbol has been looked up
+                     * in the symbol table. *)
+    invisible* = 8; (* symbol is imported but not visible to the importing unit
+                     * (hidden pointers, procedures & methods). *)
 
   CONST
     (* leaf & used status are not persistent *)
     symPersistentFlags* = (symCommonFlags - {leaf, used, invisible}) +
                           symSpecificFlags +
-                          symGenericFlags; (* flags which will be written to Sym *)
+                          symGenericFlags; (* Flags which will be written
+                                            * to '.Sym'. *)
 
   TYPE
     SymbolName* = POINTER TO ARRAY OF CHAR;
@@ -283,7 +288,7 @@ IMPORT
     END;
 
   CONST (* SymbolTypeDesc flags *)
-    tdinit* = 16; (* type descriptor already appears on the init-td list *)
+    tdinit* = 18; (* Type descriptor already appears on the init-td list. *)
 
   TYPE
     SymbolTypeDescDesc* = RECORD (SymbolDesc)
@@ -300,17 +305,19 @@ IMPORT
     END;
 
   CONST (* procedure flags *)
-    body*    = 16;
-    redef*   = 17;
-    modinit* = 18; (* XXX document; indicates a procedure symbol is actually module init code *)
-    (* XXX document intrinsic flag:
-      affects symbol export qualities.  A symbol with this flag set is owned by the compiler and not a true symbol in the
-      sense of code generation and address assignment.  A symbol w/ this flag should not be written to the symbol
-      file or the export block of the object file
-    *)
-    intrinsic* = 19; (* compiler-owned symbol;
-                      * has no real address (eg: SYSTEM init code)
-                      * should not be exported *)
+    body*    = 18;
+    redef*   = 19;
+    modinit* = 20; (* Procedure symbol is actually module init code. *)
+    (* intrinsic:
+     *
+     * Affects symbol export qualities.
+     * A symbol with this flag set is owned by the compiler and not a true
+     * symbol in the sense of code generation and address assignment.  A symbol
+     * with this flag should not be written to the symbol file or the export
+     * block of the object file.
+     *)
+    intrinsic* = 21; (* Compiler-owned symbol; has no real address
+                      * (eg: SYSTEM init code) and must not be exported. *)
 
   TYPE
     SymbolProc* = POINTER TO SymbolProcDesc;
@@ -356,11 +363,9 @@ IMPORT
     copyfn*     = 31;
     memrfn*     = 32;
     memwfn*     = 33;
-    finalizefn* = 34; (* 97.07.05: not documented yet XXX *)
-    bitrfn*     = 35; (* Reset Bit. 97.07.05: not documented yet
-                       * XXX: operates on DWORD only *)
-    bitsfn*     = 36; (* Set Bit.  97.07.05: not documented yet
-                       * XXX: operates on DWORD only *)
+    finalizefn* = 34; (* Finalization function. *)
+    bitrfn*     = 35; (* Bit reset. *)
+    bitsfn*     = 36; (* Bit set. *)
     SPlast*     = 37;
 
   TYPE
@@ -643,7 +648,7 @@ IMPORT
     t.ancestor := NIL;
     t.scope := NIL;
     t.td := NIL;
-    t.nofmeth := -1; (* methods not counted yet *)
+    t.nofmeth := MIN(LONGINT); (* methods not counted yet *)
     t.align := 0;
     t.extlev := 0;
     RETURN t;
@@ -1897,7 +1902,6 @@ BEGIN
   ASSERT(intrinsic IN symSpecificFlags, 133);
   ASSERT(redef IN symSpecificFlags, 134);
   ASSERT(~(allocated IN FPrintSet), 135);
-  ASSERT(~(method IN FPrintSet), 136);
   ASSERT(nofTypes <= MAX(SET), 137);
   ASSERT(nofSymbols <= MAX(SET), 138);
 
