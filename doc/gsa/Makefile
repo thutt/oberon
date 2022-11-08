@@ -98,7 +98,8 @@ gsa-mp:		$(GSAMP:.mp=.1)
 $(GSAMP:.mp=.1):	$(SENTINEL)
 
 $(INST_INCLUDE):	$(SENTINEL) gsa-instruction.template
-	echo "$@ has been built";
+	$(PROLOG);				\
+	true;
 
 $(SENTINEL):					\
 		gsa-instruction.template	\

@@ -1,0 +1,216 @@
+\section{Heap Block Descriptors}\label{memlay:block-descriptors}
+
+Each dynamically allocated memory block returned by the memory
+allocator will have a four byte \emph{tag} at offset -4 describing the
+contents of the block.  This block tag is used by the memory
+allocation system and is part of the administrative overhead.
+
+The tag, which is a pointer to a type descriptor in many contexts,
+reserves the upper two bits for the garbage collector, effectively
+limiting the Oberon heap size to $2^{30}$ bytes
+(1~gigabyte)\footnote{In practical terms, the LMS implementation uses
+  identity mapped memory on Linux, and the kernel fails to map if more
+  than 128 megabytes is requested.}.
+
+\subsection{Block Tag Validity}
+
+Normally a block's tag has invariant properties, but during garbage
+collection, the block tag of dynamically allocated \texttt{RECORD}
+types is overwritten with an index into the pointer table in the type
+descriptor of the block.  The overwriting of an actual block tag --
+which is nominally a pointer to a type descriptor -- violates the
+invariants, and so a method to determine if a block tag is really a
+tag, or an index into the pointer table is employed.
+
+The highest two bits of the block tag are used to determine the
+semantics of the block tag, as shown in
+\figref{memlay:block-tag-upper-bits}.
+
+\begin{figure}[h]
+  \begin{eqnarray}
+    \neg (31 \in \textrm{\texttt{tag}}) \wedge \neg (30 \in \textrm{\texttt{tag}})  & \implies & \textrm{offset into pointer table} \nonumber \\
+    \neg (31 \in \textrm{\texttt{tag}}) \wedge (30 \in \textrm{\texttt{tag}}) & \implies & \textrm{normal tag} \nonumber \\
+    (31 \in \textrm{\texttt{tag}}) \wedge \neg (30 \in \textrm{\texttt{tag}}) & \implies & \textrm{invalid} \nonumber \\
+    (31 \in \textrm{\texttt{tag}}) \wedge (30 \in \textrm{\texttt{tag}})  & \implies & \textrm{final offset into pointer table} \nonumber
+  \end{eqnarray}
+  \caption{Determining semantics of a block tag}
+  \label{memlay:block-tag-upper-bits}
+\end{figure}
+
+\subsection{Heap Block Kind}
+
+The low nibble of the block tag contains part of the information
+necessary for the \gc to perform its work; these low bits must be
+masked off before the tag is used\footnote{LMS implementation ensures
+  that all dyanamically allocated blocks are aligned to sixteen bytes,
+  therefore the low-order four bits need not be masked off before
+  using a normal pointer, but they must be masked when dealing with
+  type descriptors contained in block tags.}.
+
+\Figref{memlay:block-tag-values} describes the meanings of the low
+four bits of the tag.  Do not change the value of these flags without
+updating both the \gc in Kernel.Mod and the bootstrap loader.
+
+\begin{figure}
+  \begin{tabularx}{\linewidth}{|c|l|c|X|}
+    \hline \S &  Mnemonic & Pattern  &    Description\\
+
+    \hline \xref{memlay:descriptors-kind-blkdesc} &
+    \texttt{BlkDesc} & 0 0 0 0 & The tag is the address of a type
+    descriptor. \\
+
+    \hline \xref{memlay:descriptors-kind-blkmark} &
+    \texttt{BlkMark} & 0 0 0 1 & A block marked during garbage
+    collection. \\
+
+    \hline \xref{memlay:descriptors-kind-blksyst} &
+    \texttt{BlkSyst} & 0 0 1 0 & A system block. System blocks are not garbage
+    collected. \\
+
+    \hline \xref{memlay:descriptors-kind-blkfree} &
+    \texttt{BlkFree} & 0 1 0 0 & An unallocated memory block. \\
+
+    \hline \xref{memlay:descriptors-kind-blkaray}  &
+    \texttt{BlkAray}  & 1 0 0 0 & A dynamically allocated array block. \\
+    \hline
+  \end{tabularx}
+  \caption{Block Tag Bit Values} \label{memlay:block-tag-values}
+\end{figure}
+
+\subsubsection{\texttt{BlkDesc}}\label{memlay:descriptors-kind-blkdesc}
+
+A block tag that does not have any of \{ \texttt{BlkSyst},
+\texttt{BlkFree}, \texttt{BlkAray} \} set references the type
+descriptor for the associated heap block (which is a \texttt{RECORD}).
+
+\begin{Ventry}{Address of next block}
+\item[Size of block]
+  The size of a \texttt{BlkDesc} block is determined by inspecting the type
+  descriptor.
+
+\item[Address of next block] The address of the next block can only
+  be computed after the size of the block has been determined.
+\end{Ventry}
+
+
+\Figref{memlay:blkdesc-extract} shows how to turn the tag into the
+address of the type descriptor. See \xref{memlay:type-descriptors} for
+information on the format of these descriptors.
+
+
+\begin{figure}[h]
+$$\textrm{block tag} - \lbrace \texttt{BlkMark} \rbrace \equiv \textrm{descriptor address}$$
+  \caption{Extracting a type descriptor address from the block tag}
+  \label{memlay:blkdesc-extract}
+\end{figure}
+
+\subsubsection{\texttt{BlkMark}}\label{memlay:descriptors-kind-blkmark}
+
+The \texttt{BlkMark} bit is used only by the \gc and must be masked
+off by all other processes.  During the mark phase of garbage
+collection, all blocks which are reachable by a pointer will have this
+bit set.  During the \emph{sweep} phase, all blocks which do not have
+the bit set will be reclaimed by the heap management system.
+
+\subsubsection{\texttt{BlkSyst}}\label{memlay:descriptors-kind-blksyst}
+
+A tag marked with \texttt{BlkSyst} is a \emph{system block} and is
+always ignored by the \gc.  The invariants for tags with
+\texttt{BlkSyst} are shown in \figref{memlay:blksyst-invariants}.
+
+\begin{Ventry}{Address of next block}
+\item[Size of block]      $\textrm{tag} - \lbrace\texttt{BlkMark}, \texttt{BlkSyst}\rbrace$
+\item[Address of next block]     $\adr{tag} + \size{LONGINT} + \textrm{block size}$
+\end{Ventry}
+
+\begin{figure}[h]
+    $$(\texttt{BlkSyst} \implies \neg \texttt{BlkFree}) \wedge
+    (\texttt{BlkSyst} \implies \neg \texttt{BlkAray})$$
+  \caption{BlkSyst invariants}
+  \label{memlay:blksyst-invariants}
+\end{figure}
+
+\subsubsection{\texttt{BlkFree}}\label{memlay:descriptors-kind-blkfree}
+
+A tag marked with \texttt{BlkFree} indicates that the accociated
+memory block is not currently allocated.
+\Figref{memlay:blkfree-invariants} shows the invariants when this bit
+in the tag.
+
+Additionally, since the memory allocation system manages unallocated
+memory blocks on one of several free block lists, a pointer to the
+next unallocated memory block (on the same list) is also stored in the
+first four bytes of the block.
+
+\begin{Ventry}{Address of next block on free list}
+\item[Size of block]      $\textrm{tag} - \lbrace\texttt{BlkMark}, \texttt{BlkFree}\rbrace$
+\item[Address of next block]  $\adr{tag} + \size{LONGINT} + \textrm{block size}$
+\item[Address of next block on free list] $\mem{\adr{tag} + \size{LONGINT}}$
+\end{Ventry}
+
+
+\begin{figure}[h]
+    $$(\texttt{BlkFree} \implies \neg \texttt{BlkSyst}) \wedge
+    (\texttt{BlkFree} \implies \neg \texttt{BlkAray})$$
+  \caption{BlkFree invariants}
+  \label{memlay:blkfree-invariants}
+\end{figure}
+
+\subsubsection{\texttt{BlkAray}}\label{memlay:descriptors-kind-blkaray}
+
+A tag can be marked with \texttt{BlkAray} in two circumstances.  The
+first is known as the \emph{external} tag, and it is set on the memory
+containing a dynamically allocated array.  The second, known as the
+\emph{internal} tag, is located four bytes before the sixteen-byte
+allocated array data.  \Figref{memlay:blkaray-invariants} shows the
+invariants when this bit in a tag.
+
+\begin{enumerate}
+\item The \emph{external} tag is part of the preamble for a
+  dynamically allocated array.  When the flags are masked off, the
+  block tag is the address of the actual dynamically allocated array
+  data.
+
+  See \xref{memlay:heap-array} for information on the internal layout
+  of these blocks.
+
+\begin{Ventry}{Address of next block}
+\item[Size of block] $\mem{\adr{tag} + 4}$
+\item[Address of next block] $\adr{tag} + \textrm{size of block}$
+\item[Address of array]    $\textrm{tag} - \lbrace \texttt{BlkMark},
+  \texttt{BlkAray} \rbrace$
+\end{Ventry}
+
+\item The \emph{internal} tag is present four bytes before the actual
+  data of a dynamically allocated array.  This usage is mainly a
+  simplification for the mark phase.  It enables easy detection of
+  array blocks so that the external tag can be set.
+
+  Note, however, this usage also violates the rule in
+  \xref{memlay:descriptors-kind-blkdesc} that indicates unmarked type
+  descriptor pointers must not have any additional bits set so that no
+  masking has to be done prior to the usage of the descriptor.  This
+  deviation is deemed an acceptable exception to the rule since the
+  descriptor for dynamically allocated arrays is only used by the heap
+  allocator and the garbage collector; all uses of this descriptor are
+  handled in the Kernel module and the extra overhead of masking out
+  the flags will have little runtime overhead.
+
+\begin{Ventry}{Address of next block}
+\item[Size of block]      not applicable
+\item[Address of next block]     not applicable
+\item[Address of array]    not applicable
+\end{Ventry}
+\end{enumerate}
+
+Since no pointers in the program will actually point to the preamble
+of a dynamically allocated array, and array type descriptors are only
+used by the heap allocator and the garbage collector, there is no
+ambiguity between the two distinct uses of the same bit.
+
+\begin{figure}[h]
+    $$(\texttt{BlkAray} \implies \neg \texttt{BlkSyst}) \wedge
+    (\texttt{BlkAray} \implies \neg \texttt{BlkFree})$$ \\
+  \caption{BlkAray invariants}
+  \label{memlay:blkaray-invariants}
+\end{figure}

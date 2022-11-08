@@ -1,0 +1,106 @@
+\newcommand{\implies} {\ensuremath{\rightarrow}}
+
+\newenvironment{Ventry}[1]
+{\begin{list}{}{\renewcommand{\makelabel}[1]{\textbf{\textsf{##1:}}\hfil}
+      \settowidth{\labelwidth}{\textbf{\textsf{#1:}}}
+      \setlength{\leftmargin}{\labelwidth+\labelsep}}}
+  {\end{list}}
+
+\newenvironment{TDfields}[1]
+{\begin{list}{}{\renewcommand{\makelabel}[1]{\textbf{\textsf{##1:}}\hfil}
+      \settowidth{\labelwidth}{\textbf{\textsf{#1:}}}
+      \setlength{\leftmargin}{\labelwidth+\labelsep}}}
+  {\end{list}}
+
+\newcommand{\xref}[1] {\S\ref{#1}}
+\newcommand{\tabref}[1] {table~\ref{#1}\xspace}
+\newcommand{\Tabref}[1] {Table~\ref{#1}\xspace}
+\newcommand{\figref}[1] {figure~\ref{#1}\xspace}
+\newcommand{\Figref}[1] {Figure~\ref{#1}\xspace}
+\newcommand{\adr}[1] {\ensuremath{\texttt{ADR}(\textrm{#1})}}
+\newcommand{\size}[1]{\ensuremath{\texttt{SIZE}(\textrm{#1})}}
+\newcommand{\mem}[1]{\ensuremath{\texttt{mem}\lbrack#1\rbrack}}
+\newcommand{\setof}[1]{\ensuremath{\left\lbrace #1 \right\rbrace}}
+\newcommand{\tf}{\ensuremath{\textrm{type form}}}
+\newcommand{\chap}[1] {\chapter{#1} \label{#1}}
+
+\newcommand{\sect}[1] {\section{#1} \label{#1}}
+
+\newcommand{\subsect}[1] {\subsection{#1} \label{#1}}
+
+\newcommand{\subsubsect}[1] {\subsubsection{#1} \label{#1}}
+
+\newcommand{\pxref}[1] {\S\ref{#1}}
+
+\newcommand{\code}[1] {\texttt{#1}}
+\newcommand{\icode}[1] {\textit{#1}}
+
+\newcommand{\deref} {$\uparrow$}
+
+\newcommand{\deprecate} {\marginpar{\emph{deprecated}}}
+
+\newcommand{\nil} {\code{NIL}\xspace}
+
+\newcommand{\floor}[1] {$\lfloor #1 \rfloor$}
+
+\newcommand{\commentary}[1] {\begin{small}#1\end{small}}
+
+\newcommand{\implementation}[1]
+{
+  \fbox{\parbox{.75\linewidth}{\emph{Implementation: }#1}}
+  }
+
+\newcommand{\ASTBLOCK}[1] { % used to enclose an AST description
+  \small
+  \begin{center}
+    #1
+  \end{center}
+  \normalsize
+  }
+
+\newcommand{\AST}[2] {
+  \begin{bundle}{#1}
+    #2
+  \end{bundle}
+} % used for describing syntax trees
+
+
+\newcommand{\ASTNODE}[1]{\chunk{#1}}
+
+%{$\stackrel{\textrm{\small[#2 #3]\normalsize}}{#1}$}
+\newcommand{\ASTLABEL}[5] % {node}{class}{subclass}{type}{field}
+{ \footnotesize
+  \begin{tabular}{|lr|}
+    \hline #1 & \tiny $\stackrel{#2}{#3}$ \footnotesize \\
+    \scriptsize #4 & #5 \\
+    \hline
+  \end{tabular}
+  \normalsize
+}
+
+\newcommand{\typeguard}[2] {#1 \{ #2  \}}
+
+\newcommand{\concept}[1] {\emph{#1}}
+
+\newcommand{\noteq} {\#}
+\newcommand{\lessthan} {$<$}
+\newcommand{\greaterthan} {$>$}
+\newcommand{\lesseq} {$<=$}
+\newcommand{\greatereq} {$>=$}
+\newcommand{\gc} {garbage collector\xspace}
+
+\newcommand{\subscript}[1] {$_{#1}$}
+
+\newcommand{\todo}[1] {\marginpar{#1}}
+\newcommand{\OR} {$\mid$\ }% EBNF `or' symbol
+
+\newcommand{\invariant}[1]{\textbf{invariant:} \icode{#1} \\}
+
+\newcommand{\reqGC}[1] {\begin{Ventry}{Required GC}\item[Required GC] #1\end{Ventry}}
+\newcommand{\len}[2] {\texttt{LEN(#1, #2)}}
+\newcommand{\sba} {\emph{set by allocator}\xspace}
+\newcommand{\rfgc}[1] {\emph{reserved for GC} (#1)\xspace}
+\newcommand{\resv} {\emph{reserved}\xspace}
+\newcommand{\elsize} {\emph{element size}\xspace}
+\newcommand{\unknown} {\rule[2pt]{1mm}{.5pt} \emph{unknown} \rule[2pt]{1mm}{.5pt}}
+\newcommand{\etf} {\emph{element type form}\xspace}

@@ -226,6 +226,13 @@ The files contained here are provided under the corresponding software license.
   doc/gsa/gsa-value-numbering.tex
   doc/gsa/gsa-variables.tex
   doc/gsa/gsa.tex
+  doc/memory/Makefile
+  doc/memory/blockdesc.tex
+  doc/memory/gc.tex
+  doc/memory/introduction.tex
+  doc/memory/macros.tex
+  doc/memory/memory.tex
+  doc/memory/typedesc.tex
   doc/module/Makefile
   doc/module/environment.tex
   doc/module/getopt.tex
