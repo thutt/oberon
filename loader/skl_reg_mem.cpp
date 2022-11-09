@@ -25,7 +25,7 @@ namespace skl {
         int         Rd;
         int         Rbase;
         int         Rindex;
-        int         scale;      // { 1, 2, 4, 8 }
+        int         scale;      // { 0, 1, 2, 3 } (scale of 1, 2, 4, 8)
         const char *mne;        // XXX remove this field?
     } reg_mem_decode_t;
 
@@ -625,7 +625,7 @@ namespace skl {
         decode.Rd     = field(inst, 25, 21);
         decode.Rbase  = field(inst, 20, 16);
         decode.Rindex = field(inst, 15, 11);
-        decode.scale  = 1 << field(inst, 7, 6); // { 1, 2, 4, 8 }.
+        decode.scale  = field(inst, 7, 6); // { 0, 1, 2, 3 }.
 
         switch (opc) {
         case OPC_LB:

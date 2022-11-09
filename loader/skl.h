@@ -287,9 +287,13 @@ namespace skl
                               int         scale,
                               int         offset)
     {
-        md::uint32 scaled_index = index * static_cast<md::uint32>(scale);
+        md::uint32 scaled_index;
 
-        assert(scale == 1 || scale == 2 || scale == 4 || scale == 8);
+        assert(scale == 0 ||  /* index * 1 */
+               scale == 1 ||  /* index * 2 */
+               scale == 2 ||  /* index * 4 */
+               scale == 3);   /* index * 8 */
+        scaled_index = index << static_cast<md::uint32>(scale);
         cpu->ea = base + scaled_index  + static_cast<md::uint32>(offset);
     }
 
