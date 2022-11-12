@@ -41,7 +41,9 @@ DEBUG	:=							\
 	$(if $(filter alpha beta,$(SKL_BUILD_TYPE)),-g)
 
 OPT	:=							\
-	$(if $(filter release,$(SKL_BUILD_TYPE)),-O2,-Og)
+	$(if $(filter release,$(SKL_BUILD_TYPE)),-O3,-Og)	\
+	-fdata-sections						\
+	-ffunction-sections					\
 
 
 INCLUDE	:=					\
@@ -54,9 +56,7 @@ WARNINGS	:=				\
 	-Werror					\
 	-Wno-switch				\
 	-Wsign-conversion			\
-	-fdata-sections				\
 	-fdiagnostics-color=never		\
-	-ffunction-sections			\
 	-fno-diagnostics-show-caret
 
 
