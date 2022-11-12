@@ -107,14 +107,14 @@ namespace skl {
             case bt_clear: {
                 unsigned   mask  = ~left_shift(1, b);
                 md::uint32 nv = (v & static_cast<md::uint32>(mask));
-                write(ea, nv, sizeof(md::uint32));
+                skl::write(ea, nv, sizeof(md::uint32));
                 break;
             }
 
             case bt_set: {
                 unsigned   mask = left_shift(1, b);
                 md::uint32 nv   = (v | static_cast<md::uint32>(mask));
-                write(ea, nv, sizeof(md::uint32));
+                skl::write(ea, nv, sizeof(md::uint32));
                 break;
             }
             }

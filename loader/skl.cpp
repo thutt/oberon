@@ -187,7 +187,7 @@ namespace skl {
     classof(md::OINST inst)
     {
         int v = field(inst, 31, 26);
-        if (v > N_OPCODE_CLASSES) {
+        if (UNLIKELY(v > N_OPCODE_CLASSES)) {
             v = N_OPCODE_CLASSES; // Invalid opcode.
         }
         return static_cast<opcode_class_t>(v);
@@ -310,7 +310,7 @@ namespace skl {
             break;
         }
         }
-        if (cinst != NULL) {
+        if (LIKELY(cinst != NULL)) {
             skl::cache_instruction(cinst);
             return cinst;
         }
@@ -337,7 +337,7 @@ namespace skl {
             write_integer_register(cpu, 0, 0); // Reset R0 to zero.
 
             cpu->_instruction_count++;
-            if (cinst == NULL) {
+            if (UNLIKELY(cinst == NULL)) {
                 cinst = fetch_and_cache_instruction(cpu);
             }
 
@@ -353,7 +353,8 @@ namespace skl {
     compute_using(register_bank_t R0,
                   register_bank_t R1)
     {
-        if (R0 == RB_DOUBLE || R1 == RB_DOUBLE) {
+        bool dbl = R0 == RB_DOUBLE || R1 == RB_DOUBLE;
+        if (UNLIKELY(dbl)) {
             return RB_DOUBLE;
         }
         return RB_INTEGER;
@@ -365,7 +366,7 @@ namespace skl {
                         int              regno,
                         register_bank_t  bank)
     {
-        if (bank == RB_INTEGER) {
+        if (LIKELY(bank == RB_INTEGER)) {
             return read_integer_register(cpu, regno);
         } else {
             assert(bank == RB_DOUBLE);
@@ -378,7 +379,7 @@ namespace skl {
                        int              regno,
                        register_bank_t  bank)
     {
-        if (bank == RB_INTEGER) {
+        if (LIKELY(bank == RB_INTEGER)) {
             return read_integer_register(cpu, regno);
         } else {
             assert(bank == RB_DOUBLE);

@@ -72,10 +72,10 @@ namespace skl {
                 md::uint32 rd1;
 
                 sp1 -= static_cast<md::uint32>(sizeof(md::uint32));
-                write(sp1, r31, sizeof(md::uint32));  /* Save return address. */
+                skl::write(sp1, r31, sizeof(md::uint32));  /* Save return address. */
 
                 sp1 -= static_cast<md::uint32>(sizeof(md::uint32));
-                write(sp1, rd0, sizeof(md::uint32));   /* Save old SFP. */
+                skl::write(sp1, rd0, sizeof(md::uint32));   /* Save old SFP. */
 
                 rd1 = sp1;
 
@@ -173,7 +173,7 @@ namespace skl {
             md::uint32 sp  = read_integer_register(cpu, SP);
 
             sp -= static_cast<md::uint32>(sizeof(md::uint32));
-            write(sp, data, sizeof(md::uint32));
+            skl::write(sp, data, sizeof(md::uint32));
             write_integer_register(cpu, SP, sp);
         }
 

@@ -159,10 +159,8 @@ namespace skl {
             char sign = '+';
             int  offs;
 
-            compute_effective_address(cpu,
-                                      read_integer_register(cpu, decode.Rbase),
-                                      read_integer_register(cpu, decode.Rindex),
-                                      decode.scale, offset);
+            skl::compute_effective_address(cpu, decode.Rbase, decode.Rindex,
+                                           decode.scale, offset);
 
             offs = offset;
             if (offset < 0) {
@@ -205,10 +203,8 @@ namespace skl {
             char sign = '+';
             int  offs = offset;
 
-            compute_effective_address(cpu,
-                                      read_integer_register(cpu, decode.Rbase),
-                                      read_integer_register(cpu, decode.Rindex),
-                                      decode.scale, offset);
+            skl::compute_effective_address(cpu, decode.Rbase, decode.Rindex,
+                                           decode.scale, offset);
             value = read_integer_register(cpu, decode.Rd);
 
             if (offs < 0) {
@@ -222,7 +218,7 @@ namespace skl {
             dialog::trace("[value: %xH, ea: %xH]\n", value, cpu->ea);
 
             if (LIKELY(address_valid(cpu->ea, size))) {
-                write(cpu->ea, value, size);
+                skl::write(cpu->ea, value, size);
                 increment_pc(cpu, 2);
             } else {
                 hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
@@ -267,10 +263,8 @@ namespace skl {
             int  offs;
             char sign = '+';
 
-            compute_effective_address(cpu,
-                                      read_integer_register(cpu, decode.Rbase),
-                                      read_integer_register(cpu, decode.Rindex),
-                                      decode.scale, offset);
+            skl::compute_effective_address(cpu, decode.Rbase, decode.Rindex,
+                                           decode.scale, offset);
             offs = offset;
 
             COMPILE_TIME_ASSERT(sizeof(float) == sizeof(md::uint32) &&
@@ -318,10 +312,8 @@ namespace skl {
             double          value;
             int             offs;
 
-            compute_effective_address(cpu,
-                                      read_integer_register(cpu, decode.Rbase),
-                                      read_integer_register(cpu, decode.Rindex),
-                                      decode.scale, offset);
+            skl::compute_effective_address(cpu, decode.Rbase, decode.Rindex,
+                                           decode.scale, offset);
             offs = offset;
             if (offs < 0) {
                 sign   = '-';
@@ -344,17 +336,17 @@ namespace skl {
                 if (size == sizeof(double)) {
                     md::decompose_double(value, lo, hi);
                     COMPILE_TIME_ASSERT(skl_endian_little);
-                    write(cpu->ea, lo, sizeof(md::uint32));
-                    write(cpu->ea +
-                          static_cast<md::OADDR>(sizeof(md::uint32)),
-                          hi, sizeof(md::uint32));
+                    skl::write(cpu->ea, lo, sizeof(md::uint32));
+                    skl::write(cpu->ea +
+                               static_cast<md::OADDR>(sizeof(md::uint32)),
+                               hi, sizeof(md::uint32));
                 } else {
                     union {
                         md::uint32 i;
                         float f;
                     } v;
                     v.f = static_cast<float>(value);
-                    write(cpu->ea, v.i, sizeof(md::uint32));
+                    skl::write(cpu->ea, v.i, sizeof(md::uint32));
                 }
                 increment_pc(cpu, 2);
             } else {
@@ -596,10 +588,8 @@ namespace skl {
             char sign    = '+';
             int  loffset = offset;
 
-            compute_effective_address(cpu,
-                                      read_integer_register(cpu, decode.Rbase),
-                                      read_integer_register(cpu, decode.Rindex),
-                                      decode.scale, offset);
+            skl::compute_effective_address(cpu, decode.Rbase, decode.Rindex,
+                                           decode.scale, offset);
             write_integer_register(cpu, decode.Rd, cpu->ea);
             if (loffset < 0) {
                 sign   = '-';

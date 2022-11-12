@@ -281,13 +281,15 @@ namespace skl
 
 
     static inline void
-    compute_effective_address(cpu_t      *cpu,
-                              md::uint32  base,
-                              md::uint32  index,
-                              int         scale,
-                              int         offset)
+    compute_effective_address(cpu_t *cpu,
+                              int    Rbase,
+                              int    Rindex,
+                              int    scale,
+                              int    offset)
     {
         md::uint32 scaled_index;
+        md::uint32 base  = read_integer_register(cpu, Rbase);
+        md::uint32 index = read_integer_register(cpu, Rindex);
 
         assert(scale == 0 ||  /* index * 1 */
                scale == 1 ||  /* index * 2 */
@@ -302,7 +304,7 @@ namespace skl
     read_1(md::OADDR addr, bool sign_extend)
     {
         md::HADDR p = heap::heap_to_host(addr);
-        if (sign_extend) {
+        if (LIKELY(sign_extend)) {
             md::int8  i8  = *reinterpret_cast<md::int8 *>(p);
             md::int32 i32 = static_cast<md::int32>(i8);
             return static_cast<md::uint32>(i32);
@@ -317,7 +319,7 @@ namespace skl
     {
         md::HADDR p = heap::heap_to_host(addr);
 
-        if (sign_extend) {
+        if (LIKELY(sign_extend)) {
             md::int16 i16 = *reinterpret_cast<md::int16 *>(p);
             md::int32 i32 = static_cast<md::int32>(i16);
             return static_cast<md::uint32>(i32);
@@ -331,7 +333,7 @@ namespace skl
     read_4(md::OADDR addr, bool sign_extend)
     {
         md::HADDR p = heap::heap_to_host(addr);
-        if (sign_extend) {
+        if (LIKELY(sign_extend)) {
             /* This sign-extension only makes sense if the VM
              * supports memory access more than 32-bits. */
             md::int32 i32 = *reinterpret_cast<md::int32 *>(p);
