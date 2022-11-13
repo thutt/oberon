@@ -37,6 +37,7 @@ Usage:
           sudo apt install            \
             texlive-latex-base        \
             texlive-latex-extra       \
+            texlive-metapost          \
             texlive-science
 
 
