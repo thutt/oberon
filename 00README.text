@@ -3,12 +3,27 @@ compiler produces code for a virtual CPU, and there is an interpreter
 that executes the instructions of the virtual CPU.  It is a work in
 progress.
 
-At the time of this writing, it's not suitable for running the Oberon
-system, notably because there is no way to have any input other than
-files.  It's also probably not yet quite fast enough to run the Oberon
-System at a reasonable resolution.
+At the time of this writing, it's not suitable for running the full
+graphical ETHZ Oberon system, notably because there is no way to have
+any input other than files.  It's also probably not yet quite fast
+enough to run the Oberon System at a reasonable resolution.
 
 Usage:
+
+  o OS Support
+
+    This system is known to run on (native) Ubuntu, Raspbian and
+    Ubuntu running under WSL2 on Windows 11.
+
+    On WSL2 only, the following must be performed before moving on to
+    fulfilling the necessary prerequisites that are common to all systems:
+
+      sudo apt update
+
+      sudo apt install \
+        make
+        g++
+
 
   o Prerequisites
 
