@@ -329,11 +329,13 @@ namespace skl {
     void
     execute(cpu_t *cpu, md::OADDR addr)
     {
+        skl::instruction_t *next;
+        skl::instruction_t *cinst;
+
         cpu->pc = addr;
-
+        next    = fetch_cached_instruction(cpu);
         while (1) {
-            skl::instruction_t *cinst = fetch_cached_instruction(cpu);
-
+            cinst = next;
             write_integer_register(cpu, 0, 0); // Reset R0 to zero.
 
             cpu->_instruction_count++;
@@ -344,6 +346,14 @@ namespace skl {
             /* cinst == NIL --> Invalid opcode. */
             if (LIKELY(cinst != NULL)) {
                 cinst->interpret();
+                next = cinst->next;
+                if (UNLIKELY(next == NULL || next->pc != cpu->pc)) {
+                    next = fetch_cached_instruction(cpu);
+                    cinst->next = next;
+                }
+            } else {
+                /* Verify hardware trap raised. */
+                assert(cpu->pc == read_control_register(cpu, CR1));
             }
         }
     }

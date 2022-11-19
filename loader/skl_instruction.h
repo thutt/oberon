@@ -11,16 +11,18 @@
 namespace skl {
 
     struct instruction_t {
-        skl::cpu_t      *cpu;
-        md::OINST        inst;
-        md::OADDR        pc;
-        int              opc;
-        const char      *mne;
-        O3::decode_pc_t  decoded_pc;
+        struct instruction_t *next;
+        skl::cpu_t           *cpu;
+        md::OINST            inst;
+        md::OADDR             pc;
+        int                  opc;
+        const char           *mne;
+        O3::decode_pc_t       decoded_pc;
 
         instruction_t(skl::cpu_t *cpu_,
                       md::OINST   inst_,
                       const char **mne_) :
+            next(NULL),
             cpu(cpu_),
             inst(inst_),
             pc(cpu_->pc),
