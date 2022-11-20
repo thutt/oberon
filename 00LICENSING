@@ -491,6 +491,7 @@ The files contained here are provided under the corresponding software license.
   system/lms/Trap.Mod
   system/lms/Trap.Obj
   system/lms/Trap.Sym
+  system/lms/TrapSample.Mod
   system/lms/tests/MemoryExhaust.Mod
   system/lms/tests/MemoryExhaust.Obj
   system/lms/tests/MemoryExhaust.Sym

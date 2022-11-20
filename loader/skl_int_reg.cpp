@@ -22,9 +22,13 @@ namespace skl {
 #undef OPC
     };
 
-    typedef md::uint32 (*int_opc_fn_t)(md::uint32 l, md::uint32 r);
+    typedef md::uint32 (*int_opc_fn_t)(md::uint32 l,
+                                       md::uint32 r,
+                                       bool &fault);
 
-#define OPC(_t) static md::uint32 oper_##_t(md::uint32 l, md::uint32 r);
+#define OPC(_t) static md::uint32 oper_##_t(md::uint32 l,       \
+                                            md::uint32 r,       \
+                                            bool &fault);
 #include "skl_int_reg_opc.h"
 #undef OPC
 
@@ -57,20 +61,23 @@ namespace skl {
         virtual void interpret(void)
         {
             md::uint32       v;
-            const md::uint32 l = read_integer_register(cpu, R0);
-            const md::uint32 r = read_integer_register(cpu, R1);
+            bool             fault = false;
+            const md::uint32 l     = read_integer_register(cpu, R0);
+            const md::uint32 r     = read_integer_register(cpu, R1);
 
             dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
 
-            v = operation(l, r);
+            v = operation(l, r, fault);
             write_integer_register(cpu, Rd, v);
-            increment_pc(cpu, 1);
+            if (LIKELY(!fault)) {
+                increment_pc(cpu, 1);
+            }
         }
     };
 
 
     static md::uint32
-    oper_AND(md::uint32 l, md::uint32 r)
+    oper_AND(md::uint32 l, md::uint32 r, bool &fault)
     {
         md::uint32 v = l & r;
         dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
@@ -79,7 +86,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_ASH(md::uint32 l, md::uint32 r)
+    oper_ASH(md::uint32 l, md::uint32 r, bool &fault)
     {
         unsigned v;
 
@@ -97,7 +104,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_CMPS(md::uint32 l, md::uint32 r)
+    oper_CMPS(md::uint32 l, md::uint32 r, bool &fault)
     {
         md::uint32 v;
         md::HADDR  lp;
@@ -145,7 +152,8 @@ namespace skl {
             }
             v = create_flags(zf, sf, cf, of);
         } else {
-            v = create_flags(0, 0, 0, 0);
+            v     = create_flags(0, 0, 0, 0);
+            fault = true;
             hardware_trap(&cpu, CR2_OUT_OF_BOUNDS_READ);
         }
         dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
@@ -154,7 +162,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_BITSET(md::uint32 l, md::uint32 r)
+    oper_BITSET(md::uint32 l, md::uint32 r, bool &fault)
     {
         md::uint32 v;
 
@@ -174,7 +182,8 @@ namespace skl {
                                 sizeof(1UL) == sizeof(md::uint64));
             v = static_cast<md::uint32>(((1UL << (r - l + 1UL)) - 1UL) << l);
         } else {
-            v = ~0U;
+            v     = ~0U;
+            fault = true;
             software_trap(&cpu, 12);
         }
         dialog::trace("[%xH, %xH]    value: %xH]\n", l, r, v);
@@ -183,7 +192,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_LSH(md::uint32 l, md::uint32 r)
+    oper_LSH(md::uint32 l, md::uint32 r, bool &fault)
     {
         unsigned v;
 
@@ -199,7 +208,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_NOR(md::uint32 l, md::uint32 r)
+    oper_NOR(md::uint32 l, md::uint32 r, bool &fault)
     {
         md::uint32 v = ~(l | r);
         dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
@@ -208,7 +217,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_OR(md::uint32 l, md::uint32 r)
+    oper_OR(md::uint32 l, md::uint32 r, bool &fault)
     {
         md::uint32 v = l | r;
         dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
@@ -217,7 +226,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_ROT(md::uint32 l, md::uint32 r)
+    oper_ROT(md::uint32 l, md::uint32 r, bool &fault)
     {
         /* Rotate l by r.  If r is positive, rotate left.  If r is
          * negative, rotate right.
@@ -243,7 +252,7 @@ namespace skl {
 
 
     static md::uint32
-    oper_XOR(md::uint32 l, md::uint32 r)
+    oper_XOR(md::uint32 l, md::uint32 r, bool &fault)
     {
         md::uint32 v = l ^ r;
         dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
