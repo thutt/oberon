@@ -280,3 +280,85 @@ function skl-build ()
     (cd ${SKL_DIR:?SKL_DIR not set.};           \
      make SKL_ARCHITECTURE="${arch}" "${@}";)
 }
+
+
+# skl-list-documentation
+#
+#   Lists documentation files that can be viewed with
+#   'skl-view-documentation'.
+#
+function skl-list-documentation ()
+{
+    local path="$(skl-build-path)";
+
+    if [ -d "${path}" ] ; then
+        find "${path}" -name "*.dvi" -o -name "*.pdf";
+    else
+        echo "The build directory (${path}) does not exist; run 'make'.";
+        echo "";
+        false;
+    fi;
+}
+
+
+function skl-validate-document-viewer_ ()
+{
+    local tool="${1}";
+    if [ ! -z "${tool}" ]; then
+        local found_tool=$(which "${tool}");
+        if [ -x "${found_tool}" ] ; then
+            return 0;           # Success
+        fi;
+    fi;
+    return 1;                   # Failure
+}
+
+
+# skl-view-documentation
+#
+#   Loads an Oberon documentation file in the appropriate viewer.
+#
+function skl-view-documentation ()
+{
+    local document="${1}";
+    local tool;
+
+
+    if [ -z "${document}" ] ; then
+        echo "First argument must be full path to 'dvi' or 'pdf' file.";
+        return 1;
+    fi;
+
+    if [ ! -f "${document}" ] ; then
+        echo "Document '${document}' does not exist.";
+        return 1;
+    fi;
+
+    case "${document}" in
+        *.dvi)
+            tool="xdvi";
+            if ! skl-validate-document-viewer_ ${tool} ; then
+                echo "Cannot view; ensure 'xdvi' is installed.";
+                return 1;
+            fi;
+            ;;
+
+        *.pdf)
+            tool="xpdf";
+            if ! skl-validate-document-viewer_ ${tool} ; then
+                tool="evince";
+                if ! skl-validate-document-viewer_ ${tool} ; then
+                    echo "Cannot view; ensure either 'xpdf' or 'evince' is installed.";
+                    return 1;
+                fi;
+            fi;
+            ;;
+
+        *)
+            echo "'${document}' is not a dvi or pdf file.";
+            return 1;
+            ;;
+    esac;
+
+    "${tool}" "${document}";
+}
