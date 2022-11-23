@@ -78,8 +78,6 @@ namespace O3
     const char *module_name(module_t *m);
 
     md::OADDR lookup_command(module_t *m, const char *cmd);
-    void dump_module_list(void);
-
 
     void decode_pc__(md::OADDR pc, decode_pc_t &decode);
     static inline void

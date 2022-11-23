@@ -362,25 +362,36 @@ namespace O3
     void
     dump_module(module_t *module)
     {
-        if (config::options & config::opt_progress)
-        {
+        if ((config::options & config::opt_progress) == config::opt_progress) {
             dialog::print("module: %s, next: %p, refcnt: %d\n",
                           heap::host_address(module->name),
                           heap::host_address(module->next),
                           module->refcnt);
 
-            indent(2); print_record_elem_array_info("Exports", module->exports);
-            indent(2); print_record_elem_array_info("Privates", module->privates);
-            indent(2); print_simple_elem_array_info("Type Desc", module->tdescs);
-            indent(2); print_record_elem_array_info("Commands", module->commands);
-            indent(2); print_simple_elem_array_info("Pointers", module->pointers);
-            indent(2); print_pointer_elem_array_info("Imports", module->imports);
-            indent(2); print_simple_elem_array_info("Case Table", module->jumps);
-            indent(2); print_simple_elem_array_info("Data", module->data);
-            indent(2); dialog::print("%15s: %#x\n", "static base", module->sb);
-            indent(2); print_simple_elem_array_info("Code", module->code);
-            indent(2); print_simple_elem_array_info("td data", module->tddata);
-            indent(2); print_simple_elem_array_info("Reference Info", module->refs);
+            indent(2);
+            print_record_elem_array_info("Exports", module->exports);
+            indent(2);
+            print_record_elem_array_info("Privates", module->privates);
+            indent(2);
+            print_simple_elem_array_info("Type Desc", module->tdescs);
+            indent(2);
+            print_record_elem_array_info("Commands", module->commands);
+            indent(2);
+            print_simple_elem_array_info("Pointers", module->pointers);
+            indent(2);
+            print_pointer_elem_array_info("Imports", module->imports);
+            indent(2);
+            print_simple_elem_array_info("Case Table", module->jumps);
+            indent(2);
+            print_simple_elem_array_info("Data", module->data);
+            indent(2);
+            dialog::print("%15s: %#x\n", "static base", module->sb);
+            indent(2);
+            print_simple_elem_array_info("Code", module->code);
+            indent(2);
+            print_simple_elem_array_info("td data", module->tddata);
+            indent(2);
+            print_simple_elem_array_info("Reference Info", module->refs);
         }
     }
 
@@ -1955,17 +1966,6 @@ namespace O3
         } else {
             snprintf(decode, sizeof(decode) / sizeof(decode[0]) - 1,
                      "%xH", pc);
-        }
-    }
-
-
-    void
-    dump_module_list(void)
-    {
-        module_t *m = reinterpret_cast<module_t *>(module_list);
-        while (m != NULL) {
-            dump_module(m);
-            m = reinterpret_cast<module_t *>(heap::host_address(m->next));
         }
     }
 }
