@@ -44,6 +44,9 @@ OPT	:=							\
 	$(if $(filter release,$(SKL_BUILD_TYPE)),-O3,-Og)	\
 	-fdata-sections						\
 	-ffunction-sections					\
+	-fno-rtti						\
+	-fno-exceptions
+
 
 
 INCLUDE	:=					\
@@ -58,7 +61,6 @@ WARNINGS	:=				\
 	-Wsign-conversion			\
 	-fdiagnostics-color=never		\
 	-fno-diagnostics-show-caret
-
 
 # Compiler Source code control
 TRACE	:=	\
