@@ -16,7 +16,8 @@ programming language, or compilers or how garbage collection works,
 this project may be useful to you.  It provides a good introductory
 platform for these topics, without being too large to understand.
 
-The system is known to work on Linux and Raspberry Pi.
+The system is known to work on Linux, Raspberry Pi, and the Ubuntu
+distribution of WSL 2.
 
 It should not be terribly difficult to port to other operating
 systems, but it will be easier to port to POSIX-style hosts than
