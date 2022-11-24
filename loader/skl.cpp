@@ -305,16 +305,13 @@ namespace skl {
             cinst = op_systrap(cpu, inst);
             break;
 
-        default: {
+        default:
             hardware_trap(cpu, CR2_INVALID_OPCODE);
-            break;
+            return NULL;
         }
-        }
-        if (LIKELY(cinst != NULL)) {
-            skl::cache_instruction(cinst);
-            return cinst;
-        }
-        return NULL;
+        assert(cinst != NULL);
+        skl::cache_instruction(cinst);
+        return cinst;
     }
 
 
@@ -336,7 +333,9 @@ namespace skl {
         next    = fetch_cached_instruction(cpu);
         while (1) {
             cinst = next;
-            write_integer_register(cpu, 0, 0); // Reset R0 to zero.
+            if (UNLIKELY(read_integer_register(cpu, 0) != 0)) {
+                write_integer_register(cpu, 0, 0); // Reset R0 to zero.
+            }
 
             cpu->_instruction_count++;
             if (UNLIKELY(cinst == NULL)) {
