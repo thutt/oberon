@@ -50,13 +50,14 @@ namespace skl {
         skl_gen_reg_t(cpu_t           *cpu_,
                       md::OINST        inst_,
                       const char      **mne_,
+                      register_bank_t  bd_,
                       register_bank_t  b0_,
                       register_bank_t  b1_) :
             skl::instruction_t(cpu_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16)),
             R1(field(inst_, 15, 11)),
-            bd(static_cast<register_bank_t>(field(inst, 10, 10))),
+            bd(bd_),
             b0(b0_),
             b1(b1_)
         {
@@ -77,18 +78,49 @@ namespace skl {
     };
 
 
-    struct skl_gen_reg_int_t : skl_gen_reg_t {
+    struct skl_gen_reg_int_int_t : skl_gen_reg_t {
         md::uint32 l;
         md::uint32 r;
         md::uint32 v;
 
-        skl_gen_reg_int_t(cpu_t           *cpu_,
-                          md::OINST       inst_,
-                          const char      **mne_,
-                          register_bank_t  b0_,
-                          register_bank_t  b1_) :
-            skl_gen_reg_t(cpu_, inst_, mne_, b0_, b1_)
+        skl_gen_reg_int_int_t(cpu_t           *cpu_,
+                              md::OINST       inst_,
+                              const char      **mne_,
+                              register_bank_t  bd_,
+                              register_bank_t  b0_,
+                              register_bank_t  b1_) :
+            skl_gen_reg_t(cpu_, inst_, mne_, bd_, b0_, b1_)
         {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_INTEGER);
+        }
+
+
+        virtual void interpret_(void)
+        {
+            l = read_integer_register(cpu, R0);
+            r = read_integer_register(cpu, R1);;
+            v = arithmetic_int[opc](l, r);
+
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_integer_register(cpu, Rd, v);
+        }
+    };
+
+
+    struct skl_gen_reg_int_real_t : skl_gen_reg_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_t(cpu_t           *cpu_,
+                               md::OINST       inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(bd == RB_DOUBLE);
         }
 
 
@@ -99,11 +131,7 @@ namespace skl {
             v = arithmetic_int[opc](l, r);
 
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
-            if (bd == RB_INTEGER) {
-                write_integer_register(cpu, Rd, v);
-            } else {
-                write_real_register(cpu, Rd, static_cast<int>(v));
-            }
+            write_real_register(cpu, Rd, static_cast<int>(v));
         }
     };
 
@@ -116,9 +144,10 @@ namespace skl {
         skl_gen_reg_real_t(cpu_t           *cpu_,
                            md::OINST        inst_,
                            const char      **mne_,
+                           register_bank_t  bd_,
                            register_bank_t  b0_,
                            register_bank_t  b1_) :
-            skl_gen_reg_t(cpu_, inst_, mne_, b0_, b1_)
+            skl_gen_reg_t(cpu_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
@@ -338,13 +367,21 @@ namespace skl {
 #include "skl_gen_reg_opc.h"
 #undef OPC
         };
-        register_bank_t b0  = static_cast<register_bank_t>(field(inst,  9,  9));
-        register_bank_t b1  = static_cast<register_bank_t>(field(inst,  8,  8));
+        register_bank_t b1  = static_cast<register_bank_t>(field(inst,   8,  8));
+        register_bank_t b0  = static_cast<register_bank_t>(field(inst,   9,  9));
+        register_bank_t bd  = static_cast<register_bank_t>(field(inst,  10, 10));
 
-        if (compute_using(b0, b1) == RB_INTEGER) {
-            return new skl_gen_reg_int_t(cpu, inst, mne, b0, b1);
+        if (LIKELY(compute_using(b0, b1) == RB_INTEGER)) {
+            if (LIKELY(bd == RB_INTEGER)) {
+                return new skl_gen_reg_int_int_t(cpu, inst, mne, bd, b0, b1);
+            } else {
+                /* Compute using integer registers, write to floating
+                 * point register.
+                 */
+                return new skl_gen_reg_int_real_t(cpu, inst, mne, bd, b0, b1);
+            }
         } else {
-            return new skl_gen_reg_real_t(cpu, inst, mne, b0, b1);
+            return new skl_gen_reg_real_t(cpu, inst, mne, bd, b0, b1);
         }
     }
 }
