@@ -183,7 +183,6 @@ namespace skl
     read_integer_register(cpu_t *cpu, int regno)
     {
         assert(regno < static_cast<int>(sizeof(cpu->_R) / sizeof(cpu->_R[0])));
-        assert(regno != 0 || cpu->_R[regno] == 0);
         return cpu->_R[regno];
     }
 
