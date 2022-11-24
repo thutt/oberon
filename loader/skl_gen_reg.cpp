@@ -120,7 +120,7 @@ namespace skl {
                                register_bank_t  b1_) :
             skl_gen_reg_t(cpu_, inst_, mne_, bd_, b0_, b1_)
         {
-            assert(bd == RB_DOUBLE);
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
