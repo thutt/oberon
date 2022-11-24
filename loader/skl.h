@@ -156,8 +156,11 @@ namespace skl
     static inline int
     field(md::uint32 inst, int hi, int lo)
     {
+        // Extract bits [hi, lo] from inst.
         unsigned r    = (inst >> lo); // Shift field to bit 0.
         unsigned mask = ((1U << (hi - lo + 1)) - 1);
+
+        assert(hi >= lo);
         return static_cast<int>(r & mask);
     }
 
