@@ -83,10 +83,6 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_t : skl_gen_reg_t {
-        md::uint32 l;
-        md::uint32 r;
-        md::uint32 v;
-
         skl_gen_reg_int_int_t(cpu_t           *cpu_,
                               md::OINST       inst_,
                               const char      **mne_,
@@ -113,14 +109,14 @@ namespace skl {
 
         virtual void interpret(void)
         {
+            md::uint32 l = read_integer_register(cpu, R0);
+            md::uint32 r = read_integer_register(cpu, R1);
+            md::uint32 v = l + r;
+
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
                           reg_bank[b1], R1,
                           reg_bank[bd], Rd);
-            l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);
-            v = l + r;
-
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -141,13 +137,14 @@ namespace skl {
 
         virtual void interpret(void)
         {
+            md::uint32 l = read_integer_register(cpu, R0);
+            md::uint32 r = read_integer_register(cpu, R1);
+            md::uint32 v = l - r;
+
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
                           reg_bank[b1], R1,
                           reg_bank[bd], Rd);
-            l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);
-            v = l - r;
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -168,13 +165,14 @@ namespace skl {
 
         virtual void interpret(void)
         {
+            md::uint32 l = read_integer_register(cpu, R0);
+            md::uint32 r = read_integer_register(cpu, R1);
+            md::uint32 v = l * r;
+
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
                           reg_bank[b1], R1,
                           reg_bank[bd], Rd);
-            l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);
-            v = l * r;
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -195,12 +193,14 @@ namespace skl {
 
         virtual void interpret(void)
         {
+            md::uint32 l = read_integer_register(cpu, R0);
+            md::uint32 r = read_integer_register(cpu, R1);
+            md::uint32 v;
+
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
                           reg_bank[b1], R1,
                           reg_bank[bd], Rd);
-            l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);
             if (LIKELY(r != 0)) {
                 v = static_cast<md::uint32>(O3::DIV(static_cast<md::int32>(l),
                                                     static_cast<md::int32>(r)));
@@ -228,12 +228,14 @@ namespace skl {
 
         virtual void interpret(void)
         {
+            md::uint32 l = read_integer_register(cpu, R0);
+            md::uint32 r = read_integer_register(cpu, R1);
+            md::uint32 v;
+
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
                           reg_bank[b1], R1,
                           reg_bank[bd], Rd);
-            l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);
             if (LIKELY(r != 0)) {
                 v = static_cast<md::uint32>(O3::MOD(static_cast<md::int32>(l),
                                                     static_cast<md::int32>(r)));
@@ -261,13 +263,14 @@ namespace skl {
 
         virtual void interpret(void)
         {
+            md::uint32 l = read_integer_register(cpu, R0);
+            md::uint32 r = read_integer_register(cpu, R1);
+            md::uint32 v = synthesize_flags_int32(l, r);
+
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
                           reg_bank[b1], R1,
                           reg_bank[bd], Rd);
-            l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);
-            v = synthesize_flags_int32(l, r);
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -288,13 +291,14 @@ namespace skl {
 
         virtual void interpret(void)
         {
+            md::uint32 l = read_integer_register(cpu, R0);
+            md::uint32 r = read_integer_register(cpu, R1);
+            md::uint32 v = static_cast<md::uint32>(abs(static_cast<int>(r)));
+
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
                           reg_bank[b1], R1,
                           reg_bank[bd], Rd);
-            l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);
-            v = static_cast<md::uint32>(abs(static_cast<int>(r)));
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -303,10 +307,6 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_t : skl_gen_reg_t {
-        md::uint32 l;
-        md::uint32 r;
-        md::uint32 v;
-
         skl_gen_reg_int_real_t(cpu_t           *cpu_,
                                md::OINST       inst_,
                                const char      **mne_,
