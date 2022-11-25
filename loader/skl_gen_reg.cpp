@@ -15,28 +15,45 @@ namespace skl {
             N_OPCODES
         } opc_t;
 
-    typedef md::uint32 (*arithmetic_int_fn)(md::uint32 l, md::uint32 r);
     typedef double (*arithmetic_double_fn)(double l, double r);
-
-#define OPC(_t) static md::uint32 _t##_int(md::uint32 l, md::uint32 r);
-#include "skl_gen_reg_opc.h"
-#undef OPC
 
 #define OPC(_t) static double _t##_double(double l, double r);
 #include "skl_gen_reg_opc.h"
 #undef OPC
-
-    static arithmetic_int_fn arithmetic_int[] = {
-#define OPC(_t) _t##_int,
-#include "skl_gen_reg_opc.h"
-#undef OPC
-    };
 
     static arithmetic_double_fn arithmetic_double[] = {
 #define OPC(_t) _t##_double,
 #include "skl_gen_reg_opc.h"
 #undef OPC
     };
+
+
+    static unsigned
+    synthesize_overflow_int32(md::int32 l, md::int32 r)
+    {
+        unsigned sign_mask = left_shift(1, 31);
+        int      res       = l - r; // Result sign.
+        unsigned not_equal = static_cast<unsigned>(l ^ r);
+        unsigned sign_diff = static_cast<unsigned>(l ^ res);
+
+        return !!((not_equal & sign_diff) & sign_mask);
+    }
+
+
+    static md::uint32
+    synthesize_flags_int32(md::uint32 l, md::uint32 r)
+    {
+        md::int32  ll = static_cast<md::int32>(l);
+        md::int32  lr = static_cast<md::int32>(r);
+        md::uint32 ZF = ll == lr;                          // Zero flag.
+        md::uint32 SF = (ll - lr) < 0;                     // Sign flag.
+        md::uint32 CF = l < r;                             // Carry flag.
+        md::uint32 OF = synthesize_overflow_int32(ll, lr); // Overflow flag.
+        return ((ZF << 0) |
+                (SF << 1) |
+                (CF << 2) |
+                (OF << 3));
+    }
 
 
     struct skl_gen_reg_t : skl::instruction_t {
@@ -80,7 +97,19 @@ namespace skl {
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_INTEGER);
         }
+    };
 
+
+    struct skl_gen_reg_int_int_add_t : skl_gen_reg_int_int_t {
+        skl_gen_reg_int_int_add_t(cpu_t           *cpu_,
+                                  md::OINST       inst_,
+                                  const char      **mne_,
+                                  register_bank_t  bd_,
+                                  register_bank_t  b0_,
+                                  register_bank_t  b1_) :
+            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
 
         virtual void interpret(void)
         {
@@ -90,8 +119,182 @@ namespace skl {
                           reg_bank[bd], Rd);
             l = read_integer_register(cpu, R0);
             r = read_integer_register(cpu, R1);
-            v = arithmetic_int[opc](l, r);
+            v = l + r;
 
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_integer_register(cpu, Rd, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_int_sub_t : skl_gen_reg_int_int_t {
+        skl_gen_reg_int_int_sub_t(cpu_t           *cpu_,
+                                  md::OINST       inst_,
+                                  const char      **mne_,
+                                  register_bank_t  bd_,
+                                  register_bank_t  b0_,
+                                  register_bank_t  b1_) :
+            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = read_integer_register(cpu, R0);
+            r = read_integer_register(cpu, R1);
+            v = l - r;
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_integer_register(cpu, Rd, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_int_mul_t : skl_gen_reg_int_int_t {
+        skl_gen_reg_int_int_mul_t(cpu_t           *cpu_,
+                                  md::OINST       inst_,
+                                  const char      **mne_,
+                                  register_bank_t  bd_,
+                                  register_bank_t  b0_,
+                                  register_bank_t  b1_) :
+            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = read_integer_register(cpu, R0);
+            r = read_integer_register(cpu, R1);
+            v = l * r;
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_integer_register(cpu, Rd, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_int_div_t : skl_gen_reg_int_int_t {
+        skl_gen_reg_int_int_div_t(cpu_t           *cpu_,
+                                  md::OINST       inst_,
+                                  const char      **mne_,
+                                  register_bank_t  bd_,
+                                  register_bank_t  b0_,
+                                  register_bank_t  b1_) :
+            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = read_integer_register(cpu, R0);
+            r = read_integer_register(cpu, R1);
+            if (LIKELY(r != 0)) {
+                v = static_cast<md::uint32>(O3::DIV(static_cast<md::int32>(l),
+                                                    static_cast<md::int32>(r)));
+                write_integer_register(cpu, Rd, v);
+            } else {
+                hardware_trap(cpu, CR2_DIVIDE_BY_ZERO);
+            }
+
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_int_mod_t : skl_gen_reg_int_int_t {
+        skl_gen_reg_int_int_mod_t(cpu_t           *cpu_,
+                                  md::OINST       inst_,
+                                  const char      **mne_,
+                                  register_bank_t  bd_,
+                                  register_bank_t  b0_,
+                                  register_bank_t  b1_) :
+            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = read_integer_register(cpu, R0);
+            r = read_integer_register(cpu, R1);
+            if (LIKELY(r != 0)) {
+                v = static_cast<md::uint32>(O3::MOD(static_cast<md::int32>(l),
+                                                    static_cast<md::int32>(r)));
+                write_integer_register(cpu, Rd, v);
+            } else {
+                hardware_trap(cpu, CR2_DIVIDE_BY_ZERO);
+            }
+
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_int_cmp_t : skl_gen_reg_int_int_t {
+        skl_gen_reg_int_int_cmp_t(cpu_t           *cpu_,
+                                  md::OINST       inst_,
+                                  const char      **mne_,
+                                  register_bank_t  bd_,
+                                  register_bank_t  b0_,
+                                  register_bank_t  b1_) :
+            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = read_integer_register(cpu, R0);
+            r = read_integer_register(cpu, R1);
+            v = synthesize_flags_int32(l, r);
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_integer_register(cpu, Rd, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_int_abs_t : skl_gen_reg_int_int_t {
+        skl_gen_reg_int_int_abs_t(cpu_t           *cpu_,
+                                  md::OINST       inst_,
+                                  const char      **mne_,
+                                  register_bank_t  bd_,
+                                  register_bank_t  b0_,
+                                  register_bank_t  b1_) :
+            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = read_integer_register(cpu, R0);
+            r = read_integer_register(cpu, R1);
+            v = static_cast<md::uint32>(abs(static_cast<int>(r)));
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -114,6 +317,24 @@ namespace skl {
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
+    };
+
+
+    struct skl_gen_reg_int_real_add_t : skl_gen_reg_int_real_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_add_t(cpu_t           *cpu_,
+                                   md::OINST       inst_,
+                                   const char      **mne_,
+                                   register_bank_t  bd_,
+                                   register_bank_t  b0_,
+                                   register_bank_t  b1_) :
+            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
+        }
 
 
         virtual void interpret(void)
@@ -124,8 +345,216 @@ namespace skl {
                           reg_bank[bd], Rd);
             l = register_as_integer(cpu, R0, b0);
             r = register_as_integer(cpu, R1, b1);
-            v = arithmetic_int[opc](l, r);
+            v = l + r;
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_real_register(cpu, Rd, static_cast<int>(v));
+            increment_pc(cpu, 1);
+        }
+    };
 
+
+    struct skl_gen_reg_int_real_sub_t : skl_gen_reg_int_real_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_sub_t(cpu_t           *cpu_,
+                                   md::OINST       inst_,
+                                   const char      **mne_,
+                                   register_bank_t  bd_,
+                                   register_bank_t  b0_,
+                                   register_bank_t  b1_) :
+            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = register_as_integer(cpu, R0, b0);
+            r = register_as_integer(cpu, R1, b1);
+            v = l - r;
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_real_register(cpu, Rd, static_cast<int>(v));
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_real_mul_t : skl_gen_reg_int_real_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_mul_t(cpu_t           *cpu_,
+                                   md::OINST       inst_,
+                                   const char      **mne_,
+                                   register_bank_t  bd_,
+                                   register_bank_t  b0_,
+                                   register_bank_t  b1_) :
+            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = register_as_integer(cpu, R0, b0);
+            r = register_as_integer(cpu, R1, b1);
+            v = l * r;
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_real_register(cpu, Rd, static_cast<int>(v));
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_real_div_t : skl_gen_reg_int_real_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_div_t(cpu_t           *cpu_,
+                                   md::OINST       inst_,
+                                   const char      **mne_,
+                                   register_bank_t  bd_,
+                                   register_bank_t  b0_,
+                                   register_bank_t  b1_) :
+            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = register_as_integer(cpu, R0, b0);
+            r = register_as_integer(cpu, R1, b1);
+            if (LIKELY(r != 0)) {
+                v = static_cast<md::uint32>(O3::DIV(static_cast<md::int32>(l),
+                                                    static_cast<md::int32>(r)));
+                write_real_register(cpu, Rd, static_cast<int>(v));
+            } else {
+                hardware_trap(cpu, CR2_DIVIDE_BY_ZERO);
+            }
+
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_real_mod_t : skl_gen_reg_int_real_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_mod_t(cpu_t           *cpu_,
+                                   md::OINST       inst_,
+                                   const char      **mne_,
+                                   register_bank_t  bd_,
+                                   register_bank_t  b0_,
+                                   register_bank_t  b1_) :
+            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = register_as_integer(cpu, R0, b0);
+            r = register_as_integer(cpu, R1, b1);
+            if (LIKELY(r != 0)) {
+                v = static_cast<md::uint32>(O3::MOD(static_cast<md::int32>(l),
+                                                    static_cast<md::int32>(r)));
+                write_real_register(cpu, Rd, static_cast<int>(v));
+            } else {
+                hardware_trap(cpu, CR2_DIVIDE_BY_ZERO);
+            }
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_real_cmp_t : skl_gen_reg_int_real_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_cmp_t(cpu_t           *cpu_,
+                                   md::OINST       inst_,
+                                   const char      **mne_,
+                                   register_bank_t  bd_,
+                                   register_bank_t  b0_,
+                                   register_bank_t  b1_) :
+            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = register_as_integer(cpu, R0, b0);
+            r = register_as_integer(cpu, R1, b1);
+            v = synthesize_flags_int32(l, r);
+            dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
+            write_real_register(cpu, Rd, static_cast<int>(v));
+            increment_pc(cpu, 1);
+        }
+    };
+
+
+    struct skl_gen_reg_int_real_abs_t : skl_gen_reg_int_real_t {
+        md::uint32 l;
+        md::uint32 r;
+        md::uint32 v;
+
+        skl_gen_reg_int_real_abs_t(cpu_t           *cpu_,
+                                   md::OINST       inst_,
+                                   const char      **mne_,
+                                   register_bank_t  bd_,
+                                   register_bank_t  b0_,
+                                   register_bank_t  b1_) :
+            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+        {
+            assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
+        }
+
+
+        virtual void interpret(void)
+        {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = register_as_integer(cpu, R0, b0);
+            r = register_as_integer(cpu, R1, b1);
+            v = static_cast<md::uint32>(abs(static_cast<int>(r)));
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_real_register(cpu, Rd, static_cast<int>(v));
             increment_pc(cpu, 1);
@@ -192,34 +621,6 @@ namespace skl {
 
 
     static unsigned
-    synthesize_overflow_int32(md::int32 l, md::int32 r)
-    {
-        unsigned sign_mask = left_shift(1, 31);
-        int      res       = l - r; // Result sign.
-        unsigned not_equal = static_cast<unsigned>(l ^ r);
-        unsigned sign_diff = static_cast<unsigned>(l ^ res);
-
-        return !!((not_equal & sign_diff) & sign_mask);
-    }
-
-
-    static md::uint32
-    synthesize_flags_int32(md::uint32 l, md::uint32 r)
-    {
-        md::int32  ll = static_cast<md::int32>(l);
-        md::int32  lr = static_cast<md::int32>(r);
-        md::uint32 ZF = ll == lr;                          // Zero flag.
-        md::uint32 SF = (ll - lr) < 0;                     // Sign flag.
-        md::uint32 CF = l < r;                             // Carry flag.
-        md::uint32 OF = synthesize_overflow_int32(ll, lr); // Overflow flag.
-        return ((ZF << 0) |
-                (SF << 1) |
-                (CF << 2) |
-                (OF << 3));
-    }
-
-
-    static unsigned
     synthesize_overflow_double(double l, double r)
     {
         int t0 = (r >= 0) && (l >= md::MinLReal() + r);
@@ -242,69 +643,6 @@ namespace skl {
                 (CF << 2) |
                 (OF << 3));
     }
-
-
-    static md::uint32
-    ABS_int(md::uint32 l, md::uint32 r)
-    {
-        return static_cast<md::uint32>(abs(static_cast<int>(r)));
-    }
-
-
-    static md::uint32
-    ADD_int(md::uint32 l, md::uint32 r)
-    {
-        return l + r;
-    }
-
-
-    static md::uint32
-    SUB_int(md::uint32 l, md::uint32 r)
-    {
-        return l - r;
-    }
-
-
-    static md::uint32
-    MUL_int(md::uint32 l, md::uint32 r)
-    {
-        return l * r;
-    }
-
-
-    static md::uint32
-    DIV_int(md::uint32 l, md::uint32 r)
-    {
-        if (LIKELY(r != 0)) {
-            return static_cast<md::uint32>(O3::DIV(static_cast<md::int32>(l),
-                                                   static_cast<md::int32>(r)));
-        } else {
-            hardware_trap(&cpu, CR2_DIVIDE_BY_ZERO);
-            return 0U;          // Silence compiler.
-        }
-    }
-
-
-    static md::uint32
-    MOD_int(md::uint32 l, md::uint32 r)
-    {
-        if (LIKELY(r != 0)) {
-            return static_cast<md::uint32>(O3::MOD(static_cast<md::int32>(l),
-                                                   static_cast<md::int32>(r)));
-        } else {
-            hardware_trap(&cpu, CR2_DIVIDE_BY_ZERO);
-            return 0U;          // Silence compiler.
-        }
-    }
-
-
-    static md::uint32
-    CMP_int(md::uint32 l, md::uint32 r)
-    {
-        return synthesize_flags_int32(l, r);
-    }
-
-
     static double
     ABS_double(double l, double r)
     {
@@ -372,15 +710,78 @@ namespace skl {
         register_bank_t b1  = static_cast<register_bank_t>(field(inst,   8,  8));
         register_bank_t b0  = static_cast<register_bank_t>(field(inst,   9,  9));
         register_bank_t bd  = static_cast<register_bank_t>(field(inst,  10, 10));
+        opc_t           opc = static_cast<opc_t>(field(inst, 4, 0));
 
         if (LIKELY(compute_using(b0, b1) == RB_INTEGER)) {
             if (LIKELY(bd == RB_INTEGER)) {
-                return new skl_gen_reg_int_int_t(cpu, inst, mne, bd, b0, b1);
+                switch (opc) {
+                case OPC_ADD:
+                    return new skl_gen_reg_int_int_add_t(cpu, inst, mne,
+                                                         bd, b0, b1);
+
+                case OPC_SUB:
+                    return new skl_gen_reg_int_int_sub_t(cpu, inst, mne,
+                                                         bd, b0, b1);
+
+                case OPC_MUL:
+                    return new skl_gen_reg_int_int_mul_t(cpu, inst, mne,
+                                                         bd, b0, b1);
+
+                case OPC_DIV:
+                    return new skl_gen_reg_int_int_div_t(cpu, inst, mne,
+                                                         bd, b0, b1);
+
+                case OPC_MOD:
+                    return new skl_gen_reg_int_int_mod_t(cpu, inst, mne,
+                                                         bd, b0, b1);
+
+                case OPC_CMP:
+                    return new skl_gen_reg_int_int_cmp_t(cpu, inst, mne,
+                                                         bd, b0, b1);
+
+                case OPC_ABS:
+                    return new skl_gen_reg_int_int_abs_t(cpu, inst, mne,
+                                                         bd, b0, b1);
+
+                default:
+                    dialog::internal_error("%s: improper opcode", __func__);
+                }
             } else {
                 /* Compute using integer registers, write to floating
                  * point register.
                  */
-                return new skl_gen_reg_int_real_t(cpu, inst, mne, bd, b0, b1);
+                switch (opc) {
+                case OPC_ADD:
+                    return new skl_gen_reg_int_real_add_t(cpu, inst, mne,
+                                                          bd, b0, b1);
+
+                case OPC_SUB:
+                    return new skl_gen_reg_int_real_sub_t(cpu, inst, mne,
+                                                          bd, b0, b1);
+
+                case OPC_MUL:
+                    return new skl_gen_reg_int_real_mul_t(cpu, inst, mne,
+                                                          bd, b0, b1);
+
+                case OPC_DIV:
+                    return new skl_gen_reg_int_real_div_t(cpu, inst, mne,
+                                                          bd, b0, b1);
+
+                case OPC_MOD:
+                    return new skl_gen_reg_int_real_mod_t(cpu, inst, mne,
+                                                          bd, b0, b1);
+
+                case OPC_CMP:
+                    return new skl_gen_reg_int_real_cmp_t(cpu, inst, mne,
+                                                          bd, b0, b1);
+
+                case OPC_ABS:
+                    return new skl_gen_reg_int_real_abs_t(cpu, inst, mne,
+                                                          bd, b0, b1);
+
+                default:
+                    dialog::internal_error("%s: improper opcode", __func__);
+                }
             }
         } else {
             return new skl_gen_reg_real_t(cpu, inst, mne, bd, b0, b1);
