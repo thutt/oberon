@@ -62,19 +62,6 @@ namespace skl {
             b1(b1_)
         {
         }
-
-
-        virtual void interpret_(void) = 0;
-
-        virtual void interpret(void)
-        {
-            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
-                          reg_bank[b0], R0,
-                          reg_bank[b1], R1,
-                          reg_bank[bd], Rd);
-            interpret_();
-            increment_pc(cpu, 1);
-        }
     };
 
 
@@ -95,14 +82,19 @@ namespace skl {
         }
 
 
-        virtual void interpret_(void)
+        virtual void interpret(void)
         {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
             l = read_integer_register(cpu, R0);
-            r = read_integer_register(cpu, R1);;
+            r = read_integer_register(cpu, R1);
             v = arithmetic_int[opc](l, r);
 
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_integer_register(cpu, Rd, v);
+            increment_pc(cpu, 1);
         }
     };
 
@@ -124,14 +116,19 @@ namespace skl {
         }
 
 
-        virtual void interpret_(void)
+        virtual void interpret(void)
         {
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
             l = register_as_integer(cpu, R0, b0);
-            r = register_as_integer(cpu, R1, b1);;
+            r = register_as_integer(cpu, R1, b1);
             v = arithmetic_int[opc](l, r);
 
             dialog::trace("[%xH, %xH, %xH]\n", l, r, v);
             write_real_register(cpu, Rd, static_cast<int>(v));
+            increment_pc(cpu, 1);
         }
     };
 
@@ -152,11 +149,15 @@ namespace skl {
         }
 
 
-        virtual void interpret_(void)
+        virtual void interpret(void)
         {
-            double l = register_as_double(cpu, R0, b0);
-            double r = register_as_double(cpu, R1, b1);
-            double v = arithmetic_double[opc](l, r);
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            l = register_as_double(cpu, R0, b0);
+            r = register_as_double(cpu, R1, b1);
+            v = arithmetic_double[opc](l, r);
 
             switch (opc) {
             case OPC_ADD:
@@ -185,6 +186,7 @@ namespace skl {
                     write_real_register(cpu, Rd, v);
                 }
             }
+            increment_pc(cpu, 1);
         }
     };
 
