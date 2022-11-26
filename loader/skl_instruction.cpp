@@ -14,13 +14,21 @@ namespace skl {
     void
     release_instruction_cache(void)
     {
-        int i;
-        for (i = 0; i < cache_elements; ++i) {
-            if (cache[i] != NULL) {
-                delete cache[i];
+        if (false) {
+            /* There is no actual need to carefully destroy the cache
+             * and every skl::instruction_t created because the
+             * program is going to exit and the OS will recover all
+             * allocated resources.  Disabling this decreases
+             * prompt-to-prompt runtime characteristics.
+             */
+            int i;
+            for (i = 0; i < cache_elements; ++i) {
+                if (cache[i] != NULL) {
+                    delete cache[i];
+                }
             }
-        }            
-        delete [] cache;
+            delete [] cache;
+        }
     }
 
 
