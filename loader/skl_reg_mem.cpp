@@ -26,7 +26,6 @@ namespace skl {
         int         Rbase;
         int         Rindex;
         int         scale;      // { 0, 1, 2, 3 } (scale of 1, 2, 4, 8)
-        const char *mne;        // XXX remove this field?
     } reg_mem_decode_t;
 
 
@@ -63,7 +62,7 @@ namespace skl {
         {
             value = read_integer_register(cpu, decode.Rbase) + cdata;
             write_integer_register(cpu, decode.Rd, value);
-            dialog::trace("%s: %s  R%u + %xH, R%u", decoded_pc, decode.mne,
+            dialog::trace("%s: %s  R%u + %xH, R%u", decoded_pc, mne,
                           decode.Rbase, cdata, decode.Rd);
             dialog::trace("[%xH]\n", value);
             increment_pc(cpu, 2);
@@ -93,7 +92,7 @@ namespace skl {
 
         virtual void interpret(skl::cpu_t *cpu)
         {
-            dialog::trace("%s: %s  %f, F%u", decoded_pc, decode.mne, value,
+            dialog::trace("%s: %s  %f, F%u", decoded_pc, mne, value,
                           decode.Rd);
             dialog::trace("\n");
             write_real_register(cpu, decode.Rd, value);
@@ -120,7 +119,7 @@ namespace skl {
 
         virtual void interpret(skl::cpu_t *cpu)
         {
-            dialog::trace("%s: %s  %f, F%u", decoded_pc, decode.mne, value,
+            dialog::trace("%s: %s  %f, F%u", decoded_pc, mne, value,
                           decode.Rd);
             dialog::trace("\n");
             write_real_register(cpu, decode.Rd, value);
@@ -169,7 +168,7 @@ namespace skl {
             }
 
             dialog::trace("%s: %s  (R%u + R%u:%u %c %xH), R%u",
-                          decoded_pc, decode.mne, decode.Rbase, decode.Rindex,
+                          decoded_pc, mne, decode.Rbase, decode.Rindex,
                           decode.scale, sign, offs, decode.Rd);
 
             if (LIKELY(address_valid(ea, size))) {
@@ -214,7 +213,7 @@ namespace skl {
             }
 
             dialog::trace("%s: %s  R%u, (R%u + R%u:%u %c %xH)",
-                          decoded_pc, decode.mne, decode.Rd, decode.Rbase, decode.Rindex,
+                          decoded_pc, mne, decode.Rd, decode.Rbase, decode.Rindex,
                           decode.scale, sign, offs);
             dialog::trace("[value: %xH, ea: %xH]\n", value, ea);
 
@@ -277,7 +276,7 @@ namespace skl {
             }
 
             dialog::trace("%s: %s  (R%u + R%u:%u %c %xH), F%u ",
-                          decoded_pc, decode.mne, decode.Rbase, decode.Rindex,
+                          decoded_pc, mne, decode.Rbase, decode.Rindex,
                           decode.scale, sign, offset, decode.Rd);
 
             if (LIKELY(address_valid(ea, size))) {
@@ -322,7 +321,7 @@ namespace skl {
                 offs = -offs;
             }
             dialog::trace("%s: %s  F%u, (R%u + R%u:%u %c %xH)",
-                          decoded_pc, decode.mne, R0, decode.Rbase, decode.Rindex,
+                          decoded_pc, mne, R0, decode.Rbase, decode.Rindex,
                           decode.scale, sign, offset);
 
             value = read_real_register(cpu, R0);
@@ -601,7 +600,7 @@ namespace skl {
             }
 
             dialog::trace("%s: %s  (R%u + R%u:%u %c %xH), R%u",
-                          decoded_pc, decode.mne, decode.Rbase, decode.Rindex,
+                          decoded_pc, mne, decode.Rbase, decode.Rindex,
                           decode.scale, sign, loffset, decode.Rd);
             dialog::trace("[ea: %xH]\n", ea);
             increment_pc(cpu, 2);
@@ -615,7 +614,6 @@ namespace skl {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
         reg_mem_decode_t decode;
 
-        decode.mne    = mne[opc];
         decode.Rd     = field(inst, 25, 21);
         decode.Rbase  = field(inst, 20, 16);
         decode.Rindex = field(inst, 15, 11);
