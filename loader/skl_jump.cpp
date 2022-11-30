@@ -27,12 +27,10 @@ namespace skl {
         O3::decode_pc_t decoded_ra;
         O3::decode_pc_t decoded_new;
 
-        skl_jal_t(cpu_t       *cpu_,
-                  md::uint32   inst_,
+        skl_jal_t(md::OADDR    pc_,
+                  md::OINST    inst_,
                   const char **mne_) :
-            skl::instruction_t(cpu_,
-                               inst_,
-                               mne_)
+            skl::instruction_t(pc_, inst_, mne_)
         {
             Rd          = field(inst, 25, 21);
             addr        = skl::read(pc + 4, false, sizeof(md::uint32));
@@ -43,7 +41,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  %xH", decoded_pc, mne, addr);
             dialog::trace("[pc := %s, retpc := %s]\n", decoded_new, decoded_ra);
@@ -60,11 +58,11 @@ namespace skl {
         md::OADDR       dest_addr;
         O3::decode_pc_t decoded_da;
         bool            compare_result;
-        skl_conditional_jump_t(cpu_t       *cpu_,
+        skl_conditional_jump_t(md::OADDR    pc_,
                                opc_t        rel_,
                                md::OINST    inst_,
                                const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             rel(rel_),
             R0(field(inst, 20, 16)),
             flags(0),
@@ -75,7 +73,7 @@ namespace skl {
             O3::decode_pc(dest_addr, decoded_da);
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             flags          = read_integer_register(cpu, R0);
             compare_result = relation[rel](flags);
@@ -101,10 +99,10 @@ namespace skl {
         md::OADDR       dest_addr;
         O3::decode_pc_t decoded_da;
 
-        skl_jump_t(cpu_t       *cpu_,
-                   md::uint32   inst_,
+        skl_jump_t(md::OADDR    pc_,
+                   md::OINST    inst_,
                    const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             addr(skl::read(pc + 4, false, sizeof(md::uint32))),
             dest_addr(pc +
                       2 * static_cast<md::OADDR>(sizeof(md::uint32)) + addr)
@@ -113,7 +111,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  %xH", decoded_pc, mne, addr);
             dialog::trace("[%s]\n", decoded_da);
@@ -138,13 +136,13 @@ namespace skl {
         case OPC_JGEU:
         case OPC_JLEU:
         case OPC_JGTU:
-            return new skl_conditional_jump_t(cpu, opc, inst, mne);
+            return new skl_conditional_jump_t(cpu->pc, opc, inst, mne);
 
         case OPC_J:
-            return new skl_jump_t(cpu, inst, mne);
+            return new skl_jump_t(cpu->pc, inst, mne);
 
         case OPC_JAL:
-            return new skl_jal_t(cpu, inst, mne);
+            return new skl_jal_t(cpu->pc, inst, mne);
 
         default:
             dialog::not_implemented("%s: inst: %xH opcode: %xH",

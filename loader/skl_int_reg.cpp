@@ -39,17 +39,18 @@ namespace skl {
     };
 
 
+    // XXX TODO: special ize subclasses to remove indirect call of operand.
     struct skl_int_reg_t : skl::instruction_t {
         int          Rd;
         int          R0;
         int          R1;
         int_opc_fn_t operation;
 
-        skl_int_reg_t(cpu_t       *cpu_,
+        skl_int_reg_t(md::OADDR    pc_,
                       md::OINST   inst_,
                       const char **mne_,
                       int_opc_fn_t operation_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16)),
             R1(field(inst_, 15, 11)),
@@ -58,7 +59,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32       v;
             bool             fault = false;
@@ -261,11 +262,11 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_int_reg(cpu_t *cpu, md::OINST inst)
+    op_int_reg(cpu_t *cpu, md::OINST inst) // XXX remove cpu argument!
     {
         const opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
         assert(opc >= 0 && opc < N_OPCODES);
-        return new skl_int_reg_t(cpu, inst, mne, operation[opc]);
+        return new skl_int_reg_t(cpu->pc, inst, mne, operation[opc]);
     }
 }

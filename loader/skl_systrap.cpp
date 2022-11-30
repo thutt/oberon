@@ -24,10 +24,10 @@ namespace skl {
         int R0;
         int subcl;
 
-        skl_trap_t(cpu_t       *cpu_,
-                   md::OINST   inst_,
+        skl_trap_t(md::OADDR    pc_,
+                   md::OINST    inst_,
                    const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst, 25, 21)),
             R0(field(inst, 20, 16)),
             subcl(field(inst, 7, 0))
@@ -38,12 +38,26 @@ namespace skl {
             opc = field(inst, 15,  8);
             mne = mne_[opc];
         }
+    };
 
-        virtual bool interpret_(void) = 0;
 
-        virtual void interpret(void)
+    struct skl_trapnil_t : skl_trap_t {
+
+        skl_trapnil_t(md::OADDR    pc_,
+                      md::OINST    inst_,
+                      const char **mne_) :
+            skl_trap_t(pc_, inst_, mne_)
         {
-            bool trapped = interpret_();
+            assert(Rd == 0);
+        }
+
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32 r0 = read_integer_register(cpu, R0);
+            bool trapped = r0 == 0;         // true => trap raised.
+
+            dialog::trace("%s: %s  R%u, %u\n", decoded_pc, mne, R0, subcl);
             if (LIKELY(!trapped)) {
                 increment_pc(cpu, 1);
             } else {
@@ -53,41 +67,22 @@ namespace skl {
     };
 
 
-    struct skl_trapnil_t : skl_trap_t {
-
-        skl_trapnil_t(cpu_t       *cpu_,
-                      md::uint32   inst_,
-                      const char **mne_) :
-            skl_trap_t(cpu_, inst_, mne_)
-        {
-            assert(Rd == 0);
-        }
-
-
-        virtual bool interpret_(void)
-        {
-            md::uint32 r0 = read_integer_register(cpu, R0);
-            dialog::trace("%s: %s  R%u, %u\n", decoded_pc, mne, R0, subcl);
-            return r0 == 0;         // true => trap raised.
-        }
-    };
-
-
     struct skl_traprange_t : skl_trap_t {
 
-        skl_traprange_t(cpu_t     *cpu_,
-                      md::uint32   inst_,
-                      const char **mne_) :
-            skl_trap_t(cpu_, inst_, mne_)
+        skl_traprange_t(md::OADDR    pc_,
+                        md::OINST    inst_,
+                        const char **mne_) :
+            skl_trap_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual bool interpret_(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 r0    = read_integer_register(cpu, R0);
             int        value = static_cast<int>(r0);
             bool       ok;
+            bool       trapped;
 
             switch (subcl) {
             case 4:                 // 1 byte signed integer.
@@ -112,32 +107,43 @@ namespace skl {
                                        __func__, subcl);
             }
             dialog::trace("%s: %s  R%u, %u\n", decoded_pc, mne, R0, subcl);
-            return !ok;             // true => trap raised.
+            trapped = !ok;             // true => trap raised.
+            if (LIKELY(!trapped)) {
+                increment_pc(cpu, 1);
+            } else {
+                software_trap(cpu, opc);
+            }
         }
     };
 
 
     struct skl_traparray_t : skl_trap_t {
 
-        skl_traparray_t(cpu_t     *cpu_,
-                      md::uint32   inst_,
-                      const char **mne_) :
-            skl_trap_t(cpu_, inst_, mne_)
+        skl_traparray_t(md::OADDR    pc_,
+                        md::OINST    inst_,
+                        const char **mne_) :
+            skl_trap_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual bool interpret_(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 r0 = read_integer_register(cpu, R0);
             md::uint32 rd = read_integer_register(cpu, Rd);
             bool       ok;
+            bool       trapped;
 
             ok = (static_cast<int>(r0) >= 0 && // Non-negative index
                   r0 <= rd);                   // R0 is index (x[R0]). Rd is LEN(x).
 
             dialog::trace("%s: %s  R%u, R%u\n", decoded_pc, mne, R0, Rd);
-            return !ok;             // true => trap raised.
+            trapped = !ok;             // true => trap raised.
+            if (LIKELY(!trapped)) {
+                increment_pc(cpu, 1);
+            } else {
+                software_trap(cpu, opc);
+            }
         }
     };
 
@@ -150,13 +156,13 @@ namespace skl {
         switch (opc) {
         case OPC_TRAPGUARD:
         case OPC_TRAPNIL:
-            return new skl_trapnil_t(cpu, inst, mne);
+            return new skl_trapnil_t(cpu->pc, inst, mne);
 
         case OPC_TRAPRANGE:
-            return new skl_traprange_t(cpu, inst, mne);
+            return new skl_traprange_t(cpu->pc, inst, mne);
 
         case OPC_TRAPARRAY:
-            return new skl_traparray_t(cpu, inst, mne);
+            return new skl_traparray_t(cpu->pc, inst, mne);
 
         default:
             dialog::internal_error("%s: Unsupported systrap opcode: %d",

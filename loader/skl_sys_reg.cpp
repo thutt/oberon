@@ -24,16 +24,16 @@ namespace skl {
     struct skl_sys_reg_t : skl::instruction_t {
         int Rd;
 
-        skl_sys_reg_t(cpu_t       *cpu_,
+        skl_sys_reg_t(md::OADDR    pc_,
                       md::OINST    inst_,
                       const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21))
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             skl::write_integer_register(cpu, Rd, cpu->_instruction_count);
             dialog::trace("%xH: %s  R%u", pc, mne, Rd);
@@ -54,7 +54,7 @@ namespace skl {
             dialog::not_implemented("%s: di");
 
         case OPC_LCC:
-            return new skl_sys_reg_t(cpu, inst, mne);
+            return new skl_sys_reg_t(cpu->pc, inst, mne);
 
         default:
             dialog::not_implemented("%s: inst: %xH opcode: %x#",

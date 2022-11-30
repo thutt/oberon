@@ -24,10 +24,10 @@ namespace skl {
         md::OADDR return_addr;
         md::OADDR new_pc;
 
-        skl_jral_t(cpu_t      *cpu_,
-                   md::OINST   inst_,
+        skl_jral_t(md::OADDR    pc_,
+                   md::OINST    inst_,
                    const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16)),
             return_addr(pc + static_cast<md::OADDR>(sizeof(md::uint32)))
@@ -35,7 +35,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             O3::decode_pc_t decoded_ra;
             O3::decode_pc_t decoded_new;
@@ -58,6 +58,6 @@ namespace skl {
     {
         /* If new opcodes added, this code needs investigation. */
         COMPILE_TIME_ASSERT(sizeof(mne) / sizeof(mne[0]) == 1);
-        return new skl_jral_t(cpu, inst, mne);
+        return new skl_jral_t(cpu->pc, inst, mne);
     }
 }

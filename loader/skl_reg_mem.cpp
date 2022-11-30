@@ -33,11 +33,11 @@ namespace skl {
     struct skl_reg_mem_t : skl::instruction_t {
         const reg_mem_decode_t  decode;
 
-        skl_reg_mem_t(cpu_t       *cpu_,
-                      md::uint32   inst_,
+        skl_reg_mem_t(md::OADDR    pc_,
+                      md::OINST    inst_,
                       const char **mne_,
                       const reg_mem_decode_t &decode_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             decode(decode_)
         {
         }
@@ -49,17 +49,17 @@ namespace skl {
         md::uint32 value;
 
 
-        skl_lwi_t(cpu_t       *cpu_,
-                  md::uint32   inst_,
+        skl_lwi_t(md::OADDR    pc_,
+                  md::OINST    inst_,
                   const char **mne_,
                   const reg_mem_decode_t &decode_) :
-            skl_reg_mem_t(cpu_, inst_, mne_, decode_),
+            skl_reg_mem_t(pc_, inst_, mne_, decode_),
             cdata(skl::read(pc + 4, false, sizeof(md::uint32)))
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             value = read_integer_register(cpu, decode.Rbase) + cdata;
             write_integer_register(cpu, decode.Rd, value);
@@ -75,11 +75,11 @@ namespace skl {
         double value;
 
 
-        skl_lfi_t(cpu_t       *cpu_,
-                  md::uint32   inst_,
+        skl_lfi_t(md::OADDR    pc_,
+                  md::OINST    inst_,
                   const char **mne_,
                   const reg_mem_decode_t &decode_) :
-            skl_reg_mem_t(cpu_, inst_, mne_, decode_)
+            skl_reg_mem_t(pc_, inst_, mne_, decode_)
         {
             union {
                 md::uint32 i;
@@ -91,7 +91,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  %f, F%u", decoded_pc, decode.mne, value,
                           decode.Rd);
@@ -106,11 +106,11 @@ namespace skl {
         double value;
 
 
-        skl_ldi_t(cpu_t       *cpu_,
-                  md::uint32   inst_,
+        skl_ldi_t(md::OADDR    pc_,
+                  md::OINST    inst_,
                   const char **mne_,
                   const reg_mem_decode_t &decode_) :
-            skl_reg_mem_t(cpu_, inst_, mne_, decode_)
+            skl_reg_mem_t(pc_, inst_, mne_, decode_)
         {
             md::uint32 lo = skl::read(pc + 4, false, sizeof(md::uint32));
             md::uint32 hi = skl::read(pc + 8, false, sizeof(md::uint32));
@@ -118,7 +118,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  %f, F%u", decoded_pc, decode.mne, value,
                           decode.Rd);
@@ -132,11 +132,11 @@ namespace skl {
     struct skl_load_store_t : skl_reg_mem_t {
         int offset;
 
-        skl_load_store_t(cpu_t           *cpu_,
-                             md::uint32   inst_,
-                             const char **mne_,
-                             const reg_mem_decode_t &decode_) :
-            skl_reg_mem_t(cpu_, inst_, mne_, decode_),
+        skl_load_store_t(md::OADDR    pc_,
+                         md::OINST    inst_,
+                         const char **mne_,
+                         const reg_mem_decode_t &decode_) :
+            skl_reg_mem_t(pc_, inst_, mne_, decode_),
             offset(static_cast<int>(skl::read(pc + 4, false,
                                               static_cast<int>(sizeof(md::uint32)))))
         {
@@ -145,16 +145,16 @@ namespace skl {
 
 
     struct skl_load_int_t : skl_load_store_t {
-        skl_load_int_t(cpu_t       *cpu_,
-                       md::uint32   inst_,
+        skl_load_int_t(md::OADDR    pc_,
+                       md::OINST    inst_,
                        const char **mne_,
                        const reg_mem_decode_t &decode_) :
-            skl_load_store_t(cpu_, inst_, mne_, decode_)
+            skl_load_store_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        void load(bool sign_extend, int size)
+        void load(cpu_t *cpu, bool sign_extend, int size)
         {
             char sign = '+';
             int  offs;
@@ -188,17 +188,17 @@ namespace skl {
     struct skl_store_int_t : skl_load_store_t {
         md::uint32 value;
 
-        skl_store_int_t(cpu_t       *cpu_,
-                        md::uint32   inst_,
+        skl_store_int_t(md::OADDR    pc_,
+                        md::OINST    inst_,
                         const char **mne_,
                         const reg_mem_decode_t &decode_) :
-            skl_load_store_t(cpu_, inst_, mne_, decode_)
+            skl_load_store_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
         void
-        store(bool integer, int size)
+        store(cpu_t *cpu, bool integer, int size)
         {
             char sign = '+';
             int  offs = offset;
@@ -228,16 +228,16 @@ namespace skl {
 
 
     struct skl_load_real_t : skl_load_store_t {
-        skl_load_real_t(cpu_t       *cpu_,
-                        md::uint32   inst_,
+        skl_load_real_t(md::OADDR    pc_,
+                        md::OINST    inst_,
                         const char **mne_,
                         const reg_mem_decode_t &decode_) :
-            skl_load_store_t(cpu_, inst_, mne_, decode_)
+            skl_load_store_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        double read_real_little_endian(int size)
+        double read_real_little_endian(cpu_t *cpu, int size)
         {
             union {
                 md::uint32 i[2];
@@ -258,7 +258,7 @@ namespace skl {
         }
 
 
-        void load(int size)
+        void load(cpu_t *cpu, int size)
         {
             int  offs;
             char sign = '+';
@@ -282,7 +282,7 @@ namespace skl {
             if (LIKELY(address_valid(cpu->ea, size))) {
                 double value = 0;
                 COMPILE_TIME_ASSERT(skl_endian_little);
-                value = read_real_little_endian(size);
+                value = read_real_little_endian(cpu, size);
                 dialog::trace("[ea: %xH, value: %f]\n", cpu->ea, value);
                 write_real_register(cpu, decode.Rd, value);
                 increment_pc(cpu, 2);
@@ -294,17 +294,17 @@ namespace skl {
 
 
     struct skl_store_real_t : skl_load_store_t {
-        skl_store_real_t(cpu_t       *cpu_,
-                         md::uint32   inst_,
+        skl_store_real_t(md::OADDR    pc_,
+                         md::OINST    inst_,
                          const char **mne_,
                          const reg_mem_decode_t &decode_) :
-            skl_load_store_t(cpu_, inst_, mne_, decode_)
+            skl_load_store_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
         void
-        store(int size)
+        store(cpu_t *cpu, int size)
         {
             int             R0   = decode.Rd;
             char            sign = '+';
@@ -358,232 +358,232 @@ namespace skl {
 
     struct skl_lb_t : skl_load_int_t {
 
-        skl_lb_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_lb_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_load_int_t(cpu_, inst_, mne_, decode_)
+            skl_load_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            load(true, sizeof(md::uint8));
+            load(cpu, true, sizeof(md::uint8));
         }
     };
 
 
     struct skl_lbu_t : skl_load_int_t {
 
-        skl_lbu_t(cpu_t      *cpu_,
-                 md::uint32   inst_,
-                 const char **mne_,
-                 const reg_mem_decode_t &decode_) :
-            skl_load_int_t(cpu_, inst_, mne_, decode_)
+        skl_lbu_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_,
+                  const reg_mem_decode_t &decode_) :
+            skl_load_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            load(false, sizeof(md::uint8));
+            load(cpu, false, sizeof(md::uint8));
         }
     };
 
 
     struct skl_lh_t : skl_load_int_t {
 
-        skl_lh_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_lh_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_load_int_t(cpu_, inst_, mne_, decode_)
+            skl_load_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            load(true, sizeof(md::uint16));
+            load(cpu, true, sizeof(md::uint16));
         }
     };
 
 
     struct skl_lhu_t : skl_load_int_t {
 
-        skl_lhu_t(cpu_t       *cpu_,
-                  md::uint32   inst_,
+        skl_lhu_t(md::OADDR    pc_,
+                  md::OINST    inst_,
                   const char **mne_,
                   const reg_mem_decode_t &decode_) :
-            skl_load_int_t(cpu_, inst_, mne_, decode_)
+            skl_load_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            load(false, sizeof(md::uint16));
+            load(cpu, false, sizeof(md::uint16));
         }
     };
 
 
     struct skl_lw_t : skl_load_int_t {
 
-        skl_lw_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_lw_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_load_int_t(cpu_, inst_, mne_, decode_)
+            skl_load_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            load(true, sizeof(md::uint32));
+            load(cpu, true, sizeof(md::uint32));
         }
     };
 
 
     struct skl_lf_t : skl_load_real_t {
 
-        skl_lf_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_lf_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_load_real_t(cpu_, inst_, mne_, decode_)
+            skl_load_real_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            load(sizeof(float));
+            load(cpu, sizeof(float));
         }
     };
 
 
     struct skl_ld_t : skl_load_real_t {
 
-        skl_ld_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_ld_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_load_real_t(cpu_, inst_, mne_, decode_)
+            skl_load_real_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            load(sizeof(double));
+            load(cpu, sizeof(double));
         }
     };
 
 
     struct skl_sb_t : skl_store_int_t {
 
-        skl_sb_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_sb_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_store_int_t(cpu_, inst_, mne_, decode_)
+            skl_store_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            store(true, sizeof(md::uint8));
+            store(cpu, true, sizeof(md::uint8));
         }
     };
 
 
     struct skl_sd_t : skl_store_real_t {
 
-        skl_sd_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_sd_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_store_real_t(cpu_, inst_, mne_, decode_)
+            skl_store_real_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            store(sizeof(double));
+            store(cpu, sizeof(double));
         }
     };
 
 
     struct skl_sf_t : skl_store_real_t {
 
-        skl_sf_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_sf_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_store_real_t(cpu_, inst_, mne_, decode_)
+            skl_store_real_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            store(sizeof(float));
+            store(cpu, sizeof(float));
         }
     };
 
 
     struct skl_sh_t : skl_store_int_t {
 
-        skl_sh_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_sh_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_store_int_t(cpu_, inst_, mne_, decode_)
+            skl_store_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            store(true, sizeof(md::uint16));
+            store(cpu, true, sizeof(md::uint16));
         }
     };
 
 
     struct skl_sw_t : skl_store_int_t {
 
-        skl_sw_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_sw_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_store_int_t(cpu_, inst_, mne_, decode_)
+            skl_store_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
-            store(true, sizeof(md::uint32));
+            store(cpu, true, sizeof(md::uint32));
         }
     };
 
 
     struct skl_la_t : skl_load_int_t {
 
-        skl_la_t(cpu_t       *cpu_,
-                 md::uint32   inst_,
+        skl_la_t(md::OADDR    pc_,
+                 md::OINST    inst_,
                  const char **mne_,
                  const reg_mem_decode_t &decode_) :
-            skl_load_int_t(cpu_, inst_, mne_, decode_)
+            skl_load_int_t(pc_, inst_, mne_, decode_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             char sign    = '+';
             int  loffset = offset;
@@ -619,52 +619,52 @@ namespace skl {
 
         switch (opc) {
         case OPC_LB:
-            return new skl_lb_t(cpu, inst, mne, decode);
+            return new skl_lb_t(cpu->pc, inst, mne, decode);
 
         case OPC_LBU:
-            return new skl_lbu_t(cpu, inst, mne, decode);
+            return new skl_lbu_t(cpu->pc, inst, mne, decode);
 
         case OPC_LD:
-            return new skl_ld_t(cpu, inst, mne, decode);
+            return new skl_ld_t(cpu->pc, inst, mne, decode);
 
         case OPC_LDI:
-            return new skl_ldi_t(cpu, inst, mne, decode);
+            return new skl_ldi_t(cpu->pc, inst, mne, decode);
 
         case OPC_LF:
-            return new skl_lf_t(cpu, inst, mne, decode);
+            return new skl_lf_t(cpu->pc, inst, mne, decode);
 
         case OPC_LFI:
-            return new skl_lfi_t(cpu, inst, mne, decode);
+            return new skl_lfi_t(cpu->pc, inst, mne, decode);
 
         case OPC_LH:
-            return new skl_lh_t(cpu, inst, mne, decode);
+            return new skl_lh_t(cpu->pc, inst, mne, decode);
 
         case OPC_LHU:
-            return new skl_lhu_t(cpu, inst, mne, decode);
+            return new skl_lhu_t(cpu->pc, inst, mne, decode);
 
         case OPC_LW:
-            return new skl_lw_t(cpu, inst, mne, decode);
+            return new skl_lw_t(cpu->pc, inst, mne, decode);
 
         case OPC_LWI:
-            return new skl_lwi_t(cpu, inst, mne, decode);
+            return new skl_lwi_t(cpu->pc, inst, mne, decode);
 
         case OPC_SB:
-            return new skl_sb_t(cpu, inst, mne, decode);
+            return new skl_sb_t(cpu->pc, inst, mne, decode);
 
         case OPC_SD:
-            return new skl_sd_t(cpu, inst, mne, decode);
+            return new skl_sd_t(cpu->pc, inst, mne, decode);
 
         case OPC_SF:
-            return new skl_sf_t(cpu, inst, mne, decode);
+            return new skl_sf_t(cpu->pc, inst, mne, decode);
 
         case OPC_SH:
-            return new skl_sh_t(cpu, inst, mne, decode);
+            return new skl_sh_t(cpu->pc, inst, mne, decode);
 
         case OPC_SW:
-            return new skl_sw_t(cpu, inst, mne, decode);
+            return new skl_sw_t(cpu->pc, inst, mne, decode);
 
         case OPC_LA:
-            return new skl_la_t(cpu, inst, mne, decode);
+            return new skl_la_t(cpu->pc, inst, mne, decode);
 
         default:
             dialog::not_implemented("%s: inst: %xH opcode: %xH",

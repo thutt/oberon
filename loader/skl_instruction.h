@@ -12,20 +12,18 @@ namespace skl {
 
     struct instruction_t {
         struct instruction_t *next;
-        skl::cpu_t           *cpu;
-        md::OINST            inst;
-        md::OADDR             pc;
-        int                  opc;
-        const char           *mne;
-        O3::decode_pc_t       decoded_pc;
+        md::OINST        inst;
+        md::OADDR        pc;
+        int              opc;
+        const char      *mne;
+        O3::decode_pc_t  decoded_pc;
 
-        instruction_t(skl::cpu_t *cpu_,
-                      md::OINST   inst_,
+        instruction_t(md::OADDR    pc_,
+                      md::OINST    inst_,
                       const char **mne_) :
             next(NULL),
-            cpu(cpu_),
             inst(inst_),
-            pc(cpu_->pc),
+            pc(pc_),
             opc(field(inst, 4, 0)),
             mne(mne_[opc])
         {
@@ -33,7 +31,7 @@ namespace skl {
         }
 
         virtual ~instruction_t(void) { }
-        virtual void interpret(void) = 0;
+        virtual void interpret(skl::cpu_t *cpu) = 0;
     };
 
     extern instruction_t **cache;

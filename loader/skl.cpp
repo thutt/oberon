@@ -344,7 +344,7 @@ namespace skl {
 
             /* cinst == NIL --> Invalid opcode. */
             if (LIKELY(cinst != NULL)) {
-                cinst->interpret();
+                cinst->interpret(cpu);
                 next = cinst->next;
                 if (UNLIKELY(next == NULL || next->pc != cpu->pc)) {
                     next = fetch_cached_instruction(cpu);

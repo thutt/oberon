@@ -39,17 +39,17 @@ namespace skl {
         int   R0;
         int   R1;
 
-        skl_bt_t(cpu_t       *cpu_,
+        skl_bt_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst, 25, 21)),
             R0(field(inst, 20, 16)),
             R1(field(inst, 15, 11))
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             const md::uint32 r0 = read_integer_register(cpu, R0);
             const md::uint32 r1 = read_integer_register(cpu, R1);
@@ -68,10 +68,10 @@ namespace skl {
         int   C;
         int   R1;
 
-        skl_bti_t(cpu_t      *cpu_,
-                 md::OINST    inst_,
-                 const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+        skl_bti_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst, 25, 21)),
             C(field(inst, 20, 16)),
             R1(field(inst, 15, 11))
@@ -79,7 +79,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             const md::uint32 v = read_integer_register(cpu, R1);
             md::uint32       b;
@@ -129,11 +129,11 @@ namespace skl {
         int                  R1;
         bit_test_memory_op_t op;
 
-        skl_btm_family_t(cpu_t                 *cpu_,
+        skl_btm_family_t(md::OADDR              pc_,
                          md::OINST              inst_,
                          const char           **mne_,
                          bit_test_memory_op_t   op_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst, 25, 21)),
             R0(field(inst, 20, 16)),
             R1(field(inst, 15, 11)),
@@ -142,7 +142,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             const md::uint32 bit  = read_integer_register(cpu, R0) & md::MaxSet;
             const md::OADDR  addr = read_integer_register(cpu, R1);
@@ -164,11 +164,11 @@ namespace skl {
         int                  R1;
         bit_test_memory_op_t op;
 
-        skl_btmi_family_t(cpu_t                 *cpu_,
+        skl_btmi_family_t(md::OADDR              pc_,
                           md::OINST              inst_,
                           const char           **mne_,
                           bit_test_memory_op_t   op_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst, 25, 21)),
             C(field(inst, 20, 16)),
             R1(field(inst, 15, 11)),
@@ -177,7 +177,7 @@ namespace skl {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             const md::OADDR addr = read_integer_register(cpu, R1);
             unsigned        b    = bit_test_memory(addr, C, op);
@@ -197,28 +197,28 @@ namespace skl {
 
         switch (opc) {
         case OPC_BT:
-            return new skl_bt_t(cpu, inst, mne);
+            return new skl_bt_t(cpu->pc, inst, mne);
 
         case OPC_BTI:
-            return new skl_bti_t(cpu, inst, mne);
+            return new skl_bti_t(cpu->pc, inst, mne);
 
         case OPC_BTM:
-            return new skl_btm_family_t(cpu, inst, mne, bt_read);
+            return new skl_btm_family_t(cpu->pc, inst, mne, bt_read);
 
         case OPC_BTMI:
-            return new skl_btmi_family_t(cpu, inst, mne, bt_read);
+            return new skl_btmi_family_t(cpu->pc, inst, mne, bt_read);
 
         case OPC_BTMC:
-            return new skl_btm_family_t(cpu, inst, mne, bt_clear);
+            return new skl_btm_family_t(cpu->pc, inst, mne, bt_clear);
 
         case OPC_BTMCI:
-            return new skl_btmi_family_t(cpu, inst, mne, bt_clear);
+            return new skl_btmi_family_t(cpu->pc, inst, mne, bt_clear);
 
         case OPC_BTMS:
-            return new skl_btm_family_t(cpu, inst, mne, bt_set);
+            return new skl_btm_family_t(cpu->pc, inst, mne, bt_set);
 
         case OPC_BTMSI:
-            return new skl_btmi_family_t(cpu, inst, mne, bt_set);
+            return new skl_btmi_family_t(cpu->pc, inst, mne, bt_set);
 
         default:
             dialog::not_implemented("%s: inst: %xH opcode: %xH",

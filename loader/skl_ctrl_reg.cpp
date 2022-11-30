@@ -24,24 +24,24 @@ namespace skl {
         int Rd;
         int R0;
 
-        skl_lcr_t(cpu_t       *cpu_,
+        skl_lcr_t(md::OADDR    pc_,
                   md::OINST    inst_,
                   const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16))
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             control_registers_t cr = static_cast<control_registers_t>(R0);
             md::uint32          v  = read_control_register(cpu, cr);
 
             write_integer_register(cpu, Rd, v);
+            dialog::trace("%xH: %s  CR%u, R%u\n", cpu->pc, mne, R0, Rd);
             increment_pc(cpu, 1);
-            dialog::trace("%xH: %s  CR%u, R%u\n", pc, mne, R0, Rd);
         }
     };
 
@@ -50,24 +50,24 @@ namespace skl {
         int Rd;
         int R0;
 
-        skl_scr_t(cpu_t       *cpu_,
+        skl_scr_t(md::OADDR    pc_,
                   md::OINST    inst_,
                   const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16))
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             control_registers_t cr = static_cast<control_registers_t>(Rd);
             md::uint32          r0 = read_integer_register(cpu, R0);
 
             write_control_register(cpu, cr, r0);
+            dialog::trace("%xH: %s  R%u, CR%u\n", cpu->pc, mne, R0, cr);
             increment_pc(cpu, 1);
-            dialog::trace("%xH: %s  R%u, CR%u\n", pc, mne, R0, cr);
         }
     };
 
@@ -80,10 +80,10 @@ namespace skl {
 
         switch (opc) {
         case OPC_LCR:
-            return new skl_lcr_t(cpu, inst, mne);
+            return new skl_lcr_t(cpu->pc, inst, mne);
 
         case OPC_SCR:
-            return new skl_scr_t(cpu, inst, mne);
+            return new skl_scr_t(cpu->pc, inst, mne);
 
 
         default:

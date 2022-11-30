@@ -27,17 +27,17 @@ namespace skl {
         md::uint32 R0v;
         bool       value;
 
-        skl_conditional_set_t(cpu_t       *cpu_,
-                              md::uint32   inst_,
+        skl_conditional_set_t(md::OADDR    pc_,
+                              md::OINST    inst_,
                               const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst, 25, 21)),
             R0(field(inst, 20, 16))
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             R0v   = register_as_integer(cpu, R0, RB_INTEGER);
             value = relation[opc](R0v);
@@ -55,6 +55,6 @@ namespace skl {
         COMPILE_TIME_ASSERT(N_OPCODES == (sizeof(relation) /
                                           sizeof(relation[0])));
 
-        return new skl_conditional_set_t(cpu, inst, mne);
+        return new skl_conditional_set_t(cpu->pc, inst, mne);
     }
 }

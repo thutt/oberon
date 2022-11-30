@@ -64,13 +64,13 @@ namespace skl {
         register_bank_t b0;
         register_bank_t b1;
 
-        skl_gen_reg_t(cpu_t           *cpu_,
+        skl_gen_reg_t(md::OADDR        pc_,
                       md::OINST        inst_,
                       const char      **mne_,
                       register_bank_t  bd_,
                       register_bank_t  b0_,
                       register_bank_t  b1_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16)),
             R1(field(inst_, 15, 11)),
@@ -83,13 +83,13 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_t : skl_gen_reg_t {
-        skl_gen_reg_int_int_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_t(md::OADDR        pc_,
                               md::OINST       inst_,
                               const char      **mne_,
                               register_bank_t  bd_,
                               register_bank_t  b0_,
                               register_bank_t  b1_) :
-            skl_gen_reg_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_INTEGER);
         }
@@ -97,17 +97,17 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_add_t : skl_gen_reg_int_int_t {
-        skl_gen_reg_int_int_add_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_add_t(md::OADDR        pc_,
                                   md::OINST       inst_,
                                   const char      **mne_,
                                   register_bank_t  bd_,
                                   register_bank_t  b0_,
                                   register_bank_t  b1_) :
-            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_int_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -125,17 +125,17 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_sub_t : skl_gen_reg_int_int_t {
-        skl_gen_reg_int_int_sub_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_sub_t(md::OADDR        pc_,
                                   md::OINST       inst_,
                                   const char      **mne_,
                                   register_bank_t  bd_,
                                   register_bank_t  b0_,
                                   register_bank_t  b1_) :
-            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_int_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -153,17 +153,17 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_mul_t : skl_gen_reg_int_int_t {
-        skl_gen_reg_int_int_mul_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_mul_t(md::OADDR        pc_,
                                   md::OINST       inst_,
                                   const char      **mne_,
                                   register_bank_t  bd_,
                                   register_bank_t  b0_,
                                   register_bank_t  b1_) :
-            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_int_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -181,17 +181,17 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_div_t : skl_gen_reg_int_int_t {
-        skl_gen_reg_int_int_div_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_div_t(md::OADDR        pc_,
                                   md::OINST       inst_,
                                   const char      **mne_,
                                   register_bank_t  bd_,
                                   register_bank_t  b0_,
                                   register_bank_t  b1_) :
-            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_int_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -216,17 +216,17 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_mod_t : skl_gen_reg_int_int_t {
-        skl_gen_reg_int_int_mod_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_mod_t(md::OADDR        pc_,
                                   md::OINST       inst_,
                                   const char      **mne_,
                                   register_bank_t  bd_,
                                   register_bank_t  b0_,
                                   register_bank_t  b1_) :
-            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_int_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -251,17 +251,17 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_cmp_t : skl_gen_reg_int_int_t {
-        skl_gen_reg_int_int_cmp_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_cmp_t(md::OADDR        pc_,
                                   md::OINST       inst_,
                                   const char      **mne_,
                                   register_bank_t  bd_,
                                   register_bank_t  b0_,
                                   register_bank_t  b1_) :
-            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_int_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -279,17 +279,17 @@ namespace skl {
 
 
     struct skl_gen_reg_int_int_abs_t : skl_gen_reg_int_int_t {
-        skl_gen_reg_int_int_abs_t(cpu_t           *cpu_,
+        skl_gen_reg_int_int_abs_t(md::OADDR        pc_,
                                   md::OINST       inst_,
                                   const char      **mne_,
                                   register_bank_t  bd_,
                                   register_bank_t  b0_,
                                   register_bank_t  b1_) :
-            skl_gen_reg_int_int_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_int_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -307,13 +307,13 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_t : skl_gen_reg_t {
-        skl_gen_reg_int_real_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_t(md::OADDR        pc_,
                                md::OINST       inst_,
                                const char      **mne_,
                                register_bank_t  bd_,
                                register_bank_t  b0_,
                                register_bank_t  b1_) :
-            skl_gen_reg_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
@@ -321,19 +321,19 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_add_t : skl_gen_reg_int_real_t {
-        skl_gen_reg_int_real_add_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_add_t(md::OADDR        pc_,
                                    md::OINST       inst_,
                                    const char      **mne_,
                                    register_bank_t  bd_,
                                    register_bank_t  b0_,
                                    register_bank_t  b1_) :
-            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -351,19 +351,19 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_sub_t : skl_gen_reg_int_real_t {
-        skl_gen_reg_int_real_sub_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_sub_t(md::OADDR        pc_,
                                    md::OINST       inst_,
                                    const char      **mne_,
                                    register_bank_t  bd_,
                                    register_bank_t  b0_,
                                    register_bank_t  b1_) :
-            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -381,19 +381,19 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_mul_t : skl_gen_reg_int_real_t {
-        skl_gen_reg_int_real_mul_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_mul_t(md::OADDR        pc_,
                                    md::OINST       inst_,
                                    const char      **mne_,
                                    register_bank_t  bd_,
                                    register_bank_t  b0_,
                                    register_bank_t  b1_) :
-            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -411,19 +411,19 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_div_t : skl_gen_reg_int_real_t {
-        skl_gen_reg_int_real_div_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_div_t(md::OADDR        pc_,
                                    md::OINST       inst_,
                                    const char      **mne_,
                                    register_bank_t  bd_,
                                    register_bank_t  b0_,
                                    register_bank_t  b1_) :
-            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -448,19 +448,19 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_mod_t : skl_gen_reg_int_real_t {
-        skl_gen_reg_int_real_mod_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_mod_t(md::OADDR        pc_,
                                    md::OINST       inst_,
                                    const char      **mne_,
                                    register_bank_t  bd_,
                                    register_bank_t  b0_,
                                    register_bank_t  b1_) :
-            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -484,19 +484,19 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_cmp_t : skl_gen_reg_int_real_t {
-        skl_gen_reg_int_real_cmp_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_cmp_t(md::OADDR        pc_,
                                    md::OINST       inst_,
                                    const char      **mne_,
                                    register_bank_t  bd_,
                                    register_bank_t  b0_,
                                    register_bank_t  b1_) :
-            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -514,19 +514,19 @@ namespace skl {
 
 
     struct skl_gen_reg_int_real_abs_t : skl_gen_reg_int_real_t {
-        skl_gen_reg_int_real_abs_t(cpu_t           *cpu_,
+        skl_gen_reg_int_real_abs_t(md::OADDR        pc_,
                                    md::OINST       inst_,
                                    const char      **mne_,
                                    register_bank_t  bd_,
                                    register_bank_t  b0_,
                                    register_bank_t  b1_) :
-            skl_gen_reg_int_real_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_int_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
             assert(b0 == RB_INTEGER && b1 == RB_INTEGER && bd == RB_DOUBLE);
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -544,18 +544,18 @@ namespace skl {
 
 
     struct skl_gen_reg_real_t : skl_gen_reg_t {
-        skl_gen_reg_real_t(cpu_t           *cpu_,
+        skl_gen_reg_real_t(md::OADDR        pc_,
                            md::OINST        inst_,
                            const char      **mne_,
                            register_bank_t  bd_,
                            register_bank_t  b0_,
                            register_bank_t  b1_) :
-            skl_gen_reg_t(cpu_, inst_, mne_, bd_, b0_, b1_)
+            skl_gen_reg_t(pc_, inst_, mne_, bd_, b0_, b1_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             double l = register_as_double(cpu, R0, b0);
             double r = register_as_double(cpu, R1, b1);
@@ -694,31 +694,31 @@ namespace skl {
             if (LIKELY(bd == RB_INTEGER)) {
                 switch (opc) {
                 case OPC_ADD:
-                    return new skl_gen_reg_int_int_add_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_int_add_t(cpu->pc, inst, mne,
                                                          bd, b0, b1);
 
                 case OPC_SUB:
-                    return new skl_gen_reg_int_int_sub_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_int_sub_t(cpu->pc, inst, mne,
                                                          bd, b0, b1);
 
                 case OPC_MUL:
-                    return new skl_gen_reg_int_int_mul_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_int_mul_t(cpu->pc, inst, mne,
                                                          bd, b0, b1);
 
                 case OPC_DIV:
-                    return new skl_gen_reg_int_int_div_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_int_div_t(cpu->pc, inst, mne,
                                                          bd, b0, b1);
 
                 case OPC_MOD:
-                    return new skl_gen_reg_int_int_mod_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_int_mod_t(cpu->pc, inst, mne,
                                                          bd, b0, b1);
 
                 case OPC_CMP:
-                    return new skl_gen_reg_int_int_cmp_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_int_cmp_t(cpu->pc, inst, mne,
                                                          bd, b0, b1);
 
                 case OPC_ABS:
-                    return new skl_gen_reg_int_int_abs_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_int_abs_t(cpu->pc, inst, mne,
                                                          bd, b0, b1);
 
                 default:
@@ -730,31 +730,31 @@ namespace skl {
                  */
                 switch (opc) {
                 case OPC_ADD:
-                    return new skl_gen_reg_int_real_add_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_real_add_t(cpu->pc, inst, mne,
                                                           bd, b0, b1);
 
                 case OPC_SUB:
-                    return new skl_gen_reg_int_real_sub_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_real_sub_t(cpu->pc, inst, mne,
                                                           bd, b0, b1);
 
                 case OPC_MUL:
-                    return new skl_gen_reg_int_real_mul_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_real_mul_t(cpu->pc, inst, mne,
                                                           bd, b0, b1);
 
                 case OPC_DIV:
-                    return new skl_gen_reg_int_real_div_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_real_div_t(cpu->pc, inst, mne,
                                                           bd, b0, b1);
 
                 case OPC_MOD:
-                    return new skl_gen_reg_int_real_mod_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_real_mod_t(cpu->pc, inst, mne,
                                                           bd, b0, b1);
 
                 case OPC_CMP:
-                    return new skl_gen_reg_int_real_cmp_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_real_cmp_t(cpu->pc, inst, mne,
                                                           bd, b0, b1);
 
                 case OPC_ABS:
-                    return new skl_gen_reg_int_real_abs_t(cpu, inst, mne,
+                    return new skl_gen_reg_int_real_abs_t(cpu->pc, inst, mne,
                                                           bd, b0, b1);
 
                 default:
@@ -762,7 +762,7 @@ namespace skl {
                 }
             }
         } else {
-            return new skl_gen_reg_real_t(cpu, inst, mne, bd, b0, b1);
+            return new skl_gen_reg_real_t(cpu->pc, inst, mne, bd, b0, b1);
         }
     }
 }

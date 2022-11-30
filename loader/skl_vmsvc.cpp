@@ -24,16 +24,16 @@ namespace skl {
     struct skl_vmsvc_t : skl::instruction_t {
         int R0;
 
-        skl_vmsvc_t(cpu_t       *cpu_,
+        skl_vmsvc_t(md::OADDR    pc_,
                     md::OINST    inst_,
                     const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             R0(field(inst_, 20, 16))
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32       svc;
             const md::OADDR  adr       = read_integer_register(cpu, R0);
@@ -109,6 +109,6 @@ namespace skl {
     skl::instruction_t *
     op_vmsvc(cpu_t *cpu, md::OINST inst, const char **mne)
     {
-        return new skl_vmsvc_t(cpu, inst, mne);
+        return new skl_vmsvc_t(cpu->pc, inst, mne);
     }
 }

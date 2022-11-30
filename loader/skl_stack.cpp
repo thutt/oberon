@@ -38,10 +38,10 @@ namespace skl {
         int words;
         int n_words;
 
-        stack_frame_t(skl::cpu_t  *cpu_,
+        stack_frame_t(md::OADDR    pc_,
                       md::OINST    inst_,
                       const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             words(field(inst_, 20, 5)),
             n_words(1 + /* R31 */ 1 + /* Rd */ + words)
@@ -52,15 +52,15 @@ namespace skl {
 
     struct enter_t : stack_frame_t {
 
-        enter_t(skl::cpu_t  *cpu_,
-                md::OINST   inst_,
+        enter_t(md::OADDR    pc_,
+                md::OINST    inst_,
                 const char **mne_) :
-            stack_frame_t(cpu_, inst_, mne_)
+            stack_frame_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, Rd, words);
 
@@ -89,15 +89,14 @@ namespace skl {
                 write_integer_register(cpu, Rd, rd1); /* Set SFP. */
 
                 if (skl_alpha) {
-                    /* XXX When different build types are supported,
-                     * zero out stack space in development-style
-                     * builds.  This is intended to be used for
-                     * debugging.  But, it could be made part of the
-                     * VM, and then the compiler would not have to
-                     * initialize local pointer variables -- as long
-                     * as the NIL value is the same as the fill value.
+                    /* Zero out stack space in development builds.
+                     * This is intended to be used for debugging.
+                     * But, it could be made part of the VM, and then
+                     * the compiler would not have to initialize local
+                     * pointer variables -- as long as the NIL value
+                     * is the same as the fill value.
                      */
-                    memset(heap::host_address(sp1), '\xff', rd1 - sp1);  /* Zero new stack space */
+                    memset(heap::host_address(sp1), '\xff', rd1 - sp1);
                 }
 
                 increment_pc(cpu, 1);
@@ -110,15 +109,15 @@ namespace skl {
 
 
     struct leave_t : stack_frame_t {
-        leave_t(skl::cpu_t  *cpu_,
-                md::OINST   inst_,
+        leave_t(md::OADDR    pc_,
+                md::OINST    inst_,
                 const char **mne_) :
-            stack_frame_t(cpu_, inst_, mne_)
+            stack_frame_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, Rd, words);
 
@@ -160,10 +159,10 @@ namespace skl {
     struct stack_op_t : skl::instruction_t {
         int Rd;
 
-        stack_op_t(skl::cpu_t  *cpu_,
+        stack_op_t(md::OADDR    pc_,
                    md::OINST    inst_,
                    const char **mne_) :
-            skl::instruction_t(cpu_, inst_, mne_),
+            skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst, 25, 21))
         {
         }
@@ -195,15 +194,15 @@ namespace skl {
 
 
     struct push_t : stack_op_t {
-        push_t(skl::cpu_t  *cpu_,
+        push_t(md::OADDR    pc_,
                md::OINST    inst_,
                const char **mne_) :
-            skl::stack_op_t(cpu_, inst_, mne_)
+            skl::stack_op_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  R%u", decoded_pc, mne, Rd);
             if (stack_access_ok(cpu, 1, true)) {
@@ -222,15 +221,15 @@ namespace skl {
 
 
     struct pushf_t : stack_op_t {
-        pushf_t(skl::cpu_t  *cpu_,
+        pushf_t(md::OADDR    pc_,
                 md::OINST    inst_,
                 const char **mne_) :
-            skl::stack_op_t(cpu_, inst_, mne_)
+            skl::stack_op_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
             if (LIKELY(stack_access_ok(cpu, 1, true))) {
@@ -257,15 +256,15 @@ namespace skl {
 
 
     struct pushd_t : stack_op_t {
-        pushd_t(skl::cpu_t  *cpu_,
+        pushd_t(md::OADDR    pc_,
                 md::OINST    inst_,
                 const char **mne_) :
-            skl::stack_op_t(cpu_, inst_, mne_)
+            skl::stack_op_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
             if (LIKELY(stack_access_ok(cpu, 2, true))) {
@@ -291,15 +290,15 @@ namespace skl {
 
 
     struct pop_t : stack_op_t {
-        pop_t(skl::cpu_t  *cpu_,
+        pop_t(md::OADDR    pc_,
               md::OINST    inst_,
               const char **mne_) :
-            skl::stack_op_t(cpu_, inst_, mne_)
+            skl::stack_op_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             md::uint32      value;
 
@@ -318,15 +317,15 @@ namespace skl {
 
 
     struct popf_t : stack_op_t {
-        popf_t(skl::cpu_t  *cpu_,
+        popf_t(md::OADDR    pc_,
                md::OINST    inst_,
                const char **mne_) :
-            skl::stack_op_t(cpu_, inst_, mne_)
+            skl::stack_op_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::not_implemented(__func__);
         }
@@ -334,15 +333,15 @@ namespace skl {
 
 
     struct popd_t : stack_op_t {
-        popd_t(skl::cpu_t  *cpu_,
+        popd_t(md::OADDR    pc_,
                md::OINST    inst_,
                const char **mne_) :
-            skl::stack_op_t(cpu_, inst_, mne_)
+            skl::stack_op_t(pc_, inst_, mne_)
         {
         }
 
 
-        virtual void interpret(void)
+        virtual void interpret(skl::cpu_t *cpu)
         {
             dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
             if (LIKELY(stack_access_ok(cpu, 2, true))) {
@@ -374,28 +373,28 @@ namespace skl {
 
         switch (opc) {
         case OPC_ENTER:
-            return new enter_t(cpu, inst, mne);
+            return new enter_t(cpu->pc, inst, mne);
 
         case OPC_LEAVE:
-            return new leave_t(cpu, inst, mne);
+            return new leave_t(cpu->pc, inst, mne);
 
         case OPC_PUSH:
-            return new push_t(cpu, inst, mne);
+            return new push_t(cpu->pc, inst, mne);
 
         case OPC_POP:
-            return new pop_t(cpu, inst, mne);
+            return new pop_t(cpu->pc, inst, mne);
 
         case OPC_PUSHF:
-            return new pushf_t(cpu, inst, mne);
+            return new pushf_t(cpu->pc, inst, mne);
 
         case OPC_POPF:
-            return new popf_t(cpu, inst, mne);
+            return new popf_t(cpu->pc, inst, mne);
 
         case OPC_PUSHD:
-            return new pushd_t(cpu, inst, mne);
+            return new pushd_t(cpu->pc, inst, mne);
 
         case OPC_POPD:
-            return new popd_t(cpu, inst, mne);
+            return new popd_t(cpu->pc, inst, mne);
 
         default:
             dialog::not_implemented("%s: inst: %xH opcode: %x#",
