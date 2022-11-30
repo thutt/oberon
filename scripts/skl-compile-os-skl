@@ -13,7 +13,6 @@ source ${SKL_DIR}/scripts/functions
 function main ()
 {
     echo -e "\n\n*** Building SKL-based Oberon OS & compiler.";
-    cd ${SKL_DIR}/system;
     skl-skl-oc -n                                   \
         ${OS[*]}                                    \
         ${SKL[*]};
