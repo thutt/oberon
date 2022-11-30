@@ -56,7 +56,6 @@ namespace skl
     } register_bank_t;
 
     typedef struct cpu_t {
-        md::OADDR    ea;                       // Computed effective address.
         md::OADDR    pc;
         md::uint32   _instruction_count;
         md::uint32   _CR[N_CONTROL_REGISTERS]; // Control registers.
@@ -282,7 +281,7 @@ namespace skl
     }
 
 
-    static inline void
+    static inline md::OADDR
     compute_effective_address(cpu_t *cpu,
                               int    Rbase,
                               int    Rindex,
@@ -298,7 +297,7 @@ namespace skl
                scale == 2 ||  /* index * 4 */
                scale == 3);   /* index * 8 */
         scaled_index = index << static_cast<md::uint32>(scale);
-        cpu->ea = base + scaled_index  + static_cast<md::uint32>(offset);
+        return base + scaled_index  + static_cast<md::uint32>(offset);
     }
 
 
