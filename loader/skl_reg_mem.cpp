@@ -45,8 +45,6 @@ namespace skl {
 
     struct skl_lwi_t : skl_reg_mem_t {
         md::uint32 cdata;
-        md::uint32 value;
-
 
         skl_lwi_t(md::OADDR    pc_,
                   md::OINST    inst_,
@@ -60,6 +58,7 @@ namespace skl {
 
         virtual void interpret(skl::cpu_t *cpu)
         {
+            md::uint32 value;
             value = read_integer_register(cpu, decode.Rbase) + cdata;
             write_integer_register(cpu, decode.Rd, value);
             dialog::trace("%s: %s  R%u + %xH, R%u", decoded_pc, mne,
@@ -72,7 +71,6 @@ namespace skl {
 
     struct skl_lfi_t : skl_reg_mem_t {
         double value;
-
 
         skl_lfi_t(md::OADDR    pc_,
                   md::OINST    inst_,
@@ -103,7 +101,6 @@ namespace skl {
 
     struct skl_ldi_t : skl_reg_mem_t {
         double value;
-
 
         skl_ldi_t(md::OADDR    pc_,
                   md::OINST    inst_,
@@ -185,8 +182,6 @@ namespace skl {
 
 
     struct skl_store_int_t : skl_load_store_t {
-        md::uint32 value;
-
         skl_store_int_t(md::OADDR    pc_,
                         md::OINST    inst_,
                         const char **mne_,
@@ -205,8 +200,8 @@ namespace skl {
                                                              decode.Rindex,
                                                              decode.scale,
                                                              offset);
+            md::uint32 value = read_integer_register(cpu, decode.Rd);
 
-            value = read_integer_register(cpu, decode.Rd);
             if (offs < 0) {
                 offs = -offs;
                 sign   = '-';
@@ -358,7 +353,6 @@ namespace skl {
 
 
     struct skl_lb_t : skl_load_int_t {
-
         skl_lb_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -376,7 +370,6 @@ namespace skl {
 
 
     struct skl_lbu_t : skl_load_int_t {
-
         skl_lbu_t(md::OADDR    pc_,
                   md::OINST    inst_,
                   const char **mne_,
@@ -394,7 +387,6 @@ namespace skl {
 
 
     struct skl_lh_t : skl_load_int_t {
-
         skl_lh_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -412,7 +404,6 @@ namespace skl {
 
 
     struct skl_lhu_t : skl_load_int_t {
-
         skl_lhu_t(md::OADDR    pc_,
                   md::OINST    inst_,
                   const char **mne_,
@@ -430,7 +421,6 @@ namespace skl {
 
 
     struct skl_lw_t : skl_load_int_t {
-
         skl_lw_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -448,7 +438,6 @@ namespace skl {
 
 
     struct skl_lf_t : skl_load_real_t {
-
         skl_lf_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -466,7 +455,6 @@ namespace skl {
 
 
     struct skl_ld_t : skl_load_real_t {
-
         skl_ld_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -484,7 +472,6 @@ namespace skl {
 
 
     struct skl_sb_t : skl_store_int_t {
-
         skl_sb_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -502,7 +489,6 @@ namespace skl {
 
 
     struct skl_sd_t : skl_store_real_t {
-
         skl_sd_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -520,7 +506,6 @@ namespace skl {
 
 
     struct skl_sf_t : skl_store_real_t {
-
         skl_sf_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -538,7 +523,6 @@ namespace skl {
 
 
     struct skl_sh_t : skl_store_int_t {
-
         skl_sh_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -556,7 +540,6 @@ namespace skl {
 
 
     struct skl_sw_t : skl_store_int_t {
-
         skl_sw_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
@@ -574,7 +557,6 @@ namespace skl {
 
 
     struct skl_la_t : skl_load_int_t {
-
         skl_la_t(md::OADDR    pc_,
                  md::OINST    inst_,
                  const char **mne_,
