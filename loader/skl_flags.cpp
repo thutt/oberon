@@ -1,4 +1,4 @@
-/* Copyright (c) 2021 Logic Magicians Software */
+/* Copyright (c) 2021, 2022 Logic Magicians Software */
 #include <assert.h>
 
 #include "config.h"
@@ -39,68 +39,68 @@ namespace skl {
     static bool
     rel_eq(md::uint32 flags)
     {
-        return flag(flags, ZF);
+        return relation_eq(flags);
     }
 
 
     static bool
     rel_ne(md::uint32 flags)
     {
-        return !flag(flags, ZF);
+        return relation_ne(flags);
     }
 
 
     static bool
     rel_ltu(md::uint32 flags)
     {
-        return flag(flags, CF);
+        return relation_ltu(flags);
     }
 
 
     static bool
     rel_geu(md::uint32 flags)
     {
-        return !flag(flags, CF);
+        return relation_geu(flags);
     }
 
 
     static bool
     rel_leu(md::uint32 flags)
     {
-        return flag(flags, CF) || flag(flags, ZF);
+        return relation_leu(flags);
     }
 
     static bool
     rel_gtu(md::uint32 flags)
     {
-        return !flag(flags, CF) && !flag(flags, ZF);
+        return relation_gtu(flags);
     }
 
 
     static bool
     rel_lt(md::uint32 flags)
     {
-        return flag(flags, SF) != flag(flags, OF);
+        return relation_lt(flags);
     }
 
 
     static bool
     rel_ge(md::uint32 flags)
     {
-        return flag(flags, SF) == flag(flags, OF);
+        return relation_ge(flags);
     }
 
 
     static bool
     rel_le(md::uint32 flags)
     {
-        return flag(flags, ZF) || flag(flags, SF) != flag(flags, OF);
+        return relation_le(flags);
     }
 
 
     static bool
     rel_gt(md::uint32 flags)
     {
-        return !flag(flags, ZF) && (flag(flags, SF) == flag(flags, OF));
+        return relation_gt(flags);
     }
 }

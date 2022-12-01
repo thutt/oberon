@@ -31,4 +31,73 @@ namespace skl {
     {
         return !!(flags & left_shift(1, bit));
     }
+
+
+    static inline bool
+    relation_eq(md::uint32 flags)
+    {
+        return flag(flags, ZF);
+    }
+
+
+    static inline bool
+    relation_ne(md::uint32 flags)
+    {
+        return !flag(flags, ZF);
+    }
+
+
+    static inline bool
+    relation_ltu(md::uint32 flags)
+    {
+        return flag(flags, CF);
+    }
+
+
+    static inline bool
+    relation_geu(md::uint32 flags)
+    {
+        return !flag(flags, CF);
+    }
+
+
+    static inline bool
+    relation_leu(md::uint32 flags)
+    {
+        return flag(flags, CF) || flag(flags, ZF);
+    }
+
+    static inline bool
+    relation_gtu(md::uint32 flags)
+    {
+        return !flag(flags, CF) && !flag(flags, ZF);
+    }
+
+
+    static inline bool
+    relation_lt(md::uint32 flags)
+    {
+        return flag(flags, SF) != flag(flags, OF);
+    }
+
+
+    static inline bool
+    relation_ge(md::uint32 flags)
+    {
+        return flag(flags, SF) == flag(flags, OF);
+    }
+
+
+    static inline bool
+    relation_le(md::uint32 flags)
+    {
+        return flag(flags, ZF) || flag(flags, SF) != flag(flags, OF);
+    }
+
+
+    static inline bool
+    relation_gt(md::uint32 flags)
+    {
+        return !flag(flags, ZF) && (flag(flags, SF) == flag(flags, OF));
+    }
 }
