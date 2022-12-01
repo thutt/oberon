@@ -20,16 +20,26 @@ namespace skl {
     };
 
 
-    struct skl_lcr_t : skl::instruction_t {
+    struct skl_control_reg_t : skl::instruction_t {
         int Rd;
         int R0;
 
-        skl_lcr_t(md::OADDR    pc_,
-                  md::OINST    inst_,
-                  const char **mne_) :
+        skl_control_reg_t(md::OADDR    pc_,
+                          md::OINST    inst_,
+                          const char **mne_) :
             skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16))
+        {
+        }
+    };
+
+
+    struct skl_lcr_t : skl_control_reg_t {
+        skl_lcr_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl_control_reg_t(pc_, inst_, mne_)
         {
         }
 
@@ -46,16 +56,11 @@ namespace skl {
     };
 
 
-    struct skl_scr_t : skl::instruction_t {
-        int Rd;
-        int R0;
-
+    struct skl_scr_t : skl_control_reg_t {
         skl_scr_t(md::OADDR    pc_,
                   md::OINST    inst_,
                   const char **mne_) :
-            skl::instruction_t(pc_, inst_, mne_),
-            Rd(field(inst_, 25, 21)),
-            R0(field(inst_, 20, 16))
+            skl_control_reg_t(pc_, inst_, mne_)
         {
         }
 
