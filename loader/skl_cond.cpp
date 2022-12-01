@@ -22,10 +22,8 @@ namespace skl {
 
 
     struct skl_conditional_set_t : skl::instruction_t {
-        int        Rd;
-        int        R0;
-        md::uint32 R0v;
-        bool       value;
+        int Rd;
+        int R0;
 
         skl_conditional_set_t(md::OADDR    pc_,
                               md::OINST    inst_,
@@ -39,8 +37,9 @@ namespace skl {
 
         virtual void interpret(skl::cpu_t *cpu)
         {
-            R0v   = register_as_integer(cpu, R0, RB_INTEGER);
-            value = relation[opc](R0v);
+            md::uint32 R0v   = read_integer_register(cpu, R0);
+            bool       value = relation[opc](R0v);
+
             write_integer_register(cpu, Rd, value);
             increment_pc(cpu, 1);
             dialog::trace("%xH: %s  R%u, R%u  [%xH, %u]\n",
