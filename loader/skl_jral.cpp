@@ -22,7 +22,6 @@ namespace skl {
         int       Rd;
         int       R0;
         md::OADDR return_addr;
-        md::OADDR new_pc;
 
         skl_jral_t(md::OADDR    pc_,
                    md::OINST    inst_,
@@ -30,7 +29,7 @@ namespace skl {
             skl::instruction_t(pc_, inst_, mne_),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16)),
-            return_addr(pc + static_cast<md::OADDR>(sizeof(md::uint32)))
+            return_addr(pc_ + static_cast<md::OADDR>(sizeof(md::uint32)))
         {
         }
 
@@ -39,10 +38,10 @@ namespace skl {
         {
             O3::decode_pc_t decoded_ra;
             O3::decode_pc_t decoded_new;
+            md::OADDR       new_pc = read_integer_register(cpu, R0);
 
             O3::decode_pc(return_addr, decoded_ra);
             O3::decode_pc(new_pc, decoded_new);
-            new_pc = read_integer_register(cpu, R0);
 
             dialog::trace("%s: %s  R%u, R%u", decoded_pc, mne, R0, Rd);
             dialog::trace("[pc := %s, retpc := %s]\n", decoded_new, decoded_ra);
