@@ -536,7 +536,6 @@ The files contained here are provided under the corresponding software license.
   loader/skl_ctrl_reg.cpp
   loader/skl_ctrl_reg.h
   loader/skl_ctrl_reg_opc.h
-  loader/skl_flags.cpp
   loader/skl_flags.h
   loader/skl_gen_reg.cpp
   loader/skl_gen_reg.h

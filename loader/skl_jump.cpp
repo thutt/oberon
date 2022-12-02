@@ -52,17 +52,14 @@ namespace skl {
     };
 
     struct skl_conditional_jump_t : skl::instruction_t {
-        int             rel;
         int             R0;
         md::OADDR       addr;
         md::OADDR       destination;
 
         skl_conditional_jump_t(md::OADDR    pc_,
-                               opc_t        rel_,
                                md::OINST    inst_,
                                const char **mne_) :
             skl::instruction_t(pc_, inst_, mne_),
-            rel(rel_),
             R0(field(inst, 20, 16)),
             addr(skl::read(pc + 4, false, sizeof(md::uint32))),
             destination(pc +
@@ -70,12 +67,10 @@ namespace skl {
         {
         }
 
-        virtual void interpret(skl::cpu_t *cpu)
+
+        void epilog(skl::cpu_t *cpu, md::uint32 flags, bool compare)
         {
             O3::decode_pc_t decoded_da;
-            md::uint32      flags          = read_integer_register(cpu, R0);
-            bool            compare_result = relation[rel](flags);
-
             O3::decode_pc(destination, decoded_da);
 
             dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, R0, addr);
@@ -85,12 +80,202 @@ namespace skl {
                           flag(flags, SF),
                           flag(flags, CF),
                           flag(flags, OF),
-                          compare_result);
-            if (compare_result) {
+                          compare);
+            if (compare) {
                 cpu->pc = destination;
             } else {
                 increment_pc(cpu, 2);
             }
+        }
+    };
+
+
+    struct skl_jeq_t : skl::skl_conditional_jump_t {
+
+        skl_jeq_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_eq(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jne_t : skl::skl_conditional_jump_t {
+
+        skl_jne_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_ne(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jlt_t : skl::skl_conditional_jump_t {
+
+        skl_jlt_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_lt(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jge_t : skl::skl_conditional_jump_t {
+
+        skl_jge_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_ge(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jle_t : skl::skl_conditional_jump_t {
+
+        skl_jle_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_le(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jgt_t : skl::skl_conditional_jump_t {
+
+        skl_jgt_t(md::OADDR    pc_,
+                  md::OINST    inst_,
+                  const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_gt(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jltu_t : skl::skl_conditional_jump_t {
+
+        skl_jltu_t(md::OADDR    pc_,
+                   md::OINST    inst_,
+                   const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_ltu(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jgeu_t : skl::skl_conditional_jump_t {
+
+        skl_jgeu_t(md::OADDR    pc_,
+                   md::OINST    inst_,
+                   const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_geu(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jleu_t : skl::skl_conditional_jump_t {
+
+        skl_jleu_t(md::OADDR    pc_,
+                   md::OINST    inst_,
+               const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_leu(flags);
+
+            epilog(cpu, flags, compare);
+        }
+    };
+
+
+    struct skl_jgtu_t : skl::skl_conditional_jump_t {
+
+        skl_jgtu_t(md::OADDR    pc_,
+                   md::OINST    inst_,
+                   const char **mne_) :
+            skl::skl_conditional_jump_t(pc_, inst_, mne_)
+        {
+        }
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            md::uint32      flags   = read_integer_register(cpu, R0);
+            bool            compare = relation_gtu(flags);
+
+            epilog(cpu, flags, compare);
         }
     };
 
@@ -128,17 +313,16 @@ namespace skl {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
         switch (opc) {
-        case OPC_JEQ:
-        case OPC_JNE:
-        case OPC_JLT:
-        case OPC_JGE:
-        case OPC_JLE:
-        case OPC_JGT:
-        case OPC_JLTU:
-        case OPC_JGEU:
-        case OPC_JLEU:
-        case OPC_JGTU:
-            return new skl_conditional_jump_t(cpu->pc, opc, inst, mne);
+        case OPC_JEQ:  return new skl_jeq_t(cpu->pc, inst, mne);
+        case OPC_JNE:  return new skl_jne_t(cpu->pc, inst, mne);
+        case OPC_JLT:  return new skl_jlt_t(cpu->pc, inst, mne);
+        case OPC_JGE:  return new skl_jge_t(cpu->pc, inst, mne);
+        case OPC_JLE:  return new skl_jle_t(cpu->pc, inst, mne);
+        case OPC_JGT:  return new skl_jgt_t(cpu->pc, inst, mne);
+        case OPC_JLTU: return new skl_jltu_t(cpu->pc, inst, mne);
+        case OPC_JGEU: return new skl_jgeu_t(cpu->pc, inst, mne);
+        case OPC_JLEU: return new skl_jleu_t(cpu->pc, inst, mne);
+        case OPC_JGTU: return new skl_jgtu_t(cpu->pc, inst, mne);
 
         case OPC_J:
             return new skl_jump_t(cpu->pc, inst, mne);

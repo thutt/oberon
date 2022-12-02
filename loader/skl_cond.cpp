@@ -221,9 +221,6 @@ namespace skl {
 
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
-        COMPILE_TIME_ASSERT(N_OPCODES == (sizeof(relation) /
-                                          sizeof(relation[0])));
-
         switch (opc) {
         case OPC_SEQ:  return new skl_seq_t(cpu->pc, inst, mne);
         case OPC_SGE:  return new skl_sge_t(cpu->pc, inst, mne);
