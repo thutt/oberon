@@ -15,19 +15,6 @@ namespace skl {
             N_OPCODES
         } opc_t;
 
-    typedef double (*arithmetic_double_fn)(double l, double r);
-
-#define OPC(_t) static double _t##_double(double l, double r);
-#include "skl_gen_reg_opc.h"
-#undef OPC
-
-    static arithmetic_double_fn arithmetic_double[] = {
-#define OPC(_t) _t##_double,
-#include "skl_gen_reg_opc.h"
-#undef OPC
-    };
-
-
     static unsigned
     synthesize_overflow_int32(md::int32 l, md::int32 r)
     {
@@ -49,6 +36,31 @@ namespace skl {
         md::uint32 SF = (ll - lr) < 0;                     // Sign flag.
         md::uint32 CF = l < r;                             // Carry flag.
         md::uint32 OF = synthesize_overflow_int32(ll, lr); // Overflow flag.
+        return ((ZF << 0) |
+                (SF << 1) |
+                (CF << 2) |
+                (OF << 3));
+    }
+
+
+    static unsigned
+    synthesize_overflow_double(double l, double r)
+    {
+        int t0 = (r >= 0) && (l >= md::MinLReal() + r);
+        int t1 = (r < 0)  && (l <= md::MaxLReal() + r);
+        return !t0 && !t1;
+    }
+
+
+    static md::uint32
+    synthesize_flags_double(double l, double r)
+    {
+        double     delta = (l - r);
+        md::uint32 ZF    = delta == 0;                    // Zero flag.
+        md::uint32 SF    = delta < 0;                     // Sign flag.
+        md::uint32 CF    = l < r;                         // Carry flag.
+        md::uint32 OF = synthesize_overflow_double(l, r); // Overflow flag.
+
         return ((ZF << 0) |
                 (SF << 1) |
                 (CF << 2) |
@@ -554,37 +566,8 @@ namespace skl {
         {
         }
 
-
-        virtual void interpret(skl::cpu_t *cpu)
+        void epilog(skl::cpu_t *cpu, double v)
         {
-            double l = register_as_double(cpu, R0, b0);
-            double r = register_as_double(cpu, R1, b1);
-            double v = arithmetic_double[opc](l, r);
-
-            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
-                          reg_bank[b0], R0,
-                          reg_bank[b1], R1,
-                          reg_bank[bd], Rd);
-
-            switch (opc) {
-            case OPC_ADD:
-            case OPC_SUB:
-            case OPC_MUL:
-            case OPC_DIV:
-            case OPC_MOD:
-            case OPC_ABS:
-                dialog::trace("[%f, %f, %f]\n", l, r, v);
-                break;
-
-            case OPC_CMP:
-                dialog::trace("[%f, %f, 0%xH]\n", l, r,
-                              static_cast<md::uint32>(v));
-                break;
-
-            default:
-                dialog::not_implemented("%s: unhandled decode?", __func__);
-            }
-
             if (!cpu->exception_raised) {
                 if (bd == RB_INTEGER) {
                     write_integer_register(cpu, Rd,
@@ -598,83 +581,201 @@ namespace skl {
     };
 
 
-    static unsigned
-    synthesize_overflow_double(double l, double r)
-    {
-        int t0 = (r >= 0) && (l >= md::MinLReal() + r);
-        int t1 = (r < 0)  && (l <= md::MaxLReal() + r);
-        return !t0 && !t1;
-    }
-
-
-    static md::uint32
-    synthesize_flags_double(double l, double r)
-    {
-        double     delta = (l - r);
-        md::uint32 ZF    = delta == 0;                    // Zero flag.
-        md::uint32 SF    = delta < 0;                     // Sign flag.
-        md::uint32 CF    = l < r;                         // Carry flag.
-        md::uint32 OF = synthesize_overflow_double(l, r); // Overflow flag.
-
-        return ((ZF << 0) |
-                (SF << 1) |
-                (CF << 2) |
-                (OF << 3));
-    }
-    static double
-    ABS_double(double l, double r)
-    {
-        return fabs(r);
-    }
-
-
-    static double
-    ADD_double(double l, double r)
-    {
-        return l + r;
-    }
-
-
-    static double
-    SUB_double(double l, double r)
-    {
-        return l - r;
-    }
-
-
-    static double
-    MUL_double(double l, double r)
-    {
-        return l * r;
-    }
-
-
-    static double
-    DIV_double(double l, double r)
-    {
-        if (LIKELY(r != 0)) {
-            return l / r;
-        } else {
-            hardware_trap(&cpu, CR2_DIVIDE_BY_ZERO);
-            return 0;           // Silence compiler.
+    struct skl_gen_reg_real_add_t : skl_gen_reg_real_t {
+        skl_gen_reg_real_add_t(md::OADDR        pc_,
+                               md::OINST        inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
+        {
         }
-    }
 
 
-    static double
-    MOD_double(double l, double r)
-    {
-        dialog::internal_error("%s: MOD operator on float type "
-                               "not allowed in Oberon.", __func__);
-        return 0;
-    }
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            double l = register_as_double(cpu, R0, b0);
+            double r = register_as_double(cpu, R1, b1);
+            double v = l + r;
+
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            dialog::trace("[%f, %f, %f]\n", l, r, v);
+            epilog(cpu, v);
+        }
+    };
 
 
-    static double
-    CMP_double(double l, double r)
-    {
-        return synthesize_flags_double(l, r);
-    }
+    struct skl_gen_reg_real_sub_t : skl_gen_reg_real_t {
+        skl_gen_reg_real_sub_t(md::OADDR        pc_,
+                               md::OINST        inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            double l = register_as_double(cpu, R0, b0);
+            double r = register_as_double(cpu, R1, b1);
+            double v = l - r;
+
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            dialog::trace("[%f, %f, %f]\n", l, r, v);
+            epilog(cpu, v);
+        }
+    };
+
+
+    struct skl_gen_reg_real_mul_t : skl_gen_reg_real_t {
+        skl_gen_reg_real_mul_t(md::OADDR        pc_,
+                               md::OINST        inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            double l = register_as_double(cpu, R0, b0);
+            double r = register_as_double(cpu, R1, b1);
+            double v = l * r;
+
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            dialog::trace("[%f, %f, %f]\n", l, r, v);
+
+            epilog(cpu, v);
+        }
+    };
+
+
+    struct skl_gen_reg_real_div_t : skl_gen_reg_real_t {
+        skl_gen_reg_real_div_t(md::OADDR        pc_,
+                               md::OINST        inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            double l = register_as_double(cpu, R0, b0);
+            double r = register_as_double(cpu, R1, b1);
+            double v;
+
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+
+            if (LIKELY(r != 0)) {
+                v = l / r;
+                dialog::trace("[%f, %f, %f]\n", l, r, v);
+                epilog(cpu, v);
+            } else {
+                hardware_trap(cpu, CR2_DIVIDE_BY_ZERO);
+            }
+        }
+    };
+
+
+    struct skl_gen_reg_real_mod_t : skl_gen_reg_real_t {
+        skl_gen_reg_real_mod_t(md::OADDR        pc_,
+                               md::OINST        inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
+        {
+            dialog::internal_error("%s: MOD operator on float type "
+                                   "not allowed in Oberon.", __func__);
+        }
+
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+        }
+    };
+
+
+    struct skl_gen_reg_real_abs_t : skl_gen_reg_real_t {
+        skl_gen_reg_real_abs_t(md::OADDR        pc_,
+                               md::OINST        inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            double r = register_as_double(cpu, R1, b1);
+            double v = fabs(r);
+
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            dialog::trace("[%f, %f]\n", r, v);
+
+            epilog(cpu, v);
+        }
+    };
+
+
+    struct skl_gen_reg_real_cmp_t : skl_gen_reg_real_t {
+        skl_gen_reg_real_cmp_t(md::OADDR        pc_,
+                               md::OINST        inst_,
+                               const char      **mne_,
+                               register_bank_t  bd_,
+                               register_bank_t  b0_,
+                               register_bank_t  b1_) :
+            skl_gen_reg_real_t(pc_, inst_, mne_, bd_, b0_, b1_)
+        {
+        }
+
+
+        virtual void interpret(skl::cpu_t *cpu)
+        {
+            double l = register_as_double(cpu, R0, b0);
+            double r = register_as_double(cpu, R1, b1);
+            double v = synthesize_flags_double(l, r);
+
+            dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
+                          reg_bank[b0], R0,
+                          reg_bank[b1], R1,
+                          reg_bank[bd], Rd);
+            dialog::trace("[%f, %f, 0%xH]\n", l, r,
+                          static_cast<md::uint32>(v));
+
+            epilog(cpu, v);
+        }
+    };
 
 
     skl::instruction_t *
@@ -722,7 +823,7 @@ namespace skl {
                                                          bd, b0, b1);
 
                 default:
-                    dialog::internal_error("%s: improper opcode", __func__);
+                    dialog::internal_error("%s: improper integer opcode", __func__);
                 }
             } else {
                 /* Compute using integer registers, write to floating
@@ -762,7 +863,31 @@ namespace skl {
                 }
             }
         } else {
-            return new skl_gen_reg_real_t(cpu->pc, inst, mne, bd, b0, b1);
+            switch (opc) {
+            case OPC_ADD: return new skl_gen_reg_real_add_t(cpu->pc, inst,
+                                                            mne, bd, b0, b1);
+
+            case OPC_SUB: return new skl_gen_reg_real_sub_t(cpu->pc, inst,
+                                                            mne, bd, b0, b1);
+
+            case OPC_MUL: return new skl_gen_reg_real_mul_t(cpu->pc, inst,
+                                                            mne, bd, b0, b1);
+
+            case OPC_DIV: return new skl_gen_reg_real_div_t(cpu->pc, inst,
+                                                            mne, bd, b0, b1);
+
+            case OPC_MOD: return new skl_gen_reg_real_mod_t(cpu->pc, inst,
+                                                            mne, bd, b0, b1);
+
+            case OPC_CMP: return new skl_gen_reg_real_cmp_t(cpu->pc, inst,
+                                                            mne, bd, b0, b1);
+
+            case OPC_ABS: return new skl_gen_reg_real_abs_t(cpu->pc, inst,
+                                                            mne, bd, b0, b1);
+
+            default:
+                dialog::internal_error("%s: improper real opcode", __func__);
+            }
         }
     }
 }
