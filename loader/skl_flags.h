@@ -10,12 +10,6 @@ namespace skl {
     const int OF = 3;
 
 
-    typedef bool (*relation_t)(md::uint32 flags);
-    extern relation_t relation[10]; /* Must have same elements as Jump
-                                     * and conditional set
-                                     * instructions. */
-
-
     static inline md::uint32
     create_flags(bool zf, bool sf, bool cf, bool of)
     {

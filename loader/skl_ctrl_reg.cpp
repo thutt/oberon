@@ -13,7 +13,8 @@ namespace skl {
 #undef OPC
         N_OPCODES
     } opc_t;
-    static const char *mne[N_OPCODES] = {
+
+    static const char *mnemonics[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_ctrl_reg_opc.h"
 #undef OPC
@@ -24,10 +25,8 @@ namespace skl {
         int Rd;
         int R0;
 
-        skl_control_reg_t(md::OADDR    pc_,
-                          md::OINST    inst_,
-                          const char **mne_) :
-            skl::instruction_t(pc_, inst_, mne_),
+        skl_control_reg_t(md::OADDR pc_, md::OINST inst_) :
+            skl::instruction_t(pc_, inst_, mnemonics),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16))
         {
@@ -36,42 +35,40 @@ namespace skl {
 
 
     struct skl_lcr_t : skl_control_reg_t {
-        skl_lcr_t(md::OADDR    pc_,
-                  md::OINST    inst_,
-                  const char **mne_) :
-            skl_control_reg_t(pc_, inst_, mne_)
+        skl_lcr_t(md::OADDR pc_, md::OINST inst_) :
+            skl_control_reg_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             control_registers_t cr = static_cast<control_registers_t>(R0);
             md::uint32          v  = read_control_register(cpu, cr);
 
             write_integer_register(cpu, Rd, v);
-            dialog::trace("%xH: %s  CR%u, R%u\n", cpu->pc, mne, R0, Rd);
+            dialog::trace("%xH: %s  CR%u, R%u\n", skl::program_counter(cpu),
+                          mne, R0, Rd);
             increment_pc(cpu, 1);
         }
     };
 
 
     struct skl_scr_t : skl_control_reg_t {
-        skl_scr_t(md::OADDR    pc_,
-                  md::OINST    inst_,
-                  const char **mne_) :
-            skl_control_reg_t(pc_, inst_, mne_)
+        skl_scr_t(md::OADDR pc_, md::OINST inst_) :
+            skl_control_reg_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             control_registers_t cr = static_cast<control_registers_t>(Rd);
             md::uint32          r0 = read_integer_register(cpu, R0);
 
             write_control_register(cpu, cr, r0);
-            dialog::trace("%xH: %s  R%u, CR%u\n", cpu->pc, mne, R0, cr);
+            dialog::trace("%xH: %s  R%u, CR%u\n", skl::program_counter(cpu),
+                          mne, R0, cr);
             increment_pc(cpu, 1);
         }
     };
@@ -79,17 +76,13 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_ctrl_reg(cpu_t *cpu, md::OINST inst)
+    op_ctrl_reg(md::OADDR pc, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
         switch (opc) {
-        case OPC_LCR:
-            return new skl_lcr_t(cpu->pc, inst, mne);
-
-        case OPC_SCR:
-            return new skl_scr_t(cpu->pc, inst, mne);
-
+        case OPC_LCR: return new skl_lcr_t(pc, inst);
+        case OPC_SCR: return new skl_scr_t(pc, inst);
 
         default:
             dialog::not_implemented("%s: inst: %xH opcode: %xH",

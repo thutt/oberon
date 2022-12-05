@@ -223,7 +223,8 @@ main(int argc, char *argv[])
             skl::release_instruction_cache();
             delete [] cmdline;
             if (config::options & config::opt_instruction_count) {
-                dialog::print("Instruction Count: %u\n", skl::cpu._instruction_count);
+                dialog::print("Instruction Count: %u\n",
+                              skl::instruction_count(skl::BOOT_CPU));
             }
             return_value = config::exit_data.rc;
         }

@@ -55,12 +55,13 @@ namespace skl
         RB_DOUBLE
     } register_bank_t;
 
+
     typedef struct cpu_t {
-        md::OADDR    pc;
-        md::uint32   _instruction_count;
-        md::uint32   _CR[N_CONTROL_REGISTERS]; // Control registers.
-        md::uint32   _R[32];                   // 32 integer registers.
-        double       _F[32];                   // 32 IEEE 754 double registers.
+        md::OADDR    pc_;
+        md::uint32   instruction_count_;
+        md::uint32   CR_[N_CONTROL_REGISTERS]; // Control registers.
+        md::uint32   R_[32];                   // 32 integer registers.
+        double       F_[32];                   // 32 IEEE 754 double registers.
 
 
         /* exception_raised:
@@ -71,8 +72,14 @@ namespace skl
          *
          *   It's reset to false at the beginning of instruction fetch.
          */
-        bool         exception_raised;
+        bool         exception_raised_;
     } cpu_t;
+
+    typedef enum cpuid_t {
+        BOOT_CPU = 0,
+        CPU_0    = 0,
+        N_CPUS
+    } cpuid_t;
 
     typedef struct memory_t {   // Memory: [beg, end)
         md::OADDR beg;
@@ -89,7 +96,6 @@ namespace skl
     } effective_address_kind_t;
 
 
-    extern cpu_t       cpu;
     extern memory_t    memory;
     extern const char *reg_bank[2];
 
@@ -104,24 +110,22 @@ namespace skl
 
     register_bank_t compute_using(register_bank_t R0, register_bank_t R1);
 
-    void execute(cpu_t *cpu, md::OADDR addr);
+    void execute(skl::cpuid_t cpu, md::OADDR addr);
 
-    void write(md::OADDR addr, md::uint32 val, int size);
+    md::uint32 register_as_integer(cpuid_t         cpu,
+                                   int             regno,
+                                   register_bank_t bank);
 
-    md::uint32 register_as_integer(cpu_t           *cpu,
-                                   int              regno,
-                                   register_bank_t  bank);
+    double register_as_double(cpuid_t         cpu,
+                              int             regno,
+                              register_bank_t bank);
 
-    double register_as_double(cpu_t           *cpu,
-                              int              regno,
-                              register_bank_t  bank);
+    void software_trap(skl::cpuid_t cpu, int trap);
+    void hardware_trap(skl::cpuid_t cpu, control_register_2_t trap);
 
-    void software_trap(cpu_t *cpu, int trap);
-    void hardware_trap(cpu_t *cpu, control_register_2_t trap);
-
-    void dump_cpu__(cpu_t *cpu);
+    void dump_cpu__(skl::cpuid_t cpu);
     static inline void
-    dump_cpu(cpu_t *cpu)
+    dump_cpu(skl::cpuid_t cpu)
     {
         if (UNLIKELY(skl_trace)) {
             dump_cpu__(cpu);
@@ -164,6 +168,14 @@ namespace skl
     }
 
 
+    static inline skl::cpu_t *
+    cpuid_to_cpu(skl::cpuid_t cpuid)
+    {
+        extern skl::cpu_t cpu_;
+        return &cpu_;
+    }
+
+
     static inline md::uint32
     increment_words(int n_words)
     {
@@ -171,60 +183,116 @@ namespace skl
                                        static_cast<int>(sizeof(md::uint32)));
     }
 
+
     static inline void
-    increment_pc(cpu_t *cpu, int n_words)
+    increment_instruction_count(skl::cpuid_t cpuid)
     {
-        cpu->pc += increment_words(n_words);
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        cpu->instruction_count_++;
     }
 
 
     static inline md::uint32
-    read_integer_register(cpu_t *cpu, int regno)
+    instruction_count(skl::cpuid_t cpuid)
     {
-        assert(regno < static_cast<int>(sizeof(cpu->_R) / sizeof(cpu->_R[0])));
-        return cpu->_R[regno];
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        return cpu->instruction_count_;
+    }
+
+
+    static inline bool
+    exception_raised(skl::cpuid_t cpuid)
+    {
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        return cpu->exception_raised_;
     }
 
 
     static inline void
-    write_integer_register(cpu_t *cpu, int regno, md::uint32 value)
+    set_exception_raised(skl::cpuid_t cpuid, bool value)
     {
-        assert(regno < static_cast<int>(sizeof(cpu->_R) / sizeof(cpu->_R[0])));
-        cpu->_R[regno] = value;
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        cpu->exception_raised_ = value;
+    }
+
+
+    static inline md::uint32
+    program_counter(skl::cpuid_t cpuid)
+    {
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        return cpu->pc_;
     }
 
 
     static inline void
-    write_real_register(cpu_t *cpu, int regno, double value)
+    set_program_counter(skl::cpuid_t cpuid, md::uint32 pc)
     {
-        assert(regno < static_cast<int>(sizeof(cpu->_F) / sizeof(cpu->_F[0])));
-        cpu->_F[regno] = value;
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        cpu->pc_ = pc;
+    }
+
+
+    static inline void
+    increment_pc(skl::cpuid_t cpuid, int n_words)
+    {
+        set_program_counter(cpuid, (program_counter(cpuid) +
+                                    increment_words(n_words)));
+    }
+
+
+    static inline md::uint32
+    read_integer_register(skl::cpuid_t cpuid, int regno)
+    {
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        assert(regno < static_cast<int>(sizeof(cpu->R_) / sizeof(cpu->R_[0])));
+        return cpu->R_[regno];
+    }
+
+
+    static inline void
+    write_integer_register(skl::cpuid_t cpuid, int regno, md::uint32 value)
+    {
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        assert(regno < static_cast<int>(sizeof(cpu->R_) / sizeof(cpu->R_[0])));
+        cpu->R_[regno] = value;
+    }
+
+
+    static inline void
+    write_real_register(skl::cpuid_t cpuid, int regno, double value)
+    {
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        assert(regno < static_cast<int>(sizeof(cpu->F_) / sizeof(cpu->F_[0])));
+        cpu->F_[regno] = value;
     }
 
 
     static inline double
-    read_real_register(cpu_t *cpu, int regno)
+    read_real_register(skl::cpuid_t cpuid, int regno)
     {
-        assert(regno < static_cast<int>(sizeof(cpu->_F) / sizeof(cpu->_F[0])));
-        return cpu->_F[regno];
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        assert(regno < static_cast<int>(sizeof(cpu->F_) / sizeof(cpu->F_[0])));
+        return cpu->F_[regno];
     }
 
 
     static inline void
-    write_control_register(cpu_t               *cpu,
-                           control_registers_t  regno,
-                           md::uint32           value)
+    write_control_register(cpuid_t             cpuid,
+                           control_registers_t regno,
+                           md::uint32          value)
     {
-        assert(regno < sizeof(cpu->_CR) / sizeof(cpu->_CR[0]));
-        cpu->_CR[regno] = value;
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        assert(regno < sizeof(cpu->CR_) / sizeof(cpu->CR_[0]));
+        cpu->CR_[regno] = value;
     }
 
 
     static inline md::uint32
-    read_control_register(cpu_t *cpu, control_registers_t regno)
+    read_control_register(skl::cpuid_t cpuid, control_registers_t regno)
     {
-        assert(regno < sizeof(cpu->_CR) / sizeof(cpu->_CR[0]));
-        return cpu->_CR[regno];
+        skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+        assert(regno < sizeof(cpu->CR_) / sizeof(cpu->CR_[0]));
+        return cpu->CR_[regno];
     }
 
     static inline bool
@@ -282,11 +350,11 @@ namespace skl
 
 
     static inline md::OADDR
-    compute_effective_address(cpu_t *cpu,
-                              int    Rbase,
-                              int    Rindex,
-                              int    scale,
-                              int    offset)
+    compute_effective_address(skl::cpuid_t cpu,
+                              int          Rbase,
+                              int          Rindex,
+                              int          scale,
+                              int          offset)
     {
         md::uint32 scaled_index;
         md::uint32 base  = read_integer_register(cpu, Rbase);
@@ -346,7 +414,7 @@ namespace skl
 
 
     static inline md::uint32
-    read(md::OADDR addr, bool sign_extend, int size)
+    read(skl::cpuid_t cpu, md::OADDR addr, bool sign_extend, int size)
     {
         if (LIKELY(address_valid(addr, size))) {
             if (size == 1) {
@@ -358,8 +426,25 @@ namespace skl
                 return read_4(addr, sign_extend);
             }
         } else {
-            hardware_trap(&cpu, CR2_OUT_OF_BOUNDS_READ);
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
             return ~0U; // Value ignored, because CPU does not return.
+        }
+    }
+
+
+    void write_1(skl::cpuid_t cpu, md::OADDR addr, md::uint8 val);
+    void write_2(skl::cpuid_t cpu, md::OADDR addr, md::uint16 val);
+    void write_4(skl::cpuid_t cpu, md::OADDR addr, md::uint32 val);
+    static inline void
+    write(skl::cpuid_t cpu, md::OADDR addr, md::uint32 val, int size)
+    {
+        if (size == 1) {
+            write_1(cpu, addr, static_cast<md::uint8>(val));
+        } else if (size == 2) {
+            write_2(cpu, addr, static_cast<md::uint16>(val));
+        } else {
+            assert(size == 4);
+            write_4(cpu, addr, val);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace skl {
         N_OPCODES
     } opc_t;
 
-    static const char *mne[N_OPCODES] = {
+    static const char *mnemonics[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_sys_reg_opc.h"
 #undef OPC
@@ -24,25 +24,23 @@ namespace skl {
     struct skl_sys_reg_t : skl::instruction_t {
         int Rd;
 
-        skl_sys_reg_t(md::OADDR    pc_,
-                      md::OINST    inst_,
-                      const char **mne_) :
-            skl::instruction_t(pc_, inst_, mne_),
+        skl_sys_reg_t(md::OADDR pc_, md::OINST inst_) :
+            skl::instruction_t(pc_, inst_, mnemonics),
             Rd(field(inst_, 25, 21))
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
-            skl::write_integer_register(cpu, Rd, cpu->_instruction_count);
+            skl::write_integer_register(cpu, Rd, skl::instruction_count(cpu));
             dialog::trace("%xH: %s  R%u", pc, mne, Rd);
             increment_pc(cpu, 1);
         }
     };
 
     skl::instruction_t *
-    op_sys_reg(cpu_t *cpu, md::OINST inst)
+    op_sys_reg(md::OADDR pc, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
@@ -54,7 +52,7 @@ namespace skl {
             dialog::not_implemented("%s: di");
 
         case OPC_LCC:
-            return new skl_sys_reg_t(cpu->pc, inst, mne);
+            return new skl_sys_reg_t(pc, inst);
 
         default:
             dialog::not_implemented("%s: inst: %xH opcode: %x#",

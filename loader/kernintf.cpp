@@ -31,7 +31,7 @@ namespace kernintf
          * on the stack noticeable for these functions, since it will
          * never be used.
          */
-        skl::write_integer_register(&skl::cpu, skl::RETADR, 0xdeadbeef);
+        skl::write_integer_register(skl::BOOT_CPU, skl::RETADR, 0xdeadbeef);
 
         /* Set R28 to the module initialization function, and invoke
          * Kernel.BootstrapModuleInit.  That function will invoke it
@@ -39,10 +39,10 @@ namespace kernintf
          * returns to Kernel.BootstrapModuleInit, a VMSVC 'Bootstrap'
          * operation will return control to the bootstrap system.
          */
-        skl::write_integer_register(&skl::cpu, 28, init_fn);
+        skl::write_integer_register(skl::BOOT_CPU, 28, init_fn);
 
         if (setjmp(config::module_init_jmpbuf) == 0) {
-            skl::execute(&skl::cpu, O3::bootstrap_symbol[0].adr);
+            skl::execute(skl::BOOT_CPU, O3::bootstrap_symbol[0].adr);
         } else {
             /* longjmp() has returned here.
              * Return to caller to continue bootstrapping.

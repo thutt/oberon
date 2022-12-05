@@ -26,20 +26,20 @@ namespace skl {
 
         skl_vmsvc_t(md::OADDR    pc_,
                     md::OINST    inst_,
-                    const char **mne_) :
-            skl::instruction_t(pc_, inst_, mne_),
+                    const char **mnemonics_) :
+            skl::instruction_t(pc_, inst_, mnemonics_),
             R0(field(inst_, 20, 16))
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32       svc;
             const md::OADDR  adr       = read_integer_register(cpu, R0);
             const char      *operation = "invalid vmsvc";
 
-            svc = skl::read(adr, false, sizeof(md::uint32));
+            svc = skl::read(cpu, adr, false, sizeof(md::uint32));
 
             if (svc < N_VMSVC_OPERATIONS) {
                 operation = operations[svc];
@@ -107,8 +107,8 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_vmsvc(cpu_t *cpu, md::OINST inst, const char **mne)
+    op_vmsvc(md::OADDR pc, md::OINST inst, const char **mnemonics)
     {
-        return new skl_vmsvc_t(cpu->pc, inst, mne);
+        return new skl_vmsvc_t(pc, inst, mnemonics);
     }
 }

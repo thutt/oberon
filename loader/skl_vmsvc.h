@@ -13,7 +13,9 @@ namespace skl {
     } vmsvc_desc_t;
 
 
-    skl::instruction_t *op_vmsvc(cpu_t *cpu, md::OINST inst, const char **mne);
+    skl::instruction_t *op_vmsvc(md::OADDR pc,
+                                 md::OINST inst,
+                                 const char **mnemonics);
     void vmsvc_bootstrap(void);
     void vmsvc_console(md::OADDR adr);
     void vmsvc_debug_log(md::OADDR adr);

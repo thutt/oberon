@@ -7,6 +7,8 @@
 #include "skl.h"
 
 namespace skl {
-    skl::instruction_t *op_jump(cpu_t *cpu, md::OINST inst);
+    skl::instruction_t *op_jump(skl::cpuid_t cpuid,
+                                md::OADDR pc,
+                                md::OINST inst);
 }
 #endif

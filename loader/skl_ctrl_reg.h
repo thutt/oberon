@@ -7,6 +7,6 @@
 #include "skl.h"
 
 namespace skl {
-    skl::instruction_t *op_ctrl_reg(cpu_t *cpu, md::OINST inst);
+    skl::instruction_t *op_ctrl_reg(md::OADDR pc, md::OINST inst);
 }
 #endif

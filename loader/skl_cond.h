@@ -7,6 +7,6 @@
 #include "skl.h"
 
 namespace skl {
-    skl::instruction_t *op_conditional_set(cpu_t *cpu, md::OINST inst);
+    skl::instruction_t *op_conditional_set(md::OADDR pc, md::OINST inst);
 }
 #endif

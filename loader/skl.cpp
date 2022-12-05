@@ -35,7 +35,7 @@ namespace skl {
         "F"
     };
 
-    cpu_t    cpu;
+    cpu_t    cpu_;
     memory_t memory;
 
 
@@ -49,7 +49,7 @@ namespace skl {
 
 
     static void
-    dump_cpu_stack(cpu_t *cpu)
+    dump_cpu_stack(skl::cpuid_t cpu)
     {
         const int       default_stack_words = 32;
         int             i;
@@ -79,7 +79,7 @@ namespace skl {
             i = 0;
             do {
                 p = sp + static_cast<md::uint32>(i * static_cast<int>(sizeof(md::uint32)));
-                v = skl::read(p, false, sizeof(md::uint32));
+                v = skl::read(cpu, p, false, sizeof(md::uint32));
 
                 O3::decode_pc(v, decoded_pc);
 
@@ -102,34 +102,37 @@ namespace skl {
     }
 
     static void
-    dump_control_registers(cpu_t *cpu)
+    dump_control_registers(skl::cpuid_t cpuid)
     {
         if (false) {
-            dialog::cpu("CR0: %8.8xH [exception address]\n", cpu->_CR[0]);
-            dialog::cpu("CR1: %8.8xH [hardware exception handler]\n", cpu->_CR[1]);
-            dialog::cpu("CR2: %8.8xH [exception status]\n", cpu->_CR[2]);
-            dialog::cpu("CR5: %8.8xH [Software exception handler]\n", cpu->_CR[5]);
+            skl::cpu_t *cpu = skl::cpuid_to_cpu(cpuid);
+            dialog::cpu("CR0: %8.8xH [exception address]\n", cpu->CR_[0]);
+            dialog::cpu("CR1: %8.8xH [hardware exception handler]\n", cpu->CR_[1]);
+            dialog::cpu("CR2: %8.8xH [exception status]\n", cpu->CR_[2]);
+            dialog::cpu("CR5: %8.8xH [Software exception handler]\n", cpu->CR_[5]);
             dialog::cpu("\n");
         }
     }
 
 
     void
-    dump_cpu__(cpu_t *cpu)
+    dump_cpu__(skl::cpuid_t cpuid)
     {
-        bool            dump_float_registers = true;
+        skl::cpu_t      *cpu                  = skl::cpuid_to_cpu(cpuid);
+        bool             dump_float_registers = true;
         int              i;
-        O3::decode_pc_t decoded_pc;
+        O3::decode_pc_t  decoded_pc;
 
         if (config::options & config::opt_trace_cpu) {
-            O3::decode_pc(cpu->pc, decoded_pc);
-            dialog::cpu("pc : %s  (%xH)\n", decoded_pc, cpu->pc);
-            dump_control_registers(cpu);
+            O3::decode_pc(skl::program_counter(cpuid), decoded_pc);
+            dialog::cpu("pc : %s  (%xH)\n", decoded_pc,
+                        skl::program_counter(cpuid));
+            dump_control_registers(cpuid);
 
             i = 0;
-            while (i < static_cast<int>(sizeof(cpu->_R) /
-                                        sizeof(cpu->_R[0]))) {
-                dialog::cpu("R%-2u: %8.8xH", i, cpu->_R[i]);
+            while (i < static_cast<int>(sizeof(cpu->R_) /
+                                        sizeof(cpu->R_[0]))) {
+                dialog::cpu("R%-2u: %8.8xH", i, cpu->R_[i]);
                 ++i;
                 if ((i % 4) == 0) {
                     dialog::cpu("\n");
@@ -141,9 +144,9 @@ namespace skl {
             if (dump_float_registers) {
                 dialog::cpu("\n");
                 i = 0;
-                while (i < static_cast<int>(sizeof(cpu->_F) /
-                                            sizeof(cpu->_F[0]))) {
-                    dialog::cpu("F%-2u: %e", i, cpu->_F[i]);
+                while (i < static_cast<int>(sizeof(cpu->F_) /
+                                            sizeof(cpu->F_[0]))) {
+                    dialog::cpu("F%-2u: %e", i, cpu->F_[i]);
                     ++i;
                     if ((i % 3) == 0) {
                         dialog::cpu("\n");
@@ -153,33 +156,37 @@ namespace skl {
                 }
             }
             dialog::cpu("\n");
-            dump_cpu_stack(cpu);
+            dump_cpu_stack(cpuid);
         }
     }
 
 
     void
-    software_trap(cpu_t *cpu, int trap)
+    software_trap(skl::cpuid_t cpuid, int trap)
     {
-        write_integer_register(cpu, 1,
+        write_integer_register(cpuid, 1,
                                static_cast<md::uint32>(trap)); // Trap code.
-        write_integer_register(cpu, 31, cpu->pc);  // Return address.
-        cpu->pc = read_control_register(cpu, CR5); // Kernel.SysTrap
-        cpu->exception_raised = true;
+        write_integer_register(cpuid, 31, skl::program_counter(cpuid));  // Return address.
+        set_program_counter(cpuid, read_control_register(cpuid, CR5)); // Kernel.SysTrap
+        set_exception_raised(cpuid, true);
     }
 
 
     void
-    hardware_trap(cpu_t *cpu, control_register_2_t trap)
+    hardware_trap(skl::cpuid_t cpuid, control_register_2_t trap)
     {
-        md::uint32 cr2;
-        write_control_register(cpu, CR0, cpu->pc); // Exception address.
-        cr2 = static_cast<md::uint32>(trap |
-                                      0    | // Interrupt enable setting (not supported).
-                                      1);    // Processor, not external.
-        write_control_register(cpu, CR2, cr2);
-        cpu->pc = read_control_register(cpu, CR1); // Kernel.HardwareTrap
-        cpu->exception_raised = true;
+        md::uint32  cr2;
+
+        write_control_register(cpuid, CR0,
+                               skl::program_counter(cpuid)); // Exception address.
+        cr2 = static_cast<md::uint32>(trap     | /* Bits 4..2.  Pre-shifted. */
+                                      (0 << 1) | /* Bit 1: interrupt enable
+                                                  *        (unsupported). */
+                                      (1 << 0)); /* Bit 0: Processor trap. */
+        write_control_register(cpuid, CR2, cr2);
+        set_program_counter(cpuid,
+                            read_control_register(cpuid, CR1)); // Kernel.HardwareTrap
+        set_exception_raised(cpuid, true);
     }
 
 
@@ -195,70 +202,77 @@ namespace skl {
 
 
     void
-    write(md::OADDR addr, md::uint32 val, int size)
+    write_1(skl::cpuid_t cpu, md::OADDR addr, md::uint8 val)
     {
-        if (LIKELY(address_valid(addr, size))) {
+        if (LIKELY(address_valid(addr, sizeof(val)))) {
             md::HADDR p = heap::heap_to_host(addr);
-
-            switch (size) {
-            case 1: {
-                md::uint8 v = static_cast<md::uint8>(val);
-                *reinterpret_cast<md::uint8 *>(p) = v;
-                break;
-            }
-
-            case 2: {
-                md::uint16 v = static_cast<md::uint16>(val);
-                *reinterpret_cast<md::uint16 *>(p) = v;
-                break;
-            }
-
-            case 4:
-                *reinterpret_cast<md::uint32 *>(p) = val;
-                break;
-
-            default:
-                dialog::internal_error("%s: invalid write size '%d'",
-                                       __func__, size);
-            }
+            md::uint8 v = static_cast<md::uint8>(val);
+            *reinterpret_cast<md::uint8 *>(p) = v;
         } else {
-            hardware_trap(&cpu, CR2_OUT_OF_BOUNDS_WRITE);
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
+        }
+    }
+
+
+    void
+    write_2(skl::cpuid_t cpu, md::OADDR addr, md::uint16 val)
+    {
+        if (LIKELY(address_valid(addr, sizeof(val)))) {
+            md::HADDR p = heap::heap_to_host(addr);
+            md::uint16 v = static_cast<md::uint16>(val);
+            *reinterpret_cast<md::uint16 *>(p) = v;
+        } else {
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
+        }
+    }
+
+
+    void
+    write_4(skl::cpuid_t cpu, md::OADDR addr, md::uint32 val)
+    {
+        if (LIKELY(address_valid(addr, sizeof(val)))) {
+            md::HADDR p = heap::heap_to_host(addr);
+            *reinterpret_cast<md::uint32 *>(p) = val;
+        } else {
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
         }
     }
 
 
     static md::uint32
-    fetch_instruction(void)
+    fetch_instruction(cpuid_t cpu, md::OADDR pc)
     {
         md::uint32 inst;
 
-        if (LIKELY(aligned(cpu.pc, static_cast<int>(sizeof(md::uint32))))) {
-            inst = skl::read(cpu.pc, false, sizeof(md::uint32));
+        if (LIKELY(aligned(pc, static_cast<int>(sizeof(md::uint32))))) {
+            inst = skl::read(cpu, pc, false, sizeof(md::uint32));
+            return inst;
         } else {
-            hardware_trap(&cpu, CR2_BAD_ALIGNMENT);
+            hardware_trap(cpu, CR2_BAD_ALIGNMENT);
+            return ~0U;         // Causes classof() to return invalid.
         }
-        return inst;
     }
 
     static skl::instruction_t *
-    fetch_and_cache_instruction(skl::cpu_t *cpu)
+    fetch_and_cache_instruction(skl::cpuid_t cpuid)
     {
         md::OINST           inst;
         opcode_class_t      cls;
         skl::instruction_t *cinst = NULL;
+        md::OADDR           pc    = skl::program_counter(cpuid);
 
-        dump_cpu(cpu);
-        cpu->exception_raised = false;
-        inst = skl::fetch_instruction();
+        dump_cpu(cpuid);
+        set_exception_raised(cpuid, false);
+        inst = skl::fetch_instruction(cpuid, pc);
         cls  = classof(inst);
 
         switch (cls) {
         case OC_GEN_REG:
-            cinst = op_gen_reg(cpu, inst);
+            cinst = op_gen_reg(pc, inst);
             break;
 
         case OC_INT_REG:
-            cinst = op_int_reg(cpu, inst);
+            cinst = op_int_reg(pc, inst);
             break;
 
         case OC_SIGN_EXT:
@@ -266,47 +280,47 @@ namespace skl {
             break;
 
         case OC_CTL_REG:
-            cinst = op_ctrl_reg(cpu, inst);
+            cinst = op_ctrl_reg(pc, inst);
             break;
 
         case OC_SYS_REG:
-            cinst = op_sys_reg(cpu, inst);
+            cinst = op_sys_reg(pc, inst);
             break;
 
         case OC_MISC:
-            cinst = op_misc(cpu, inst);
+            cinst = op_misc(pc, inst);
             break;
 
         case OC_JRAL:
-            cinst = op_jral(cpu, inst);
+            cinst = op_jral(pc, inst);
             break;
 
         case OC_JUMP:
-            cinst = op_jump(cpu, inst);
+            cinst = op_jump(cpuid, pc, inst);
             break;
 
         case OC_REG_MEM:
-            cinst = op_reg_mem(cpu, inst);
+            cinst = op_reg_mem(cpuid, pc, inst);
             break;
 
         case OC_BIT_TEST:
-            cinst = op_bit_test(cpu, inst);
+            cinst = op_bit_test(pc, inst);
             break;
 
         case OC_STACK:
-            cinst = op_stack(cpu, inst);
+            cinst = op_stack(pc, inst);
             break;
 
         case OC_CONDITIONAL_SET:
-            cinst = op_conditional_set(cpu, inst);
+            cinst = op_conditional_set(pc, inst);
             break;
 
         case OC_SYSTRAP:
-            cinst = op_systrap(cpu, inst);
+            cinst = op_systrap(pc, inst);
             break;
 
         default:
-            hardware_trap(cpu, CR2_INVALID_OPCODE);
+            hardware_trap(cpuid, CR2_INVALID_OPCODE);
             return NULL;
         }
         assert(cinst != NULL);
@@ -316,43 +330,45 @@ namespace skl {
 
 
     static skl::instruction_t *
-    fetch_cached_instruction(skl::cpu_t *cpu)
+    fetch_cached_instruction(skl::cpuid_t cpu)
     {
-        skl::instruction_t *cinst = skl::lookup_instruction(cpu->pc);
+        skl::instruction_t *cinst = skl::lookup_instruction(skl::program_counter(cpu));
         return cinst;
     }
 
 
     void
-    execute(cpu_t *cpu, md::OADDR addr)
+    execute(skl::cpuid_t cpuid, md::OADDR addr)
     {
         skl::instruction_t *next;
         skl::instruction_t *cinst;
 
-        cpu->pc = addr;
-        next    = fetch_cached_instruction(cpu);
+        skl::set_program_counter(cpuid, addr);
+        next    = fetch_cached_instruction(cpuid);
         while (1) {
             cinst = next;
-            if (UNLIKELY(read_integer_register(cpu, 0) != 0)) {
-                write_integer_register(cpu, 0, 0); // Reset R0 to zero.
+            if (UNLIKELY(read_integer_register(cpuid, 0) != 0)) {
+                write_integer_register(cpuid, 0, 0); // Reset R0 to zero.
             }
 
-            cpu->_instruction_count++;
+            skl::increment_instruction_count(cpuid);
             if (UNLIKELY(cinst == NULL)) {
-                cinst = fetch_and_cache_instruction(cpu);
+                cinst = fetch_and_cache_instruction(cpuid);
             }
 
             /* cinst == NIL --> Invalid opcode. */
             if (LIKELY(cinst != NULL)) {
-                cinst->interpret(cpu);
+                cinst->interpret(cpuid);
                 next = cinst->next;
-                if (UNLIKELY(next == NULL || next->pc != cpu->pc)) {
-                    next = fetch_cached_instruction(cpu);
+                if (UNLIKELY(next == NULL ||
+                             next->pc != skl::program_counter(cpuid))) {
+                    next = fetch_cached_instruction(cpuid);
                     cinst->next = next;
                 }
             } else {
                 /* Verify hardware trap raised. */
-                assert(cpu->pc == read_control_register(cpu, CR1));
+                assert(skl::program_counter(cpuid) ==
+                       read_control_register(cpuid, CR1));
             }
         }
     }
@@ -371,28 +387,28 @@ namespace skl {
 
 
     md::uint32
-    register_as_integer(cpu_t           *cpu,
-                        int              regno,
-                        register_bank_t  bank)
+    register_as_integer(skl::cpuid_t    cpuid,
+                        int             regno,
+                        register_bank_t bank)
     {
         if (LIKELY(bank == RB_INTEGER)) {
-            return read_integer_register(cpu, regno);
+            return read_integer_register(cpuid, regno);
         } else {
             assert(bank == RB_DOUBLE);
-            return static_cast<md::uint32>(cpu->_F[regno]);
+            return static_cast<md::uint32>(read_real_register(cpuid, regno));
         }
     }
 
     double
-    register_as_double(cpu_t           *cpu,
-                       int              regno,
-                       register_bank_t  bank)
+    register_as_double(cpuid_t         cpuid,
+                       int             regno,
+                       register_bank_t bank)
     {
         if (LIKELY(bank == RB_INTEGER)) {
-            return read_integer_register(cpu, regno);
+            return read_integer_register(cpuid, regno);
         } else {
             assert(bank == RB_DOUBLE);
-            return cpu->_F[regno];
+            return read_real_register(cpuid, regno);
         }
     }
 
@@ -425,7 +441,7 @@ namespace skl {
          * the stack dumping logic can terminate easily in
          * skl::dump_cpu_stack().
          */
-        write_integer_register(&skl::cpu, SP, stack_top);
-        write_integer_register(&skl::cpu, SFP, stack_top);
+        write_integer_register(skl::BOOT_CPU, SP, stack_top);
+        write_integer_register(skl::BOOT_CPU, SFP, stack_top);
     }
 }

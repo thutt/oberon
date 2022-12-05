@@ -45,16 +45,14 @@ namespace bootstrap
         skl::initialize_stack();
         lookup_kernel_bootstrap_symbols(m);
 
-        skl::write_integer_register(&skl::cpu, 1,
+        skl::write_integer_register(skl::BOOT_CPU, 1,
                                     heap::heap_address(heap::oberon_heap));
-        skl::write_integer_register(&skl::cpu, 2, heap_size);
-        skl::write_integer_register(&skl::cpu, 3,
+        skl::write_integer_register(skl::BOOT_CPU, 2, heap_size);
+        skl::write_integer_register(skl::BOOT_CPU, 3,
                                     heap::heap_address(heap::oberon_stack));
-        skl::write_integer_register(&skl::cpu, 4, stack_size);
-        skl::write_integer_register(&skl::cpu, 5,
-                                    O3::module_list);
-        skl::write_integer_register(&skl::cpu, 6,
-                                    cmdline);
+        skl::write_integer_register(skl::BOOT_CPU, 4, stack_size);
+        skl::write_integer_register(skl::BOOT_CPU, 5, O3::module_list);
+        skl::write_integer_register(skl::BOOT_CPU, 6, cmdline);
 
         kernintf::init_module(m);
     }
@@ -65,7 +63,7 @@ namespace bootstrap
         /* The Modules module requires the head of the module list to
          * be in the R1 so that the module list can be maintained.
          */
-        skl::write_integer_register(&skl::cpu, 1, O3::module_list);
+        skl::write_integer_register(skl::BOOT_CPU, 1, O3::module_list);
         kernintf::init_module(m);
     }
 

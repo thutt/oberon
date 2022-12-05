@@ -14,7 +14,7 @@ namespace skl {
         N_OPCODES
     } opc_t;
 
-    static const char *mne[N_OPCODES] = {
+    static const char *mnemonics[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_cond_opc.h"
 #undef OPC
@@ -25,34 +25,32 @@ namespace skl {
         int Rd;
         int R0;
 
-        skl_conditional_set_t(md::OADDR    pc_,
-                              md::OINST    inst_,
-                              const char **mne_) :
-            skl::instruction_t(pc_, inst_, mne_),
+        skl_conditional_set_t(md::OADDR pc_, md::OINST inst_) :
+            skl::instruction_t(pc_, inst_, mnemonics),
             Rd(field(inst, 25, 21)),
             R0(field(inst, 20, 16))
         {
         }
 
 
-        void epilog(skl::cpu_t *cpu, bool value, md::uint32 R0v)
+        void epilog(skl::cpuid_t cpu, bool value, md::uint32 R0v)
         {
             write_integer_register(cpu, Rd, value);
             increment_pc(cpu, 1);
             dialog::trace("%xH: %s  R%u, R%u  [%xH, %u]\n",
-                          cpu->pc, mne, R0, Rd, R0v, value);
+                          skl::program_counter(cpu), mne, R0, Rd, R0v, value);
         }
     };
 
 
-    struct skl_seq_t : skl::skl_conditional_set_t {
-        skl_seq_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_seq_t : skl_conditional_set_t {
+        skl_seq_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_eq(R0v);
@@ -62,14 +60,14 @@ namespace skl {
     };
 
 
-    struct skl_sge_t : skl::skl_conditional_set_t {
-        skl_sge_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sge_t : skl_conditional_set_t {
+        skl_sge_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_ge(R0v);
@@ -79,14 +77,14 @@ namespace skl {
     };
 
 
-    struct skl_sgeu_t : skl::skl_conditional_set_t {
-        skl_sgeu_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sgeu_t : skl_conditional_set_t {
+        skl_sgeu_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_geu(R0v);
@@ -96,14 +94,14 @@ namespace skl {
     };
 
 
-    struct skl_sgt_t : skl::skl_conditional_set_t {
-        skl_sgt_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sgt_t : skl_conditional_set_t {
+        skl_sgt_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_gt(R0v);
@@ -113,14 +111,14 @@ namespace skl {
     };
 
 
-    struct skl_sgtu_t : skl::skl_conditional_set_t {
-        skl_sgtu_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sgtu_t : skl_conditional_set_t {
+        skl_sgtu_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_gtu(R0v);
@@ -130,14 +128,14 @@ namespace skl {
     };
 
 
-    struct skl_sle_t : skl::skl_conditional_set_t {
-        skl_sle_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sle_t : skl_conditional_set_t {
+        skl_sle_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_le(R0v);
@@ -147,14 +145,14 @@ namespace skl {
     };
 
 
-    struct skl_sleu_t : skl::skl_conditional_set_t {
-        skl_sleu_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sleu_t : skl_conditional_set_t {
+        skl_sleu_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_leu(R0v);
@@ -164,14 +162,14 @@ namespace skl {
     };
 
 
-    struct skl_slt_t : skl::skl_conditional_set_t {
-        skl_slt_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_slt_t : skl_conditional_set_t {
+        skl_slt_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_lt(R0v);
@@ -181,14 +179,14 @@ namespace skl {
     };
 
 
-    struct skl_sltu_t : skl::skl_conditional_set_t {
-        skl_sltu_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sltu_t : skl_conditional_set_t {
+        skl_sltu_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_ltu(R0v);
@@ -198,14 +196,14 @@ namespace skl {
     };
 
 
-    struct skl_sne_t : skl::skl_conditional_set_t {
-        skl_sne_t(md::OADDR pc_, md::OINST inst_, const char **mne_) :
-            skl::skl_conditional_set_t(pc_, inst_, mne_)
+    struct skl_sne_t : skl_conditional_set_t {
+        skl_sne_t(md::OADDR pc_, md::OINST inst_) :
+            skl_conditional_set_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 R0v   = read_integer_register(cpu, R0);
             bool       value = relation_ne(R0v);
@@ -216,22 +214,22 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_conditional_set(cpu_t *cpu, md::OINST inst)
+    op_conditional_set(md::OADDR pc, md::OINST inst)
     {
 
         opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
         switch (opc) {
-        case OPC_SEQ:  return new skl_seq_t(cpu->pc, inst, mne);
-        case OPC_SGE:  return new skl_sge_t(cpu->pc, inst, mne);
-        case OPC_SGEU: return new skl_sgeu_t(cpu->pc, inst, mne);
-        case OPC_SGT:  return new skl_sgt_t(cpu->pc, inst, mne);
-        case OPC_SGTU: return new skl_sgtu_t(cpu->pc, inst, mne);
-        case OPC_SLE:  return new skl_sle_t(cpu->pc, inst, mne);
-        case OPC_SLEU: return new skl_sleu_t(cpu->pc, inst, mne);
-        case OPC_SLT:  return new skl_slt_t(cpu->pc, inst, mne);
-        case OPC_SLTU: return new skl_sltu_t(cpu->pc, inst, mne);
-        case OPC_SNE:  return new skl_sne_t(cpu->pc, inst, mne);
+        case OPC_SEQ:  return new skl_seq_t(pc, inst);
+        case OPC_SGE:  return new skl_sge_t(pc, inst);
+        case OPC_SGEU: return new skl_sgeu_t(pc, inst);
+        case OPC_SGT:  return new skl_sgt_t(pc, inst);
+        case OPC_SGTU: return new skl_sgtu_t(pc, inst);
+        case OPC_SLE:  return new skl_sle_t(pc, inst);
+        case OPC_SLEU: return new skl_sleu_t(pc, inst);
+        case OPC_SLT:  return new skl_slt_t(pc, inst);
+        case OPC_SLTU: return new skl_sltu_t(pc, inst);
+        case OPC_SNE:  return new skl_sne_t(pc, inst);
         default:       dialog::internal_error("%s: improper opcode", __func__);
         }
     }

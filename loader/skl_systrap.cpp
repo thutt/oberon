@@ -12,7 +12,7 @@ namespace skl {
         N_OPCODES
     } opc_t;
 
-    static const char *mne[N_OPCODES] = {
+    static const char *mnemonics[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_systrap_opc.h"
 #undef OPC
@@ -24,10 +24,8 @@ namespace skl {
         int R0;
         int subcl;
 
-        skl_trap_t(md::OADDR    pc_,
-                   md::OINST    inst_,
-                   const char **mne_) :
-            skl::instruction_t(pc_, inst_, mne_),
+        skl_trap_t(md::OADDR pc_, md::OINST inst_) :
+            skl::instruction_t(pc_, inst_, mnemonics),
             Rd(field(inst, 25, 21)),
             R0(field(inst, 20, 16)),
             subcl(field(inst, 7, 0))
@@ -36,11 +34,11 @@ namespace skl {
              * than the rest of the instructions.
              */
             opc = field(inst, 15,  8);
-            mne = mne_[opc];
+            mne = mnemonics[opc];
         }
 
 
-        void epilog(skl::cpu_t *cpu, bool trapped)
+        void epilog(skl::cpuid_t cpu, bool trapped)
         {
             if (LIKELY(!trapped)) {
                 increment_pc(cpu, 1);
@@ -53,16 +51,14 @@ namespace skl {
 
     struct skl_trapnil_t : skl_trap_t {
 
-        skl_trapnil_t(md::OADDR    pc_,
-                      md::OINST    inst_,
-                      const char **mne_) :
-            skl_trap_t(pc_, inst_, mne_)
+        skl_trapnil_t(md::OADDR pc_, md::OINST inst_) :
+            skl_trap_t(pc_, inst_)
         {
             assert(Rd == 0);
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 r0 = read_integer_register(cpu, R0);
             bool trapped = r0 == 0;         // true => trap raised.
@@ -75,10 +71,8 @@ namespace skl {
 
     struct skl_traprange_t : skl_trap_t {
 
-        skl_traprange_t(md::OADDR    pc_,
-                        md::OINST    inst_,
-                        const char **mne_) :
-            skl_trap_t(pc_, inst_, mne_)
+        skl_traprange_t(md::OADDR pc_, md::OINST inst_) :
+            skl_trap_t(pc_, inst_)
         {
         }
     };
@@ -86,15 +80,13 @@ namespace skl {
 
     struct skl_traprange_sint_t : skl_traprange_t {
 
-        skl_traprange_sint_t(md::OADDR    pc_,
-                             md::OINST    inst_,
-                             const char **mne_) :
-            skl_traprange_t(pc_, inst_, mne_)
+        skl_traprange_sint_t(md::OADDR pc_, md::OINST inst_) :
+            skl_traprange_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 r0    = read_integer_register(cpu, R0);
             int        value = static_cast<int>(r0);
@@ -108,15 +100,13 @@ namespace skl {
 
     struct skl_traprange_int_t : skl_traprange_t {
 
-        skl_traprange_int_t(md::OADDR    pc_,
-                            md::OINST    inst_,
-                            const char **mne_) :
-            skl_traprange_t(pc_, inst_, mne_)
+        skl_traprange_int_t(md::OADDR pc_, md::OINST inst_) :
+            skl_traprange_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 r0    = read_integer_register(cpu, R0);
             int        value = static_cast<int>(r0);
@@ -130,15 +120,13 @@ namespace skl {
 
     struct skl_traprange_lint_t : skl_traprange_t {
 
-        skl_traprange_lint_t(md::OADDR    pc_,
-                            md::OINST    inst_,
-                            const char **mne_) :
-            skl_traprange_t(pc_, inst_, mne_)
+        skl_traprange_lint_t(md::OADDR pc_, md::OINST inst_) :
+            skl_traprange_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             /* LONGINT types can never exceed their range. */
             bool ok = true;
@@ -150,15 +138,13 @@ namespace skl {
 
     struct skl_traprange_bitset_t : skl_traprange_t {
 
-        skl_traprange_bitset_t(md::OADDR    pc_,
-                               md::OINST    inst_,
-                               const char **mne_) :
-            skl_traprange_t(pc_, inst_, mne_)
+        skl_traprange_bitset_t(md::OADDR pc_, md::OINST inst_) :
+            skl_traprange_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 r0    = read_integer_register(cpu, R0);
             int        value = static_cast<int>(r0);
@@ -172,15 +158,13 @@ namespace skl {
 
     struct skl_traparray_t : skl_trap_t {
 
-        skl_traparray_t(md::OADDR    pc_,
-                        md::OINST    inst_,
-                        const char **mne_) :
-            skl_trap_t(pc_, inst_, mne_)
+        skl_traparray_t(md::OADDR pc_, md::OINST inst_) :
+            skl_trap_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 r0 = read_integer_register(cpu, R0);
             md::uint32 rd = read_integer_register(cpu, Rd);
@@ -196,30 +180,29 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_systrap(cpu_t *cpu, md::OINST inst)
+    op_systrap(md::OADDR pc, md::OINST inst)
     {
         opc_t opc = static_cast<opc_t>(field(inst, 15,  8));
 
         switch (opc) {
         case OPC_TRAPGUARD:
-        case OPC_TRAPNIL:
-            return new skl_trapnil_t(cpu->pc, inst, mne);
+        case OPC_TRAPNIL: return new skl_trapnil_t(pc, inst);
 
         case OPC_TRAPRANGE: {
             int subcl = field(inst, 7, 0);
 
             switch (subcl) {
-            case 4 : return new skl_traprange_sint_t(cpu->pc, inst, mne);
-            case 5 : return new skl_traprange_int_t(cpu->pc, inst, mne);
-            case 6 : return new skl_traprange_lint_t(cpu->pc, inst, mne);
-            case 9 : return new skl_traprange_bitset_t(cpu->pc, inst, mne);
+            case 4 : return new skl_traprange_sint_t(pc, inst);
+            case 5 : return new skl_traprange_int_t(pc, inst);
+            case 6 : return new skl_traprange_lint_t(pc, inst);
+            case 9 : return new skl_traprange_bitset_t(pc, inst);
             default: dialog::internal_error("%s: traprange (subcl: %u)",
                                             __func__, subcl);
             }
         }
 
         case OPC_TRAPARRAY:
-            return new skl_traparray_t(cpu->pc, inst, mne);
+            return new skl_traparray_t(pc, inst);
 
         default:
             dialog::internal_error("%s: Unsupported systrap opcode: %d",

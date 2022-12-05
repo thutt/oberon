@@ -31,7 +31,7 @@ namespace skl {
         }
 
         virtual ~instruction_t(void) { }
-        virtual void interpret(skl::cpu_t *cpu) = 0;
+        virtual void interpret(skl::cpuid_t cpu) = 0;
     };
 
     extern instruction_t **cache;

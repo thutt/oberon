@@ -16,7 +16,7 @@ namespace skl {
 #undef OPC
         N_OPCODES
     } opc_t;
-    static const char *mne[N_OPCODES] = {
+    static const char *mnemonics[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_int_reg_opc.h"
 #undef OPC
@@ -28,10 +28,8 @@ namespace skl {
         int          R0;
         int          R1;
 
-        skl_int_reg_base_t(md::OADDR    pc_,
-                      md::OINST   inst_,
-                      const char **mne_) :
-            skl::instruction_t(pc_, inst_, mne_),
+        skl_int_reg_base_t(md::OADDR pc_, md::OINST inst_) :
+            skl::instruction_t(pc_, inst_, mnemonics),
             Rd(field(inst_, 25, 21)),
             R0(field(inst_, 20, 16)),
             R1(field(inst_, 15, 11))
@@ -41,21 +39,20 @@ namespace skl {
 
 
     struct skl_int_reg_and_t : skl::skl_int_reg_base_t {
-        skl_int_reg_and_t(md::OADDR    pc_,
-                          md::OINST   inst_,
-                          const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_and_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l     = read_integer_register(cpu, R0);
             const md::uint32 r     = read_integer_register(cpu, R1);
             md::uint32       v     = l & r;
 
-            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
+            dialog::trace("%s: %s  R%u, R%u, R%u",
+                          decoded_pc, mne, R0, R1, Rd);
 
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -64,21 +61,20 @@ namespace skl {
 
 
     struct skl_int_reg_ash_t : skl::skl_int_reg_base_t {
-        skl_int_reg_ash_t(md::OADDR    pc_,
-                          md::OINST   inst_,
-                          const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_ash_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l     = read_integer_register(cpu, R0);
             const md::uint32 r     = read_integer_register(cpu, R1);
             md::uint32       v;
 
-            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
+            dialog::trace("%s: %s  R%u, R%u, R%u",
+                          decoded_pc, mne, R0, R1, Rd);
 
             if (static_cast<md::int8>(r) >= 0) {
                 v = left_shift(l, static_cast<int>(r));
@@ -96,15 +92,13 @@ namespace skl {
 
 
     struct skl_int_reg_cmps_t : skl::skl_int_reg_base_t {
-        skl_int_reg_cmps_t(md::OADDR    pc_,
-                           md::OINST   inst_,
-                           const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_cmps_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l = read_integer_register(cpu, R0);
             const md::uint32 r = read_integer_register(cpu, R1);
@@ -164,15 +158,13 @@ namespace skl {
 
 
     struct skl_int_reg_bitset_t : skl::skl_int_reg_base_t {
-        skl_int_reg_bitset_t(md::OADDR    pc_,
-                           md::OINST   inst_,
-                           const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_bitset_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
@@ -206,15 +198,13 @@ namespace skl {
 
 
     struct skl_int_reg_lsh_t : skl::skl_int_reg_base_t {
-        skl_int_reg_lsh_t(md::OADDR    pc_,
-                           md::OINST   inst_,
-                           const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_lsh_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l     = read_integer_register(cpu, R0);
             const md::uint32 r     = read_integer_register(cpu, R1);
@@ -236,15 +226,13 @@ namespace skl {
 
 
     struct skl_int_reg_nor_t : skl::skl_int_reg_base_t {
-        skl_int_reg_nor_t(md::OADDR    pc_,
-                           md::OINST   inst_,
-                           const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_nor_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l = read_integer_register(cpu, R0);
             const md::uint32 r = read_integer_register(cpu, R1);
@@ -259,15 +247,13 @@ namespace skl {
 
 
     struct skl_int_reg_or_t : skl::skl_int_reg_base_t {
-        skl_int_reg_or_t(md::OADDR    pc_,
-                           md::OINST   inst_,
-                           const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_or_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l = read_integer_register(cpu, R0);
             const md::uint32 r = read_integer_register(cpu, R1);
@@ -282,15 +268,13 @@ namespace skl {
 
 
     struct skl_int_reg_rot_t : skl::skl_int_reg_base_t {
-        skl_int_reg_rot_t(md::OADDR    pc_,
-                           md::OINST   inst_,
-                           const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_rot_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l           = read_integer_register(cpu, R0);
             const md::uint32 r           = read_integer_register(cpu, R1);
@@ -325,21 +309,20 @@ namespace skl {
 
 
     struct skl_int_reg_xor_t : skl::skl_int_reg_base_t {
-        skl_int_reg_xor_t(md::OADDR    pc_,
-                           md::OINST   inst_,
-                           const char **mne_) :
-            skl_int_reg_base_t(pc_, inst_, mne_)
+        skl_int_reg_xor_t(md::OADDR pc_, md::OINST inst_) :
+            skl_int_reg_base_t(pc_, inst_)
         {
         }
 
 
-        virtual void interpret(skl::cpu_t *cpu)
+        virtual void interpret(skl::cpuid_t cpu)
         {
             const md::uint32 l = read_integer_register(cpu, R0);
             const md::uint32 r = read_integer_register(cpu, R1);
             md::uint32       v = l ^ r;
 
-            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
+            dialog::trace("%s: %s  R%u, R%u, R%u",
+                          decoded_pc, mne, R0, R1, Rd);
 
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -348,38 +331,21 @@ namespace skl {
 
 
     skl::instruction_t *
-    op_int_reg(cpu_t *cpu, md::OINST inst) // XXX remove cpu argument!
+    op_int_reg(md::OADDR pc, md::OINST inst)
     {
         const opc_t opc = static_cast<opc_t>(field(inst, 4, 0));
 
         assert(opc >= 0 && opc < N_OPCODES);
         switch (opc) {
-        case OPC_AND:
-            return new skl_int_reg_and_t(cpu->pc, inst, mne);
-
-        case OPC_ASH:
-            return new skl_int_reg_ash_t(cpu->pc, inst, mne);
-
-        case OPC_BITSET:
-            return new skl_int_reg_bitset_t(cpu->pc, inst, mne);
-
-        case OPC_CMPS:
-            return new skl_int_reg_cmps_t(cpu->pc, inst, mne);
-
-        case OPC_LSH:
-            return new skl_int_reg_lsh_t(cpu->pc, inst, mne);
-
-        case OPC_NOR:
-            return new skl_int_reg_nor_t(cpu->pc, inst, mne);
-
-        case OPC_OR:
-            return new skl_int_reg_or_t(cpu->pc, inst, mne);
-
-        case OPC_ROT:
-            return new skl_int_reg_rot_t(cpu->pc, inst, mne);
-
-        case OPC_XOR:
-            return new skl_int_reg_xor_t(cpu->pc, inst, mne);
+        case OPC_AND:    return new skl_int_reg_and_t(pc, inst);
+        case OPC_ASH:    return new skl_int_reg_ash_t(pc, inst);
+        case OPC_BITSET: return new skl_int_reg_bitset_t(pc, inst);
+        case OPC_CMPS:   return new skl_int_reg_cmps_t(pc, inst);
+        case OPC_LSH:    return new skl_int_reg_lsh_t(pc, inst);
+        case OPC_NOR:    return new skl_int_reg_nor_t(pc, inst);
+        case OPC_OR:     return new skl_int_reg_or_t(pc, inst);
+        case OPC_ROT:    return new skl_int_reg_rot_t(pc, inst);
+        case OPC_XOR:    return new skl_int_reg_xor_t(pc, inst);
 
         default:
             dialog::internal_error("%s: improper opcode", __func__);
