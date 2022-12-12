@@ -365,51 +365,54 @@ namespace skl
                scale == 2 ||  /* index * 4 */
                scale == 3);   /* index * 8 */
         scaled_index = index << static_cast<md::uint32>(scale);
-        return base + scaled_index  + static_cast<md::uint32>(offset);
+        return base + scaled_index + static_cast<md::uint32>(offset);
     }
 
 
     static inline md::uint32
-    read_1(md::OADDR addr, bool sign_extend)
+    read_1_se(md::HADDR p)
     {
-        md::HADDR p = heap::heap_to_host(addr);
-        if (LIKELY(sign_extend)) {
-            md::int8  i8  = *reinterpret_cast<md::int8 *>(p);
-            md::int32 i32 = static_cast<md::int32>(i8);
-            return static_cast<md::uint32>(i32);
-        } else {
-            return *reinterpret_cast<md::uint8 *>(p);
-        }
+        md::int8  i8  = *reinterpret_cast<md::int8 *>(p);
+        md::int32 i32 = static_cast<md::int32>(i8);
+        return static_cast<md::uint32>(i32);
     }
 
 
     static inline md::uint32
-    read_2(md::OADDR addr, bool sign_extend)
+    read_1_ze(md::HADDR p)
     {
-        md::HADDR p = heap::heap_to_host(addr);
-
-        if (LIKELY(sign_extend)) {
-            md::int16 i16 = *reinterpret_cast<md::int16 *>(p);
-            md::int32 i32 = static_cast<md::int32>(i16);
-            return static_cast<md::uint32>(i32);
-        } else {
-            return *reinterpret_cast<md::uint16 *>(p);
-        }
+        return *reinterpret_cast<md::uint8 *>(p);
     }
 
 
     static inline md::uint32
-    read_4(md::OADDR addr, bool sign_extend)
+    read_2_se(md::HADDR p)
     {
-        md::HADDR p = heap::heap_to_host(addr);
-        if (LIKELY(sign_extend)) {
-            /* This sign-extension only makes sense if the VM
-             * supports memory access more than 32-bits. */
-            md::int32 i32 = *reinterpret_cast<md::int32 *>(p);
-            return static_cast<md::uint32>(i32);
-        } else {
-            return *reinterpret_cast<md::uint32 *>(p);
-        }
+        md::int16 i16 = *reinterpret_cast<md::int16 *>(p);
+        md::int32 i32 = static_cast<md::int32>(i16);
+        return static_cast<md::uint32>(i32);
+    }
+
+
+    static inline md::uint32
+    read_2_ze(md::HADDR p)
+    {
+        return *reinterpret_cast<md::uint16 *>(p);
+    }
+
+
+    static inline md::uint32
+    read_4_se(md::HADDR p)
+    {
+        md::int32 i32 = *reinterpret_cast<md::int32 *>(p);
+        return static_cast<md::uint32>(i32);
+    }
+
+
+    static inline md::uint32
+    read_4_ze(md::HADDR p)
+    {
+        return *reinterpret_cast<md::uint32 *>(p);
     }
 
 
@@ -417,13 +420,26 @@ namespace skl
     read(skl::cpuid_t cpu, md::OADDR addr, bool sign_extend, int size)
     {
         if (LIKELY(address_valid(addr, size))) {
+            md::HADDR p = heap::heap_to_host(addr);
             if (size == 1) {
-                return read_1(addr, sign_extend);
+                if (sign_extend) {
+                    return read_1_se(p);
+                } else {
+                    return read_1_ze(p);
+                }
             } else if (size == 2) {
-                return read_2(addr, sign_extend);
+                if (sign_extend) {
+                    return read_2_se(p);
+                } else {
+                    return read_2_ze(p);
+                }
             } else {
                 assert(size == 4);
-                return read_4(addr, sign_extend);
+                if (sign_extend) {
+                    return read_4_se(p);
+                } else {
+                    return read_4_ze(p);
+                }
             }
         } else {
             hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
