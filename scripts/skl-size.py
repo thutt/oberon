@@ -196,7 +196,7 @@ def compare(base, modi):
 
     print("")
     header(width, field_width)
-    for pname in base:
+    for pname in sorted(base):
         bartifact = base[pname]
         bres      = bartifact.values()
 
@@ -238,7 +238,7 @@ def report(artifacts):
     print("")
     field_width = 8
     header(width, field_width)
-    for pname in artifacts:
+    for pname in sorted(artifacts):
         artifact = artifacts[pname]
         res = artifact.values()
         if res is not None:
