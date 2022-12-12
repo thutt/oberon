@@ -201,44 +201,6 @@ namespace skl {
     }
 
 
-    void
-    write_1(skl::cpuid_t cpu, md::OADDR addr, md::uint8 val)
-    {
-        if (LIKELY(address_valid(addr, sizeof(val)))) {
-            md::HADDR p = heap::heap_to_host(addr);
-            md::uint8 v = static_cast<md::uint8>(val);
-            *reinterpret_cast<md::uint8 *>(p) = v;
-        } else {
-            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
-        }
-    }
-
-
-    void
-    write_2(skl::cpuid_t cpu, md::OADDR addr, md::uint16 val)
-    {
-        if (LIKELY(address_valid(addr, sizeof(val)))) {
-            md::HADDR p = heap::heap_to_host(addr);
-            md::uint16 v = static_cast<md::uint16>(val);
-            *reinterpret_cast<md::uint16 *>(p) = v;
-        } else {
-            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
-        }
-    }
-
-
-    void
-    write_4(skl::cpuid_t cpu, md::OADDR addr, md::uint32 val)
-    {
-        if (LIKELY(address_valid(addr, sizeof(val)))) {
-            md::HADDR p = heap::heap_to_host(addr);
-            *reinterpret_cast<md::uint32 *>(p) = val;
-        } else {
-            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
-        }
-    }
-
-
     static md::uint32
     fetch_instruction(cpuid_t cpu, md::OADDR pc)
     {

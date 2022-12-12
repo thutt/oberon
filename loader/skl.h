@@ -448,19 +448,44 @@ namespace skl
     }
 
 
-    void write_1(skl::cpuid_t cpu, md::OADDR addr, md::uint8 val);
-    void write_2(skl::cpuid_t cpu, md::OADDR addr, md::uint16 val);
-    void write_4(skl::cpuid_t cpu, md::OADDR addr, md::uint32 val);
+    static inline void
+    write_1(skl::cpuid_t cpu, md::HADDR p, md::uint8 val)
+    {
+        md::uint8 v = static_cast<md::uint8>(val);
+        *reinterpret_cast<md::uint8 *>(p) = v;
+    }
+
+
+    static inline void
+    write_2(skl::cpuid_t cpu, md::HADDR p, md::uint16 val)
+    {
+        md::uint16 v = static_cast<md::uint16>(val);
+        *reinterpret_cast<md::uint16 *>(p) = v;
+    }
+
+
+    static inline void
+    write_4(skl::cpuid_t cpu, md::HADDR p, md::uint32 val)
+    {
+        *reinterpret_cast<md::uint32 *>(p) = val;
+    }
+
+
     static inline void
     write(skl::cpuid_t cpu, md::OADDR addr, md::uint32 val, int size)
     {
-        if (size == 1) {
-            write_1(cpu, addr, static_cast<md::uint8>(val));
-        } else if (size == 2) {
-            write_2(cpu, addr, static_cast<md::uint16>(val));
+        if (LIKELY(address_valid(addr, sizeof(val)))) {
+            md::HADDR p = heap::heap_to_host(addr);
+            if (size == 1) {
+                write_1(cpu, p, static_cast<md::uint8>(val));
+            } else if (size == 2) {
+                write_2(cpu, p, static_cast<md::uint16>(val));
+            } else {
+                assert(size == 4);
+                write_4(cpu, p, val);
+            }
         } else {
-            assert(size == 4);
-            write_4(cpu, addr, val);
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
         }
     }
 }
