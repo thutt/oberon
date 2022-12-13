@@ -37,15 +37,22 @@ _BUILD_DIR	:= $(SKL_BUILD_DIR)/$(SKL_BUILD_TYPE)$(_OPTS)
 PROFILE	:=							\
 	$(if $(filter profile,$(SKL_BUILD_OPTIONS)),-pg)
 
+
 DEBUG	:=							\
 	$(if $(filter alpha beta,$(SKL_BUILD_TYPE)),-g)
+
+
+TRACE	:=	\
+	$(if $(filter trace,$(SKL_BUILD_OPTIONS)),-DENABLE_TRACE)
+
 
 OPT	:=							\
 	$(if $(filter release,$(SKL_BUILD_TYPE)),-O3,-Og)	\
 	-fdata-sections						\
 	-ffunction-sections					\
 	-fno-rtti						\
-	-fno-exceptions
+	-fno-exceptions						\
+	$(if $(filter alpha beta,$(SKL_BUILD_TYPE)),,-fno-stack-protector)
 
 
 
@@ -61,10 +68,6 @@ WARNINGS	:=				\
 	-Wsign-conversion			\
 	-fdiagnostics-color=never		\
 	-fno-diagnostics-show-caret
-
-# Compiler Source code control
-TRACE	:=	\
-	$(if $(filter trace,$(SKL_BUILD_OPTIONS)),-DENABLE_TRACE)
 
 
 CXXFLAGS	:=				\
