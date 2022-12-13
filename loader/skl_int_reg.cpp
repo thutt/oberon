@@ -119,12 +119,7 @@ namespace skl {
             llen = static_cast<int>(strlen(reinterpret_cast<const char *>(lp)));
             rp   = heap::heap_to_host(r);
             rlen = static_cast<int>(strlen(reinterpret_cast<const char *>(rp)));
-            valid = (address_valid(l, static_cast<int>(sizeof(md::uint8))) &&
-                     address_valid(l + static_cast<md::OADDR>(llen),
-                                   static_cast<int>(sizeof(md::uint8))) &&
-                     address_valid(r, static_cast<int>(sizeof(md::uint8))) &&
-                     address_valid(r + static_cast<md::OADDR>(rlen),
-                                   static_cast<int>(sizeof(md::uint8))));
+            valid = address_valid(l, llen + 1) && address_valid(r, rlen + 1);
 
             if (LIKELY(valid)) {
                 int compare = strcmp(reinterpret_cast<const char *>(lp),

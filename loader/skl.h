@@ -344,8 +344,7 @@ namespace skl
     static inline bool
     address_valid(md::OADDR ea, int size)
     {
-        return (aligned(ea, size) &&
-                memory_access_ok(&memory, ea, size));
+        return memory_access_ok(&memory, ea, size);
     }
 
 
