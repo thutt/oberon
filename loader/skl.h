@@ -473,7 +473,7 @@ namespace skl
     static inline void
     write(skl::cpuid_t cpu, md::OADDR addr, md::uint32 val, int size)
     {
-        if (LIKELY(address_valid(addr, sizeof(val)))) {
+        if (LIKELY(address_valid(addr, size))) {
             md::HADDR p = heap::heap_to_host(addr);
             if (size == 1) {
                 write_1(cpu, p, static_cast<md::uint8>(val));
