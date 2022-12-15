@@ -177,25 +177,33 @@ IMPORT
     END;
     io.Ln;
 
-    MI.OpenStack(sfp, stkDesc); (* Get info of trapped function. *)
-    LOOP
-      IF stkDesc.EOS OR (stkDesc.module = NIL) THEN
-        EXIT;
-      END;
+    (* If a hardware fault has occurred, do not try to produce a stack dump.
+     * This is because a hardware fault caused by stack corruption will
+     * lead to more faults as functions are called, or the current stack
+     * frame pointer is used to access memory.  Instead, return so an
+     * orderly exit can be performed.
+     *)
+    IF ~(trap IN { HaltReadAccess, HaltWriteAccess }) THEN
+      MI.OpenStack(sfp, stkDesc); (* Get info of trapped function. *)
+      LOOP
+        IF stkDesc.EOS OR (stkDesc.module = NIL) THEN
+          EXIT;
+        END;
 
-      io.Str(stkDesc.module.name^);
-      IF MI.FindProcedure(stkDesc, modOffs, procLen, name) THEN
-        io.Ch('.');
-        io.Str(name);
-        io.Str(' [');
-        io.Hex(modOffs);
-        io.Str('H..');
-        io.Hex(modOffs + procLen);
-        io.Str('H)');
-        io.Ln;
-        Locals(stkDesc, stkDesc.sfp);
+        io.Str(stkDesc.module.name^);
+        IF MI.FindProcedure(stkDesc, modOffs, procLen, name) THEN
+          io.Ch('.');
+          io.Str(name);
+          io.Str(' [');
+          io.Hex(modOffs);
+          io.Str('H..');
+          io.Hex(modOffs + procLen);
+          io.Str('H)');
+          io.Ln;
+          Locals(stkDesc, stkDesc.sfp);
+        END;
+        MI.NextStackFrame(stkDesc);
       END;
-      MI.NextStackFrame(stkDesc);
     END;
   END Show;
 
