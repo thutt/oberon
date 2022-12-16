@@ -146,8 +146,9 @@ bit fields.
 \begin{figure}[h]
   \centering
     \begin{bytefield}{32}
-      \bitheader[endianness=big]{0,1,2,4,5,31}          \\
-      \bitbox{27}{reserved}
+      \bitheader[endianness=big]{0,1,2,4,5,6,7,31}        \\
+      \bitbox{25}{reserved}
+      \bitbox{2}{A}
       \bitbox{3}{T}
       \bitbox{1}{I}
       \bitbox{1}{C}
@@ -192,6 +193,19 @@ fault should be handled.
   110 & \emph{reserved} \\
   111 & \emph{reserved} \\
 \end{tabular} \\
+
+\hline A & Active &
+\begin{tabular}{lp{0.6\textwidth}}
+ 00 & No faults active. \\
+
+ 01 & A fault is currently being handled. \\
+
+ 10 & A second fault was raised while processing the
+ first fault.  The virtual hardware terminates on this condition.  \\
+
+ 11 & \emph{reserved} \\
+\end{tabular} \\
+
 \hline
 \end{tabularx}
 

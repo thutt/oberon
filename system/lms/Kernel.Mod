@@ -1553,6 +1553,7 @@
    *)
   PROCEDURE - GetCR0 00H, 00H, 20H, 0CH; (* lcr CR0, R1 *)
   PROCEDURE - GetCR2 00H, 00H, 22H, 0CH; (* lcr CR2, R1 *)
+  PROCEDURE - SetCR2 01H, 00H, 41H, 0CH; (* scr R1, CR2 *)
   PROCEDURE HwdTrap;
     CONST
       SFP = 29;                 (* R29 is stack frame pointer. *)
@@ -1576,7 +1577,21 @@
       svc.cr2  := cr2;
       VMService(VMSVCEarlyHwdTrap, svc);
     END;
+    SetCR2;
   END HwdTrap;
+
+  (* EndOfHardwareTrap
+   *
+   * Set CR2 to 0 to signify no active hardware traps.
+   *
+   * Without resetting CR2 after a hardware trap, the next one
+   * trap will halt the interpreter.
+   *)
+  PROCEDURE EndOfHardwareTrap*;
+  BEGIN
+    SYSTEM.PUTREG(1, 0);
+    SetCR2;
+  END EndOfHardwareTrap;
 
 
   PROCEDURE - SetCR5 01H, 00H, 0A1H, 0CH; (* scr R1, CR5 *)

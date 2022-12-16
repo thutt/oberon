@@ -160,7 +160,6 @@ namespace skl {
         }
     }
 
-
     void
     software_trap(skl::cpuid_t cpuid, int trap)
     {
@@ -172,14 +171,32 @@ namespace skl {
     }
 
 
+    static int
+    process_cr2_active(skl::cpuid_t cpuid)
+    {
+        int        active;      // CR2 Active field, bits 6..5.
+        md::uint32 cr2 = skl::read_control_register(cpuid, CR2);
+
+        active = static_cast<int>(((cr2 >> 5) & 3)) + 1;
+        if (active < 2) {
+            return active << 5;
+        } else {
+            dialog::fatal("Hardware trap raised while processing "
+                          "hardware trap.");
+            return 0;
+        }
+    }
+
     void
     hardware_trap(skl::cpuid_t cpuid, control_register_2_t trap)
     {
-        md::uint32  cr2;
+        md::uint32 cr2;
+        int        active = process_cr2_active(cpuid);
 
         write_control_register(cpuid, CR0,
                                skl::program_counter(cpuid)); // Exception address.
-        cr2 = static_cast<md::uint32>(trap     | /* Bits 4..2.  Pre-shifted. */
+        cr2 = static_cast<md::uint32>(active   | /* Bits 6..5.  Pre-shifted. */
+                                      trap     | /* Bits 4..2.  Pre-shifted. */
                                       (0 << 1) | /* Bit 1: interrupt enable
                                                   *        (unsupported). */
                                       (1 << 0)); /* Bit 0: Processor trap. */

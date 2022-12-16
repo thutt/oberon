@@ -225,6 +225,7 @@ IMPORT
       Show(TRUE, (cr2 DIV 4) MOD 8, ip, sfp, cr2);
     END;
     io.Close;
+    Kernel.EndOfHardwareTrap;
     Kernel.Terminate(127);
   END ShowHwdTrap;
 
