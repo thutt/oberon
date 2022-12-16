@@ -16,20 +16,40 @@ namespace skl {
         N_OPCODES
     } opc_t;
 
+
     static const char *mnemonics[N_OPCODES] = {
 #define OPC(_t) #_t,
 #include "skl_stack_opc.h"
 #undef OPC
     };
 
-    static inline bool
-    stack_access_ok(skl::cpuid_t cpuid, int n_words, bool push)
+
+    static void
+    push_word(skl::cpuid_t cpuid, md::uint32 data)
     {
-        if (push) {
-            return true;        // Stack bounds checking disabled.
-        } else {
-            return true;        // Stack bounds checking disabled.
+        md::uint32 sp  = read_integer_register(cpuid, SP);
+
+        sp -= static_cast<md::uint32>(sizeof(md::uint32));
+        skl::write(cpuid, sp, data, sizeof(md::uint32));
+
+        if (LIKELY(!skl::exception_raised(cpuid))) {
+            write_integer_register(cpuid, SP, sp);
         }
+    }
+
+
+    static md::uint32
+    pop_word(skl::cpuid_t cpuid, md::uint32 &rsp)
+    {
+        md::uint32 sp    = read_integer_register(cpuid, SP);
+        md::uint32 value = skl::read(cpuid, sp, false, sizeof(md::uint32));
+
+        if (LIKELY(!skl::exception_raised(cpuid))) {
+            rsp    = sp;
+            sp    += static_cast<md::uint32>(sizeof(md::uint32));
+            write_integer_register(cpuid, SP, sp);
+        }
+        return value;
     }
 
 
@@ -58,21 +78,22 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
+            md::uint32 sp0 = read_integer_register(cpuid, SP);
+            md::uint32 r31 = read_integer_register(cpuid, RETADR);
+            md::uint32 rd0 = read_integer_register(cpuid, Rd);
+            md::uint32 sp1 = sp0;
+            md::uint32 rd1 = 0;
+
             dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, Rd, words);
+            sp1 -= static_cast<md::uint32>(sizeof(md::uint32));
+            skl::write(cpuid, sp1, r31, sizeof(md::uint32));  /* Save return address. */
 
-            if (stack_access_ok(cpuid, n_words, true)) {
-                md::uint32 sp0 = read_integer_register(cpuid, SP);
-                md::uint32 r31 = read_integer_register(cpuid, RETADR);
-                md::uint32 rd0 = read_integer_register(cpuid, Rd);
-                md::uint32 sp1 = sp0;
-                md::uint32 rd1;
-
-                sp1 -= static_cast<md::uint32>(sizeof(md::uint32));
-                skl::write(cpuid, sp1, r31, sizeof(md::uint32));  /* Save return address. */
-
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 sp1 -= static_cast<md::uint32>(sizeof(md::uint32));
                 skl::write(cpuid, sp1, rd0, sizeof(md::uint32));   /* Save old SFP. */
+            }
 
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 rd1 = sp1;
 
                 sp1 -= static_cast<md::uint32>(words * /* Local variable space. */
@@ -83,7 +104,9 @@ namespace skl {
 
                 write_integer_register(cpuid, SP, sp1); /* Set SP. */
                 write_integer_register(cpuid, Rd, rd1); /* Set SFP. */
+            }
 
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 if (skl_alpha) {
                     /* Zero out stack space in development builds.
                      * This is intended to be used for debugging.
@@ -96,9 +119,6 @@ namespace skl {
                 }
 
                 increment_pc(cpuid, 1);
-            } else {
-                /* Stack overflow exception. */
-                dialog::not_implemented("stack overflow");
             }
         }
     };
@@ -113,39 +133,37 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
+            md::uint32 rd1;
+            md::uint32 sfp;
+            md::uint32 rd0 = read_integer_register(cpuid, Rd);
+            md::uint32 sp0 = read_integer_register(cpuid, SP);
+            md::uint32 r31 = 0;
+
             dialog::trace("%s: %s  R%u, %xH", decoded_pc, mne, Rd, words);
 
-            if (stack_access_ok(cpuid, n_words, false)) {
-                md::uint32 rd0 = read_integer_register(cpuid, Rd);
-                md::uint32 sp0 = read_integer_register(cpuid, SP);
-                md::uint32 rd1;
-                md::uint32 sfp;
-                md::uint32 r31;
+            sfp = rd0;
 
-                /* This code does some unnecessary work and can be improved. */
-
-                sfp = rd0;
-
-                rd1 = skl::read(cpuid, sfp, false, sizeof(md::uint32));   /* Old SFP. */
+            rd1 = skl::read(cpuid, sfp, false, sizeof(md::uint32));   /* Old SFP. */
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 sfp += static_cast<md::uint32>(sizeof(md::uint32));
 
-                r31 = skl::read(cpuid, sfp, false, sizeof(md::uint32)); /* Restore return address. */
+                /* Restore return address. */
+                r31 = skl::read(cpuid, sfp, false, sizeof(md::uint32));
+            }
+
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 sfp += static_cast<md::uint32>(sizeof(md::uint32));
 
                 sfp += static_cast<md::uint32>(words * /* Remove arguments. */
-                                               static_cast<int>(sizeof(md::uint32))); 
+                                               static_cast<int>(sizeof(md::uint32)));
 
                 dialog::trace("[R%u: %xH -> %xH,   R%u: %xH -> %xH]\n",
-                              SFP, rd0, rd1, SP, sp0, sfp);
+                          SFP, rd0, rd1, SP, sp0, sfp);
                 write_integer_register(cpuid, RETADR, r31);
                 write_integer_register(cpuid, Rd, rd1);
                 write_integer_register(cpuid, SP, sfp);
                 increment_pc(cpuid, 1);
-            } else {
-                /* Stack underflow exception. */
-                dialog::not_implemented("stack underflow");
             }
-
         }
     };
 
@@ -157,30 +175,6 @@ namespace skl {
             skl::instruction_t(pc_, inst_, mnemonics),
             Rd(field(inst, 25, 21))
         {
-        }
-
-        void push_word(skl::cpuid_t cpuid, md::uint32 data)
-        {
-            md::uint32 sp  = read_integer_register(cpuid, SP);
-
-            sp -= static_cast<md::uint32>(sizeof(md::uint32));
-            skl::write(cpuid, sp, data, sizeof(md::uint32));
-            write_integer_register(cpuid, SP, sp);
-        }
-
-
-        md::uint32 pop_word(skl::cpuid_t cpuid, md::uint32 &rsp)
-        {
-            md::uint32 sp;
-            md::uint32 value;
-
-            sp     = read_integer_register(cpuid, SP);
-            rsp    = sp;
-            value  = skl::read(cpuid, sp, false, sizeof(md::uint32));
-            sp    += static_cast<md::uint32>(sizeof(md::uint32));
-            write_integer_register(cpuid, SP, sp);
-
-            return value;
         }
     };
 
@@ -194,18 +188,16 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
-            dialog::trace("%s: %s  R%u", decoded_pc, mne, Rd);
-            if (stack_access_ok(cpuid, 1, true)) {
-                md::uint32 sp;
-                md::uint32 val = read_integer_register(cpuid, Rd);
+            md::uint32 sp;
+            md::uint32 val = read_integer_register(cpuid, Rd);
 
-                push_word(cpuid, val);
+            dialog::trace("%s: %s  R%u", decoded_pc, mne, Rd);
+            push_word(cpuid, val);
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 sp = read_integer_register(cpuid, SP);
                 dialog::trace("[ea: %xH  val: %xH]\n", sp, val);
-            } else {
-                dialog::not_implemented("stack overflow");
+                increment_pc(cpuid, 1);
             }
-            increment_pc(cpuid, 1);
         }
     };
 
@@ -219,26 +211,24 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
+            union {
+                md::uint32 i;
+                float f;
+            } v;
+            md::uint32 sp;
+            double     rvalue = read_real_register(cpuid, Rd);
+
+            COMPILE_TIME_ASSERT(sizeof(float) == sizeof(md::uint32));
+            COMPILE_TIME_ASSERT(skl_endian_little);
             dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
-            if (LIKELY(stack_access_ok(cpuid, 1, true))) {
-                union {
-                    md::uint32 i;
-                    float f;
-                } v;
-                md::uint32 sp;
-                double     rvalue = read_real_register(cpuid, Rd);
 
-                COMPILE_TIME_ASSERT(sizeof(float) == sizeof(md::uint32));
-                COMPILE_TIME_ASSERT(skl_endian_little);
-
-                v.f = static_cast<float>(rvalue);
-                push_word(cpuid, v.i);
+            v.f = static_cast<float>(rvalue);
+            push_word(cpuid, v.i);
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 sp = read_integer_register(cpuid, SP);
                 dialog::trace("[ea: %xH  val: %f]\n", sp, v.f);
-            } else {
-                dialog::not_implemented("stack overflow");
+                increment_pc(cpuid, 1);
             }
-            increment_pc(cpuid, 1);
         }
     };
 
@@ -252,25 +242,25 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
-            dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
-            if (LIKELY(stack_access_ok(cpuid, 2, true))) {
-                md::uint32 sp;
-                md::uint32 lo;
-                md::uint32 hi;
-                double     value = read_real_register(cpuid, Rd);
+            md::uint32 sp;
+            md::uint32 lo;
+            md::uint32 hi;
+            double     value = read_real_register(cpuid, Rd);
 
-                COMPILE_TIME_ASSERT(sizeof(double) == 2 * sizeof(md::uint32));
-                COMPILE_TIME_ASSERT(skl_endian_little);
-                md::decompose_double(value, lo, hi);
-                push_word(cpuid, hi); /* Stack grows down; little endian order. */
+            COMPILE_TIME_ASSERT(sizeof(double) == 2 * sizeof(md::uint32));
+            COMPILE_TIME_ASSERT(skl_endian_little);
+            dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
+
+            md::decompose_double(value, lo, hi);
+            push_word(cpuid, hi); /* Stack grows down; little endian order. */
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 push_word(cpuid, lo);
                 sp = read_integer_register(cpuid, SP);
                 dialog::trace("[ea: %xH  val: %e]\n", sp, value);
-
-            } else {
-                dialog::not_implemented("stack overflow");
             }
-            increment_pc(cpuid, 1);
+            if (LIKELY(!skl::exception_raised(cpuid))) {
+                increment_pc(cpuid, 1);
+            }
         }
     };
 
@@ -284,18 +274,17 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
-            md::uint32      value;
+            md::uint32 value;
+            md::uint32 sp;
 
             dialog::trace("%s: %s  R%u", decoded_pc, mne, Rd);
-            if (stack_access_ok(cpuid, 1, true)) {
-                md::uint32 sp;
-                value = pop_word(cpuid, sp);
-                dialog::trace("[ea: %xH  val: %xH]\n", sp, value);
+
+            value = pop_word(cpuid, sp);
+            dialog::trace("[ea: %xH  val: %xH]\n", sp, value);
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 write_integer_register(cpuid, Rd, value);
-            } else {
-                dialog::not_implemented("stack overflow");
+                increment_pc(cpuid, 1);
             }
-            increment_pc(cpuid, 1);
         }
     };
 
@@ -323,25 +312,27 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
-            dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
-            if (LIKELY(stack_access_ok(cpuid, 2, true))) {
-                md::uint32 lo;
-                md::uint32 hi;
-                md::uint32 sp_lo;
-                md::uint32 sp_hi;
-                double     value;
+            md::uint32 lo;
+            md::uint32 hi = 0;
+            md::uint32 sp_lo;
+            md::uint32 sp_hi;
+            double     value;
 
-                COMPILE_TIME_ASSERT(sizeof(double) == 2 * sizeof(md::uint32));
-                COMPILE_TIME_ASSERT(skl_endian_little);
-                lo = pop_word(cpuid, sp_lo);
+            COMPILE_TIME_ASSERT(sizeof(double) == 2 * sizeof(md::uint32));
+            COMPILE_TIME_ASSERT(skl_endian_little);
+            dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
+
+            lo = pop_word(cpuid, sp_lo);
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 hi = pop_word(cpuid, sp_hi);
+            }
+
+            if (LIKELY(!skl::exception_raised(cpuid))) {
                 md::recompose_double(lo, hi, value);
                 dialog::trace("[ea: %xH  val: %e]\n", sp_lo, value);
                 write_real_register(cpuid, Rd, value);
-            } else {
-                dialog::not_implemented("stack overflow");
+                increment_pc(cpuid, 1);
             }
-            increment_pc(cpuid, 1);
         }
     };
 
