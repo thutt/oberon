@@ -20,6 +20,93 @@ namespace skl {
 #undef OPC
     };
 
+    typedef union float_int_pun_little_endian_t {
+        md::uint32 i;
+        float      f;
+    } float_int_pun_little_endian_t;
+
+
+    static float
+    read_little_endian_float(skl::cpuid_t cpu, md::OADDR addr)
+    {
+        float_int_pun_little_endian_t v;
+        md::HADDR p = heap::heap_to_host(addr);
+
+        COMPILE_TIME_ASSERT(skl_endian_little);
+        COMPILE_TIME_ASSERT(sizeof(v.i) == sizeof(v.f));
+
+        if (LIKELY(address_valid(addr, sizeof(v.f)))) {
+            v.i = skl::read_4_ze(p);
+            return v.f;
+        } else {
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
+            return 0; // Value ignored, because CPU does not return.
+        }
+    }
+
+
+    static double
+    read_little_endian_double(skl::cpuid_t cpu, md::OADDR addr)
+    {
+        double    value;
+        md::HADDR p = heap::heap_to_host(addr);
+
+        COMPILE_TIME_ASSERT(skl_endian_little);
+        COMPILE_TIME_ASSERT(sizeof(value) == 2 * sizeof(md::uint32));
+
+        if (LIKELY(address_valid(addr, sizeof(value)))) {
+            md::OADDR  hi_offs = static_cast<md::OADDR>(sizeof(md::uint32));
+            md::uint32 lo      = skl::read_4_ze(p);
+            md::uint32 hi      = skl::read_4_ze(p + hi_offs);
+
+            md::recompose_double(lo, hi, value);
+            return value;
+        } else {
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
+            return 0; // Value ignored, because CPU does not return.
+        }
+    }
+
+
+    static void
+    write_little_endian_float(skl::cpuid_t cpu, md::OADDR addr, float value)
+    {
+        float_int_pun_little_endian_t v;
+        md::HADDR p = heap::heap_to_host(addr);
+
+        COMPILE_TIME_ASSERT(skl_endian_little);
+        COMPILE_TIME_ASSERT(sizeof(v.i) == sizeof(v.f));
+
+        if (LIKELY(address_valid(addr, sizeof(value)))) {
+            v.f = value;
+            skl::write_4(cpu, p, v.i);
+        } else {
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
+        }
+    }
+
+
+    static void
+    write_little_endian_double(skl::cpuid_t cpu, md::OADDR addr, double value)
+    {
+        md::HADDR p = heap::heap_to_host(addr);
+
+        COMPILE_TIME_ASSERT(skl_endian_little);
+        COMPILE_TIME_ASSERT(sizeof(value) == 2 * sizeof(md::uint32));
+
+        if (LIKELY(address_valid(addr, sizeof(value)))) {
+            md::uint32 lo;
+            md::uint32 hi;
+            md::OADDR  hi_offs = static_cast<md::OADDR>(sizeof(md::uint32));
+
+            md::decompose_double(value, lo, hi);
+            skl::write_4(cpu, p, lo);
+            skl::write_4(cpu, p + hi_offs, hi);
+        } else {
+            hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
+        }
+    }
+
 
     typedef struct reg_mem_decode_t {
         int         Rd;
@@ -78,13 +165,7 @@ namespace skl {
                   const reg_mem_decode_t &decode_) :
             skl_reg_mem_t(cpuid_, pc_, inst_, decode_)
         {
-            union {
-                md::uint32 i;
-                float      f;
-            } v;
-            COMPILE_TIME_ASSERT(sizeof(v.i) == sizeof(v.f));
-            v.i   = skl::read(cpuid_, pc + 4, false, sizeof(md::uint32));
-            value = v.f;
+            value = read_little_endian_float(cpuid_, pc + 4);
         }
 
 
@@ -108,9 +189,7 @@ namespace skl {
                   const reg_mem_decode_t &decode_) :
             skl_reg_mem_t(cpuid_, pc_, inst_, decode_)
         {
-            md::uint32 lo = skl::read(cpuid_, pc + 4, false, sizeof(md::uint32));
-            md::uint32 hi = skl::read(cpuid_, pc + 8, false, sizeof(md::uint32));
-            md::recompose_double(lo, hi, value);
+            value = read_little_endian_double(cpuid_, pc + 4);
         }
 
 
@@ -152,6 +231,7 @@ namespace skl {
 
         void load(skl::cpuid_t cpu, bool sign_extend, int size)
         {
+            md::uint32 value;
             char       sign = '+';
             int        offs = offset;
             md::OADDR  ea   = skl::compute_effective_address(cpu, decode.Rbase,
@@ -168,14 +248,12 @@ namespace skl {
                           decoded_pc, mne, decode.Rbase, decode.Rindex,
                           decode.scale, sign, offs, decode.Rd);
 
-            if (LIKELY(address_valid(ea, size))) {
-                md::uint32 value = skl::read(cpu, ea, sign_extend, size);
 
+            value = skl::read(cpu, ea, sign_extend, size);
+            if (LIKELY(!skl::exception_raised(cpu))) {
                 dialog::trace("[ea: %xH, value: %xH]\n", ea, value);
                 write_integer_register(cpu, decode.Rd, value);
                 increment_pc(cpu, 2);
-            } else {
-                hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
             }
         }
     };
@@ -212,11 +290,9 @@ namespace skl {
                           decode.scale, sign, offs);
             dialog::trace("[value: %xH, ea: %xH]\n", value, ea);
 
-            if (LIKELY(address_valid(ea, size))) {
-                skl::write(cpu, ea, value, size);
+            skl::write(cpu, ea, value, size);
+            if (LIKELY(!skl::exception_raised(cpu))) {
                 increment_pc(cpu, 2);
-            } else {
-                hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
             }
         }
     };
@@ -232,32 +308,13 @@ namespace skl {
         }
 
 
-        double read_real_little_endian(skl::cpuid_t cpu, md::OADDR ea, int size)
+        void
+        load(skl::cpuid_t cpu, int size)
         {
-            union {
-                md::uint32 i[2];
-                float      f;
-            } v;
-            double d;
-
-            v.i[0] = skl::read(cpu, ea, false, sizeof(md::uint32));
-            if (size == sizeof(double)) {
-                v.i[1] = skl::read(cpu, ea +
-                                   static_cast<md::OADDR>(sizeof(md::uint32)),
-                                   false, sizeof(md::uint32));
-                md::recompose_double(v.i[0], v.i[1], d);
-            } else {
-                d = v.f;
-            }
-            return d;
-        }
-
-
-        void load(skl::cpuid_t cpu, int size)
-        {
-            char       sign = '+';
-            int        offs = offset;
-            md::OADDR  ea   = skl::compute_effective_address(cpu, decode.Rbase,
+            char      sign  = '+';
+            int       offs  = offset;
+            double    value = 0;
+            md::OADDR ea    = skl::compute_effective_address(cpu, decode.Rbase,
                                                              decode.Rindex,
                                                              decode.scale,
                                                              offset);
@@ -274,15 +331,16 @@ namespace skl {
                           decoded_pc, mne, decode.Rbase, decode.Rindex,
                           decode.scale, sign, offset, decode.Rd);
 
-            if (LIKELY(address_valid(ea, size))) {
-                double value = 0;
-                COMPILE_TIME_ASSERT(skl_endian_little);
-                value = read_real_little_endian(cpu, ea, size);
-                dialog::trace("[ea: %xH, value: %f]\n", ea, value);
+            COMPILE_TIME_ASSERT(skl_endian_little);
+            if (size == sizeof(double)) {
+                value = skl::read_little_endian_double(cpu, ea);
+            } else {
+                value =read_little_endian_float(cpu, ea);
+            }
+            dialog::trace("[ea: %xH, value: %f]\n", ea, value);
+            if (LIKELY(!skl::exception_raised(cpu))) {
                 write_real_register(cpu, decode.Rd, value);
                 increment_pc(cpu, 2);
-            } else {
-                hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
             }
         }
     };
@@ -306,10 +364,13 @@ namespace skl {
             int             R0   = decode.Rd;
             char            sign = '+';
             int             offs = offset;
-            md::OADDR  ea   = skl::compute_effective_address(cpu, decode.Rbase,
-                                                             decode.Rindex,
-                                                             decode.scale,
-                                                             offset);
+            md::OADDR       ea   = skl::compute_effective_address(cpu, decode.Rbase,
+                                                                  decode.Rindex,
+                                                                  decode.scale,
+                                                                  offset);
+
+            COMPILE_TIME_ASSERT(sizeof(float) == sizeof(md::uint32) &&
+                                sizeof(double) == 2 * sizeof(float));
 
             if (offs < 0) {
                 sign   = '-';
@@ -322,31 +383,14 @@ namespace skl {
             value = read_real_register(cpu, R0);
             dialog::trace("[value: %f, ea: %xH]\n", value, ea);
 
-            if (LIKELY(address_valid(ea, size))) {
-                md::uint32 lo;
-                md::uint32 hi;
-
-                COMPILE_TIME_ASSERT(sizeof(float) == sizeof(md::uint32) &&
-                                    sizeof(double) == 2 * sizeof(float));
-
-                if (size == sizeof(double)) {
-                    md::decompose_double(value, lo, hi);
-                    COMPILE_TIME_ASSERT(skl_endian_little);
-                    skl::write(cpu, ea, lo, sizeof(md::uint32));
-                    skl::write(cpu, ea +
-                               static_cast<md::OADDR>(sizeof(md::uint32)),
-                               hi, sizeof(md::uint32));
-                } else {
-                    union {
-                        md::uint32 i;
-                        float f;
-                    } v;
-                    v.f = static_cast<float>(value);
-                    skl::write(cpu, ea, v.i, sizeof(md::uint32));
-                }
-                increment_pc(cpu, 2);
+            if (size == sizeof(double)) {
+                skl::write_little_endian_double(cpu, ea, value);
             } else {
-                hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);
+                float flt = static_cast<float>(value);
+                skl::write_little_endian_float(cpu, ea, flt);
+            }
+            if (LIKELY(!skl::exception_raised(cpu))) {
+                increment_pc(cpu, 2);
             }
         }
     };
