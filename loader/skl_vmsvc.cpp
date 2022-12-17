@@ -40,68 +40,70 @@ namespace skl {
             const char      *operation = "invalid vmsvc";
 
             svc = skl::read(cpu, adr, false, sizeof(md::uint32));
+            if (LIKELY(!skl::exception_raised(cpu))) {
 
-            if (svc < N_VMSVC_OPERATIONS) {
-                operation = operations[svc];
+                if (svc < N_VMSVC_OPERATIONS) {
+                    operation = operations[svc];
+                }
+
+                dialog::trace("%s: %s  R%u", decoded_pc, mne, R0);
+                dialog::trace("[%s]\n", operation);
+
+                switch (svc) {
+                case VMSVC_BOOTSTRAP:
+                    vmsvc_bootstrap();
+                    break;
+
+                case VMSVC_TRACE_CONTROL:
+                    vmsvc_trace_control(adr);
+                    break;
+
+                case VMSVC_EARLY_SYSTRAP:
+                    vmsvc_early_systrap(adr);
+                    break;
+
+                case VMSVC_DEBUG_LOG:
+                    vmsvc_debug_log(adr);
+                    break;
+
+                case VMSVC_TERMINATE:
+                    vmsvc_terminate(adr);
+                    break;
+
+                case VMSVC_TIME:
+                    dialog::not_implemented("%s: time", __func__);
+                    break;
+
+                case VMSVC_DIRECTORY:
+                    vmsvc_directory(adr);
+                    break;
+
+                case VMSVC_FILE:
+                    vmsvc_file(adr);
+                    break;
+
+                case VMSVC_CONSOLE:
+                    vmsvc_console(adr);
+                    break;
+
+                case VMSVC_FILL_MEMORY:
+                    vmsvc_fill_memory(adr);
+                    break;
+
+                case VMSVC_EARLY_HWDTRAP:
+                    vmsvc_early_hwdtrap(adr);
+                    break;
+
+                case VMSVC_ENVIRONMENT:
+                    vmsvc_environment(adr);
+                    break;
+
+                default:
+                    dialog::not_implemented("unhandled vmsvc", __func__);
+                    break;
+                }
+                increment_pc(cpu, 1);
             }
-
-            dialog::trace("%s: %s  R%u", decoded_pc, mne, R0);
-            dialog::trace("[%s]\n", operation);
-
-            switch (svc) {
-            case VMSVC_BOOTSTRAP:
-                vmsvc_bootstrap();
-                break;
-
-            case VMSVC_TRACE_CONTROL:
-                vmsvc_trace_control(adr);
-                break;
-
-            case VMSVC_EARLY_SYSTRAP:
-                vmsvc_early_systrap(adr);
-                break;
-
-            case VMSVC_DEBUG_LOG:
-                vmsvc_debug_log(adr);
-                break;
-
-            case VMSVC_TERMINATE:
-                vmsvc_terminate(adr);
-                break;
-
-            case VMSVC_TIME:
-                dialog::not_implemented("%s: time", __func__);
-                break;
-
-            case VMSVC_DIRECTORY:
-                vmsvc_directory(adr);
-                break;
-
-            case VMSVC_FILE:
-                vmsvc_file(adr);
-                break;
-
-            case VMSVC_CONSOLE:
-                vmsvc_console(adr);
-                break;
-
-            case VMSVC_FILL_MEMORY:
-                vmsvc_fill_memory(adr);
-                break;
-
-            case VMSVC_EARLY_HWDTRAP:
-                vmsvc_early_hwdtrap(adr);
-                break;
-
-            case VMSVC_ENVIRONMENT:
-                vmsvc_environment(adr);
-                break;
-
-            default:
-                dialog::not_implemented("unhandled vmsvc", __func__);
-                break;
-            }
-            increment_pc(cpu, 1);
         }
     };
 
