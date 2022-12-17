@@ -26,11 +26,11 @@ namespace skl {
         md::OADDR       return_addr;
 
         skl_jal_t(skl::cpuid_t cpuid_, md::OADDR pc_, md::OINST inst_) :
-            skl::instruction_t(pc_, inst_, mnemonics)
+            skl::instruction_t(pc_, inst_, mnemonics),
+            Rd(field(inst, 25, 21)),
+            destination(skl::read(cpuid_, pc + 4, false, sizeof(md::uint32))),
+            return_addr(pc + 2 * static_cast<md::OADDR>(sizeof(md::uint32)))
         {
-            Rd          = field(inst, 25, 21);
-            destination = skl::read(cpuid_, pc + 4, false, sizeof(md::uint32));
-            return_addr = pc + 2 * static_cast<md::OADDR>(sizeof(md::uint32));
             assert(Rd == RETADR);
         }
 
