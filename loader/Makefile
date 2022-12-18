@@ -1,11 +1,21 @@
 # Copyright (c) 2000, 2020-2022 Logic Magicians Software
 MAKEFILE	:= $(lastword $(MAKEFILE_LIST))
+SRC_DIR		:= $(dir $(MAKEFILE))
 include $(SKL_DIR)/make/config.mk
+
+ARCHITECTURE_DIR	:=					\
+	$(if $(filter $(SKL_ARCHITECTURE),Intel-x86-64),x86)	\
+	$(if $(filter $(SKL_ARCHITECTURE),Arm64),arm64)
+
 
 TEST-FLAGS	:= test-flags-$(SKL_ARCHITECTURE)
 
 INCLUDE	:=					\
-	$(SKL_DIR)/include
+	$(SKL_DIR)/include			\
+	$(SRC_DIR)				\
+	$(SRC_DIR)$(ARCHITECTURE_DIR)		\
+	$(SRC_DIR)generic
+
 
 SOURCE :=					\
 		bootstrap.cpp			\

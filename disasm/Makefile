@@ -10,6 +10,10 @@ SOURCE	:=					\
 
 OBJ	= $(SOURCE:.cpp=.o)
 
+INCLUDE	:=							\
+	$(SKL_DIR)/include
+
+
 $(OBJ):	$(SKL_DIR)/make/config.mk $(MAKEFILE)
 
 

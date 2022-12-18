@@ -55,10 +55,6 @@ OPT	:=							\
 	$(if $(filter alpha beta,$(SKL_BUILD_TYPE)),,-fno-stack-protector)
 
 
-
-INCLUDE	:=					\
-	$(SKL_DIR)/include
-
 WARNINGS	:=				\
 	--pedantic				\
 	-Wall					\
@@ -70,7 +66,7 @@ WARNINGS	:=				\
 	-fno-diagnostics-show-caret
 
 
-CXXFLAGS	:=				\
+CXXFLAGS	=				\
 	-D$(HOSTOS)				\
 	-DBUILD_TYPE_$(SKL_BUILD_TYPE)		\
 	$(addprefix -I,$(INCLUDE))		\

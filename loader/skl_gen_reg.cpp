@@ -5,6 +5,7 @@
 
 #include "dialog.h"
 #include "o3.h"
+#include "skl_flags.h"
 #include "skl_gen_reg.h"
 
 namespace skl {
@@ -20,59 +21,6 @@ namespace skl {
 #include "skl_gen_reg_opc.h"
 #undef OPC
         };
-
-
-    static unsigned
-    synthesize_overflow_int32(md::int32 l, md::int32 r)
-    {
-        unsigned sign_mask = left_shift(1, 31);
-        int      res       = l - r; // Result sign.
-        unsigned not_equal = static_cast<unsigned>(l ^ r);
-        unsigned sign_diff = static_cast<unsigned>(l ^ res);
-
-        return !!((not_equal & sign_diff) & sign_mask);
-    }
-
-
-    static md::uint32
-    synthesize_flags_int32(md::uint32 l, md::uint32 r)
-    {
-        md::int32  ll = static_cast<md::int32>(l);
-        md::int32  lr = static_cast<md::int32>(r);
-        md::uint32 ZF = ll == lr;                          // Zero flag.
-        md::uint32 SF = (ll - lr) < 0;                     // Sign flag.
-        md::uint32 CF = l < r;                             // Carry flag.
-        md::uint32 OF = synthesize_overflow_int32(ll, lr); // Overflow flag.
-        return ((ZF << 0) |
-                (SF << 1) |
-                (CF << 2) |
-                (OF << 3));
-    }
-
-
-    static unsigned
-    synthesize_overflow_double(double l, double r)
-    {
-        int t0 = (r >= 0) && (l >= md::MinLReal() + r);
-        int t1 = (r < 0)  && (l <= md::MaxLReal() + r);
-        return !t0 && !t1;
-    }
-
-
-    static md::uint32
-    synthesize_flags_double(double l, double r)
-    {
-        double     delta = (l - r);
-        md::uint32 ZF    = delta == 0;                    // Zero flag.
-        md::uint32 SF    = delta < 0;                     // Sign flag.
-        md::uint32 CF    = l < r;                         // Carry flag.
-        md::uint32 OF = synthesize_overflow_double(l, r); // Overflow flag.
-
-        return ((ZF << 0) |
-                (SF << 1) |
-                (CF << 2) |
-                (OF << 3));
-    }
 
 
     struct skl_gen_reg_t : skl::instruction_t {
@@ -244,7 +192,7 @@ namespace skl {
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
-            md::uint32 v = synthesize_flags_int32(l, r);
+            md::uint32 v = skl::synthesize_flags_int32(l, r);
 
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,

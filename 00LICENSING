@@ -258,6 +258,8 @@ The files contained here are provided under the corresponding software license.
   licenses/gpl-3.0.text
   loader/fileutils.cpp
   loader/fileutils.h
+  loader/generic/skl_flags_alu.h
+  loader/x86/skl_flags_alu.h
   make/config.mk
   scripts/execute.py
   scripts/files.def

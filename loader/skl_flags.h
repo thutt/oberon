@@ -1,7 +1,10 @@
 /* Copyright (c) 2021, 2022 Logic Magicians Software */
+#if !defined(_SKL_FLAGS_H)
+#define _SKL_FLAGS_H
+
 #include "md.h"
 #include "skl.h"
-
+#include "skl_flags_alu.h"
 
 namespace skl {
     const int ZF = 0;
@@ -95,3 +98,4 @@ namespace skl {
         return !flag(flags, ZF) && (flag(flags, SF) == flag(flags, OF));
     }
 }
+#endif
