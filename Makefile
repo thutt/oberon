@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Logic Magicians Software
 
 $(if $(SKL_DIR),,$(error 'SKL_DIR' is not defined.))
-$(if $(filter $(SKL_ARCHITECTURE),Intel-x86-64  Arm64),,	\
+$(if $(filter $(SKL_ARCHITECTURE),Intel-x86-64 Arm64),,	\
    $(error 'SKL_ARCHITECTURE' is not Intel-x86-64 or Arm64.))
 
 include $(SKL_DIR)/make/config.mk
