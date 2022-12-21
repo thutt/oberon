@@ -1,8 +1,6 @@
-/* Copyright (c) 2021, 2022 Logic Magicians Software
+/* Copyright (c) 2022 Logic Magicians Software
  *
- *  This file is a generic implementation of ALU flag synthesis.  It
- *  will work for any GCC target architecture that is not superceded
- *  by a specific architecture version.
+ *  This file is an x86-specific implementation of ALU flag synthesis.
  */
 #if !defined(_SKL_FLAGS_ALU_H)
 #define _SKL_FLAGS_ALU_H

@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, 2022 Logic Magicians Software
+/* Copyright (c) 2022 Logic Magicians Software
  *
  *  This file is a generic implementation of ALU flag synthesis.  It
  *  will work for any GCC target architecture that is not superceded

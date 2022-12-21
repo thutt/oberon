@@ -13,11 +13,6 @@ namespace skl
     const int SP     = 30; /* (LMCGL.Mod) Stack Pointer. */
     const int RETADR = 31; /* Hardware-defined.  Return address. */
 
-    typedef enum exception_t {
-        E_STACK_UNDERFLOW,
-        E_STACK_OVERFLOW
-    } exception_t;
-
     typedef enum memory_access_t {
         MA_BYTE,
         MA_HALF_WORD,
