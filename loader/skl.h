@@ -310,25 +310,6 @@ namespace skl
         return true || (addr & (size - 1)) == 0;
     }
 
-    /* Returns true if:
-     *
-     *   [acc_beg, acc_beg + n_bytes)
-     *
-     * is in
-     *
-     *   [mem_beg, mem_end).
-     */
-    static inline bool
-    memory_access_ok(const memory_t *memory,
-                     md::OADDR       acc_beg,
-                     int             n_bytes)
-    {
-        /* [acc_beg, acc_beg + n_bytes) IN [memory->beg, memory->end) */
-        md::uint32 acc_end = acc_beg + static_cast<md::uint32>(n_bytes);
-        return (memory->beg <= acc_beg &&
-                acc_end < memory->end);
-    }
-
 
     /* address_valid
      *
@@ -339,7 +320,9 @@ namespace skl
     static inline bool
     address_valid(md::OADDR ea, int size)
     {
-        return memory_access_ok(&memory, ea, size);
+        bool beg_ok = memory.beg <= ea;
+        bool end_ok = ea + static_cast<md::uint32>(size) < memory.end;
+        return beg_ok & end_ok;
     }
 
 
