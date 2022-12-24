@@ -22,13 +22,14 @@ namespace skl {
                              "setc %[CF]\n\t"
                              "seto %[OF]\n\t"
 
-                             "shl    $3, %[OF]\n\t" /* OF = OF << 3 */
-                             "shl    $2, %[CF]\n\t" /* CF = CF << 3 */
-                             "shl    $1, %[SF]\n\t" /* SF = SF << 3 */
+                             /* ZF |= SF << 1; */
+                             "lea (%k[ZF], %k[SF], 2), %k[ZF]\n\t"
 
-                             "orb    %[OF], %[ZF]\n\t"
-                             "orb    %[CF], %[ZF]\n\t"
-                             "orb    %[SF], %[ZF]\n\t"
+                             /* ZF |= CF << 2; */
+                             "lea (%k[ZF], %k[CF], 4), %k[ZF]\n\t"
+
+                             /* ZF |= OF << 3; */
+                             "lea (%k[ZF], %k[OF], 8), %k[ZF]\n\t"
                              : /* output */
                                [ZF]  "=r" (ZF),
                                [SF]  "=r" (SF),
