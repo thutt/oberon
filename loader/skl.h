@@ -310,7 +310,6 @@ namespace skl
         return true || (addr & (size - 1)) == 0;
     }
 
-
     /* address_valid
      *
      *  Returns 'true' iff the address is within the bounds of memory,
@@ -323,26 +322,6 @@ namespace skl
         bool beg_ok = memory.beg <= ea;
         bool end_ok = ea + static_cast<md::uint32>(size) < memory.end;
         return beg_ok & end_ok;
-    }
-
-
-    static inline md::OADDR
-    compute_effective_address(skl::cpuid_t cpu,
-                              int          Rbase,
-                              int          Rindex,
-                              int          scale,
-                              int          offset)
-    {
-        md::uint32 scaled_index;
-        md::uint32 base  = read_integer_register(cpu, Rbase);
-        md::uint32 index = read_integer_register(cpu, Rindex);
-
-        assert(scale == 0 ||  /* index * 1 */
-               scale == 1 ||  /* index * 2 */
-               scale == 2 ||  /* index * 4 */
-               scale == 3);   /* index * 8 */
-        scaled_index = index << static_cast<md::uint32>(scale);
-        return base + scaled_index + static_cast<md::uint32>(offset);
     }
 
 
@@ -426,7 +405,7 @@ namespace skl
 
 
     static inline void
-    write_1(skl::cpuid_t cpu, md::HADDR p, md::uint8 val)
+    write_1(md::HADDR p, md::uint8 val)
     {
         md::uint8 v = static_cast<md::uint8>(val);
         *reinterpret_cast<md::uint8 *>(p) = v;
@@ -434,7 +413,7 @@ namespace skl
 
 
     static inline void
-    write_2(skl::cpuid_t cpu, md::HADDR p, md::uint16 val)
+    write_2(md::HADDR p, md::uint16 val)
     {
         md::uint16 v = static_cast<md::uint16>(val);
         *reinterpret_cast<md::uint16 *>(p) = v;
@@ -442,7 +421,7 @@ namespace skl
 
 
     static inline void
-    write_4(skl::cpuid_t cpu, md::HADDR p, md::uint32 val)
+    write_4(md::HADDR p, md::uint32 val)
     {
         *reinterpret_cast<md::uint32 *>(p) = val;
     }
@@ -454,12 +433,12 @@ namespace skl
         if (LIKELY(address_valid(addr, size))) {
             md::HADDR p = heap::heap_to_host(addr);
             if (size == 1) {
-                write_1(cpu, p, static_cast<md::uint8>(val));
+                write_1(p, static_cast<md::uint8>(val));
             } else if (size == 2) {
-                write_2(cpu, p, static_cast<md::uint16>(val));
+                write_2(p, static_cast<md::uint16>(val));
             } else {
                 assert(size == 4);
-                write_4(cpu, p, val);
+                write_4(p, val);
             }
         } else {
             hardware_trap(cpu, CR2_OUT_OF_BOUNDS_WRITE);

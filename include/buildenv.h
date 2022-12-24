@@ -35,6 +35,7 @@
   #define UNLIKELY(_e) __builtin_expect(_e, 0)
   #define UNUSED __attribute__((unused))
   #define NORETURN __attribute__((noreturn))
+  #define NOINLINE __attribute__((noinline))
 
 #else
   #error Unable to build.  Unsupported compiler.
