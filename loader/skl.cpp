@@ -330,7 +330,6 @@ namespace skl {
                 write_integer_register(cpuid, 0, 0); // Reset R0 to zero.
             }
 
-            skl::increment_instruction_count(cpuid);
             if (UNLIKELY(cinst == NULL)) {
                 cinst = fetch_and_cache_instruction(cpuid);
             }
@@ -338,6 +337,7 @@ namespace skl {
             /* cinst == NIL --> Invalid opcode. */
             if (LIKELY(cinst != NULL)) {
                 cinst->interpret(cpuid);
+                skl::increment_instruction_count(cpuid);
                 next = cinst->next;
                 if (UNLIKELY(next == NULL ||
                              next->pc != skl::program_counter(cpuid))) {
