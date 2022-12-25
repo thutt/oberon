@@ -417,11 +417,10 @@ namespace heap
          * all host pointers must be 0.
          *
          * If the addresses are not the same, special handling must be
-         * done to treat an address as a 'host address' or an 'oberon
-         * address' depending on the context (a host address cannot
-         * directly be stored in the Oberon heap, nor can an Oberon
-         * address cannot be used by this software, without
-         * conversion.
+         * written to treat an address as a 'host address' OR an
+         * 'oberon address' depending on the context (a host address
+         * cannot directly be stored in the Oberon heap, nor can an
+         * Oberon address be used, without conversion.
          */
         if ((addr & ~mask) != 0) {
             dialog::fatal("%s: mmap() memory above 4Gb boundary", __func__);

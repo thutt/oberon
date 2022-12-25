@@ -312,8 +312,9 @@ namespace skl
 
     /* address_valid
      *
-     *  Returns 'true' iff the address is within the bounds of memory,
-     *  and it is aligned to natural alignment to access 'size' bytes.
+     *  Returns 'true' iff the address is within the bounds of memory:
+     *
+     *   [ea, ea + size) is contained in [memory.beg, memory.end)
      *
      */
     static inline bool
