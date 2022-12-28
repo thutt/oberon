@@ -83,15 +83,9 @@ namespace dialog
 
 
     void
-    progress(const char *fmt, ...)
+    progress__(const char *fmt, va_list args)
     {
-        va_list args;
-
-        va_start(args, fmt);
-        if (config::options & config::opt_progress) {
-            vfprintf(stdout, fmt, args);
-        }
-        va_end(args);
+        vfprintf(stdout, fmt, args);
     }
 
 
@@ -107,16 +101,10 @@ namespace dialog
 
 
     void
-    diagnostic(const char *fmt, ...)
+    diagnostic__(const char *fmt, va_list args)
     {
-        va_list args;
-
-        va_start(args, fmt);
-        if (config::options & config::opt_diagnostic) {
-            fprintf(stderr, "diagnostic: ");
-            vfprintf(stderr, fmt, args);
-        }
-        va_end(args);
+        fprintf(stderr, "diagnostic: ");
+        vfprintf(stderr, fmt, args);
     }
 
 

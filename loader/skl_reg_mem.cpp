@@ -119,13 +119,6 @@ namespace skl {
     }
 
 
-    typedef struct reg_mem_decode_t {
-        int Rd;
-        int Rbase;
-        int Rindex;
-    } reg_mem_decode_t;
-
-
     struct skl_reg_mem_t : skl::instruction_t {
         int Rd;
         int Rbase;
