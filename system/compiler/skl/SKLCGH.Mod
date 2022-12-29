@@ -431,21 +431,16 @@ IMPORT
     VAR
       s   : CGL.Item;
       sp  : CGL.Item;
-      opc : SHORTINT;
   BEGIN
-    IF n < 0 THEN (* restoration *)
-      opc := CGL.opcADD;
+    IF n > 0 THEN (* Make space on stack; stack grows downward. *)
       n := -n;
-    ELSE (* making room *)
-      opc := CGL.opcSUB;
     END;
     MakeConstItem(s, n, ST.linttyp);
     sp.mode   := CGL.Ireg;
     sp.type   := ST.linttyp;
     sp.mnolev := 0;
     sp.reg    := CGL.SP;
-    Load(s);
-    CGL.PutGenReg(opc, sp, s, sp); (* add/sub Rsp, Rs, Rsp *)
+    CGL.PutAddConstant(sp, s, sp); (* la (Rsp, n), Rsp *)
   END AdjustSP;
 
 
@@ -681,12 +676,6 @@ IMPORT
       ELSIF CGL.IsConstOne(x) THEN
         TemporaryReg(x, x.type);
         LoadOne(x);
-      ELSIF CGL.IsConstTwo(x) THEN
-        TemporaryReg(y, x.type);
-        LoadOne(y);
-        CGL.PutGenReg(CGL.opcADD, y, y, y); (* add Ry, Ry, Ry *)
-        CGL.Release(x);
-        x := y;
       ELSIF x.mode = CGL.Icoc THEN
         (* A condition code is a register (x.reg) and a condition code (x.cc).
          * The register contains a TRUE/FALSE value already, as a result of a
@@ -1526,7 +1515,7 @@ IMPORT
     ELSIF f IN ST.IntSet THEN
       Load(x);
       IF (x.mode = CGL.Ireg) & (y.mode = CGL.Iconst) THEN
-        CGL.PutAddConstant(x, y); (* Use LA to perform add. *)
+        CGL.PutAddConstant(x, y, x); (* Use LA to perform add. *)
       ELSE
         Load(y);
         TemporaryReg(dest, x.type);
@@ -1573,7 +1562,7 @@ IMPORT
         dest := x;
         negy := y;
         negy.val.i0 := -negy.val.i0;
-        CGL.PutAddConstant(dest, negy); (* Use LA to perform subtraction. *)
+        CGL.PutAddConstant(dest, negy, dest); (* Use LA to perform subtraction. *)
       ELSE
         Load(y);
         CGL.DoubleRef(y);
@@ -2924,10 +2913,9 @@ IMPORT
     MakeConstItem(one, 1, ST.linttyp);
     GetLenDesc(arr, y, t);
     Load(y);
-    Load(one);
     CGL.Release(arr);
     arr := y;
-    CGL.PutGenReg(CGL.opcADD, arr, one, arr); (* add Rarr, Rone, Rarr *)
+    CGL.PutAddConstant(arr, one, arr);
   END StdLen;
 
   (* StdBit:

@@ -2347,17 +2347,21 @@ IMPORT
   END PutConditionalSet;
 
 
-  PROCEDURE PutAddConstant*(VAR x, y : Item); (* Add constant in 'y' to Rx,
-                                               * and store in Rx using LA. *)
+  (* Add constant in 'const' to 'Rsrc', and store in 'Rdest' using LA.
+   * 'src' and 'dest' can be the same.
+   *)
+  PROCEDURE PutAddConstant*(VAR src, const, dest : Item);
     VAR inst : Instruction;
   BEGIN
-    ASSERT(x.mode IN {Ireg}, 200);
+    ASSERT(src.mode IN {Ireg}, 200);
+    ASSERT(const.mode IN {Iconst}, 201);
+    ASSERT(dest.mode IN {Ireg}, 202);
     DefaultInst(inst);
-    Operand(y, inst);
+    Operand(const, inst);
     inst.opclass := ocREGMEMIMM;
     inst.opc     := opcLA;
-    inst.Rd      := SHORT(SHORT(x.reg));
-    inst.R0      := SHORT(SHORT(x.reg));
+    inst.Rd      := SHORT(SHORT(dest.reg));
+    inst.R0      := SHORT(SHORT(src.reg));
     inst.scale   := 0;
     PutInst(inst);
   END PutAddConstant;
