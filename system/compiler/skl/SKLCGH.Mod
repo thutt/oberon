@@ -1524,10 +1524,10 @@ IMPORT
       CGL.PutIntReg(CGL.opcOR, x, y, dest);
       CGL.Release(x);
     ELSIF f IN ST.IntSet THEN
+      Load(x);
       IF (x.mode = CGL.Ireg) & (y.mode = CGL.Iconst) THEN
         CGL.PutAddConstant(x, y); (* Use LA to perform add. *)
       ELSE
-        Load(x);
         Load(y);
         TemporaryReg(dest, x.type);
         CGL.PutGenReg(CGL.opcADD, x, y, dest);
