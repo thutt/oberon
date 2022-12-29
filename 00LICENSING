@@ -303,6 +303,9 @@ The files contained here are provided under the corresponding software license.
   system/compiler/skl/SKLERR.Mod
   system/compiler/skl/SKLERR.Obj
   system/compiler/skl/SKLERR.Sym
+  system/compiler/skl/SKLFP.Mod
+  system/compiler/skl/SKLFP.Obj
+  system/compiler/skl/SKLFP.Sym
   system/compiler/skl/SKLIE.Mod
   system/compiler/skl/SKLIE.Obj
   system/compiler/skl/SKLIE.Sym

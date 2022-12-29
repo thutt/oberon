@@ -305,7 +305,7 @@ IMPORT
      *   reg   : n/a
      *   inxreg: n/a
      *   adr   : Address of described variable
-     *   offset: n/a
+     *   offset: constant offset from base of 'adr'.
      *   flags : { various }
      *   val   : Not used.
      *   type  : Type of symbol.
@@ -2325,7 +2325,7 @@ IMPORT
     inst.Rd      := SHORT(SHORT(result.reg));
     inst.R0      := SHORT(SHORT(lop.reg));
     inst.R1      := SHORT(SHORT(rop.reg));
-    inst.bd      := 0;          (* Alway integer register. *)
+    inst.bd      := 0;          (* Always integer register. *)
     inst.b0      := RegBankOf(lop.type.form);
     inst.b1      := RegBankOf(rop.type.form);
     PutInst(inst);
@@ -2345,6 +2345,22 @@ IMPORT
     inst.R0      := SHORT(SHORT(Rcoc.reg));
     PutInst(inst);
   END PutConditionalSet;
+
+
+  PROCEDURE PutAddConstant*(VAR x, y : Item); (* Add constant in 'y' to Rx,
+                                               * and store in Rx using LA. *)
+    VAR inst : Instruction;
+  BEGIN
+    ASSERT(x.mode IN {Ireg}, 200);
+    DefaultInst(inst);
+    Operand(y, inst);
+    inst.opclass := ocREGMEMIMM;
+    inst.opc     := opcLA;
+    inst.Rd      := SHORT(SHORT(x.reg));
+    inst.R0      := SHORT(SHORT(x.reg));
+    inst.scale   := 0;
+    PutInst(inst);
+  END PutAddConstant;
 
 
   PROCEDURE PutLoadAddress*(VAR x, y : Item); (* Load address of 'y' into register 'x' *)

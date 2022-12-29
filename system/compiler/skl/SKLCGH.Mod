@@ -1523,15 +1523,25 @@ IMPORT
       CGL.DoubleRef(dest);
       CGL.PutIntReg(CGL.opcOR, x, y, dest);
       CGL.Release(x);
-    ELSIF f IN ST.IntSet + ST.RealSet THEN
+    ELSIF f IN ST.IntSet THEN
+      IF (x.mode = CGL.Ireg) & (y.mode = CGL.Iconst) THEN
+        CGL.PutAddConstant(x, y); (* Use LA to perform add. *)
+      ELSE
+        Load(x);
+        Load(y);
+        TemporaryReg(dest, x.type);
+        CGL.PutGenReg(CGL.opcADD, x, y, dest);
+        CGL.Release(x);
+        x := dest;
+        END;
+    ELSE
+      ASSERT(f IN ST.RealSet);
       Load(x);
       Load(y);
       TemporaryReg(dest, x.type);
       CGL.PutGenReg(CGL.opcADD, x, y, dest);
       CGL.Release(x);
       x := dest;
-    ELSE
-      OPM.internal("H", 1201);
     END;
     CGL.Release(y);
   END Add;
@@ -1542,24 +1552,41 @@ IMPORT
       dest : CGL.Item;
       zero : CGL.Item;
       noty : CGL.Item;
+      negy : CGL.Item;
   BEGIN
-    Load(y);
     Load(x);
     CGL.DoubleRef(x);
-    CGL.DoubleRef(y);
     TemporaryReg(dest, x.type);
     TemporaryReg(noty, y.type);
 
     f := x.type.form;
     IF f = ST.set THEN
+      Load(y);
+      CGL.DoubleRef(y);
       MakeConstItem(zero, 0, x.type);
       Load(zero);
       CGL.PutIntReg(CGL.opcNOR, y, zero, noty);
       CGL.PutIntReg(CGL.opcAND, x, noty, dest);
-    ELSIF f IN ST.IntSet + ST.RealSet THEN
+      CGL.Release(y);
+    ELSIF f IN ST.IntSet THEN
+      IF (x.mode = CGL.Ireg) & (y.mode = CGL.Iconst) THEN
+        dest := x;
+        negy := y;
+        negy.val.i0 := -negy.val.i0;
+        CGL.PutAddConstant(dest, negy); (* Use LA to perform subtraction. *)
+      ELSE
+        Load(y);
+        CGL.DoubleRef(y);
+        CGL.PutGenReg(CGL.opcSUB, x, y, dest);
+        CGL.Release(y);
+      END;
+    ELSE
+      ASSERT(f IN ST.RealSet);
+      Load(y);
+      CGL.DoubleRef(y);
       CGL.PutGenReg(CGL.opcSUB, x, y, dest);
+      CGL.Release(y);
     END;
-    CGL.Release(y);
     CGL.Release(x);
     CGL.Release(noty);
     x := dest;
