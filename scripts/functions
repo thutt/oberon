@@ -292,7 +292,7 @@ function skl-list-documentation ()
     local path="$(skl-build-path)";
 
     if [ -d "${path}" ] ; then
-        find "${path}" -name "*.dvi" -o -name "*.pdf";
+        find "${path}" -name "*.dvi" -o -name "*.pdf" -o -name "*.ps";
     else
         echo "The build directory (${path}) does not exist; run 'make'.";
         echo "";
