@@ -1,5 +1,5 @@
 % Copyright (c) 2001-2022 Logic Magicians Software
-prologues:=0;
+prologues:=2;
 input boxes;
 beginfig(1);        % simplified view of how instructions are linked
   numeric ysep;

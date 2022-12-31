@@ -1,5 +1,5 @@
 % Copyright (c) 2001-2022 Logic Magicians Software
-prologues:=0;
+prologues:=2;
 
 vardef cuta(suffix a, b)(expr p) =
 drawarrow p cutbefore bpath.a cutafter bpath.b;
