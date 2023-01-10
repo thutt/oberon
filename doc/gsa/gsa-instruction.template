@@ -1,4 +1,4 @@
-# Copyright (c) 2001-2022 Logic Magicians Software
+# Copyright (c) 2001-2023 Logic Magicians Software
 # output-filename|instruction-name|operands|results
 #
 # number-of-results := results excluding dummy & instruction
@@ -53,6 +53,7 @@ lsl|lsl|value,shift|
 lsr|lsr|value,shift|
 leq|leq|{op}_{0},{op}_{1}|
 lss|lss|{op}_{0},{op}_{1}|
+mayalias|mayalias|{address},{alias}|
 memr|memr|addr,coffs|
 memw|memw|addr,coffs,data|
 mod|mod|dividend,divisor|
