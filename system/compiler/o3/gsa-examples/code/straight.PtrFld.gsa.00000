@@ -1,0 +1,51 @@
+Initial GSA
+
+0.0 (0)  greg: PtrFld range=[-32768, -32722)
+  0.1 (31)  [1:[location=b0], 2:[location=b1], 3:[location=.%0]] enter flags{} %nlm  range=[-32768, -32723) uses={}
+   0.2 (32)  %nlm := nlmctor flags{}  range=[-32725, -32724) uses={(8)}
+   0.4 (33)  %return-2 := copy flags{} const{FALSE}  range=[-32725, -32725) uses={}
+  0.5 (2)  neq.u1 flags{} b0 , const{0}  range=[-32768, -32726) uses={(62) (63)}
+  0.7 (63)  guard-true flags{live} result[(2)]  range=[-32768, -32727) uses={(59)}
+  0.6 (62)  guard-false flags{} result[(2)]  range=[-32768, -32728) uses={(60)}
+  0.9 (60)  merge-cond flags{live} result[(62)]  range=[-32768, -32729) uses={(59)}
+   0.10 (61)  trap-nil flags{live}  range=[-32730, -32730) uses={}
+  0.8 (59)  merge-if flags{live} result[(63)] , result[(60)]  range=[-32768, -32731) uses={}
+  0.11 (7)  adr flags{} b0  range=[-32768, -32732) uses={(8)}
+  0.3 (8)  access-deref flags{} result{1 of (31)} , result[(7)] , result[(32)]  range=[-32768, -32733) uses={(11) (9)}
+  0.13 (9)  adr flags{} result[(8)]  range=[-32768, -32734) uses={(10)}
+  0.14 (10)  add.u4 flags{} result[(9)] , const{2}  range=[-32768, -32735) uses={(11)}
+  0.12 (11)  %nlm := update-field flags{} result[(8)] , result[(10)] , const{2} , result[(12)]  range=[-32768, -32736) uses={(35) (44) (19)}
+  0.15 (12)  convert.s2 flags{} const{0}  range=[-32768, -32737) uses={(11)}
+  0.19 (13)  neq.u1 flags{} b1 , const{0}  range=[-32768, -32738) uses={(57) (58)}
+  0.21 (58)  guard-true flags{live} result[(13)]  range=[-32768, -32739) uses={(54)}
+  0.20 (57)  guard-false flags{} result[(13)]  range=[-32768, -32740) uses={(55)}
+  0.23 (55)  merge-cond flags{live} result[(57)]  range=[-32768, -32741) uses={(54)}
+   0.24 (56)  trap-nil flags{live}  range=[-32742, -32742) uses={}
+  0.22 (54)  merge-if flags{live} result[(58)] , result[(55)]  range=[-32768, -32743) uses={}
+  0.25 (18)  adr flags{} b1  range=[-32768, -32744) uses={(19)}
+  0.18 (19)  access-deref flags{} result{2 of (31)} , result[(18)] , result[(11)]  range=[-32768, -32745) uses={(22) (20)}
+  0.27 (20)  adr flags{} result[(19)]  range=[-32768, -32746) uses={(21)}
+  0.28 (21)  add.u4 flags{} result[(20)] , const{2}  range=[-32768, -32747) uses={(22)}
+  0.26 (22)  access-field flags{} result[(19)] , result[(21)] , const{2}  range=[-32768, -32748) uses={(24)}
+  0.30 (23)  convert.s2 flags{} const{0}  range=[-32768, -32749) uses={(24)}
+  0.29 (24)  eql.s2 flags{} result[(22)] , result[(23)]  range=[-32768, -32750) uses={(36) (37)}
+  0.32 (37)  guard-true flags{} result[(24)]  range=[-32768, -32751) uses={(34)}
+   0.34 (38)  neq.u1 flags{} b1 , const{0}  range=[-32763, -32752) uses={(52) (53)}
+   0.36 (53)  guard-true flags{live} result[(38)]  range=[-32763, -32753) uses={(49)}
+   0.35 (52)  guard-false flags{} result[(38)]  range=[-32763, -32754) uses={(50)}
+   0.38 (50)  merge-cond flags{live} result[(52)]  range=[-32763, -32755) uses={(49)}
+    0.39 (51)  trap-nil flags{live}  range=[-32756, -32756) uses={}
+   0.37 (49)  merge-if flags{live} result[(53)] , result[(50)]  range=[-32763, -32757) uses={}
+   0.40 (43)  adr flags{} b1  range=[-32763, -32758) uses={(44)}
+   0.17 (44)  access-deref flags{} result{2 of (31)} , result[(43)] , result[(11)]  range=[-32763, -32759) uses={(47) (45)}
+   0.42 (45)  adr flags{} result[(44)]  range=[-32763, -32760) uses={(46)}
+   0.43 (46)  add.u4 flags{} result[(45)] , const{2}  range=[-32763, -32761) uses={(47)}
+   0.41 (47)  %nlm := update-field flags{} result[(44)] , result[(46)] , const{2} , result[(48)]  range=[-32763, -32762) uses={(35)}
+   0.44 (48)  convert.s2 flags{} const{2}  range=[-32763, -32763) uses={(47)}
+  0.31 (36)  guard-false flags{} result[(24)]  range=[-32768, -32764) uses={(34)}
+  0.33 (34)  merge-if flags{} result[(37)] , result[(36)]  range=[-32768, -32765) uses={(35)}
+   0.16 (35)  %nlm := gate flags{} result[(34)] , result[(47)] , result[(11)]  range=[-32766, -32766) uses={(30)}
+  0.46 (29)  exit flags{} result[(30)]  range=[-32768, -32767) uses={}
+   0.45 (30)  nlmdtor flags{live} result[(35)]  range=[-32768, -32768) uses={(29)}
+
+

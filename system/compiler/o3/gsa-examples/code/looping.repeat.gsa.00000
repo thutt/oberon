@@ -1,0 +1,19 @@
+Initial GSA
+
+0.0 (0)  greg: repeat range=[-32768, -32754)
+  0.1 (9)  [1:[location=j], 2:[location=i], 3:[location=.%0]] enter flags{} %nlm  range=[-32768, -32755) uses={}
+   0.2 (10)  %nlm := nlmctor flags{}  range=[-32758, -32756) uses={(8)}
+   0.4 (11)  %return-2 := copy flags{} const{FALSE}  range=[-32758, -32757) uses={}
+   0.5 (12)  %result-3 := copy flags{} const{0}  range=[-32758, -32758) uses={}
+  0.6 (2)  i := copy flags{} const{0}  range=[-32768, -32759) uses={}
+  0.7 (3)  i := convert.s2 flags{} const{100}  range=[-32768, -32760) uses={(15)}
+  0.9 (13)  merge-loop flags{} const{TRUE} , result[(17)]  range=[-32768, -32761) uses={(15)}
+   0.11 (14)  i := add.s2 flags{} result[(15)] , const{1}  range=[-32765, -32762) uses={(15)}
+   0.8 (15)  %result-3 := gate flags{} result[(13)] , result[(3)] , result[(14)]  range=[-32765, -32763) uses={(7) (16) (14)}
+   0.13 (16)  gtr.s2 flags{} result[(15)] , result{1 of (9)}  range=[-32765, -32764) uses={(17)}
+   0.10 (17)  not.u1 flags{} result[(16)]  range=[-32765, -32765) uses={(13)}
+  0.14 (5)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
+  0.12 (7)  exit flags{} result[(15)] [location=%result-3], result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  nlmdtor flags{live} result[(10)]  range=[-32768, -32768) uses={(7)}
+
+

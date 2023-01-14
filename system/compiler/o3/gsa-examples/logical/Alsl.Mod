@@ -1,0 +1,15 @@
+(* Copyright (c) 1997-2023 Logic Magicians Software *)
+MODULE Alsl;
+IMPORT SYSTEM;
+
+PROCEDURE P0(v : LONGINT) : LONGINT;
+BEGIN
+  RETURN SYSTEM.LSH(v, 3);
+END P0;
+
+PROCEDURE P1(v : LONGINT) : LONGINT;
+BEGIN
+  RETURN SYSTEM.LSH(v, -3);
+END P1;
+
+END Alsl.

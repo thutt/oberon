@@ -1,0 +1,14 @@
+Initial GSA
+
+0.0 (0)  greg: P1 range=[-32768, -32759)
+  0.1 (9)  [1:[location=x], 2:[location=x/adr], 3:[location=y], 4:[location=y/adr]] enter flags{} %nlm  range=[-32768, -32760) uses={}
+   0.2 (10)  %nlm := nlmctor flags{}  range=[-32762, -32761) uses={(5) (3)}
+   0.5 (11)  %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
+  0.6 (2)  adr flags{} x  range=[-32768, -32763) uses={(3)}
+  0.4 (3)  %nlm := update-nonlocal flags{} x , result[(2)] , result[(10)] , result[(5)]  range=[-32768, -32764) uses={(8)}
+  0.8 (4)  adr flags{} y  range=[-32768, -32765) uses={(5)}
+  0.3 (5)  access-nonlocal flags{} y , result[(4)] , result[(10)]  range=[-32768, -32766) uses={(3)}
+  0.9 (7)  exit flags{} result[(8)]  range=[-32768, -32767) uses={}
+   0.7 (8)  nlmdtor flags{live} result[(3)]  range=[-32768, -32768) uses={(7)}
+
+

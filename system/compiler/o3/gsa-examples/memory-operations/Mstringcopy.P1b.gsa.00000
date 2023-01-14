@@ -1,0 +1,18 @@
+Initial GSA
+
+0.0 (0)  greg: P1b range=[-32768, -32755)
+  0.1 (13)  [1:[location=gd], 2:[location=gd/adr]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+   0.2 (14)  %nlm := nlmctor flags{}  range=[-32758, -32757) uses={(3)}
+   0.4 (15)  %return-2 := copy flags{} const{FALSE}  range=[-32758, -32758) uses={}
+  0.5 (2)  adr flags{} gd  range=[-32768, -32759) uses={(3)}
+  0.3 (3)  access-nonlocal flags{} gd , result[(2)] , result[(14)]  range=[-32768, -32760) uses={(6) (4)}
+  0.7 (4)  adr flags{} result[(3)]  range=[-32768, -32761) uses={(5)}
+  0.8 (5)  add.u4 flags{} result[(4)] , const{0}  range=[-32768, -32762) uses={(6)}
+  0.6 (6)  %nlm := update-field flags{} result[(3)] , result[(5)] , const{0} , result[(7)]  range=[-32768, -32763) uses={(12) (8) (7)}
+  0.9 (7)  stringcopy flags{} result[(6)] , result[(8)] , const{151} , const{"hello"} , result[(9)]  range=[-32768, -32764) uses={(6)}
+  0.11 (8)  adr flags{} result[(6)]  range=[-32768, -32765) uses={(7)}
+  0.12 (9)  adr flags{} const{"hello"}  range=[-32768, -32766) uses={(7)}
+  0.13 (11)  exit flags{} result[(12)]  range=[-32768, -32767) uses={}
+   0.10 (12)  nlmdtor flags{live} result[(6)]  range=[-32768, -32768) uses={(11)}
+
+

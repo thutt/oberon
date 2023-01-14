@@ -1,0 +1,22 @@
+Initial GSA
+
+0.0 (0)  greg: RecordFldNonLocal range=[-32768, -32751)
+  0.1 (17)  [1:[location=bd0], 2:[location=bd0/adr], 3:[location=bd1], 4:[location=bd1/adr]] enter flags{} %nlm  range=[-32768, -32752) uses={}
+   0.2 (18)  %nlm := nlmctor flags{}  range=[-32754, -32753) uses={(3)}
+   0.4 (19)  %return-2 := copy flags{} const{FALSE}  range=[-32754, -32754) uses={}
+  0.5 (2)  adr flags{} bd0  range=[-32768, -32755) uses={(3)}
+  0.3 (3)  access-nonlocal flags{} bd0 , result[(2)] , result[(18)]  range=[-32768, -32756) uses={(6) (4)}
+  0.7 (4)  adr flags{} result[(3)]  range=[-32768, -32757) uses={(5)}
+  0.8 (5)  add.u4 flags{} result[(4)] , const{2}  range=[-32768, -32758) uses={(6)}
+  0.6 (6)  %nlm := update-field flags{} result[(3)] , result[(5)] , const{2} , result[(7)]  range=[-32768, -32759) uses={(9)}
+  0.9 (7)  convert.s2 flags{} const{10}  range=[-32768, -32760) uses={(6)}
+  0.11 (8)  adr flags{} bd1  range=[-32768, -32761) uses={(9)}
+  0.10 (9)  access-nonlocal flags{} bd1 , result[(8)] , result[(6)]  range=[-32768, -32762) uses={(12) (10)}
+  0.13 (10)  adr flags{} result[(9)]  range=[-32768, -32763) uses={(11)}
+  0.14 (11)  add.u4 flags{} result[(10)] , const{2}  range=[-32768, -32764) uses={(12)}
+  0.12 (12)  %nlm := update-field flags{} result[(9)] , result[(11)] , const{2} , result[(13)]  range=[-32768, -32765) uses={(16)}
+  0.15 (13)  convert.s2 flags{} const{20}  range=[-32768, -32766) uses={(12)}
+  0.17 (15)  exit flags{} result[(16)]  range=[-32768, -32767) uses={}
+   0.16 (16)  nlmdtor flags{live} result[(12)]  range=[-32768, -32768) uses={(15)}
+
+

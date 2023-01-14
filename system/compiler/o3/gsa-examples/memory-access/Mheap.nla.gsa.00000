@@ -1,0 +1,24 @@
+Initial GSA
+
+0.0 (0)  greg: nla range=[-32768, -32749)
+  0.1 (18)  [1:[location=dynamic-frame], 2:[location=nl], 3:[location=nl/adr]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+   0.2 (19)  %nlm := nlmctor flags{}  range=[-32752, -32751) uses={(17) (11) (4)}
+   0.6 (20)  %return-3 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
+  0.7 (2)  y := copy flags{} const{0}  range=[-32768, -32753) uses={}
+  0.8 (3)  adr flags{} nl  range=[-32768, -32754) uses={(4)}
+  0.5 (4)  access-nonlocal flags{} nl , result[(3)] , result[(19)]  range=[-32768, -32755) uses={(11) (10) (5)}
+  0.10 (5)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32756) uses={(24) (25)}
+  0.12 (25)  guard-true flags{live} result[(5)]  range=[-32768, -32757) uses={(21)}
+  0.11 (24)  guard-false flags{} result[(5)]  range=[-32768, -32758) uses={(22)}
+  0.14 (22)  merge-cond flags{live} result[(24)]  range=[-32768, -32759) uses={(21)}
+   0.15 (23)  trap-nil flags{live}  range=[-32760, -32760) uses={}
+  0.13 (21)  merge-if flags{live} result[(25)] , result[(22)]  range=[-32768, -32761) uses={}
+  0.9 (10)  adr flags{} result[(4)]  range=[-32768, -32762) uses={(11)}
+  0.4 (11)  access-deref flags{} result[(4)] , result[(10)] , result[(19)]  range=[-32768, -32763) uses={(14) (12)}
+  0.17 (12)  adr flags{} result[(11)]  range=[-32768, -32764) uses={(13)}
+  0.18 (13)  add.u4 flags{} result[(12)] , const{0}  range=[-32768, -32765) uses={(14)}
+  0.16 (14)  y := access-field flags{} result[(11)] , result[(13)] , const{0}  range=[-32768, -32766) uses={}
+  0.19 (16)  exit flags{} result[(17)]  range=[-32768, -32767) uses={}
+   0.3 (17)  nlmdtor flags{live} result[(19)]  range=[-32768, -32768) uses={(16)}
+
+

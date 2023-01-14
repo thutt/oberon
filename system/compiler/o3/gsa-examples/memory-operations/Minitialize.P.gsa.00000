@@ -1,0 +1,25 @@
+Initial GSA
+
+0.0 (0)  greg: P range=[-32768, -32748)
+  0.1 (20)  enter flags{} %nlm  range=[-32768, -32749) uses={}
+   0.2 (21)  %nlm := nlmctor flags{}  range=[-32751, -32750) uses={(19)}
+   0.4 (22)  %return-2 := copy flags{} const{FALSE}  range=[-32751, -32751) uses={}
+  0.5 (2)  bool := copy flags{} const{FALSE}  range=[-32768, -32752) uses={}
+  0.6 (3)  byte := copy flags{} const{0}  range=[-32768, -32753) uses={}
+  0.7 (4)  ch := copy flags{} const{0}  range=[-32768, -32754) uses={}
+  0.8 (5)  si := copy flags{} const{0}  range=[-32768, -32755) uses={}
+  0.9 (6)  i := copy flags{} const{0}  range=[-32768, -32756) uses={}
+  0.10 (7)  li := copy flags{} const{0}  range=[-32768, -32757) uses={}
+  0.11 (8)  r := copy flags{} const{  0.0E+00}  range=[-32768, -32758) uses={}
+  0.12 (9)  lr := copy flags{} const{  0.000000D+000}  range=[-32768, -32759) uses={}
+  0.13 (10)  s := copy flags{} const{{}}  range=[-32768, -32760) uses={}
+  0.14 (11)  pointer := copy flags{} const{0}  range=[-32768, -32761) uses={}
+  0.15 (12)  procedure := copy flags{} const{0}  range=[-32768, -32762) uses={}
+  0.16 (13)  adr flags{} record  range=[-32768, -32763) uses={(14)}
+  0.17 (14)  record := initialize flags{} record , result[(13)] , const{4}  range=[-32768, -32764) uses={}
+  0.18 (15)  adr flags{} array  range=[-32768, -32765) uses={(16)}
+  0.19 (16)  array := initialize flags{} array , result[(15)] , const{40}  range=[-32768, -32766) uses={}
+  0.20 (18)  exit flags{} result[(19)]  range=[-32768, -32767) uses={}
+   0.3 (19)  nlmdtor flags{live} result[(21)]  range=[-32768, -32768) uses={(18)}
+
+

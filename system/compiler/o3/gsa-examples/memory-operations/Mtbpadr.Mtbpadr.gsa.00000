@@ -1,0 +1,13 @@
+Initial GSA
+
+0.0 (0)  greg: Mtbpadr range=[-32768, -32760)
+  0.1 (8)  enter flags{live} %nlm  range=[-32768, -32761) uses={}
+   0.2 (9)  %nlm := nlmctor flags{live}  range=[-32763, -32762) uses={(7) (6)}
+   0.5 (10)  %return-2 := copy flags{live} const{FALSE}  range=[-32763, -32763) uses={(6)}
+  0.6 (2)  .BaseDesc-BaseDesc := init-rectd flags{live} BaseDesc  range=[-32768, -32764) uses={(6)}
+  0.7 (3)  .Ext1Desc-Ext1Desc := init-rectd flags{live} Ext1Desc  range=[-32768, -32765) uses={(6)}
+  0.8 (4)  .Ext0Desc-Ext0Desc := init-rectd flags{live} Ext0Desc  range=[-32768, -32766) uses={(6)}
+  0.4 (6)  exit flags{live} result[(9)] [location=%nlm], result[(10)] [location=%return-2], result[(2)] [location=.BaseDesc-BaseDesc], result[(3)] [location=.Ext1Desc-Ext1Desc], result[(4)] [location=.Ext0Desc-Ext0Desc], result[(7)]  range=[-32768, -32767) uses={}
+   0.3 (7)  nlmdtor flags{live} result[(9)]  range=[-32768, -32768) uses={(6)}
+
+

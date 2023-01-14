@@ -1,0 +1,17 @@
+Initial GSA
+
+0.0 (0)  greg: P0 range=[-32768, -32756)
+  0.1 (9)  enter flags{} %nlm  range=[-32768, -32757) uses={}
+   0.2 (10)  %nlm := nlmctor flags{}  range=[-32759, -32758) uses={(8)}
+   0.4 (11)  %return-2 := copy flags{} const{FALSE}  range=[-32759, -32759) uses={}
+  0.5 (2)  g := copy flags{} const{0}  range=[-32768, -32760) uses={}
+  0.6 (16)  guard-true flags{} const{FALSE}  range=[-32768, -32761) uses={(12)}
+   0.8 (17)  g := convert.s2 flags{} const{100}  range=[-32762, -32762) uses={(13)}
+  0.10 (14)  guard-false flags{} const{FALSE}  range=[-32768, -32763) uses={(12)}
+   0.11 (15)  g := convert.s2 flags{} const{10}  range=[-32764, -32764) uses={(13)}
+  0.7 (12)  merge-if flags{} result[(16)] , result[(14)]  range=[-32768, -32765) uses={(13)}
+   0.9 (13)  g := gate flags{} result[(12)] , result[(17)] , result[(15)]  range=[-32766, -32766) uses={}
+  0.12 (7)  exit flags{} result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  nlmdtor flags{live} result[(10)]  range=[-32768, -32768) uses={(7)}
+
+

@@ -1,0 +1,17 @@
+Initial GSA
+
+0.0 (0)  greg: ParmRefCaller range=[-32768, -32756)
+  0.1 (9)  [1:[location=b], 2:[location=.%0], 3:[location=.%1], 4:[location=.BaseDesc-BaseDesc], 5:[location=.BaseDesc-BaseDesc/adr]] enter flags{} %nlm  range=[-32768, -32757) uses={}
+   0.2 (10)  %nlm := nlmctor flags{}  range=[-32762, -32758) uses={(8)}
+   0.4 (11)  adr flags{} %t2  range=[-32762, -32759) uses={(13)}
+   0.6 (12)  adr flags{} b  range=[-32762, -32760) uses={(13)}
+   0.5 (13)  recordcopy flags{} %t2 , result[(11)] , const{2} , b , result[(12)]  range=[-32762, -32761) uses={}
+   0.7 (14)  %return-3 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
+  0.8 (2)  tbpadr flags{} result{4 of (9)} , BaseDesc , RefMethod , const{0} , const{-4}  range=[-32768, -32763) uses={(5)}
+  0.10 (3)  adr flags{} %t2  range=[-32768, -32764) uses={(5)}
+  0.11 (4)  convert.s2 flags{} const{21}  range=[-32768, -32765) uses={(5)}
+  0.9 (5)  call flags{} result[(2)] , result[(3)] , %t2 , result[(4)]  range=[-32768, -32766) uses={(7)}
+  0.12 (7)  exit flags{} result[(5)] , result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  nlmdtor flags{live} result[(10)]  range=[-32768, -32768) uses={(7)}
+
+

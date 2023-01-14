@@ -1,0 +1,12 @@
+Initial GSA
+
+0.0 (0)  greg: UpdREAL range=[-32768, -32761)
+  0.1 (7)  [1:[location=v], 2:[location=.%0], 3:[location=r], 4:[location=r/adr]] enter flags{} %nlm  range=[-32768, -32762) uses={}
+   0.2 (8)  %nlm := nlmctor flags{}  range=[-32764, -32763) uses={(3)}
+   0.4 (9)  %return-2 := copy flags{} const{FALSE}  range=[-32764, -32764) uses={}
+  0.5 (2)  adr flags{} r  range=[-32768, -32765) uses={(3)}
+  0.3 (3)  %nlm := update-nonlocal flags{} r , result[(2)] , result[(8)] , result{1 of (7)}  range=[-32768, -32766) uses={(6)}
+  0.7 (5)  exit flags{} result[(6)]  range=[-32768, -32767) uses={}
+   0.6 (6)  nlmdtor flags{live} result[(3)]  range=[-32768, -32768) uses={(5)}
+
+

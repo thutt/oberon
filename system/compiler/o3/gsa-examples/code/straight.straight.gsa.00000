@@ -1,0 +1,22 @@
+Initial GSA
+
+0.0 (0)  greg: straight range=[-32768, -32751)
+  0.1 (17)  enter flags{live} %nlm  range=[-32768, -32752) uses={}
+   0.2 (18)  %nlm := nlmctor flags{live}  range=[-32754, -32753) uses={(16) (15)}
+   0.5 (19)  %return-2 := copy flags{live} const{FALSE}  range=[-32754, -32754) uses={(15)}
+  0.6 (2)  .straight-BaseDesc := init-rectd flags{live} BaseDesc  range=[-32768, -32755) uses={(15)}
+  0.7 (3)  .straight-ExtDesc := init-rectd flags{live} ExtDesc  range=[-32768, -32756) uses={(15)}
+  0.8 (4)  x := copy flags{live} const{0}  range=[-32768, -32757) uses={(15)}
+  0.9 (5)  y := copy flags{live} const{0}  range=[-32768, -32758) uses={(15)}
+  0.10 (6)  b0 := copy flags{live} const{0}  range=[-32768, -32759) uses={(15)}
+  0.11 (7)  b1 := copy flags{live} const{0}  range=[-32768, -32760) uses={(15)}
+  0.12 (8)  adr flags{live} bd0  range=[-32768, -32761) uses={(9)}
+  0.13 (9)  bd0 := initialize flags{live} bd0 , result[(8)] , const{6}  range=[-32768, -32762) uses={(15)}
+  0.14 (10)  adr flags{live} bd1  range=[-32768, -32763) uses={(11)}
+  0.15 (11)  bd1 := initialize flags{live} bd1 , result[(10)] , const{6}  range=[-32768, -32764) uses={(15)}
+  0.16 (12)  e0 := copy flags{live} const{0}  range=[-32768, -32765) uses={(15)}
+  0.17 (13)  e1 := copy flags{live} const{0}  range=[-32768, -32766) uses={(15)}
+  0.4 (15)  exit flags{live} result[(18)] [location=%nlm], result[(19)] [location=%return-2], result[(2)] [location=.straight-BaseDesc], result[(3)] [location=.straight-ExtDesc], result[(4)] [location=x], result[(5)] [location=y], result[(6)] [location=b0], result[(7)] [location=b1], result[(9)] [location=bd0], result[(11)] [location=bd1], result[(12)] [location=e0], result[(13)] [location=e1], result[(16)]  range=[-32768, -32767) uses={}
+   0.3 (16)  nlmdtor flags{live} result[(18)]  range=[-32768, -32768) uses={(15)}
+
+

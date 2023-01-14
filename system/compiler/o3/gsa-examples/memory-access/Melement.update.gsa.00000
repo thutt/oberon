@@ -1,0 +1,28 @@
+Initial GSA
+
+0.0 (0)  greg: update range=[-32768, -32745)
+  0.1 (19)  enter flags{} %nlm  range=[-32768, -32746) uses={}
+   0.2 (20)  %nlm := nlmctor flags{}  range=[-32748, -32747) uses={(18)}
+   0.4 (21)  %return-2 := copy flags{} const{FALSE}  range=[-32748, -32748) uses={}
+  0.5 (2)  adr flags{} a  range=[-32768, -32749) uses={(3)}
+  0.6 (3)  a := initialize flags{} a , result[(2)] , const{15}  range=[-32768, -32750) uses={}
+  0.7 (4)  ch := copy flags{} const{0}  range=[-32768, -32751) uses={}
+  0.8 (5)  convert.s4 flags{} const{5}  range=[-32768, -32752) uses={(15) (12) (27) (6)}
+  0.12 (6)  geq.s4 flags{} result[(5)] , const{0}  range=[-32768, -32753) uses={(25) (26)}
+  0.14 (26)  guard-true flags{live} result[(6)]  range=[-32768, -32754) uses={(22)}
+   0.11 (27)  lss.s4 flags{} result[(5)] , const{15}  range=[-32757, -32755) uses={(30) (31)}
+   0.17 (31)  guard-true flags{} result[(27)]  range=[-32757, -32756) uses={}
+   0.16 (30)  guard-false flags{} result[(27)]  range=[-32757, -32757) uses={(23)}
+  0.13 (25)  guard-false flags{} result[(6)]  range=[-32768, -32758) uses={(23)}
+  0.18 (23)  merge-cond flags{live} result[(25)] , result[(30)]  range=[-32768, -32759) uses={(22)}
+   0.19 (24)  trap-index flags{live}  range=[-32760, -32760) uses={}
+  0.15 (22)  merge-if flags{live} result[(26)] , result[(23)]  range=[-32768, -32761) uses={}
+  0.20 (11)  adr flags{} a  range=[-32768, -32762) uses={(14)}
+  0.10 (12)  mul.s4 flags{} result[(5)] , const{1}  range=[-32768, -32763) uses={(13)}
+  0.22 (13)  convert.u4 flags{} result[(12)]  range=[-32768, -32764) uses={(14)}
+  0.21 (14)  add.u4 flags{} result[(11)] , result[(13)]  range=[-32768, -32765) uses={(15)}
+  0.9 (15)  update-element flags{} a , result[(14)] , result[(5)] , const{65}  range=[-32768, -32766) uses={}
+  0.23 (17)  exit flags{} result[(18)]  range=[-32768, -32767) uses={}
+   0.3 (18)  nlmdtor flags{live} result[(20)]  range=[-32768, -32768) uses={(17)}
+
+

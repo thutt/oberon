@@ -1,0 +1,15 @@
+Initial GSA
+
+0.0 (0)  greg: Mstringcopy range=[-32768, -32758)
+  0.1 (10)  enter flags{live} %nlm  range=[-32768, -32759) uses={}
+   0.2 (11)  %nlm := nlmctor flags{live}  range=[-32761, -32760) uses={(9) (8)}
+   0.5 (12)  %return-2 := copy flags{live} const{FALSE}  range=[-32761, -32761) uses={(8)}
+  0.6 (2)  .Mstringcopy-Base := init-rectd flags{live} Base  range=[-32768, -32762) uses={(8)}
+  0.7 (3)  .td_0 := init-darrtd flags{live} anonymous type  range=[-32768, -32763) uses={(8)}
+  0.8 (4)  .td_1 := init-darrtd flags{live} anonymous type  range=[-32768, -32764) uses={(8)}
+  0.9 (5)  adr flags{live} gd  range=[-32768, -32765) uses={(6)}
+  0.10 (6)  gd := initialize flags{live} gd , result[(5)] , const{151}  range=[-32768, -32766) uses={(8)}
+  0.4 (8)  exit flags{live} result[(11)] [location=%nlm], result[(12)] [location=%return-2], result[(2)] [location=.Mstringcopy-Base], result[(3)] [location=.td_0], result[(4)] [location=.td_1], result[(6)] [location=gd], result[(9)]  range=[-32768, -32767) uses={}
+   0.3 (9)  nlmdtor flags{live} result[(11)]  range=[-32768, -32768) uses={(8)}
+
+

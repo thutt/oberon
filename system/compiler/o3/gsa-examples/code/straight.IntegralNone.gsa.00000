@@ -1,0 +1,16 @@
+Initial GSA
+
+0.0 (0)  greg: IntegralNone range=[-32768, -32757)
+  0.1 (11)  [1:[location=x], 2:[location=x/adr], 3:[location=y], 4:[location=y/adr]] enter flags{} %nlm  range=[-32768, -32758) uses={}
+   0.2 (12)  %nlm := nlmctor flags{}  range=[-32760, -32759) uses={(3)}
+   0.4 (13)  %return-2 := copy flags{} const{FALSE}  range=[-32760, -32760) uses={}
+  0.5 (2)  adr flags{} x  range=[-32768, -32761) uses={(3)}
+  0.3 (3)  %nlm := update-nonlocal flags{} x , result[(2)] , result[(12)] , result[(4)]  range=[-32768, -32762) uses={(6)}
+  0.6 (4)  convert.s2 flags{} const{10}  range=[-32768, -32763) uses={(3)}
+  0.8 (5)  adr flags{} y  range=[-32768, -32764) uses={(6)}
+  0.7 (6)  %nlm := update-nonlocal flags{} y , result[(5)] , result[(3)] , result[(7)]  range=[-32768, -32765) uses={(10)}
+  0.9 (7)  convert.s2 flags{} const{10}  range=[-32768, -32766) uses={(6)}
+  0.11 (9)  exit flags{} result[(10)]  range=[-32768, -32767) uses={}
+   0.10 (10)  nlmdtor flags{live} result[(6)]  range=[-32768, -32768) uses={(9)}
+
+

@@ -1,0 +1,28 @@
+Initial GSA
+
+0.0 (0)  greg: P0 range=[-32768, -32745)
+  0.1 (12)  [1:[location=x], 2:[location=y], 3:[location=.%0]] enter flags{} %nlm  range=[-32768, -32746) uses={}
+   0.2 (13)  %nlm := nlmctor flags{}  range=[-32749, -32747) uses={(11)}
+   0.4 (14)  %return-2 := copy flags{} const{FALSE}  range=[-32749, -32748) uses={}
+   0.5 (15)  %result-3 := copy flags{} const{0}  range=[-32749, -32749) uses={}
+  0.6 (2)  y := copy flags{} const{0}  range=[-32768, -32750) uses={}
+  0.7 (3)  convert.s2 flags{} const{10}  range=[-32768, -32751) uses={(4)}
+  0.8 (4)  eql.s2 flags{} result{1 of (12)} , result[(3)]  range=[-32768, -32752) uses={(18) (30)}
+  0.10 (30)  guard-true flags{} result[(4)]  range=[-32768, -32753) uses={(16)}
+   0.12 (31)  y := convert.s2 flags{} const{1}  range=[-32754, -32754) uses={(17)}
+  0.9 (18)  guard-false flags{} result[(4)]  range=[-32768, -32755) uses={(16)}
+   0.14 (19)  convert.s2 flags{} const{20}  range=[-32763, -32756) uses={(20)}
+   0.15 (20)  eql.s2 flags{} result{1 of (12)} , result[(19)]  range=[-32763, -32757) uses={(26) (28)}
+   0.17 (28)  guard-true flags{} result[(20)]  range=[-32763, -32758) uses={(24)}
+    0.19 (29)  y := convert.s2 flags{} const{2}  range=[-32759, -32759) uses={(25)}
+   0.16 (26)  guard-false flags{} result[(20)]  range=[-32763, -32760) uses={(24)}
+    0.21 (27)  y := convert.s2 flags{} const{3}  range=[-32761, -32761) uses={(25)}
+   0.18 (24)  merge-if flags{} result[(28)] , result[(26)]  range=[-32763, -32762) uses={(25)}
+    0.20 (25)  y := gate flags{} result[(24)] , result[(29)] , result[(27)]  range=[-32763, -32763) uses={(17)}
+  0.11 (16)  merge-if flags{} result[(30)] , result[(18)]  range=[-32768, -32764) uses={(17)}
+   0.13 (17)  %result-3 := gate flags{} result[(16)] , result[(31)] , result[(25)]  range=[-32765, -32765) uses={(10)}
+  0.23 (8)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
+  0.22 (10)  exit flags{} result[(17)] [location=%result-3], result[(11)]  range=[-32768, -32767) uses={}
+   0.3 (11)  nlmdtor flags{live} result[(13)]  range=[-32768, -32768) uses={(10)}
+
+

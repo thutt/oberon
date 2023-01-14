@@ -1,0 +1,11 @@
+Initial GSA
+
+0.0 (0)  greg: Gbit range=[-32768, -32762)
+  0.1 (6)  enter flags{live} %nlm  range=[-32768, -32763) uses={}
+   0.2 (7)  %nlm := nlmctor flags{live}  range=[-32765, -32764) uses={(5) (4)}
+   0.5 (8)  %return-2 := copy flags{live} const{FALSE}  range=[-32765, -32765) uses={(4)}
+  0.6 (2)  import flags{live} SYSTEM  range=[-32768, -32766) uses={}
+  0.4 (4)  exit flags{live} result[(7)] [location=%nlm], result[(8)] [location=%return-2], result[(5)]  range=[-32768, -32767) uses={}
+   0.3 (5)  nlmdtor flags{live} result[(7)]  range=[-32768, -32768) uses={(4)}
+
+

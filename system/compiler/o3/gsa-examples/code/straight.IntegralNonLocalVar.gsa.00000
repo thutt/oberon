@@ -1,0 +1,24 @@
+Initial GSA
+
+0.0 (0)  greg: IntegralNonLocalVar range=[-32768, -32749)
+  0.1 (15)  [1:[location=y], 2:[location=y/adr], 3:[location=.%0], 4:[location=x], 5:[location=x/adr]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+   0.2 (16)  %nlm := nlmctor flags{}  range=[-32752, -32751) uses={(3)}
+   0.4 (17)  %return-2 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
+  0.5 (2)  adr flags{} x  range=[-32768, -32753) uses={(3)}
+  0.3 (3)  %nlm := update-nonlocal flags{} x , result[(2)] , result[(16)] , result[(4)]  range=[-32768, -32754) uses={(19) (23) (6)}
+  0.6 (4)  convert.s2 flags{} const{10}  range=[-32768, -32755) uses={(3)}
+  0.10 (5)  adr flags{} y  range=[-32768, -32756) uses={(6)}
+  0.9 (6)  access-varparm flags{} y , result[(5)] , result[(3)]  range=[-32768, -32757) uses={(8)}
+  0.12 (7)  convert.s2 flags{} const{10}  range=[-32768, -32758) uses={(8)}
+  0.11 (8)  eql.s2 flags{} result[(6)] , result[(7)]  range=[-32768, -32759) uses={(20) (21)}
+  0.14 (21)  guard-true flags{} result[(8)]  range=[-32768, -32760) uses={(18)}
+   0.16 (22)  adr flags{} y  range=[-32763, -32761) uses={(23)}
+   0.8 (23)  %nlm := update-varparm flags{} y , result[(22)] , result[(3)] , result[(24)]  range=[-32763, -32762) uses={(19)}
+   0.17 (24)  convert.s2 flags{} const{0}  range=[-32763, -32763) uses={(23)}
+  0.13 (20)  guard-false flags{} result[(8)]  range=[-32768, -32764) uses={(18)}
+  0.15 (18)  merge-if flags{} result[(21)] , result[(20)]  range=[-32768, -32765) uses={(19)}
+   0.7 (19)  %nlm := gate flags{} result[(18)] , result[(23)] , result[(3)]  range=[-32766, -32766) uses={(14)}
+  0.19 (13)  exit flags{} result[(14)]  range=[-32768, -32767) uses={}
+   0.18 (14)  nlmdtor flags{live} result[(19)]  range=[-32768, -32768) uses={(13)}
+
+

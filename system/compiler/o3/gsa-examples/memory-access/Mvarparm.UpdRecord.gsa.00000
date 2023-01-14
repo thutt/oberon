@@ -1,0 +1,30 @@
+Initial GSA
+
+0.0 (0)  greg: UpdRecord range=[-32768, -32743)
+  0.1 (22)  [1:[location=v], 2:[location=v/adr], 3:[location=v-tag], 4:[location=v-tag/adr], 5:[location=record], 6:[location=.%0], 7:[location=.%1], 8:[location=.Mvarparm-Record], 9:[location=.Mvarparm-Record/adr]] enter flags{} %nlm  range=[-32768, -32744) uses={}
+   0.2 (23)  %nlm := nlmctor flags{}  range=[-32746, -32745) uses={(30) (5)}
+   0.5 (24)  %return-3 := copy flags{} const{FALSE}  range=[-32746, -32746) uses={}
+  0.6 (2)  adr flags{} record  range=[-32768, -32747) uses={(3)}
+  0.7 (3)  record := initialize flags{} record , result[(2)] , const{2}  range=[-32768, -32748) uses={(12) (10)}
+  0.10 (4)  adr flags{} v  range=[-32768, -32749) uses={(5)}
+  0.4 (5)  access-varparm flags{} v , result[(4)] , result[(23)]  range=[-32768, -32750) uses={}
+  0.11 (6)  eql.u4 flags{} result{4 of (22)} , result{8 of (22)}  range=[-32768, -32751) uses={(26) (28)}
+  0.13 (28)  guard-true flags{live} result[(6)]  range=[-32768, -32752) uses={(25)}
+   0.15 (29)  adr flags{} v  range=[-32754, -32753) uses={(30)}
+   0.3 (30)  %nlm := update-varparm flags{} v , result[(29)] , result[(23)] , result[(10)]  range=[-32754, -32754) uses={(14) (11) (10)}
+  0.12 (26)  guard-false flags{live} result[(6)]  range=[-32768, -32755) uses={(25)}
+   0.18 (27)  trap-iguard flags{live}  range=[-32756, -32756) uses={}
+  0.14 (25)  merge-if flags{live} result[(28)] , result[(26)]  range=[-32768, -32757) uses={}
+  0.9 (10)  recordcopy flags{} result[(30)] , result[(11)] , const{2} , result[(3)] , result[(12)]  range=[-32768, -32758) uses={(30)}
+  0.17 (11)  adr flags{} result[(30)]  range=[-32768, -32759) uses={(10)}
+  0.8 (12)  adr flags{} result[(3)]  range=[-32768, -32760) uses={(10)}
+  0.19 (13)  adr flags{} v  range=[-32768, -32761) uses={(14)}
+  0.16 (14)  access-varparm flags{} v , result[(13)] , result[(30)]  range=[-32768, -32762) uses={(17) (15)}
+  0.21 (15)  adr flags{} result[(14)]  range=[-32768, -32763) uses={(16)}
+  0.22 (16)  add.u4 flags{} result[(15)] , const{0}  range=[-32768, -32764) uses={(17)}
+  0.20 (17)  %nlm := update-field flags{} result[(14)] , result[(16)] , const{0} , result[(18)]  range=[-32768, -32765) uses={(21)}
+  0.23 (18)  convert.s2 flags{} const{0}  range=[-32768, -32766) uses={(17)}
+  0.25 (20)  exit flags{} result[(21)]  range=[-32768, -32767) uses={}
+   0.24 (21)  nlmdtor flags{live} result[(17)]  range=[-32768, -32768) uses={(20)}
+
+

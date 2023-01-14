@@ -1,0 +1,21 @@
+Initial GSA
+
+0.0 (0)  greg: Char range=[-32768, -32752)
+  0.1 (7)  [1:[location=ch], 2:[location=.%0]] enter flags{} %nlm  range=[-32768, -32753) uses={}
+   0.2 (8)  %nlm := nlmctor flags{}  range=[-32756, -32754) uses={(6)}
+   0.4 (9)  %return-2 := copy flags{} const{FALSE}  range=[-32756, -32755) uses={}
+   0.5 (10)  %result-3 := copy flags{} const{0}  range=[-32756, -32756) uses={}
+  0.6 (11)  case flags{} result{1 of (7)}  range=[-32768, -32757) uses={}
+   0.7 (22)  guard-case flags{} result{1 of (7)} , const{0} , const{255}  range=[-32765, -32758) uses={(16)}
+    0.9 (23)  ch := copy flags{} const{65}  range=[-32759, -32759) uses={(17)}
+   0.11 (20)  guard-case flags{} result{1 of (7)} , const{[65..90]} , const{97} , const{122}  range=[-32765, -32760) uses={(16)}
+    0.12 (21)  ch := copy flags{} const{95}  range=[-32761, -32761) uses={(17)}
+   0.13 (18)  guard-celse flags{} result{1 of (7)}  range=[-32765, -32762) uses={(16)}
+    0.14 (19)  ch := copy flags{} const{0}  range=[-32763, -32763) uses={(17)}
+   0.8 (16)  merge-case flags{} result[(22)] , result[(20)] , result[(18)]  range=[-32765, -32764) uses={(17)}
+    0.10 (17)  %result-3 := gate flags{} result[(16)] , result[(23)] , result[(21)] , result[(19)]  range=[-32765, -32765) uses={(5)}
+  0.16 (3)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
+  0.15 (5)  exit flags{} result[(17)] [location=%result-3], result[(6)]  range=[-32768, -32767) uses={}
+   0.3 (6)  nlmdtor flags{live} result[(8)]  range=[-32768, -32768) uses={(5)}
+
+

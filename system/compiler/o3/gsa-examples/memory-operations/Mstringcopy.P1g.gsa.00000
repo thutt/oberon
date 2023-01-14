@@ -1,0 +1,19 @@
+Initial GSA
+
+0.0 (0)  greg: P1g range=[-32768, -32754)
+  0.1 (13)  enter flags{} %nlm  range=[-32768, -32755) uses={}
+   0.2 (14)  %nlm := nlmctor flags{}  range=[-32757, -32756) uses={(9)}
+   0.4 (15)  %return-2 := copy flags{} const{FALSE}  range=[-32757, -32757) uses={}
+  0.5 (2)  d := copy flags{} const{0}  range=[-32768, -32758) uses={(9)}
+  0.6 (3)  neq.u1 flags{} d , const{0}  range=[-32768, -32759) uses={(19) (20)}
+  0.8 (20)  guard-true flags{live} result[(3)]  range=[-32768, -32760) uses={(16)}
+  0.7 (19)  guard-false flags{} result[(3)]  range=[-32768, -32761) uses={(17)}
+  0.10 (17)  merge-cond flags{live} result[(19)]  range=[-32768, -32762) uses={(16)}
+   0.11 (18)  trap-nil flags{live}  range=[-32763, -32763) uses={}
+  0.9 (16)  merge-if flags{live} result[(20)] , result[(17)]  range=[-32768, -32764) uses={}
+  0.12 (8)  adr flags{} d  range=[-32768, -32765) uses={(9)}
+  0.3 (9)  %nlm := update-deref flags{} result[(2)] , result[(8)] , result[(14)] , const{"hello"}  range=[-32768, -32766) uses={(12)}
+  0.14 (11)  exit flags{} result[(12)]  range=[-32768, -32767) uses={}
+   0.13 (12)  nlmdtor flags{live} result[(9)]  range=[-32768, -32768) uses={(11)}
+
+

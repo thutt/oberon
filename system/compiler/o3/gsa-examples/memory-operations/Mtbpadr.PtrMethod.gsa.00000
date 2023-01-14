@@ -1,0 +1,10 @@
+Initial GSA
+
+0.0 (0)  greg: PtrMethod range=[-32768, -32763)
+  0.1 (5)  [1:[location=x], 2:[location=y], 3:[location=.%0]] enter flags{} %nlm  range=[-32768, -32764) uses={}
+   0.2 (6)  %nlm := nlmctor flags{}  range=[-32766, -32765) uses={(4)}
+   0.4 (7)  %return-2 := copy flags{} const{FALSE}  range=[-32766, -32766) uses={}
+  0.5 (3)  exit flags{} result[(4)]  range=[-32768, -32767) uses={}
+   0.3 (4)  nlmdtor flags{live} result[(6)]  range=[-32768, -32768) uses={(3)}
+
+

@@ -1,0 +1,44 @@
+Initial GSA
+
+0.0 (0)  greg: P0 range=[-32768, -32729)
+  0.1 (35)  [1:[location=b], 2:[location=e], 3:[location=.%0], 4:[location=.Tiguard-BaseDesc], 5:[location=.Tiguard-BaseDesc/adr]] enter flags{} %nlm  range=[-32768, -32730) uses={}
+   0.2 (36)  %nlm := nlmctor flags{}  range=[-32732, -32731) uses={(28) (21) (9)}
+   0.6 (37)  %return-2 := copy flags{} const{FALSE}  range=[-32732, -32732) uses={}
+  0.7 (2)  e := copy flags{} const{0}  range=[-32768, -32733) uses={(28)}
+  0.8 (3)  neq.u1 flags{} b , const{0}  range=[-32768, -32734) uses={(55) (56)}
+  0.10 (56)  guard-true flags{live} result[(3)]  range=[-32768, -32735) uses={(52)}
+  0.9 (55)  guard-false flags{} result[(3)]  range=[-32768, -32736) uses={(53)}
+  0.12 (53)  merge-cond flags{live} result[(55)]  range=[-32768, -32737) uses={(52)}
+   0.13 (54)  trap-nil flags{live}  range=[-32738, -32738) uses={}
+  0.11 (52)  merge-if flags{live} result[(56)] , result[(53)]  range=[-32768, -32739) uses={}
+  0.14 (8)  adr flags{} b  range=[-32768, -32740) uses={(9)}
+  0.5 (9)  access-deref flags{} result{1 of (35)} , result[(8)] , result[(36)]  range=[-32768, -32741) uses={(10)}
+  0.15 (10)  heaptag flags{} b , result[(9)]  range=[-32768, -32742) uses={(11)}
+  0.16 (11)  eql.u4 flags{} result[(10)] , result{4 of (35)}  range=[-32768, -32743) uses={(49) (51)}
+  0.18 (51)  guard-true flags{live} result[(11)]  range=[-32768, -32744) uses={(48)}
+  0.17 (49)  guard-false flags{live} result[(11)]  range=[-32768, -32745) uses={(48)}
+   0.20 (50)  trap-iguard flags{live}  range=[-32746, -32746) uses={}
+  0.19 (48)  merge-if flags{live} result[(51)] , result[(49)]  range=[-32768, -32747) uses={}
+  0.21 (15)  neq.u1 flags{} b , const{0}  range=[-32768, -32748) uses={(46) (47)}
+  0.23 (47)  guard-true flags{live} result[(15)]  range=[-32768, -32749) uses={(43)}
+  0.22 (46)  guard-false flags{} result[(15)]  range=[-32768, -32750) uses={(44)}
+  0.25 (44)  merge-cond flags{live} result[(46)]  range=[-32768, -32751) uses={(43)}
+   0.26 (45)  trap-nil flags{live}  range=[-32752, -32752) uses={}
+  0.24 (43)  merge-if flags{live} result[(47)] , result[(44)]  range=[-32768, -32753) uses={}
+  0.27 (20)  adr flags{} b  range=[-32768, -32754) uses={(21)}
+  0.4 (21)  %nlm := update-deref flags{} result{1 of (35)} , result[(20)] , result[(36)] , result[(29)]  range=[-32768, -32755) uses={(34) (30) (29)}
+  0.31 (22)  neq.u1 flags{} e , const{0}  range=[-32768, -32756) uses={(41) (42)}
+  0.33 (42)  guard-true flags{live} result[(22)]  range=[-32768, -32757) uses={(38)}
+  0.32 (41)  guard-false flags{} result[(22)]  range=[-32768, -32758) uses={(39)}
+  0.35 (39)  merge-cond flags{live} result[(41)]  range=[-32768, -32759) uses={(38)}
+   0.36 (40)  trap-nil flags{live}  range=[-32760, -32760) uses={}
+  0.34 (38)  merge-if flags{live} result[(42)] , result[(39)]  range=[-32768, -32761) uses={}
+  0.37 (27)  adr flags{} e  range=[-32768, -32762) uses={(28)}
+  0.3 (28)  access-deref flags{} result[(2)] , result[(27)] , result[(36)]  range=[-32768, -32763) uses={(31) (29)}
+  0.28 (29)  recordcopy flags{} result[(21)] , result[(30)] , const{2} , result[(28)] , result[(31)]  range=[-32768, -32764) uses={(21)}
+  0.30 (30)  adr flags{} result[(21)]  range=[-32768, -32765) uses={(29)}
+  0.38 (31)  adr flags{} result[(28)]  range=[-32768, -32766) uses={(29)}
+  0.39 (33)  exit flags{} result[(34)]  range=[-32768, -32767) uses={}
+   0.29 (34)  nlmdtor flags{live} result[(21)]  range=[-32768, -32768) uses={(33)}
+
+

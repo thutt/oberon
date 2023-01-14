@@ -1,0 +1,13 @@
+Initial GSA
+
+0.0 (0)  greg: P2 range=[-32768, -32760)
+  0.1 (5)  [1:[location=a], 2:[location=.%0], 3:[location=.%1]] enter flags{} %nlm  range=[-32768, -32761) uses={}
+   0.2 (6)  %nlm := nlmctor flags{}  range=[-32766, -32762) uses={(4)}
+   0.4 (7)  adr flags{} %t2  range=[-32766, -32763) uses={(9)}
+   0.6 (8)  adr flags{} a  range=[-32766, -32764) uses={(9)}
+   0.5 (9)  arraycopy flags{} %t2 , result[(7)] , const{10} , a , result[(8)]  range=[-32766, -32765) uses={}
+   0.7 (10)  %return-3 := copy flags{} const{FALSE}  range=[-32766, -32766) uses={}
+  0.8 (3)  exit flags{} result[(4)]  range=[-32768, -32767) uses={}
+   0.3 (4)  nlmdtor flags{live} result[(6)]  range=[-32768, -32768) uses={(3)}
+
+

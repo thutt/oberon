@@ -1,0 +1,44 @@
+Initial GSA
+
+0.0 (0)  greg: P0 range=[-32768, -32729)
+  0.1 (33)  [1:[location=.td_0], 2:[location=.td_0/adr]] enter flags{} %nlm  range=[-32768, -32730) uses={}
+   0.2 (34)  %nlm := nlmctor flags{}  range=[-32732, -32731) uses={(17) (10)}
+   0.5 (35)  %return-2 := copy flags{} const{FALSE}  range=[-32732, -32732) uses={}
+  0.6 (2)  p := copy flags{} const{0}  range=[-32768, -32733) uses={}
+  0.7 (3)  p := newarray flags{unique result} .td_0  range=[-32768, -32734) uses={(17) (10)}
+  0.8 (4)  neq.u1 flags{} p , const{0}  range=[-32768, -32735) uses={(54) (55)}
+  0.10 (55)  guard-true flags{live} result[(4)]  range=[-32768, -32736) uses={(51)}
+  0.9 (54)  guard-false flags{} result[(4)]  range=[-32768, -32737) uses={(52)}
+  0.12 (52)  merge-cond flags{live} result[(54)]  range=[-32768, -32738) uses={(51)}
+   0.13 (53)  trap-nil flags{live}  range=[-32739, -32739) uses={}
+  0.11 (51)  merge-if flags{live} result[(55)] , result[(52)]  range=[-32768, -32740) uses={}
+  0.14 (9)  adr flags{} p  range=[-32768, -32741) uses={(10)}
+  0.4 (10)  access-deref flags{} result[(3)] , result[(9)] , result[(34)]  range=[-32768, -32742) uses={(29) (25)}
+  0.17 (11)  neq.u1 flags{} p , const{0}  range=[-32768, -32743) uses={(49) (50)}
+  0.19 (50)  guard-true flags{live} result[(11)]  range=[-32768, -32744) uses={(46)}
+  0.18 (49)  guard-false flags{} result[(11)]  range=[-32768, -32745) uses={(47)}
+  0.21 (47)  merge-cond flags{live} result[(49)]  range=[-32768, -32746) uses={(46)}
+   0.22 (48)  trap-nil flags{live}  range=[-32747, -32747) uses={}
+  0.20 (46)  merge-if flags{live} result[(50)] , result[(47)]  range=[-32768, -32748) uses={}
+  0.23 (16)  adr flags{} p  range=[-32768, -32749) uses={(17)}
+  0.3 (17)  access-deref flags{} result[(3)] , result[(16)] , result[(34)]  range=[-32768, -32750) uses={(18)}
+  0.24 (18)  dynarrlen flags{} result[(17)] , const{0} , const{8}  range=[-32768, -32751) uses={(41)}
+  0.26 (19)  convert.s4 flags{} const{5}  range=[-32768, -32752) uses={(29) (26) (41) (20)}
+  0.28 (20)  geq.s4 flags{} result[(19)] , const{0}  range=[-32768, -32753) uses={(39) (40)}
+  0.30 (40)  guard-true flags{live} result[(20)]  range=[-32768, -32754) uses={(36)}
+   0.25 (41)  lss.s4 flags{} result[(19)] , result[(18)]  range=[-32757, -32755) uses={(44) (45)}
+   0.33 (45)  guard-true flags{} result[(41)]  range=[-32757, -32756) uses={}
+   0.32 (44)  guard-false flags{} result[(41)]  range=[-32757, -32757) uses={(37)}
+  0.29 (39)  guard-false flags{} result[(20)]  range=[-32768, -32758) uses={(37)}
+  0.34 (37)  merge-cond flags{live} result[(39)] , result[(44)]  range=[-32768, -32759) uses={(36)}
+   0.35 (38)  trap-index flags{live}  range=[-32760, -32760) uses={}
+  0.31 (36)  merge-if flags{live} result[(40)] , result[(37)]  range=[-32768, -32761) uses={}
+  0.16 (25)  adr flags{} result[(10)]  range=[-32768, -32762) uses={(28)}
+  0.27 (26)  mul.s4 flags{} result[(19)] , const{2}  range=[-32768, -32763) uses={(27)}
+  0.37 (27)  convert.u4 flags{} result[(26)]  range=[-32768, -32764) uses={(28)}
+  0.36 (28)  add.u4 flags{} result[(25)] , result[(27)]  range=[-32768, -32765) uses={(29)}
+  0.15 (29)  %nlm := update-element flags{} result[(10)] , result[(28)] , result[(19)] , const{151}  range=[-32768, -32766) uses={(32)}
+  0.39 (31)  exit flags{} result[(32)]  range=[-32768, -32767) uses={}
+   0.38 (32)  nlmdtor flags{live} result[(29)]  range=[-32768, -32768) uses={(31)}
+
+

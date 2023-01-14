@@ -1,0 +1,27 @@
+Initial GSA
+
+0.0 (0)  greg: while range=[-32768, -32746)
+  0.1 (14)  [1:[location=j], 2:[location=i], 3:[location=.%0]] enter flags{} %nlm  range=[-32768, -32747) uses={}
+   0.2 (15)  %nlm := nlmctor flags{}  range=[-32750, -32748) uses={(13)}
+   0.4 (16)  %return-2 := copy flags{} const{FALSE}  range=[-32750, -32749) uses={}
+   0.5 (17)  %result-3 := copy flags{} const{0}  range=[-32750, -32750) uses={}
+  0.6 (2)  i := copy flags{} const{0}  range=[-32768, -32751) uses={}
+  0.7 (3)  i := convert.s2 flags{} const{100}  range=[-32768, -32752) uses={(19) (25) (6)}
+  0.11 (4)  j := convert.s2 flags{} const{99}  range=[-32768, -32753) uses={}
+  0.12 (5)  convert.s2 flags{} const{100}  range=[-32768, -32754) uses={(6)}
+  0.10 (6)  leq.s2 flags{} result[(3)] , result[(5)]  range=[-32768, -32755) uses={(20) (21)}
+  0.14 (21)  guard-true flags{} result[(6)]  range=[-32768, -32756) uses={(18)}
+   0.16 (23)  merge-loop flags{} const{TRUE} , result[(28)]  range=[-32762, -32757) uses={(25)}
+    0.18 (24)  i := add.s2 flags{} result[(25)] , const{1}  range=[-32762, -32758) uses={(27) (25)}
+    0.9 (25)  i := gate flags{} result[(23)] , result[(3)] , result[(24)]  range=[-32762, -32759) uses={(19) (24)}
+    0.20 (26)  convert.s2 flags{} const{100}  range=[-32762, -32760) uses={(27)}
+    0.19 (27)  leq.s2 flags{} result[(24)] , result[(26)]  range=[-32762, -32761) uses={(28)}
+    0.17 (28)  not.u1 flags{} result[(27)]  range=[-32762, -32762) uses={(23)}
+  0.13 (20)  guard-false flags{} result[(6)]  range=[-32768, -32763) uses={(18)}
+  0.15 (18)  merge-if flags{} result[(21)] , result[(20)]  range=[-32768, -32764) uses={(19)}
+   0.8 (19)  %result-3 := gate flags{} result[(18)] , result[(25)] , result[(3)]  range=[-32765, -32765) uses={(12)}
+  0.22 (10)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
+  0.21 (12)  exit flags{} result[(19)] [location=%result-3], result[(13)]  range=[-32768, -32767) uses={}
+   0.3 (13)  nlmdtor flags{live} result[(15)]  range=[-32768, -32768) uses={(12)}
+
+

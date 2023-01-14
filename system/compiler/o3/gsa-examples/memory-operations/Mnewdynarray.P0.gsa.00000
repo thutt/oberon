@@ -1,0 +1,14 @@
+Initial GSA
+
+0.0 (0)  greg: P0 range=[-32768, -32759)
+  0.1 (9)  [1:[location=.td_0], 2:[location=.td_0/adr]] enter flags{} %nlm  range=[-32768, -32760) uses={}
+   0.2 (10)  %nlm := nlmctor flags{}  range=[-32762, -32761) uses={(8)}
+   0.4 (11)  %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
+  0.5 (2)  p := copy flags{} const{0}  range=[-32768, -32763) uses={}
+  0.6 (3)  convert.s4 flags{} const{3}  range=[-32768, -32764) uses={(5)}
+  0.8 (4)  convert.s4 flags{} const{4}  range=[-32768, -32765) uses={(5)}
+  0.7 (5)  p := newdynarray flags{unique result} .td_0 , result[(3)] , result[(4)]  range=[-32768, -32766) uses={}
+  0.9 (7)  exit flags{} result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  nlmdtor flags{live} result[(10)]  range=[-32768, -32768) uses={(7)}
+
+

@@ -1,0 +1,26 @@
+Initial GSA
+
+0.0 (0)  greg: P5b range=[-32768, -32747)
+  0.1 (20)  [1:[location=len], 2:[location=len/adr]] enter flags{} %nlm  range=[-32768, -32748) uses={}
+   0.2 (21)  %nlm := nlmctor flags{}  range=[-32750, -32749) uses={(15) (5)}
+   0.5 (22)  %return-2 := copy flags{} const{FALSE}  range=[-32750, -32750) uses={}
+  0.6 (2)  adr flags{} base  range=[-32768, -32751) uses={(3)}
+  0.7 (3)  base := initialize flags{} base , result[(2)] , const{105380}  range=[-32768, -32752) uses={}
+  0.8 (4)  adr flags{} len  range=[-32768, -32753) uses={(5)}
+  0.4 (5)  %nlm := update-nonlocal flags{} len , result[(4)] , result[(21)] , result[(16)]  range=[-32768, -32754) uses={(19)}
+  0.11 (6)  adr flags{} base  range=[-32768, -32755) uses={(7)}
+  0.12 (7)  add.u4 flags{} result[(6)] , const{92}  range=[-32768, -32756) uses={(8)}
+  0.13 (8)  access-field flags{} base , result[(7)] , const{92}  range=[-32768, -32757) uses={(15) (14) (9)}
+  0.15 (9)  neq.u1 flags{} result[(8)] , const{0}  range=[-32768, -32758) uses={(26) (27)}
+  0.17 (27)  guard-true flags{live} result[(9)]  range=[-32768, -32759) uses={(23)}
+  0.16 (26)  guard-false flags{} result[(9)]  range=[-32768, -32760) uses={(24)}
+  0.19 (24)  merge-cond flags{live} result[(26)]  range=[-32768, -32761) uses={(23)}
+   0.20 (25)  trap-nil flags{live}  range=[-32762, -32762) uses={}
+  0.18 (23)  merge-if flags{live} result[(27)] , result[(24)]  range=[-32768, -32763) uses={}
+  0.14 (14)  adr flags{} result[(8)]  range=[-32768, -32764) uses={(15)}
+  0.3 (15)  access-deref flags{} result[(8)] , result[(14)] , result[(21)]  range=[-32768, -32765) uses={(16)}
+  0.9 (16)  dynarrlen flags{} result[(15)] , const{0} , const{8}  range=[-32768, -32766) uses={(5)}
+  0.21 (18)  exit flags{} result[(19)]  range=[-32768, -32767) uses={}
+   0.10 (19)  nlmdtor flags{live} result[(5)]  range=[-32768, -32768) uses={(18)}
+
+

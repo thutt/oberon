@@ -1,0 +1,13 @@
+Initial GSA
+
+0.0 (0)  greg: AccREAL range=[-32768, -32760)
+  0.1 (8)  [1:[location=v], 2:[location=v/adr], 3:[location=r], 4:[location=.%0]] enter flags{} %nlm  range=[-32768, -32761) uses={}
+   0.2 (9)  %nlm := nlmctor flags{}  range=[-32763, -32762) uses={(7) (4)}
+   0.5 (10)  %return-2 := copy flags{} const{FALSE}  range=[-32763, -32763) uses={}
+  0.6 (2)  r := copy flags{} const{  0.0E+00}  range=[-32768, -32764) uses={}
+  0.7 (3)  adr flags{} v  range=[-32768, -32765) uses={(4)}
+  0.4 (4)  r := access-varparm flags{} v , result[(3)] , result[(9)]  range=[-32768, -32766) uses={}
+  0.8 (6)  exit flags{} result[(7)]  range=[-32768, -32767) uses={}
+   0.3 (7)  nlmdtor flags{live} result[(9)]  range=[-32768, -32768) uses={(6)}
+
+

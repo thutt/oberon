@@ -1,0 +1,21 @@
+Initial GSA
+
+0.0 (0)  greg: PtrVarVar range=[-32768, -32752)
+  0.1 (13)  [1:[location=b0], 2:[location=b0/adr], 3:[location=b1], 4:[location=b1/adr], 5:[location=.%0]] enter flags{} %nlm  range=[-32768, -32753) uses={}
+   0.2 (14)  %nlm := nlmctor flags{}  range=[-32755, -32754) uses={(3)}
+   0.4 (15)  %return-2 := copy flags{} const{FALSE}  range=[-32755, -32755) uses={}
+  0.5 (2)  adr flags{} b0  range=[-32768, -32756) uses={(3)}
+  0.3 (3)  %nlm := update-varparm flags{} b0 , result[(2)] , result[(14)] , const{0}  range=[-32768, -32757) uses={(17) (21) (5)}
+  0.9 (4)  adr flags{} b1  range=[-32768, -32758) uses={(5)}
+  0.8 (5)  access-varparm flags{} b1 , result[(4)] , result[(3)]  range=[-32768, -32759) uses={(6)}
+  0.10 (6)  neq.u4 flags{} result[(5)] , const{0}  range=[-32768, -32760) uses={(18) (19)}
+  0.12 (19)  guard-true flags{} result[(6)]  range=[-32768, -32761) uses={(16)}
+   0.14 (20)  adr flags{} b1  range=[-32763, -32762) uses={(21)}
+   0.7 (21)  %nlm := update-varparm flags{} b1 , result[(20)] , result[(3)] , const{0}  range=[-32763, -32763) uses={(17)}
+  0.11 (18)  guard-false flags{} result[(6)]  range=[-32768, -32764) uses={(16)}
+  0.13 (16)  merge-if flags{} result[(19)] , result[(18)]  range=[-32768, -32765) uses={(17)}
+   0.6 (17)  %nlm := gate flags{} result[(16)] , result[(21)] , result[(3)]  range=[-32766, -32766) uses={(12)}
+  0.16 (11)  exit flags{} result[(12)]  range=[-32768, -32767) uses={}
+   0.15 (12)  nlmdtor flags{live} result[(17)]  range=[-32768, -32768) uses={(11)}
+
+

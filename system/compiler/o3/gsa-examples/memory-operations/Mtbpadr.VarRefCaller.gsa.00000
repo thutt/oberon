@@ -1,0 +1,16 @@
+Initial GSA
+
+0.0 (0)  greg: VarRefCaller range=[-32768, -32757)
+  0.1 (11)  [1:[location=.BaseDesc-BaseDesc], 2:[location=.BaseDesc-BaseDesc/adr]] enter flags{} %nlm  range=[-32768, -32758) uses={}
+   0.2 (12)  %nlm := nlmctor flags{}  range=[-32760, -32759) uses={(10)}
+   0.4 (13)  %return-2 := copy flags{} const{FALSE}  range=[-32760, -32760) uses={}
+  0.5 (2)  adr flags{} b  range=[-32768, -32761) uses={(3)}
+  0.6 (3)  b := initialize flags{} b , result[(2)] , const{2}  range=[-32768, -32762) uses={(7) (5)}
+  0.9 (4)  tbpadr flags{} result{1 of (11)} , BaseDesc , RefMethod , const{0} , const{-4}  range=[-32768, -32763) uses={(7)}
+  0.8 (5)  adr flags{} result[(3)]  range=[-32768, -32764) uses={(7)}
+  0.10 (6)  convert.s2 flags{} const{21}  range=[-32768, -32765) uses={(7)}
+  0.7 (7)  call flags{} result[(4)] , result[(5)] , result[(3)] , result[(6)]  range=[-32768, -32766) uses={(9)}
+  0.11 (9)  exit flags{} result[(7)] , result[(10)]  range=[-32768, -32767) uses={}
+   0.3 (10)  nlmdtor flags{live} result[(12)]  range=[-32768, -32768) uses={(9)}
+
+

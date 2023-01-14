@@ -1,0 +1,10 @@
+Initial GSA
+
+0.0 (0)  greg: Aadd range=[-32768, -32763)
+  0.1 (5)  enter flags{live} %nlm  range=[-32768, -32764) uses={}
+   0.2 (6)  %nlm := nlmctor flags{live}  range=[-32766, -32765) uses={(4) (3)}
+   0.5 (7)  %return-2 := copy flags{live} const{FALSE}  range=[-32766, -32766) uses={(3)}
+  0.4 (3)  exit flags{live} result[(6)] [location=%nlm], result[(7)] [location=%return-2], result[(4)]  range=[-32768, -32767) uses={}
+   0.3 (4)  nlmdtor flags{live} result[(6)]  range=[-32768, -32768) uses={(3)}
+
+

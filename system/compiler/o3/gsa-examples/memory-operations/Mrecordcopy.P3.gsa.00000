@@ -1,0 +1,24 @@
+Initial GSA
+
+0.0 (0)  greg: P3 range=[-32768, -32749)
+  0.1 (16)  [1:[location=b0], 2:[location=b0/adr], 3:[location=b0-tag], 4:[location=b0-tag/adr], 5:[location=b1], 6:[location=.%0], 7:[location=.%1], 8:[location=.Mrecordcopy-ExtDesc], 9:[location=.Mrecordcopy-ExtDesc/adr]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+   0.2 (17)  %nlm := nlmctor flags{}  range=[-32752, -32751) uses={(15) (24) (5)}
+   0.6 (18)  %return-3 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
+  0.7 (2)  adr flags{} b1  range=[-32768, -32753) uses={(3)}
+  0.8 (3)  b1 := initialize flags{} b1 , result[(2)] , const{12}  range=[-32768, -32754) uses={}
+  0.9 (4)  adr flags{} b0  range=[-32768, -32755) uses={(5)}
+  0.5 (5)  access-varparm flags{} b0 , result[(4)] , result[(17)]  range=[-32768, -32756) uses={}
+  0.10 (6)  eql.u4 flags{} result{4 of (16)} , result{8 of (16)}  range=[-32768, -32757) uses={(20) (22)}
+  0.12 (22)  guard-true flags{live} result[(6)]  range=[-32768, -32758) uses={(19)}
+   0.14 (23)  adr flags{} b0  range=[-32760, -32759) uses={(24)}
+   0.4 (24)  access-varparm flags{} b0 , result[(23)] , result[(17)]  range=[-32760, -32760) uses={(12) (10)}
+  0.11 (20)  guard-false flags{live} result[(6)]  range=[-32768, -32761) uses={(19)}
+   0.17 (21)  trap-eguard flags{live}  range=[-32762, -32762) uses={}
+  0.13 (19)  merge-if flags{live} result[(22)] , result[(20)]  range=[-32768, -32763) uses={}
+  0.16 (10)  b1 := recordcopy flags{} b1 , result[(11)] , const{12} , result[(24)] , result[(12)]  range=[-32768, -32764) uses={}
+  0.18 (11)  adr flags{} b1  range=[-32768, -32765) uses={(10)}
+  0.15 (12)  adr flags{} result[(24)]  range=[-32768, -32766) uses={(10)}
+  0.19 (14)  exit flags{} result[(15)]  range=[-32768, -32767) uses={}
+   0.3 (15)  nlmdtor flags{live} result[(17)]  range=[-32768, -32768) uses={(14)}
+
+

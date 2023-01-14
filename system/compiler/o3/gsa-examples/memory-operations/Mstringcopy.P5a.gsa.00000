@@ -1,0 +1,17 @@
+Initial GSA
+
+0.0 (0)  greg: P5a range=[-32768, -32756)
+  0.1 (12)  [1:[location=array], 2:[location=array/adr], 3:[location=array-len-0], 4:[location=d], 5:[location=.%0], 6:[location=.%1]] enter flags{} %nlm  range=[-32768, -32757) uses={}
+   0.2 (13)  %nlm := nlmctor flags{}  range=[-32759, -32758) uses={(11) (5)}
+   0.5 (14)  %return-3 := copy flags{} const{FALSE}  range=[-32759, -32759) uses={}
+  0.6 (2)  adr flags{} d  range=[-32768, -32760) uses={(3)}
+  0.7 (3)  d := initialize flags{} d , result[(2)] , const{21}  range=[-32768, -32761) uses={}
+  0.8 (4)  adr flags{} array  range=[-32768, -32762) uses={(5)}
+  0.4 (5)  access-varparm flags{} array , result[(4)] , result[(13)]  range=[-32768, -32763) uses={(8) (6)}
+  0.10 (6)  d := stringcopy flags{} d , result[(7)] , const{21} , result[(5)] , result[(8)]  range=[-32768, -32764) uses={}
+  0.11 (7)  adr flags{} d  range=[-32768, -32765) uses={(6)}
+  0.9 (8)  adr flags{} result[(5)]  range=[-32768, -32766) uses={(6)}
+  0.12 (10)  exit flags{} result[(11)]  range=[-32768, -32767) uses={}
+   0.3 (11)  nlmdtor flags{live} result[(13)]  range=[-32768, -32768) uses={(10)}
+
+

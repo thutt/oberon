@@ -1,0 +1,21 @@
+Initial GSA
+
+0.0 (0)  greg: P1 range=[-32768, -32752)
+  0.1 (11)  [1:[location=v], 2:[location=.%0]] enter flags{} %nlm  range=[-32768, -32753) uses={}
+   0.2 (12)  %nlm := nlmctor flags{}  range=[-32756, -32754) uses={(10)}
+   0.4 (13)  %return-2 := copy flags{} const{FALSE}  range=[-32756, -32755) uses={}
+   0.5 (14)  %result-3 := copy flags{} const{0}  range=[-32756, -32756) uses={}
+  0.6 (2)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32757) uses={}
+  0.7 (3)  neg.s1 flags{} const{3}  range=[-32768, -32758) uses={(18) (20) (4)}
+  0.10 (4)  lss.s1 flags{} result[(3)] , const{0}  range=[-32768, -32759) uses={(17) (19)}
+  0.12 (19)  guard-true flags{} result[(4)]  range=[-32768, -32760) uses={(15)}
+   0.9 (20)  neg.s1 flags{} result[(3)]  range=[-32762, -32761) uses={(21)}
+   0.14 (21)  %t4 := lsr.s4 flags{} result{1 of (11)} , result[(20)]  range=[-32762, -32762) uses={(16)}
+  0.11 (17)  guard-false flags{} result[(4)]  range=[-32768, -32763) uses={(15)}
+   0.8 (18)  %t4 := lsl.s4 flags{} result{1 of (11)} , result[(3)]  range=[-32764, -32764) uses={(16)}
+  0.13 (15)  merge-if flags{} result[(19)] , result[(17)]  range=[-32768, -32765) uses={(16)}
+   0.15 (16)  %result-3 := gate flags{} result[(15)] , result[(21)] , result[(18)]  range=[-32766, -32766) uses={(9)}
+  0.16 (9)  exit flags{} result[(16)] [location=%result-3], result[(10)]  range=[-32768, -32767) uses={}
+   0.3 (10)  nlmdtor flags{live} result[(12)]  range=[-32768, -32768) uses={(9)}
+
+

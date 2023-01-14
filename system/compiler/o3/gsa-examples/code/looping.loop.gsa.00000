@@ -1,0 +1,32 @@
+Initial GSA
+
+0.0 (0)  greg: loop range=[-32768, -32741)
+  0.1 (11)  [1:[location=j], 2:[location=i], 3:[location=.%0]] enter flags{} %nlm  range=[-32768, -32742) uses={}
+   0.2 (12)  %nlm := nlmctor flags{}  range=[-32746, -32743) uses={(10)}
+   0.4 (13)  %return-2 := copy flags{} const{FALSE}  range=[-32746, -32744) uses={}
+   0.5 (14)  %result-3 := copy flags{} const{0}  range=[-32746, -32745) uses={}
+   0.6 (15)  %exit-4 := copy flags{} const{FALSE}  range=[-32746, -32746) uses={(22) (27)}
+  0.9 (2)  i := copy flags{} const{0}  range=[-32768, -32747) uses={}
+  0.10 (3)  i := convert.s2 flags{} const{100}  range=[-32768, -32748) uses={(7) (30) (18)}
+  0.14 (4)  j := convert.s2 flags{} const{10}  range=[-32768, -32749) uses={(23) (26)}
+  0.17 (16)  merge-loop flags{} const{TRUE} , result[(24)]  range=[-32768, -32750) uses={(23) (22)}
+   0.19 (17)  convert.s2 flags{} const{100}  range=[-32764, -32751) uses={(18)}
+   0.13 (18)  eql.s2 flags{} result[(3)] , result[(17)]  range=[-32764, -32752) uses={(28) (29)}
+   0.21 (29)  guard-true flags{} result[(18)]  range=[-32764, -32753) uses={(25)}
+    0.12 (30)  add.s2 flags{} result[(23)] , result[(3)]  range=[-32757, -32754) uses={(32)}
+    0.24 (31)  convert.s2 flags{} const{1}  range=[-32757, -32755) uses={(32)}
+    0.23 (32)  j := add.s2 flags{} result[(30)] , result[(31)]  range=[-32757, -32756) uses={(26)}
+    0.25 (33)  %exit-4 := copy flags{} const{TRUE}  range=[-32757, -32757) uses={(27)}
+   0.20 (28)  guard-false flags{} result[(18)]  range=[-32764, -32758) uses={(25)}
+   0.22 (25)  merge-if flags{} result[(29)] , result[(28)]  range=[-32764, -32759) uses={(27) (26)}
+    0.16 (26)  j := gate flags{} result[(25)] , result[(32)] , result[(4)]  range=[-32761, -32760) uses={(23)}
+    0.8 (27)  %exit-4 := gate flags{} result[(25)] , result[(33)] , result[(15)]  range=[-32761, -32761) uses={(24) (22)}
+   0.7 (22)  %exit-4 := gate flags{} result[(16)] , result[(15)] , result[(27)]  range=[-32764, -32762) uses={}
+   0.15 (23)  j := gate flags{} result[(16)] , result[(4)] , result[(26)]  range=[-32764, -32763) uses={(7) (30)}
+   0.18 (24)  eql.u1 flags{} result[(27)] , const{FALSE}  range=[-32764, -32764) uses={(16)}
+  0.26 (6)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32765) uses={}
+  0.11 (7)  %result-3 := add.s2 flags{} result[(3)] , result[(23)]  range=[-32768, -32766) uses={(9)}
+  0.27 (9)  exit flags{} result[(7)] [location=%result-3], result[(10)]  range=[-32768, -32767) uses={}
+   0.3 (10)  nlmdtor flags{live} result[(12)]  range=[-32768, -32768) uses={(9)}
+
+

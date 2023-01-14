@@ -1,0 +1,17 @@
+Initial GSA
+
+0.0 (0)  greg: Mdynarrlen range=[-32768, -32756)
+  0.1 (12)  enter flags{live} %nlm  range=[-32768, -32757) uses={}
+   0.2 (13)  %nlm := nlmctor flags{live}  range=[-32759, -32758) uses={(11) (10)}
+   0.5 (14)  %return-2 := copy flags{live} const{FALSE}  range=[-32759, -32759) uses={(10)}
+  0.6 (2)  .Mdynarrlen-Base := init-rectd flags{live} Base  range=[-32768, -32760) uses={(10)}
+  0.7 (3)  .td_0 := init-darrtd flags{live} anonymous type  range=[-32768, -32761) uses={(10)}
+  0.8 (4)  .td_1 := init-arrtd flags{live} anonymous type  range=[-32768, -32762) uses={(10)}
+  0.9 (5)  .td_2 := init-darrtd flags{live} anonymous type  range=[-32768, -32763) uses={(10)}
+  0.10 (6)  len := copy flags{live} const{0}  range=[-32768, -32764) uses={(10)}
+  0.11 (7)  adr flags{live} global  range=[-32768, -32765) uses={(8)}
+  0.12 (8)  global := initialize flags{live} global , result[(7)] , const{200}  range=[-32768, -32766) uses={(10)}
+  0.4 (10)  exit flags{live} result[(13)] [location=%nlm], result[(14)] [location=%return-2], result[(2)] [location=.Mdynarrlen-Base], result[(3)] [location=.td_0], result[(4)] [location=.td_1], result[(5)] [location=.td_2], result[(6)] [location=len], result[(8)] [location=global], result[(11)]  range=[-32768, -32767) uses={}
+   0.3 (11)  nlmdtor flags{live} result[(13)]  range=[-32768, -32768) uses={(10)}
+
+

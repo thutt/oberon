@@ -1,0 +1,18 @@
+Initial GSA
+
+0.0 (0)  greg: UpdArray range=[-32768, -32755)
+  0.1 (10)  [1:[location=v], 2:[location=.%0], 3:[location=.%1], 4:[location=array], 5:[location=array/adr]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+   0.2 (11)  %nlm := nlmctor flags{}  range=[-32761, -32757) uses={(3)}
+   0.4 (12)  adr flags{} %t2  range=[-32761, -32758) uses={(14)}
+   0.6 (13)  adr flags{} v  range=[-32761, -32759) uses={(14)}
+   0.5 (14)  arraycopy flags{} %t2 , result[(12)] , const{20} , v , result[(13)]  range=[-32761, -32760) uses={}
+   0.7 (15)  %return-3 := copy flags{} const{FALSE}  range=[-32761, -32761) uses={}
+  0.8 (2)  adr flags{} array  range=[-32768, -32762) uses={(3)}
+  0.3 (3)  %nlm := update-nonlocal flags{} array , result[(2)] , result[(11)] , result[(4)]  range=[-32768, -32763) uses={(9) (5) (4)}
+  0.9 (4)  arraycopy flags{} result[(3)] , result[(5)] , const{10} , %t2 , result[(6)]  range=[-32768, -32764) uses={(3)}
+  0.11 (5)  adr flags{} result[(3)]  range=[-32768, -32765) uses={(4)}
+  0.12 (6)  adr flags{} %t2  range=[-32768, -32766) uses={(4)}
+  0.13 (8)  exit flags{} result[(9)]  range=[-32768, -32767) uses={}
+   0.10 (9)  nlmdtor flags{live} result[(3)]  range=[-32768, -32768) uses={(8)}
+
+

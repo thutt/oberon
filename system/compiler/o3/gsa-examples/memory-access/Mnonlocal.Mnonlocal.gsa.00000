@@ -1,0 +1,26 @@
+Initial GSA
+
+0.0 (0)  greg: Mnonlocal range=[-32768, -32747)
+  0.1 (21)  enter flags{live} %nlm  range=[-32768, -32748) uses={}
+   0.2 (22)  %nlm := nlmctor flags{live}  range=[-32750, -32749) uses={(20) (19)}
+   0.5 (23)  %return-2 := copy flags{live} const{FALSE}  range=[-32750, -32750) uses={(19)}
+  0.6 (2)  import flags{live} SYSTEM  range=[-32768, -32751) uses={}
+  0.7 (3)  .Mnonlocal-Record := init-rectd flags{live} Record  range=[-32768, -32752) uses={(19)}
+  0.8 (4)  .td_0 := init-darrtd flags{live} anonymous type  range=[-32768, -32753) uses={(19)}
+  0.9 (5)  b := copy flags{live} const{0}  range=[-32768, -32754) uses={(19)}
+  0.10 (6)  c := copy flags{live} const{0}  range=[-32768, -32755) uses={(19)}
+  0.11 (7)  si := copy flags{live} const{0}  range=[-32768, -32756) uses={(19)}
+  0.12 (8)  i := copy flags{live} const{0}  range=[-32768, -32757) uses={(19)}
+  0.13 (9)  li := copy flags{live} const{0}  range=[-32768, -32758) uses={(19)}
+  0.14 (10)  r := copy flags{live} const{  0.0E+00}  range=[-32768, -32759) uses={(19)}
+  0.15 (11)  lr := copy flags{live} const{  0.000000D+000}  range=[-32768, -32760) uses={(19)}
+  0.16 (12)  adr flags{live} record  range=[-32768, -32761) uses={(13)}
+  0.17 (13)  record := initialize flags{live} record , result[(12)] , const{2}  range=[-32768, -32762) uses={(19)}
+  0.18 (14)  pointer := copy flags{live} const{0}  range=[-32768, -32763) uses={(19)}
+  0.19 (15)  adr flags{live} array  range=[-32768, -32764) uses={(16)}
+  0.20 (16)  array := initialize flags{live} array , result[(15)] , const{20}  range=[-32768, -32765) uses={(19)}
+  0.21 (17)  pointerarray := copy flags{live} const{0}  range=[-32768, -32766) uses={(19)}
+  0.4 (19)  exit flags{live} result[(22)] [location=%nlm], result[(23)] [location=%return-2], result[(3)] [location=.Mnonlocal-Record], result[(4)] [location=.td_0], result[(5)] [location=b], result[(6)] [location=c], result[(7)] [location=si], result[(8)] [location=i], result[(9)] [location=li], result[(10)] [location=r], result[(11)] [location=lr], result[(13)] [location=record], result[(14)] [location=pointer], result[(16)] [location=array], result[(17)] [location=pointerarray], result[(20)]  range=[-32768, -32767) uses={}
+   0.3 (20)  nlmdtor flags{live} result[(22)]  range=[-32768, -32768) uses={(19)}
+
+

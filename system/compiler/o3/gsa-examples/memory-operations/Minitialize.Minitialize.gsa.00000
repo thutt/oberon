@@ -1,0 +1,16 @@
+Initial GSA
+
+0.0 (0)  greg: Minitialize range=[-32768, -32757)
+  0.1 (11)  enter flags{live} %nlm  range=[-32768, -32758) uses={}
+   0.2 (12)  %nlm := nlmctor flags{live}  range=[-32760, -32759) uses={(10) (9)}
+   0.5 (13)  %return-2 := copy flags{live} const{FALSE}  range=[-32760, -32760) uses={(9)}
+  0.6 (2)  import flags{live} SYSTEM  range=[-32768, -32761) uses={}
+  0.7 (3)  .Minitialize-Base := init-rectd flags{live} Base  range=[-32768, -32762) uses={(9)}
+  0.8 (4)  adr flags{live} gBase  range=[-32768, -32763) uses={(5)}
+  0.9 (5)  gBase := initialize flags{live} gBase , result[(4)] , const{4}  range=[-32768, -32764) uses={(9)}
+  0.10 (6)  adr flags{live} gArr  range=[-32768, -32765) uses={(7)}
+  0.11 (7)  gArr := initialize flags{live} gArr , result[(6)] , const{40}  range=[-32768, -32766) uses={(9)}
+  0.4 (9)  exit flags{live} result[(12)] [location=%nlm], result[(13)] [location=%return-2], result[(3)] [location=.Minitialize-Base], result[(5)] [location=gBase], result[(7)] [location=gArr], result[(10)]  range=[-32768, -32767) uses={}
+   0.3 (10)  nlmdtor flags{live} result[(12)]  range=[-32768, -32768) uses={(9)}
+
+

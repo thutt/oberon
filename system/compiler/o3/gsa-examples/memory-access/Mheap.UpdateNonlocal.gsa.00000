@@ -1,0 +1,11 @@
+Initial GSA
+
+0.0 (0)  greg: UpdateNonlocal range=[-32768, -32762)
+  0.1 (6)  enter flags{} %nlm  range=[-32768, -32763) uses={}
+   0.2 (7)  %nlm := nlmctor flags{}  range=[-32765, -32764) uses={(5)}
+   0.4 (8)  %return-2 := copy flags{} const{FALSE}  range=[-32765, -32765) uses={}
+  0.5 (2)  nl := copy flags{} const{0}  range=[-32768, -32766) uses={}
+  0.6 (4)  exit flags{} result[(5)]  range=[-32768, -32767) uses={}
+   0.3 (5)  nlmdtor flags{live} result[(7)]  range=[-32768, -32768) uses={(4)}
+
+
