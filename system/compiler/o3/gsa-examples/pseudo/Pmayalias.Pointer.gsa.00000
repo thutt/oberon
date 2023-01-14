@@ -1,0 +1,54 @@
+Initial GSA
+
+0.0 (0)  greg: Pointer range=[-32768, -32719)
+  0.1 (33)  [1:[location=a], 2:[location=b], 3:[location=.%0], 4:[location=X], 5:[location=X/adr]] enter flags{} %nlm  range=[-32768, -32720) uses={}
+   0.2 (34)  %nlm := nlmctor flags{}  range=[-32722, -32721) uses={(13) (8)}
+   0.5 (35)  %return-2 := copy flags{} const{FALSE}  range=[-32722, -32722) uses={}
+  0.6 (2)  neq.u1 flags{} a , const{0}  range=[-32768, -32723) uses={(65) (66)}
+  0.8 (66)  guard-true flags{live} result[(2)]  range=[-32768, -32724) uses={(62)}
+  0.7 (65)  guard-false flags{} result[(2)]  range=[-32768, -32725) uses={(63)}
+  0.10 (63)  merge-cond flags{live} result[(65)]  range=[-32768, -32726) uses={(62)}
+   0.11 (64)  trap-nil flags{live}  range=[-32727, -32727) uses={}
+  0.9 (62)  merge-if flags{live} result[(66)] , result[(63)]  range=[-32768, -32728) uses={}
+  0.12 (7)  adr flags{} a  range=[-32768, -32729) uses={(8)}
+  0.4 (8)  access-deref flags{} result{1 of (33)} , result[(7)] , result[(34)]  range=[-32768, -32730) uses={(11) (9)}
+  0.14 (9)  adr flags{} result[(8)]  range=[-32768, -32731) uses={(10)}
+  0.15 (10)  add.u4 flags{} result[(9)] , const{0}  range=[-32768, -32732) uses={(11)}
+  0.13 (11)  %nlm := update-field flags{} result[(8)] , result[(10)] , const{0} , result[(13)]  range=[-32768, -32733) uses={(37) (51) (46) (25) (20)}
+  0.21 (12)  adr flags{} X  range=[-32768, -32734) uses={(13)}
+  0.3 (13)  access-nonlocal flags{} X , result[(12)] , result[(34)]  range=[-32768, -32735) uses={(11)}
+  0.22 (14)  neq.u1 flags{} b , const{0}  range=[-32768, -32736) uses={(60) (61)}
+  0.24 (61)  guard-true flags{live} result[(14)]  range=[-32768, -32737) uses={(57)}
+  0.23 (60)  guard-false flags{} result[(14)]  range=[-32768, -32738) uses={(58)}
+  0.26 (58)  merge-cond flags{live} result[(60)]  range=[-32768, -32739) uses={(57)}
+   0.27 (59)  trap-nil flags{live}  range=[-32740, -32740) uses={}
+  0.25 (57)  merge-if flags{live} result[(61)] , result[(58)]  range=[-32768, -32741) uses={}
+  0.28 (19)  adr flags{} b  range=[-32768, -32742) uses={(20)}
+  0.20 (20)  access-deref flags{} result{2 of (33)} , result[(19)] , result[(11)]  range=[-32768, -32743) uses={(23) (21)}
+  0.30 (21)  adr flags{} result[(20)]  range=[-32768, -32744) uses={(22)}
+  0.31 (22)  add.u4 flags{} result[(21)] , const{2}  range=[-32768, -32745) uses={(23)}
+  0.29 (23)  access-field flags{} result[(20)] , result[(22)] , const{2}  range=[-32768, -32746) uses={(26)}
+  0.33 (24)  adr flags{} X  range=[-32768, -32747) uses={(25)}
+  0.19 (25)  access-nonlocal flags{} X , result[(24)] , result[(11)]  range=[-32768, -32748) uses={(26)}
+  0.32 (26)  eql.s2 flags{} result[(23)] , result[(25)]  range=[-32768, -32749) uses={(38) (39)}
+  0.35 (39)  guard-true flags{} result[(26)]  range=[-32768, -32750) uses={(36)}
+   0.37 (40)  neq.u1 flags{} b , const{0}  range=[-32763, -32751) uses={(55) (56)}
+   0.39 (56)  guard-true flags{live} result[(40)]  range=[-32763, -32752) uses={(52)}
+   0.38 (55)  guard-false flags{} result[(40)]  range=[-32763, -32753) uses={(53)}
+   0.41 (53)  merge-cond flags{live} result[(55)]  range=[-32763, -32754) uses={(52)}
+    0.42 (54)  trap-nil flags{live}  range=[-32755, -32755) uses={}
+   0.40 (52)  merge-if flags{live} result[(56)] , result[(53)]  range=[-32763, -32756) uses={}
+   0.43 (45)  adr flags{} b  range=[-32763, -32757) uses={(46)}
+   0.18 (46)  access-deref flags{} result{2 of (33)} , result[(45)] , result[(11)]  range=[-32763, -32758) uses={(49) (47)}
+   0.45 (47)  adr flags{} result[(46)]  range=[-32763, -32759) uses={(48)}
+   0.46 (48)  add.u4 flags{} result[(47)] , const{0}  range=[-32763, -32760) uses={(49)}
+   0.44 (49)  %nlm := update-field flags{} result[(46)] , result[(48)] , const{0} , result[(51)]  range=[-32763, -32761) uses={(37)}
+   0.47 (50)  adr flags{} X  range=[-32763, -32762) uses={(51)}
+   0.17 (51)  access-nonlocal flags{} X , result[(50)] , result[(11)]  range=[-32763, -32763) uses={(49)}
+  0.34 (38)  guard-false flags{} result[(26)]  range=[-32768, -32764) uses={(36)}
+  0.36 (36)  merge-if flags{} result[(39)] , result[(38)]  range=[-32768, -32765) uses={(37)}
+   0.16 (37)  %nlm := gate flags{} result[(36)] , result[(49)] , result[(11)]  range=[-32766, -32766) uses={(32)}
+  0.49 (31)  exit flags{} result[(32)]  range=[-32768, -32767) uses={}
+   0.48 (32)  nlmdtor flags{live} result[(37)]  range=[-32768, -32768) uses={(31)}
+
+

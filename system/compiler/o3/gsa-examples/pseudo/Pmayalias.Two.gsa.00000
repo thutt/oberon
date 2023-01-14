@@ -1,0 +1,59 @@
+Initial GSA
+
+0.0 (0)  greg: Two range=[-32768, -32714)
+  0.1 (47)  [1:[location=cc], 2:[location=y], 3:[location=x], 4:[location=x/adr], 5:[location=z], 6:[location=.%0], 7:[location=LX], 8:[location=LX/adr], 9:[location=X], 10:[location=X/adr]] enter flags{} %nlm  range=[-32768, -32715) uses={}
+   0.2 (48)  %nlm := nlmctor flags{}  range=[-32717, -32716) uses={(7) (5)}
+   0.5 (49)  %return-2 := copy flags{} const{FALSE}  range=[-32717, -32717) uses={}
+  0.6 (2)  z := copy flags{} const{0}  range=[-32768, -32718) uses={}
+  0.7 (3)  y := add.s2 flags{} result{2 of (47)} , const{1}  range=[-32768, -32719) uses={(54) (26)}
+  0.10 (4)  adr flags{} LX  range=[-32768, -32720) uses={(5)}
+  0.4 (5)  %nlm := update-nonlocal flags{} LX , result[(4)] , result[(48)] , result[(8)]  range=[-32768, -32721) uses={(14) (12) (10)}
+  0.15 (6)  adr flags{} x  range=[-32768, -32722) uses={(7)}
+  0.3 (7)  access-varparm flags{} x , result[(6)] , result[(48)]  range=[-32768, -32723) uses={(8)}
+  0.11 (8)  convert.s4 flags{} result[(7)]  range=[-32768, -32724) uses={(5)}
+  0.16 (9)  adr flags{} X  range=[-32768, -32725) uses={(10)}
+  0.14 (10)  z := access-nonlocal flags{} X , result[(9)] , result[(5)]  range=[-32768, -32726) uses={(57)}
+  0.18 (11)  adr flags{} x  range=[-32768, -32727) uses={(12)}
+  0.13 (12)  %nlm := update-varparm flags{} x , result[(11)] , result[(5)] , result[(15)]  range=[-32768, -32728) uses={(33) (31) (25) (19) (17)}
+  0.25 (13)  adr flags{} x  range=[-32768, -32729) uses={(14)}
+  0.12 (14)  access-varparm flags{} x , result[(13)] , result[(5)]  range=[-32768, -32730) uses={(15)}
+  0.19 (15)  add.s2 flags{} result[(14)] , const{1}  range=[-32768, -32731) uses={(12)}
+  0.26 (16)  adr flags{} x  range=[-32768, -32732) uses={(17)}
+  0.24 (17)  access-varparm flags{} x , result[(16)] , result[(12)]  range=[-32768, -32733) uses={(20)}
+  0.28 (18)  adr flags{} X  range=[-32768, -32734) uses={(19)}
+  0.23 (19)  access-nonlocal flags{} X , result[(18)] , result[(12)]  range=[-32768, -32735) uses={(20)}
+  0.27 (20)  eql.s2 flags{} result[(17)] , result[(19)]  range=[-32768, -32736) uses={(63) (65)}
+  0.30 (65)  guard-true flags{live} result[(20)]  range=[-32768, -32737) uses={(62)}
+  0.29 (63)  guard-false flags{live} result[(20)]  range=[-32768, -32738) uses={(62)}
+   0.32 (64)  trap-assert flags{live}  range=[-32739, -32739) uses={}
+  0.31 (62)  merge-if flags{live} result[(65)] , result[(63)]  range=[-32768, -32740) uses={}
+  0.33 (24)  adr flags{} X  range=[-32768, -32741) uses={(25)}
+  0.22 (25)  access-nonlocal flags{} X , result[(24)] , result[(12)]  range=[-32768, -32742) uses={(26)}
+  0.9 (26)  eql.s2 flags{} result[(3)] , result[(25)]  range=[-32768, -32743) uses={(59) (61)}
+  0.35 (61)  guard-true flags{live} result[(26)]  range=[-32768, -32744) uses={(58)}
+  0.34 (59)  guard-false flags{live} result[(26)]  range=[-32768, -32745) uses={(58)}
+   0.37 (60)  trap-assert flags{live}  range=[-32746, -32746) uses={}
+  0.36 (58)  merge-if flags{live} result[(61)] , result[(59)]  range=[-32768, -32747) uses={}
+  0.38 (30)  adr flags{} X  range=[-32768, -32748) uses={(31)}
+  0.21 (31)  %nlm := update-nonlocal flags{} X , result[(30)] , result[(12)] , result[(34)]  range=[-32768, -32749) uses={(54) (57)}
+  0.40 (32)  adr flags{} X  range=[-32768, -32750) uses={(33)}
+  0.20 (33)  access-nonlocal flags{} X , result[(32)] , result[(12)]  range=[-32768, -32751) uses={(34)}
+  0.39 (34)  sub.s2 flags{} result[(33)] , const{1}  range=[-32768, -32752) uses={(31)}
+  0.41 (55)  guard-true flags{} result{1 of (47)}  range=[-32768, -32753) uses={(50)}
+   0.43 (56)  adr flags{} X  range=[-32755, -32754) uses={(57)}
+   0.17 (57)  %nlm := update-nonlocal flags{} X , result[(56)] , result[(31)] , result[(10)]  range=[-32755, -32755) uses={(51)}
+  0.45 (52)  guard-false flags{} result{1 of (47)}  range=[-32768, -32756) uses={(50)}
+   0.46 (53)  adr flags{} x  range=[-32758, -32757) uses={(54)}
+   0.8 (54)  %nlm := update-varparm flags{} x , result[(53)] , result[(31)] , result[(3)]  range=[-32758, -32758) uses={(51)}
+  0.42 (50)  merge-if flags{} result[(55)] , result[(52)]  range=[-32768, -32759) uses={(51)}
+   0.44 (51)  %nlm := gate flags{} result[(50)] , result[(57)] , result[(54)]  range=[-32760, -32760) uses={(41) (39)}
+  0.49 (38)  adr flags{} x  range=[-32768, -32761) uses={(39)}
+  0.48 (39)  %nlm := update-varparm flags{} x , result[(38)] , result[(51)] , result[(41)]  range=[-32768, -32762) uses={(46) (43)}
+  0.52 (40)  adr flags{} X  range=[-32768, -32763) uses={(41)}
+  0.47 (41)  access-nonlocal flags{} X , result[(40)] , result[(51)]  range=[-32768, -32764) uses={(39)}
+  0.53 (42)  adr flags{} x  range=[-32768, -32765) uses={(43)}
+  0.51 (43)  y := access-varparm flags{} x , result[(42)] , result[(39)]  range=[-32768, -32766) uses={}
+  0.54 (45)  exit flags{} result[(46)]  range=[-32768, -32767) uses={}
+   0.50 (46)  nlmdtor flags{live} result[(39)]  range=[-32768, -32768) uses={(45)}
+
+

@@ -1,0 +1,34 @@
+Initial GSA
+
+0.0 (0)  greg: VarParmRecord range=[-32768, -32739)
+  0.1 (18)  [1:[location=r], 2:[location=r/adr], 3:[location=r-tag], 4:[location=r-tag/adr], 5:[location=i], 6:[location=i/adr], 7:[location=.%0], 8:[location=.%1], 9:[location=X], 10:[location=X/adr]] enter flags{} %nlm  range=[-32768, -32740) uses={}
+   0.2 (19)  %nlm := nlmctor flags{}  range=[-32742, -32741) uses={(3)}
+   0.4 (20)  %return-3 := copy flags{} const{FALSE}  range=[-32742, -32742) uses={}
+  0.5 (2)  adr flags{} r  range=[-32768, -32743) uses={(3)}
+  0.3 (3)  access-varparm flags{} r , result[(2)] , result[(19)]  range=[-32768, -32744) uses={(6) (4)}
+  0.7 (4)  adr flags{} result[(3)]  range=[-32768, -32745) uses={(5)}
+  0.8 (5)  add.u4 flags{} result[(4)] , const{0}  range=[-32768, -32746) uses={(6)}
+  0.6 (6)  %nlm := update-field flags{} result[(3)] , result[(5)] , const{0} , result[(7)]  range=[-32768, -32747) uses={(22) (31) (26) (9)}
+  0.9 (7)  convert.s2 flags{} const{10}  range=[-32768, -32748) uses={(6)}
+  0.14 (8)  adr flags{} i  range=[-32768, -32749) uses={(9)}
+  0.13 (9)  access-varparm flags{} i , result[(8)] , result[(6)]  range=[-32768, -32750) uses={(11)}
+  0.16 (10)  convert.s2 flags{} const{10}  range=[-32768, -32751) uses={(11)}
+  0.15 (11)  eql.s2 flags{} result[(9)] , result[(10)]  range=[-32768, -32752) uses={(23) (24)}
+  0.18 (24)  guard-true flags{} result[(11)]  range=[-32768, -32753) uses={(21)}
+   0.20 (25)  adr flags{} r  range=[-32763, -32754) uses={(26)}
+   0.12 (26)  access-varparm flags{} r , result[(25)] , result[(6)]  range=[-32763, -32755) uses={(29) (27)}
+   0.22 (27)  adr flags{} result[(26)]  range=[-32763, -32756) uses={(28)}
+   0.23 (28)  add.u4 flags{} result[(27)] , const{0}  range=[-32763, -32757) uses={(29)}
+   0.21 (29)  %nlm := update-field flags{} result[(26)] , result[(28)] , const{0} , result[(31)]  range=[-32763, -32758) uses={(33)}
+   0.25 (30)  adr flags{} X  range=[-32763, -32759) uses={(31)}
+   0.11 (31)  access-nonlocal flags{} X , result[(30)] , result[(6)]  range=[-32763, -32760) uses={(29)}
+   0.26 (32)  adr flags{} i  range=[-32763, -32761) uses={(33)}
+   0.24 (33)  %nlm := update-varparm flags{} i , result[(32)] , result[(29)] , result[(34)]  range=[-32763, -32762) uses={(22)}
+   0.27 (34)  convert.s2 flags{} const{12}  range=[-32763, -32763) uses={(33)}
+  0.17 (23)  guard-false flags{} result[(11)]  range=[-32768, -32764) uses={(21)}
+  0.19 (21)  merge-if flags{} result[(24)] , result[(23)]  range=[-32768, -32765) uses={(22)}
+   0.10 (22)  %nlm := gate flags{} result[(21)] , result[(33)] , result[(6)]  range=[-32766, -32766) uses={(17)}
+  0.29 (16)  exit flags{} result[(17)]  range=[-32768, -32767) uses={}
+   0.28 (17)  nlmdtor flags{live} result[(22)]  range=[-32768, -32768) uses={(16)}
+
+

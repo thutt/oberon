@@ -1,0 +1,16 @@
+Alias Analysis
+
+0.0 (0)  greg: Pmayalias range=[-32768, -32757)
+  0.1 (11)  enter flags{live} %nlm  range=[-32768, -32758) uses={}
+   0.2 (12)  %nlm := nlmctor flags{live}  range=[-32760, -32759) uses={(10) (9)}
+   0.5 (13)  %return-2 := copy flags{live} const{FALSE}  range=[-32760, -32760) uses={(9)}
+  0.6 (2)  .Pmayalias-RecordDesc := init-rectd flags{live} RecordDesc  range=[-32768, -32761) uses={(9)}
+  0.7 (3)  .Pmayalias-ExtensionDesc := init-rectd flags{live} ExtensionDesc  range=[-32768, -32762) uses={(9)}
+  0.8 (4)  X := copy flags{live} const{0}  range=[-32768, -32763) uses={(9)}
+  0.9 (5)  LX := copy flags{live} const{0}  range=[-32768, -32764) uses={(9)}
+  0.10 (6)  adr flags{live} RD  range=[-32768, -32765) uses={(7)}
+  0.11 (7)  RD := initialize flags{live} RD , result[(6)] , const{2}  range=[-32768, -32766) uses={(9)}
+  0.4 (9)  exit flags{live} result[(12)] [location=%nlm], result[(13)] [location=%return-2], result[(2)] [location=.Pmayalias-RecordDesc], result[(3)] [location=.Pmayalias-ExtensionDesc], result[(4)] [location=X], result[(5)] [location=LX], result[(7)] [location=RD], result[(10)]  range=[-32768, -32767) uses={}
+   0.3 (10)  nlmdtor flags{live} result[(12)]  range=[-32768, -32768) uses={(9)}
+
+

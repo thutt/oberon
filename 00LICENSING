@@ -900,6 +900,20 @@ The files contained here are provided under the corresponding software license.
   system/lms/tests/StackOverflow.Sym
 
 
+**** licenses/gpl-v3.0.text
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Mod
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Pmayalias.gsa.00000
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Pmayalias.gsa.00100
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Pointer.gsa.00000
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Pointer.gsa.00100
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Three.gsa.00000
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Three.gsa.00100
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Two.gsa.00000
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.Two.gsa.00100
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.VarParmRecord.gsa.00000
+  system/compiler/o3/gsa-examples/pseudo/Pmayalias.VarParmRecord.gsa.00100
+
+
 **** licenses/lgpl-3.0.text
   licenses/lgpl-3.0.text
   loader/Makefile

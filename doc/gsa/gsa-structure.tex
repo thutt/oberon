@@ -987,7 +987,7 @@ guard evalutes to false, the instructions are not executed.
 %-----------------------------------------------------------------------------
 \begin{instruction}{asl}
   \info{Instruction}{Lasl}{asU4}{Models \emph{arithmetic shift
-      left}}{none}{asl}{logical}
+      left}}{Aasl.Mod}{asl}{logical}
 
   \begin{notes}
     Consider the following bit pattern:
@@ -1023,7 +1023,7 @@ guard evalutes to false, the instructions are not executed.
 %-----------------------------------------------------------------------------
 \begin{instruction}{asr}
   \info{Instruction}{Lasr}{asU4}{Models \emph{arithmetic shift
-      right}}{none}{asr}{logical}
+      right}}{Aasr.Mod}{asr}{logical}
 
   \begin{notes}
     Consider the following bit patterns:
@@ -2635,7 +2635,7 @@ following sections.
 
 %-----------------------------------------------------------------------------
 \begin{instruction}{mayalias}
-  \info{Pseudo Instruction}{Palias}{Pmayalias}{Models memory aliasing}{none}{mayalias}{Palias}
+  \info{Pseudo Instruction}{Palias}{Pmayalias}{Models memory aliasing}{Pmayalias.Mod}{mayalias}{Palias}
 
   \begin{notes}
     \gsainst{mayalias} models memory aliasing by replacing the
