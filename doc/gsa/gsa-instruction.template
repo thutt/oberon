@@ -82,7 +82,7 @@ set-diff|set-diff|{op}_{0},{op}_{1}|
 set-element|set-element|{bit},{set}|
 set-excl|set-excl|{set},{value}|
 set-incl|set-incl|{set},{value}|
-set-intersection|set-intersection|{op}_{0},{op}_{1}|
+set-intersect|set-intersect|{op}_{0},{op}_{1}|
 set-neg|set-neg|{op}|
 set-range|set-range|{low}_{0},{high}_{1}|
 set-sub|set-sub|{op}_{0},{op}_{1}|

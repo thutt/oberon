@@ -1,16 +1,16 @@
-% Copyright (c) 2001-2022 Logic Magicians Software
+% Copyright (c) 2001-2023 Logic Magicians Software
 \chapter{Type Hierarchy}
 
 The implementation of \ac{gsa} for in this compiler uses type
 extension to enable an easy-to-use and simple-to-understand framework
-of data structures.  
+of data structures.
 
 \begin{figure}[h!]
 % 2000.07.20: There is a metapost equivalent of this diagram (which
 % looks  much better), but a defect in the NEC SuperScript 1800N
 % printer - or in metapost - causes the metapost diagram to hang the
 % printer.  So, instead this xypic version will have to be used for
-% now. 
+% now.
 \begin{tiny}
   \xymatrix@R=23pt@C=5pt{
   *+[F]{ConstSet} & *+[F]{ConstIntRange} & *+[F]{ConstInt} &
@@ -65,7 +65,7 @@ table type and an \code{Info} field.  The \code{Info} field is to be
 considered volatile over different \ac{cia} executions; in other
 words, this field is available for use by a \ac{cia}.
 
-\subsection{Operand}
+\subsection{Operand}\label{th:operand}
 
 An \code{Operand} type defines an \emph{operand} of an
 \code{Instruction}.  Operands have the following attributes:
@@ -77,7 +77,7 @@ An \code{Operand} type defines an \emph{operand} of an
   implements a \emph{use chain}.
 
 \item Operands refer back to the instruction that contains them.
-  
+
 \item Operands contain a field which indicates the definition of the
   operand's value.
 \end{itemize}
@@ -111,7 +111,7 @@ working with \code{Addressable} items.
 \item When used as an lvalue, the Addressable object (\code{Symbol},
   \code{Temporary}, \code{Const}) will be directly placed into the
   \code{Result.lhs} field.
-  
+
 \item When used as an rvalue, an \code{Addressable} must be rendered
   into a \code{Result}.  This will happen naturally through the use of
   the \code{Addressable.currvalue} field in all cases except the first
@@ -199,7 +199,7 @@ Each \code{Instruction} has the following attributes:
 \item Each can have zero or more operands on a doubly-linked list with
   a dummy head.
 \item Each has a reference to the \code{Region} which contains it.
-  \item Each can be numbered using a \emph{value numbering} scheme. 
+  \item Each can be numbered using a \emph{value numbering} scheme.
 \end{itemize}
 
 \subsection{Gate}

@@ -171,25 +171,6 @@ type increases.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{neg}
-  \info{Instruction}{Aneg}{\multisubcl{asS1, asS2, asS4, asR8,
-      asR4}}{Negates signed integers and real
-    numbers.}{Aneg.Mod}{neg}{arithmetic}
-
-  \begin{results}
-  \item The result is the negative value of the operand.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value which is to be negated.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{not}{arithmetic}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
 \begin{instruction}{add}
   \info{Instruction}{Aadd}{\multisubcl{asS1, asS2, asS4, asR8,
       asR4}}{Models addition of integer and real
@@ -213,140 +194,6 @@ type increases.
     \refgsainst{sub}{arithmetic}, \refgsainst{mul}{arithmetic},
     \refgsainst{mod}{arithmetic}, \refgsainst{div}{arithmetic}
   \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{sub}
-  \info{Instruction}{Asub}{\multisubcl{asS1, asS2, asS4, asR8,
-      asR4}}{Models subtraction of integers and real
-    numbers.}{Asub.Mod}{sub}{arithmetic}
-
-  \begin{notes}
-    The \ac{fe} guarantees the two operands are of the size
-    represented by the instruction subclass.
-  \end{notes}
-
-  \begin{results}
-  \item ${op}_{0} - {op}_{1}$.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the minuend.}
-  \item \operand{Usable}{The value of the subtrahend.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{add}{arithmetic}, \refgsainst{mul}{arithmetic},
-    \refgsainst{mod}{arithmetic}, \refgsainst{div}{arithmetic}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{div}
-  \info{Instruction}{Adiv}{\multisubcl{asS1, asS2, asS4, asR8,
-      asR4}}{Models division of integers and real
-    numbers.}{Adiv.Mod}{div}{arithmetic}
-
-  \begin{notes}
-    The \ac{fe} guarantees the two operands are of the size
-    represented by the instruction subclass.
-  \end{notes}
-
-  \begin{results}
-  \item $\textrm{dividend}_0 \div \textrm{divisor}_1$.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the dividend.}
-  \item \operand{Usable}{The value of the divisor.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{add}{arithmetic}, \refgsainst{sub}{arithmetic},
-    \refgsainst{mul}{arithmetic}, \refgsainst{mod}{arithmetic}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{mul}
-  \info{Instruction}{Amul}{\multisubcl{asS1, asS2, asS4, asR8,
-      asR4}}{Models multiplication of integers and real
-    numbers.}{Amul.Mod}{mul}{arithmetic}
-
-  \begin{notes}
-    The \ac{fe} guarantees the two operands are of the size
-    represented by the instruction subclass.
-  \end{notes}
-
-  \begin{results}
-  \item ${op}_0 \times {op}_1$
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the first multiplicand.}
-  \item \operand{Usable}{The value of the second multiplicand.}
-  \end{operands}
-
-  \todo{There is no discussion about out-of-range values or results,
-    but there should be.}
-
-  \begin{seealso}
-    \refgsainst{add}{arithmetic}, \refgsainst{sub}{arithmetic},
-    \refgsainst{mod}{arithmetic}, \refgsainst{div}{arithmetic}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{mod}
-  \info{Instruction}{Amod}{\multisubcl{asS1, asS2, asS4}}{Models
-    modulo arithmetic on integers.}{Amod.Mod}{mod}{arithmetic}
-
-  \begin{notes}
-    The \ac{fe} guarantees the two operands are of the size
-    represented by the instruction subclass.
-
-    The code generated for \gsainst{mod} must conform to the following
-    relations:
-
-    \[ x \bmod y \equiv x - y \lfloor {x \div y} \rfloor \]
-
-\todo{This equation needs to be cleaned up}
-    \[x \bmod y = \left\{
-      \begin{array}{l|l}
-        0 \leq x \bmod y < y & y > 0 \\
-        \mbox{undefined} & y = 0 \\
-        y < x \bmod y \leq 0 & y < 0
-      \end{array}
-      \right. \]
-  \end{notes}
-
-  \begin{results}
-  \item $\textrm{dividend} \bmod \textrm{divisor}$.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the dividend.}
-  \item \operand{Usable}{The value of the divisor.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{add}{arithmetic}, \refgsainst{sub}{arithmetic},
-    \refgsainst{mul}{arithmetic}, \refgsainst{div}{arithmetic}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{odd}
-  \info{Instruction}{Aodd}{\multisubcl{asS1, asS2, asS4}}{Determines
-    if the input operand is \emph{odd}.}{Aodd.Mod}{odd}{arithmetic}
-
-  \begin{results}
-  \item $\textrm{value} \bmod 2 = 0$.
-  \end{results}
-
-  \begin{operands}
-  \item The value which should be tested for \emph{odd-ness}.
-  \end{operands}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
@@ -419,6 +266,119 @@ j := 5 + i;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
+\begin{instruction}{div}
+  \info{Instruction}{Adiv}{\multisubcl{asS1, asS2, asS4, asR8,
+      asR4}}{Models division of integers and real
+    numbers.}{Adiv.Mod}{div}{arithmetic}
+
+  \begin{notes}
+    The \ac{fe} guarantees the two operands are of the size
+    represented by the instruction subclass.
+  \end{notes}
+
+  \begin{results}
+  \item $\textrm{dividend}_0 \div \textrm{divisor}_1$.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value of the dividend.}
+  \item \operand{Usable}{The value of the divisor.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{add}{arithmetic}, \refgsainst{sub}{arithmetic},
+    \refgsainst{mul}{arithmetic}, \refgsainst{mod}{arithmetic}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{mod}
+  \info{Instruction}{Amod}{\multisubcl{asS1, asS2, asS4}}{Models
+    modulo arithmetic on integers.}{Amod.Mod}{mod}{arithmetic}
+
+  \begin{notes}
+    The \ac{fe} guarantees the two operands are of the size
+    represented by the instruction subclass.
+
+    The code generated for \gsainst{mod} must conform to the following
+    relations:
+
+    \[ x \bmod y \equiv x - y \lfloor {x \div y} \rfloor \]
+
+\todo{This equation needs to be cleaned up}
+    \[x \bmod y = \left\{
+      \begin{array}{l|l}
+        0 \leq x \bmod y < y & y > 0 \\
+        \mbox{undefined} & y = 0 \\
+        y < x \bmod y \leq 0 & y < 0
+      \end{array}
+      \right. \]
+  \end{notes}
+
+  \begin{results}
+  \item $\textrm{dividend} \bmod \textrm{divisor}$.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value of the dividend.}
+  \item \operand{Usable}{The value of the divisor.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{add}{arithmetic}, \refgsainst{sub}{arithmetic},
+    \refgsainst{mul}{arithmetic}, \refgsainst{div}{arithmetic}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{mul}
+  \info{Instruction}{Amul}{\multisubcl{asS1, asS2, asS4, asR8,
+      asR4}}{Models multiplication of integers and real
+    numbers.}{Amul.Mod}{mul}{arithmetic}
+
+  \begin{notes}
+    The \ac{fe} guarantees the two operands are of the size
+    represented by the instruction subclass.
+  \end{notes}
+
+  \begin{results}
+  \item ${op}_0 \times {op}_1$
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value of the first multiplicand.}
+  \item \operand{Usable}{The value of the second multiplicand.}
+  \end{operands}
+
+  \todo{There is no discussion about out-of-range values or results,
+    but there should be.}
+
+  \begin{seealso}
+    \refgsainst{add}{arithmetic}, \refgsainst{sub}{arithmetic},
+    \refgsainst{mod}{arithmetic}, \refgsainst{div}{arithmetic}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{neg}
+  \info{Instruction}{Aneg}{\multisubcl{asS1, asS2, asS4, asR8,
+      asR4}}{Negates signed integers and real
+    numbers.}{Aneg.Mod}{neg}{arithmetic}
+
+  \begin{results}
+  \item The result is the negative value of the operand.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value which is to be negated.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{not}{arithmetic}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
 \begin{instruction}{not}
   \info{Instruction}{Anot}{asU1}{Models boolean
     negation.}{Anot.Mod}{not}{arithmetic}
@@ -444,6 +404,45 @@ j := 5 + i;
   \end{seealso}
 \end{instruction}
 
+%-----------------------------------------------------------------------------
+\begin{instruction}{odd}
+  \info{Instruction}{Aodd}{\multisubcl{asS1, asS2, asS4}}{Determines
+    if the input operand is \emph{odd}.}{Aodd.Mod}{odd}{arithmetic}
+
+  \begin{results}
+  \item $\textrm{value} \bmod 2 = 0$.
+  \end{results}
+
+  \begin{operands}
+  \item The value which should be tested for \emph{odd-ness}.
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{sub}
+  \info{Instruction}{Asub}{\multisubcl{asS1, asS2, asS4, asR8,
+      asR4}}{Models subtraction of integers and real
+    numbers.}{Asub.Mod}{sub}{arithmetic}
+
+  \begin{notes}
+    The \ac{fe} guarantees the two operands are of the size
+    represented by the instruction subclass.
+  \end{notes}
+
+  \begin{results}
+  \item ${op}_{0} - {op}_{1}$.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value of the minuend.}
+  \item \operand{Usable}{The value of the subtrahend.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{add}{arithmetic}, \refgsainst{mul}{arithmetic},
+    \refgsainst{mod}{arithmetic}, \refgsainst{div}{arithmetic}
+  \end{seealso}
+\end{instruction}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conditional}\label{class:conditional}
@@ -502,10 +501,10 @@ conditional instructs supported.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{neq}
-  \info{Instruction}{Cneq}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
-      asU4, asR8, asR4, asST}}{Models the $\neq$
-    test}{Cneq.Mod}{neq}{conditional}
+\begin{instruction}{geq}
+  \info{Instruction}{Cgeq}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
+      asU4, asR8, asR4, asST}}{Models the $\geq$
+    test.}{Cgeq.Mod}{geq}{conditional}
 
   \begin{notes}
     \inv{The \ac{fe} guarantees that the generated \ac{ast} is
@@ -514,21 +513,81 @@ conditional instructs supported.
   \end{notes}
 
   \begin{results}
-  \item ${op}_0 \neq {op}_1$
+  \item ${op}_0 \geq {op}_1$
   \end{results}
 
   \begin{operands}
-  \item \operand{Usable}{The value of the left operand from the
-      source.}
-  \item \operand{Usable}{The value of the right operand from the
-      source.}
+  \item \operand{Usable}{The value of the left operand from the source.}
+  \item \operand{Usable}{The value of the right operand from the source.}
   \end{operands}
 
   \begin{seealso}
     \refgsainst{not}{arithmetic}
     \refgsainst{eql}{conditional},
+    \refgsainst{neq}{conditional},
     \refgsainst{lss}{conditional},
     \refgsainst{leq}{conditional},
+    \refgsainst{gtr}{conditional},
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{gtr}
+  \info{Instruction}{Cgtr}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
+      asU4, asR8, asR4, asST}}{Models the $>$
+    test.}{Cgtr.Mod}{gtr}{conditional}
+
+  \begin{notes}
+    \inv{The \ac{fe} guarantees that the generated \ac{ast} is
+      type-correct so that mismatches between \ac{gsa} instructions
+      will not occur when generating \ac{gsa} form.}
+  \end{notes}
+
+  \begin{results}
+  \item ${op}_0 > {op}_1$
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value of the left operand from the source.}
+  \item \operand{Usable}{The value of the right operand from the source.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{not}{arithmetic}
+    \refgsainst{eql}{conditional},
+    \refgsainst{neq}{conditional},
+    \refgsainst{lss}{conditional},
+    \refgsainst{leq}{conditional},
+    \refgsainst{geq}{conditional}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{leq}
+  \info{Instruction}{Cleq}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
+      asU4, asR8, asR4, asST}}{Models the $\leq$
+    test.}{Cleq.Mod}{leq}{conditional}
+
+  \begin{notes}
+    \inv{The \ac{fe} guarantees that the generated \ac{ast} is
+      type-correct so that mismatches between \ac{gsa} instructions
+      will not occur when generating \ac{gsa} form.}
+  \end{notes}
+
+  \begin{results}
+  \item ${op}_0 \leq {op}_1$
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value of the left operand from the source.}
+  \item \operand{Usable}{The value of the right operand from the source.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{not}{arithmetic}
+    \refgsainst{eql}{conditional},
+    \refgsainst{neq}{conditional},
+    \refgsainst{lss}{conditional},
     \refgsainst{gtr}{conditional},
     \refgsainst{geq}{conditional}
   \end{seealso}
@@ -566,10 +625,10 @@ conditional instructs supported.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{leq}
-  \info{Instruction}{Cleq}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
-      asU4, asR8, asR4, asST}}{Models the $\leq$
-    test.}{Cleq.Mod}{leq}{conditional}
+\begin{instruction}{neq}
+  \info{Instruction}{Cneq}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
+      asU4, asR8, asR4, asST}}{Models the $\neq$
+    test}{Cneq.Mod}{neq}{conditional}
 
   \begin{notes}
     \inv{The \ac{fe} guarantees that the generated \ac{ast} is
@@ -578,83 +637,23 @@ conditional instructs supported.
   \end{notes}
 
   \begin{results}
-  \item ${op}_0 \leq {op}_1$
+  \item ${op}_0 \neq {op}_1$
   \end{results}
 
   \begin{operands}
-  \item \operand{Usable}{The value of the left operand from the source.}
-  \item \operand{Usable}{The value of the right operand from the source.}
+  \item \operand{Usable}{The value of the left operand from the
+      source.}
+  \item \operand{Usable}{The value of the right operand from the
+      source.}
   \end{operands}
 
   \begin{seealso}
     \refgsainst{not}{arithmetic}
     \refgsainst{eql}{conditional},
-    \refgsainst{neq}{conditional},
-    \refgsainst{lss}{conditional},
-    \refgsainst{gtr}{conditional},
-    \refgsainst{geq}{conditional}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{gtr}
-  \info{Instruction}{Cgtr}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
-      asU4, asR8, asR4, asST}}{Models the $>$
-    test.}{Cgtr.Mod}{gtr}{conditional}
-
-  \begin{notes}
-    \inv{The \ac{fe} guarantees that the generated \ac{ast} is
-      type-correct so that mismatches between \ac{gsa} instructions
-      will not occur when generating \ac{gsa} form.}
-  \end{notes}
-
-  \begin{results}
-  \item ${op}_0 > {op}_1$
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the left operand from the source.}
-  \item \operand{Usable}{The value of the right operand from the source.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{not}{arithmetic}
-    \refgsainst{eql}{conditional},
-    \refgsainst{neq}{conditional},
-    \refgsainst{lss}{conditional},
-    \refgsainst{leq}{conditional},
-    \refgsainst{geq}{conditional}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{geq}
-  \info{Instruction}{Cgeq}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
-      asU4, asR8, asR4, asST}}{Models the $\geq$
-    test.}{Cgeq.Mod}{geq}{conditional}
-
-  \begin{notes}
-    \inv{The \ac{fe} guarantees that the generated \ac{ast} is
-      type-correct so that mismatches between \ac{gsa} instructions
-      will not occur when generating \ac{gsa} form.}
-  \end{notes}
-
-  \begin{results}
-  \item ${op}_0 \geq {op}_1$
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the left operand from the source.}
-  \item \operand{Usable}{The value of the right operand from the source.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{not}{arithmetic}
-    \refgsainst{eql}{conditional},
-    \refgsainst{neq}{conditional},
     \refgsainst{lss}{conditional},
     \refgsainst{leq}{conditional},
     \refgsainst{gtr}{conditional},
+    \refgsainst{geq}{conditional}
   \end{seealso}
 \end{instruction}
 
@@ -684,65 +683,32 @@ guard evalutes to false, the instructions are not executed.
 \end{table}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{true}
-  \info{Guard}{Gguard}{Gtrue}{Models a region to be executed only when
-    the guarded condition is true.}{Gtrue.Mod}{true}{Gguard}
+\begin{instruction}{caseelse}
+  \info{Guard}{Gguard}{Gcaseelse}{Models the \code{ELSE}
+  clause of a \code{CASE} statement.}{Gcase.Mod}{caseelse}{Gguard}
 
   \begin{notes}
-    When the condition specified by the operand list evaluates to
-    \code{TRUE}, then the code in this region is executed.  When it
-    evalutes to \code{FALSE}, the code is not executed.
+    If no match for the \emph{selection} expression for a \code{CASE}
+    statement is found in the \gsainst{casesgl} regions, then the
+    control flow passes to the \gsainst{caseelse} region.
 
-    This region goes hand-in-hand with \refgsainst{false}{Gguard}: when
-    the \gsainst{true} region is executed, the \gsainst{false} region
-    is not and when the \gsainst{true} region is not executed, the
-    \gsainst{false} region is.
-  \end{notes}
-
-  \begin{results}
-  \item THere are no program-usable results produced by this
-    instruction, but its result is used by \emph{merge} statements to
-    merge control flow.  A guard with a value of \code{TRUE} indicates
-    that the guarded region is executed.  Conversely, a guard with a
-    value of \code{FALSE} indicates that the guarded region is not
-    executed.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the condition which guards the
-      region.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{false}{Gguard}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{false}
-  \info{Guard}{Gguard}{Gfalse}{Models a region to be executed only
-    when the guarded condition is false.}{Gfalse.Mod}{false}{Gguard}
-
-  \begin{notes}
-    If the condition specified by the operand list evaluates to
-    \code{FALSE}, then the code in this region is executed.  When the
-    condition evalutes to \code{TRUE}, the code is not executed.
-
-    This region goes hand-in-hand with \refgsainst{true}{Gguard}: when
-    the \gsainst{true} region is executed, the \gsainst{false} region
-    is not and when the \gsainst{true} region is not executed, the
-    \gsainst{false} region is.
+    The \ac{fe} ensures that all trees generated for \code{CASE}
+    statements will have an \code{ELSE} clause.  In the absence of a
+    user-supplied \code{ELSE} clause, the compiler will insert a
+    \emph{trap} instruction which corresponds to \emph{no selection
+      found}.
   \end{notes}
 
   \nresults
 
   \begin{operands}
-  \item \operand{Usable}{This value of the condition which guards the
-      region.}
+  \item \operand{Usable}{The current value of selector used in the
+      \code{CASE} statement.}
   \end{operands}
 
   \begin{seealso}
-    \refgsainst{true}{Gguard}
+    \refgsainst{casereg}{Mregion}, \refgsainst{casesgl}{Gguard},
+    \refgsainst{case}{Gmerge}
   \end{seealso}
 \end{instruction}
 
@@ -781,32 +747,65 @@ guard evalutes to false, the instructions are not executed.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{caseelse}
-  \info{Guard}{Gguard}{Gcaseelse}{Models the \code{ELSE}
-  clause of a \code{CASE} statement.}{Gcase.Mod}{caseelse}{Gguard}
+\begin{instruction}{false}
+  \info{Guard}{Gguard}{Gfalse}{Models a region to be executed only
+    when the guarded condition is false.}{Gfalse.Mod}{false}{Gguard}
 
   \begin{notes}
-    If no match for the \emph{selection} expression for a \code{CASE}
-    statement is found in the \gsainst{casesgl} regions, then the
-    control flow passes to the \gsainst{caseelse} region.
+    If the condition specified by the operand list evaluates to
+    \code{FALSE}, then the code in this region is executed.  When the
+    condition evalutes to \code{TRUE}, the code is not executed.
 
-    The \ac{fe} ensures that all trees generated for \code{CASE}
-    statements will have an \code{ELSE} clause.  In the absence of a
-    user-supplied \code{ELSE} clause, the compiler will insert a
-    \emph{trap} instruction which corresponds to \emph{no selection
-      found}.
+    This region goes hand-in-hand with \refgsainst{true}{Gguard}: when
+    the \gsainst{true} region is executed, the \gsainst{false} region
+    is not and when the \gsainst{true} region is not executed, the
+    \gsainst{false} region is.
   \end{notes}
 
   \nresults
 
   \begin{operands}
-  \item \operand{Usable}{The current value of selector used in the
-      \code{CASE} statement.}
+  \item \operand{Usable}{This value of the condition which guards the
+      region.}
   \end{operands}
 
   \begin{seealso}
-    \refgsainst{casereg}{Mregion}, \refgsainst{casesgl}{Gguard},
-    \refgsainst{case}{Gmerge}
+    \refgsainst{true}{Gguard}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{true}
+  \info{Guard}{Gguard}{Gtrue}{Models a region to be executed only when
+    the guarded condition is true.}{Gtrue.Mod}{true}{Gguard}
+
+  \begin{notes}
+    When the condition specified by the operand list evaluates to
+    \code{TRUE}, then the code in this region is executed.  When it
+    evalutes to \code{FALSE}, the code is not executed.
+
+    This region goes hand-in-hand with \refgsainst{false}{Gguard}: when
+    the \gsainst{true} region is executed, the \gsainst{false} region
+    is not and when the \gsainst{true} region is not executed, the
+    \gsainst{false} region is.
+  \end{notes}
+
+  \begin{results}
+  \item THere are no program-usable results produced by this
+    instruction, but its result is used by \emph{merge} statements to
+    merge control flow.  A guard with a value of \code{TRUE} indicates
+    that the guarded region is executed.  Conversely, a guard with a
+    value of \code{FALSE} indicates that the guarded region is not
+    executed.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value of the condition which guards the
+      region.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{false}{Gguard}
   \end{seealso}
 \end{instruction}
 
@@ -814,7 +813,7 @@ guard evalutes to false, the instructions are not executed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Hardware}\label{class:hardware}
 %-----------------------------------------------------------------------------
-\begin{instruction}{get}
+\begin{instruction}{get}\label{hardware:get}
   \info{Instruction}{Hget}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
       asU4}}{Models reading directly from
     memory.}{Hget.Mod}{get}{hardware}
@@ -837,31 +836,6 @@ guard evalutes to false, the instructions are not executed.
   \begin{operands}
   \item \operand{Usable}{The operand is a value which represents the
       memory address to read.}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{put}
-  \info{Instruction}{Hput}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
-      asU4}}{Models writing directly to
-    memory.}{Hput.Mod}{put}{hardware}
-
-  \begin{notes}
-    \inv{The result of the instruction is of the size specified by the
-      instruction subclass.  The \ac{fe} guarantees that the generated
-      \ac{ast} is type-correct so that mismatches between \ac{gsa}
-      instructions will not occur.}
-
-    \inv{This instruction cannot be moved to a different region.}
-
-    \inv{This instruction cannot be removed.}
-  \end{notes}
-
-  \nresults
-
-  \begin{operands}
-  \item \operand{Usable}{The address to which data should be written.}
-  \item \operand{Usable}{The value which should be written to memory.}
   \end{operands}
 \end{instruction}
 
@@ -892,32 +866,7 @@ guard evalutes to false, the instructions are not executed.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{putreg}
-  \info{Instruction}{Hputreg}{\{asS1, asS2, asS4\}}{Models writing a
-    physical cpu register.}{Hputreg.Mod}{putreg}{hardware}
-
-  \begin{notes}
-    \inv{The result of the instruction is of the size specified by the
-      instruction subclass.  The \ac{fe} guarantees that the generated
-      \ac{ast} is type-correct so that mismatches between \ac{gsa}
-      instructions will not occur.}
-
-    \inv{This instruction cannot be moved to a different region.}
-
-    \inv{This instruction cannot be removed.}
-  \end{notes}
-
-  \nresults
-
-  \begin{operands}
-  \item \operand{Usable}{The number of the physical cpu register which
-      should be written.}
-  \item \operand{Usable}{The value to be written to the cpu register.}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{memr}
+\begin{instruction}{memr}\label{hardware:memr}
   \info{Instruction}{Hmemr}{asS4}{Models reading directly from
     memory.}{Hmemr.Mod}{memr}{hardware}
 
@@ -951,7 +900,7 @@ guard evalutes to false, the instructions are not executed.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{memw}
+\begin{instruction}{memw}\label{hardware:memw}
   \info{Instruction}{Hmemw}{asS4}{Models writing directly to
     memory.}{Hmemw.Mod}{memw}{hardware}
 
@@ -982,10 +931,207 @@ guard evalutes to false, the instructions are not executed.
   \end{operands}
 \end{instruction}
 
+%-----------------------------------------------------------------------------
+\begin{instruction}{put}\label{hardware:put}
+  \info{Instruction}{Hput}{\multisubcl{asS1, asU1, asS2, asU2, asS4,
+      asU4}}{Models writing directly to memory.}{Hput.Mod}{put}{hardware}
+
+  \begin{notes}
+    \inv{The result of the instruction is of the size specified by the
+      instruction subclass.  The \ac{fe} guarantees that the generated
+      \ac{ast} is type-correct so that mismatches between \ac{gsa}
+      instructions will not occur.}
+
+    \inv{This instruction cannot be moved to a different region.}
+
+    \inv{This instruction cannot be removed.}
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Usable}{The address to which data should be written.}
+  \item \operand{Usable}{The value which should be written to memory.}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{putreg}
+  \info{Instruction}{Hputreg}{\{asS1, asS2, asS4\}}{Models writing a
+    physical cpu register.}{Hputreg.Mod}{putreg}{hardware}
+
+  \begin{notes}
+    \inv{The result of the instruction is of the size specified by the
+      instruction subclass.  The \ac{fe} guarantees that the generated
+      \ac{ast} is type-correct so that mismatches between \ac{gsa}
+      instructions will not occur.}
+
+    \inv{This instruction cannot be moved to a different region.}
+
+    \inv{This instruction cannot be removed.}
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Usable}{The number of the physical cpu register which
+      should be written.}
+  \item \operand{Usable}{The value to be written to the cpu register.}
+  \end{operands}
+\end{instruction}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Logical}\label{class:logical}
 %-----------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
+\begin{instruction}{asl}
+  \info{Instruction}{Lasl}{asU4}{Models \emph{arithmetic shift
+      left}}{none}{asl}{logical}
+
+  \begin{notes}
+    Consider the following bit pattern:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
+      \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
+    \end{bytefield}
+
+    Executing a shift left of three (3) bits would produce:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{aaaaabbb} \bitbox{8}{bbbbbccc}
+      \bitbox{8}{cccccddd} \bitbox{8}{ddddd000}
+    \end{bytefield}
+  \end{notes}
+
+  \begin{results}
+  \item The result of this instruction is the value obtained after
+    performing the shift.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value to be shifted.}
+  \item \operand{Usable}{The number of bits to shift.
+
+    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{asr}
+  \info{Instruction}{Lasr}{asU4}{Models \emph{arithmetic shift
+      right}}{none}{asr}{logical}
+
+  \begin{notes}
+    Consider the following bit patterns:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{1aaaaaaa} \bitbox{8}{bbbbbbbb} \bitbox{8}{cccccccc}
+      \bitbox{8}{dddddddd} \\
+      \bitbox{8}{0aaaaaaa} \bitbox{8}{bbbbbbbb} \bitbox{8}{cccccccc}
+      \bitbox{8}{dddddddd}
+    \end{bytefield}
+
+    Executing a shift right of three (3) bits would produce:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{111aaaaa} \bitbox{8}{aaabbbbb} \bitbox{8}{bbbccccc}
+      \bitbox{8}{cccddddd} \\
+      \bitbox{8}{000aaaaa} \bitbox{8}{aaabbbbb} \bitbox{8}{bbbccccc} \bitbox{8}{cccddddd}
+    \end{bytefield}
+  \end{notes}
+
+  \begin{results}
+  \item The result of this instruction is the value obtained after
+    performing the shift.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value to be shifted.}
+  \item \operand{Usable}{The number of bits to shift.
+
+    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{lsl}
+  \info{Instruction}{Llsl}{asU4}{Models
+  \emph{logical shift left}}{Alsl.Mod}{lsl}{logical}
+
+  \begin{notes}
+    Consider the following bit pattern:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
+      \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
+    \end{bytefield}
+
+    Executing a shift left of three (3) bits would produce:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{aaaaabbb} \bitbox{8}{bbbbbccc}
+      \bitbox{8}{cccccddd} \bitbox{8}{ddddd000}
+    \end{bytefield}
+
+    \todo{Ensure this only works with unsigned values}
+  \end{notes}
+
+  \begin{results}
+  \item The result of this instruction is the value obtained after
+    performing the shift.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value to be shifted.}
+  \item \operand{Usable}{The number of bits to shift.
+
+    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{lsr}
+  \info{Instruction}{Llsr}{asU4}{Models \emph{logical shift
+      right}}{Alsr.Mod}{lsr}{logical}
+
+  \begin{notes}
+    Consider the following bit pattern:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
+      \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
+    \end{bytefield}
+
+    Executing a shift right of three (3) bits would produce:
+
+    \begin{bytefield}{32}
+      \bitheader[b]{0,8,16,24,31} \\
+      \bitbox{8}{000aaaaa} \bitbox{8}{aaabbbbb}
+      \bitbox{8}{bbbccccc} \bitbox{8}{cccddddd}
+    \end{bytefield}
+  \end{notes}
+
+  \begin{results}
+  \item The result is the value produced by the shift.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value to be shifted.}
+  \item \operand{Usable}{The number of bits to shift.
+
+    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
+  \end{operands}
+\end{instruction}
+
 \begin{instruction}{rol}
   \info{Instruction}{Lrol}{asU4}{Models \emph{rotate
       left.}}{Arol.Mod}{rol}{logical}
@@ -1064,154 +1210,6 @@ guard evalutes to false, the instructions are not executed.
   \end{operands}
 \end{instruction}
 
-%-----------------------------------------------------------------------------
-\begin{instruction}{lsl}
-  \info{Instruction}{Llsl}{asU4}{Models
-  \emph{logical shift left}}{Alsl.Mod}{lsl}{logical}
-
-  \begin{notes}
-    Consider the following bit pattern:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
-      \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
-    \end{bytefield}
-
-    Executing a shift left of three (3) bits would produce:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{aaaaabbb} \bitbox{8}{bbbbbccc}
-      \bitbox{8}{cccccddd} \bitbox{8}{ddddd000}
-    \end{bytefield}
-
-    \todo{Ensure this only works with unsigned values}
-  \end{notes}
-
-  \begin{results}
-  \item The result of this instruction is the value obtained after
-    performing the shift.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value to be shifted.}
-  \item \operand{Usable}{The number of bits to shift.
-
-    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{lsr}
-  \info{Instruction}{Llsr}{asU4}{Models \emph{logical shift
-      right}}{Alsr.Mod}{lsr}{logical}
-
-  \begin{notes}
-    Consider the following bit pattern:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
-      \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
-    \end{bytefield}
-
-    Executing a shift right of three (3) bits would produce:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{000aaaaa} \bitbox{8}{aaabbbbb}
-      \bitbox{8}{bbbccccc} \bitbox{8}{cccddddd}
-    \end{bytefield}
-  \end{notes}
-
-  \begin{results}
-  \item The result is the value produced by the shift.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value to be shifted.}
-  \item \operand{Usable}{The number of bits to shift.
-
-    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{asl}
-  \info{Instruction}{Lasl}{asU4}{Models \emph{arithmetic shift
-      left}}{none}{asl}{logical}
-
-  \begin{notes}
-    Consider the following bit pattern:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{aaaaaaaa} \bitbox{8}{bbbbbbbb}
-      \bitbox{8}{cccccccc} \bitbox{8}{dddddddd}
-    \end{bytefield}
-
-    Executing a shift left of three (3) bits would produce:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{aaaaabbb} \bitbox{8}{bbbbbccc}
-      \bitbox{8}{cccccddd} \bitbox{8}{ddddd000}
-    \end{bytefield}
-  \end{notes}
-
-  \begin{results}
-  \item The result of this instruction is the value obtained after
-    performing the shift.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value to be shifted.}
-  \item \operand{Usable}{The number of bits to shift.
-
-    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{asr}
-  \info{Instruction}{Lasr}{asU4}{Models \emph{arithmetic shift
-      right}}{none}{asr}{logical}
-
-  \begin{notes}
-    Consider the following bit patterns:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{1aaaaaaa} \bitbox{8}{bbbbbbbb} \bitbox{8}{cccccccc}
-      \bitbox{8}{dddddddd} \\
-      \bitbox{8}{0aaaaaaa} \bitbox{8}{bbbbbbbb} \bitbox{8}{cccccccc}
-      \bitbox{8}{dddddddd}
-    \end{bytefield}
-
-    Executing a shift right of three (3) bits would produce:
-
-    \begin{bytefield}{32}
-      \bitheader[b]{0,8,16,24,31} \\
-      \bitbox{8}{111aaaaa} \bitbox{8}{aaabbbbb} \bitbox{8}{bbbccccc}
-      \bitbox{8}{cccddddd} \\
-      \bitbox{8}{000aaaaa} \bitbox{8}{aaabbbbb} \bitbox{8}{bbbccccc} \bitbox{8}{cccddddd}
-    \end{bytefield}
-  \end{notes}
-
-  \begin{results}
-  \item The result of this instruction is the value obtained after
-    performing the shift.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value to be shifted.}
-  \item \operand{Usable}{The number of bits to shift.
-
-    \inv{$\textrm{bits-to-shift} \in \{0..31\}$}}
-  \end{operands}
-\end{instruction}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Memory Access}\label{class:memory-access}
@@ -1225,181 +1223,23 @@ the compiler to hold values in registers during its entire \emph{live
 Table \ref{tab:instruction-memory} shows the instructions described in
 the following sections.
 
+
 \begin{table}[h!]
   \begin{tabularx}{\linewidth}{|l|X|}
     \hline Instruction & Description \\
-    \hline \gsainst{field} & Oberon \code{RECORD} field access. \\
-    \hline \gsainst{element} & Oberon \code{ARRAY} element access. \\
     \hline \gsainst{deref} & Provides access to the heap through
     dereferencing Oberon pointers.\\
+    \hline \gsainst{element} & Oberon \code{ARRAY} element access. \\
+    \hline \gsainst{field} & Oberon \code{RECORD} field access. \\
+    \hline \gsainst{mem} & Provides direct access to memory through
+    the \code{SYSTEM} module.\footnote{Not implemented.}\\
     \hline \gsainst{nonlocal} & Models access to nonlocal variables
     (variables contained in outer lexical scopes).\\
     \hline \gsainst{varparm} & Models access to \code{VAR} parameters.\\
-    \hline \gsainst{mem} & Provides direct access to memory through
-    the \code{SYSTEM} module.\footnote{Not implemented.}\\
-    \hline \gsainst{nlmdtor} & Finalizes the pseudo-variable
-    \gsavar{nlm}. \\
-    \hline \gsainst{nlmctor} & Creates the pseudo-variable \gsavar{nlm}.\\
-    \hline \gsainst{adr} & Synthesizes the address of data.\\
-    \hline \gsainst{tbpadr} & Synthesizes the address of an Oberon
-    \ac{tbp}.\\
-    \hline \gsainst{dynarrlen} & Calculates the length of a heap-based
-    dynamic array. \\
-    \hline \gsainst{heaptag} & Synthesizes the \emph{tag} value of a
-    heap-based memory block. \\
-    \hline \gsainst{initialize} & Models the initialization of
-    structured data to binary zero (0). \\
-    \hline \gsainst{stringcopy} & Copies a string literal or an array
-    of characters to another array of characters. \\
-    \hline \gsainst{recordcopy} & Provides a byte-wise copy of a
-    record onto another compatible record. \\
-    \hline \gsainst{arraycopy} &  Provides a byte-wise copy of a
-    statically sized array onto another compatible array. \\
-    \hline \gsainst{newrecord} & Models the heap allocation of a new
-    record. \\
-    \hline \gsainst{newarray} & Models the heap allocation of a new
-    statically-sized array. \\
-    \hline \gsainst{newdynarray} & Models the heap allocation of a new
-    dynamically-sized array. \\
     \hline
   \end{tabularx}
 \caption{Memory Access Instructions}\label{tab:instruction-memory}
 \end{table}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{extract-field}\todo{Has this been renamed 'field'?}
-  \info{Instruction}{Maccess}{Mfield}{Extracts a field from a
-    structured variable; for use when the field reference appears as
-    an \ac{rv}.}{Mfield.Mod}{access-field}{Maccess}
-
-
-  \begin{notes}
-    The \emph{variable} is required by analysis phases, such as
-    \ac{cse}.  The \emph{offset} value is helpful in distinguishing
-    between accesses to different fields.
-
-    Since the \emph{address} of the field must be calculated at some
-    point to provide physical access, associating tightly it with the
-    instruction which will eventually require it provides for better
-    code improvement opportunities.
-  \end{notes}
-
-  \begin{results}
-  \item The value of the extracted field.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the variable to be
-      referenced.}
-  \item \operand{Usable}{The computed address of the referenced item.}
-  \item \operand{ConstInt}{The offset, in bytes, of the item in the
-      record.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{update-field}{Mupdate}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{update-field}
-  \info{Instruction}{Mupdate}{Mfield}{Writes a field value into a
-    structured variable; for use when the field reference appears as
-    an \ac{lv}.}{Mfield.Mod}{update-field}{Mupdate}
-
-  \begin{notes}
-    The \emph{variable} is required by several analysis steps.  The
-    \emph{offset} value is helpful in distinguishing between accesses
-    to different fields.
-
-    Since the \emph{address} of the field must be calculated at some
-    point to provide physical access, associating tightly it with the
-    instruction which will eventually require it provides for better
-    code improvement opportunities.
-  \end{notes}
-
-  \begin{results}
-  \item A new value for \gsavar{nlm}.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the variable to be
-      referenced.  This can be a direct variable reference,
-      \gsainst{access} or \gsainst{deref} instruction.}
-  \item \operand{Usable}{The computed address of the referenced item.}
-  \item \operand{ConstInt}{The offset, in bytes, of the item in the
-      record.}
-  \item \operand{Usable}{The value to which the field should be set.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{access-field}{Maccess}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{extract-element}
-  \info{Instruction}{Maccess}{Melement}{Extracts an element from an
-    array; for use when the array access appears as an
-    \ac{rv}.}{Melement.Mod}{access-element}{Maccess}
-
-  \begin{notes}
-    The \emph{variable} is required by several analysis steps.  The
-    \emph{index} value is helpful in distinguishing between accesses
-    to different elements.
-
-    Since the \emph{address} of the index must be calculated at some
-    point to provide physical access, associating tightly it with the
-    instruction which will eventually require it provides for better
-    code improvement opportunities.
-  \end{notes}
-
-  \begin{results}
-  \item The value of the extracted element.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the variable to be indexed.}
-  \item \operand{Usable}{The computed address of the indexed element.}
-  \item \operand{Usable}{The unscaled index value.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{update-element}{Mupdate}
-  \end{seealso}
-\end{instruction}
-%-----------------------------------------------------------------------------
-\begin{instruction}{update-element}
-  \info{Instruction}{Mupdate}{Melement}{Writes a single element into
-    an array; for use when the array access appears as an
-    \ac{lv}.}{Melement.Mod}{update-element}{Mupdate}
-
-  \begin{notes}
-    The \emph{variable} is required by several analysis steps.  The
-    \emph{index} value is helpful in distinguishing between accesses
-    to different elements.
-
-    Since the \emph{address} of the index must be calculated at some
-    point to provide physical access, associating tightly it with the
-    instruction which will eventually require it provides for better
-    code improvement opportunities.
-  \end{notes}
-
-  \begin{results}
-  \item A new copy of \gsavar{nlm}.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the variable to be indexed.}
-  \item \operand{Usable}{The computed address of the indexed element.}
-  \item \operand{Usable}{The unscaled index value.}
-  \item \operand{Usable}{The value to store into the array element.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{access-element}{Maccess}
-  \end{seealso}
-\end{instruction}
 
 %-----------------------------------------------------------------------------
 \begin{instruction}{access-deref}
@@ -1444,32 +1284,84 @@ the following sections.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{update-deref}
-  \info{Instruction}{Mupdate}{Mheap}{Models the update of dereferenced pointer
-    values.}{Mheap.Mod}{update-deref}{Mupdate}
+\begin{instruction}{access-element}\label{memory-access:element}
+  \info{Instruction}{Maccess}{Melement}{Accesses an element from an
+    array; for use when the array access appears as an
+    \ac{rv}.}{Melement.Mod}{access-element}{Maccess}
 
   \begin{notes}
-    The addition of \gsainst{nlmctor} as an operand allows a
-    consistent view of memory: it becomes possible to easily ensure
-    that variables are written to their home memory locations when
-    necessary.
+    The \emph{variable} is required by several analysis steps.  The
+    \emph{index} value is helpful in distinguishing between accesses
+    to different elements.
+
+    Since the \emph{address} of the index must be calculated at some
+    point to provide physical access, associating tightly it with the
+    instruction which will eventually require it provides for better
+    code improvement opportunities.
   \end{notes}
 
   \begin{results}
-  \item A new value for \gsavar{nlm}.
+  \item The value of the accessed element.
   \end{results}
 
   \begin{operands}
-  \item \operand{Usable}{The current value of the variable being accessed.}
-  \item \operand{Usable}{The address of the variable to dereference.}
-  \item \operand{Usable}{The current value of \gsavar{nlm}.}
-  \item \operand{Usable}{The value which is to be written to the
-      derferenced memory.}
+  \item \operand{Usable}{The current value of the variable to be
+    indexed.  If this operand is an \texttt{Instruction}, it
+    indicates a non-local variable has been used as the base.  If it
+    is not an \texttt{Instruction}, then it is a local variable.}
+  \item \operand{Usable}{The computed address of the indexed element.}
+  \item \operand{Usable}{The unscaled index value.}
   \end{operands}
 
   \begin{seealso}
-    \refgsainst{access-deref}{Maccess}
+    \refgsainst{update-element}{Mupdate}
   \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{access-field}\label{memory-access:field}
+  \info{Instruction}{Maccess}{Mfield}{Accesses a field from a
+    structured variable; for use when the field reference appears as
+    an \ac{rv}.}{Mfield.Mod}{access-field}{Maccess}
+
+
+  \begin{notes}
+    The \emph{variable} is required by analysis phases, such as
+    \ac{cse}.  The \emph{offset} value is helpful in distinguishing
+    between accesses to different fields.
+
+    Since the \emph{address} of the field must be calculated at some
+    point to provide physical access, associating tightly it with the
+    instruction which will eventually require it provides for better
+    code improvement opportunities.
+  \end{notes}
+
+  \begin{results}
+  \item The value of the accessed field.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The current value of the variable to be
+    referenced.  If this operand is an \texttt{Instruction}, it
+    indicates a non-local variable has been used as the base.  If it
+    is not an \texttt{Instruction}, then it is a local variable.}
+  \item \operand{Usable}{The computed address of the referenced item.}
+  \item \operand{ConstInt}{The offset, in bytes, of the item in the
+      record.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{update-field}{Mupdate}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{access-mem}
+  \info{Instruction}{Maccess}{Mmem}{Models direct read access to
+    memory through the Oberon \code{SYSTEM} module}{}{nop}{Mmem}
+  \begin{notes}
+    This instruction is not yet implemented.
+  \end{notes}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
@@ -1503,6 +1395,147 @@ the following sections.
   \begin{seealso}
     \refgsainst{update-nonlocal}{Mupdate}
   \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{access-varparm}
+  \info{Instruction}{Maccess}{Mvarparm}{Models read access to \byref
+    variables.}{Mvarparm.Mod}{access-varparm}{Maccess}
+
+  \begin{notes}
+    This instruction provides uniform access to \byref procedure
+    parameters so that a consistent view of non-local memory is
+    maintained throughout the compilation of a procedure body.
+  \end{notes}
+
+  \begin{results}
+  \item The current value of the accessed \byref variable.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The current value of the  variable being accessed.}
+  \item \operand{Usable}{The address of the variable being accessed.}
+  \item \operand{The current value of \gsavar{nlm}.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{update-varparm}{Mupdate}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{update-deref}
+  \info{Instruction}{Mupdate}{Mheap}{Models the update of dereferenced pointer
+    values.}{Mheap.Mod}{update-deref}{Mupdate}
+
+  \begin{notes}
+    The addition of \gsainst{nlmctor} as an operand allows a
+    consistent view of memory: it becomes possible to easily ensure
+    that variables are written to their home memory locations when
+    necessary.
+  \end{notes}
+
+  \begin{results}
+  \item A new value for \gsavar{nlm}.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The current value of the variable being accessed.}
+  \item \operand{Usable}{The address of the variable to dereference.}
+  \item \operand{Usable}{The current value of \gsavar{nlm}.}
+  \item \operand{Usable}{The value which is to be written to the
+      derferenced memory.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{access-deref}{Maccess}
+  \end{seealso}
+\end{instruction}
+
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{update-element}
+  \info{Instruction}{Mupdate}{Melement}{Writes a single element into
+    an array; for use when the array access appears as an
+    \ac{lv}.}{Melement.Mod}{update-element}{Mupdate}
+
+  \begin{notes}
+    The \emph{variable} is required by several analysis steps.  The
+    \emph{index} value is helpful in distinguishing between accesses
+    to different elements.
+
+    Since the \emph{address} of the index must be calculated at some
+    point to provide physical access, associating tightly it with the
+    instruction which will eventually require it provides for better
+    code improvement opportunities.
+  \end{notes}
+
+  \begin{results}
+  \item A new copy of \gsavar{nlm}.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The current value of the variable to be
+    indexed.  If this operand is an \texttt{Instruction}, it
+    indicates a non-local variable has been used as the base.  If it
+    is not an \texttt{Instruction}, then it is a local variable.}
+  \item \operand{Usable}{The computed address of the indexed element.}
+  \item \operand{Usable}{The unscaled index value.}
+  \item \operand{Usable}{The value to store into the array element.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{access-element}{Maccess}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{update-field}
+  \info{Instruction}{Mupdate}{Mfield}{Writes a field value into a
+    structured variable; for use when the field reference appears as
+    an \ac{lv}.}{Mfield.Mod}{update-field}{Mupdate}
+
+  \begin{notes}
+    The \emph{variable} is required by several analysis steps.  The
+    \emph{offset} value is helpful in distinguishing between accesses
+    to different fields.
+
+    Since the \emph{address} of the field must be calculated at some
+    point to provide physical access, associating tightly it with the
+    instruction which will eventually require it provides for better
+    code improvement opportunities.
+  \end{notes}
+
+  \begin{results}
+  \item A new value for \gsavar{nlm}.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The current value of the variable to be
+    referenced.  If this operand is an \texttt{Instruction}, it
+    indicates a non-local variable has been used as the base.  If it
+    is not an \texttt{Instruction}, then it is a local variable.  This
+    can be a direct variable reference, \gsainst{access} or
+    \gsainst{deref} instruction.}
+  \item \operand{Usable}{The computed address of the referenced item.}
+  \item \operand{ConstInt}{The offset, in bytes, of the item in the
+      record.}
+  \item \operand{Usable}{The value to which the field should be set.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{access-field}{Maccess}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{update-mem}
+  \info{Instruction}{Mupdate}{Mmem}{Models direct write access to
+  memory through the Oberon \code{SYSTEM} module}{}{nop}{Mmem}
+
+  \begin{notes}
+    This instruction is not yet implemented.
+  \end{notes}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
@@ -1572,31 +1605,6 @@ END P;
   \end{seealso}
 \end{instruction}
 
-%-----------------------------------------------------------------------------
-\begin{instruction}{access-varparm}
-  \info{Instruction}{Maccess}{Mvarparm}{Models read access to \byref
-    variables.}{Mvarparm.Mod}{access-varparm}{Maccess}
-
-  \begin{notes}
-    This instruction provides uniform access to \byref procedure
-    parameters so that a consistent view of non-local memory is
-    maintained throughout the compilation of a procedure body.
-  \end{notes}
-
-  \begin{results}
-  \item The current value of the accessed \byref variable.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the  variable being accessed.}
-  \item \operand{Usable}{The address of the variable being accessed.}
-  \item \operand{The current value of \gsavar{nlm}.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{update-varparm}{Mupdate}
-  \end{seealso}
-\end{instruction}
 
 %-----------------------------------------------------------------------------
 \begin{instruction}{update-varparm}
@@ -1625,68 +1633,39 @@ END P;
   \end{seealso}
 \end{instruction}
 
-%-----------------------------------------------------------------------------
-\begin{instruction}{nlmdtor}
-  \info{Instruction}{Mmemory}{Mnlmdtor}{Ensures that all non-local
-    variables are written back to their home memory
-   location}{Mnlmdtor.Mod}{nlmdtor}{Mmemory}
 
-  \begin{notes}
-    \todo{The semantics of this instruction have not yet been
-      implemented.}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Memory Operations}\label{class:memory-operations}
 
-    In conjunction with \refgsainst{nlmctor}{Mmemory}, this
-    instruction ensures that non-local variables are written back to
-    their home memory location at appropriate times.
-
-    Every \ac{greg} will have a \gsainst{nlmdtor} in the
-    \gsainst{exit} region; each such instruction will be marked as
-    \emph{always live}.
-
-  \end{notes}
-
-  \begin{results}
-  \item A consistent view of \gsavar{nlm} is implied by this
-    instruction.
-  \end{results}
-
-  \noperands
-
-  \begin{seealso}
-    \refgsainst{nlmctor}{Mmemory}, \refgsavar{nlm},
-    \refgsainst{exit}{Mregion}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{nlmctor}
-  \info{Instruction}{Mmemory}{Mnlmctor}{Models read and write
-    access to non-local
-    variables.}{Mnlmctor.Mod}{nlmctor}{Mmemory}
-
-  \begin{notes}
-    \gsavar{nlm} models \emph{nonlocal variables}, \emph{\byref
-      parameters} and \emph{heap-based objects}.  This instruction,
-    coupled with \refgsainst{nlmdtor}{Mmemory} ensures that all
-    such items are written back to their home memory location at the
-    appropriate times.
-
-    Every \ac{greg} will have a \gsainst{nlmctor} instruction as
-    part of the \gsainst{enter} region.
-  \end{notes}
-
-  \begin{results}
-  \item The current value of the the pseudo-variable
-    \gsavar{nlm}.
-  \end{results}
-
-  \noperands
-
-  \begin{seealso}
-    \refgsainst{nlmdtor}{Mmemory}, \refgsavar{nlm},
-    \refgsainst{enter}{Mregion}
-  \end{seealso}
-\end{instruction}
+\begin{table}[h!]
+  \begin{tabularx}{\linewidth}{|l|X|}
+    \hline Instruction & Description \\
+    \hline \gsainst{adr} & Synthesizes the address of data.\\
+    \hline \gsainst{arraycopy} &  Provides a byte-wise copy of a
+    statically sized array onto another compatible array. \\
+    \hline \gsainst{dynarrlen} & Calculates the length of a heap-based
+    dynamic array. \\
+    \hline \gsainst{initialize} & Models the initialization of
+    structured data to binary zero (0). \\
+    \hline \gsainst{heaptag} & Synthesizes the \emph{tag} value of a
+    heap-based memory block. \\
+    \hline \gsainst{newarray} & Models the heap allocation of a new
+    statically-sized array. \\
+    \hline \gsainst{newdynarray} & Models the heap allocation of a new
+    dynamically-sized array. \\
+    \hline \gsainst{newrecord} & Models the heap allocation of a new
+    record. \\
+    \hline \gsainst{nlmctor} & Creates the pseudo-variable \gsavar{nlm}.\\
+    \hline \gsainst{nlmdtor} & Finalizes the pseudo-variable \gsavar{nlm}. \\
+    \hline \gsainst{recordcopy} & Provides a byte-wise copy of a
+    record onto another compatible record. \\
+    \hline \gsainst{stringcopy} & Copies a string literal or an array
+    of characters to another array of characters. \\
+    \hline \gsainst{tbpadr} & Synthesizes the address of an Oberon \ac{tbp}.\\
+    \hline
+  \end{tabularx}
+\caption{Memory Operations}\label{tab:instruction-memory-operations}
+\end{table}
 
 %-----------------------------------------------------------------------------
 \begin{instruction}{adr}
@@ -1719,83 +1698,45 @@ END P;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{tbpadr}
-  \info{Instruction}{Mmemory}{Mtbpadr}{Models the address of a
-    \ac{tbp}.}{Mtbpadr.Mod}{tbpadr}{Mmemory}
+\begin{instruction}{arraycopy}\label{memory:arraycopy}
+  \info{Instruction}{Mmemory}{Marraycopy}{Models the
+    copying of a source array to a destination
+    array.}{Marraycopy.Mod}{arraycopy}{Mmemory}
 
   \begin{notes}
-    This static type of the self symbol parameter prevents the taking
-    of the address of two different methods with identical names, from
-    two different type hierarchies extended from the same base, and
-    having the same \ac{mt} index from being considered
-    congruent\note{Consider two type hierarchies with the
-      characterstics stated above, then write this instruction without
-      this operand and notice that they would be considered
-      congruent}.
+    The \ac{fe} ensures that the arrays are of the same size and are
+    assignment compatible.
 
-    Consider:
+    When presented a \code{RECORD} with no fields, the \ac{fe} will
+    create \code{RECORD} and \code{ARRAY} types which are zero (0)
+    bytes in size; in this case the parameter indicating the number of
+    bytes in the destination will, of course, be zero (0).
 
-\begin{verbatim}
-TYPE
-  Base = POINTER TO BaseDesc;
-  BaseDesc = RECORD END;
-
-  Ext0 = POINTER TO Ext0Desc;
-  Ext0Desc = RECORD (BaseDesc) END;
-  Ext1 = POINTER TO Ext1Desc;
-  Ext1Desc = RECORD (BaseDesc) END;
-
-PROCEDURE (x : Ext0) Method(y : INTEGER);
-BEGIN END Method;
-
-PROCEDURE (x : Ext1) Method(y : INTEGER);
-BEGIN END Method;
-
-PROCEDURE NotCongruent;
-  VAR b : Base;
-BEGIN
-  b{Ext0}.Method(0);
-  b{Ext1}.Method(0);
-END NotCongruent;
-\end{verbatim}
-
-    Without the addition of the static type of the self parameter, the
-    two invocations of \code{Method} would be considered congruent.
+    There are two situations which cause this instruction to be
+    generated:
+    \begin{enumerate}
+    \item To copy \byval parameters into a local temporary.
+    \item To handle source-level array assignments.
+    \end{enumerate}
   \end{notes}
 
   \begin{results}
-  \item The result of this instruction is the address of the specified
-    \ac{tbp}.
+  \item The result is a copy of the source.  The current value of the
+    destination will be assigned the copy of the source.
   \end{results}
 
-  \todo{Ensure the fact that the static type descriptor symbol and the
-    output of \gsainst{heaptag} are identical in layout.}
-
   \begin{operands}
-  \item \operand{Usable}{The address of the \ac{td} for record which
-      owns the specified method.
-
-      This instruction will be synthesized from either
-      \refgsainst{heaptag}{Mmemory}, or, in the case of statically
-      typed method references, by a direct reference to the address of
-      the \ac{td} symbol.}
-
-  \item The static type of the \emph{self} symbol being referenced.
-
-  \item The global symbol of the method; the compiler-generated symbol
-    which is used for relocations involving the method.  This can be
-    used to transform some method invocations into direct procedure
-    calls\todo{2001.08.03: The Oberon compiler does not generate
-      global symbols for methods; as of now, the symbol is only the
-      method symbol}.
-
-  \item The ordinal number of the method.
-  \item The physical offset, in bytes, from the beginning of the
-    \ac{mt} for the method.
+  \item \operand{Usable}{The current value of the destination
+      variable.}
+  \item \operand{Usable}{The address of the destination.}
+  \item \operand{ConstInt}{\code{LEN(dest)}.}
+  \item \operand{Usable}{The current value of the source array.}
+  \item \operand{Usable}{The address of the current value of the
+      source array.}
   \end{operands}
 
   \begin{seealso}
-    \refgsainst{adr}{Mmemory}
+    \refgsainst{stringcopy}{Mmemory}, \refgsainst{recordcopy}{Mmemory}
   \end{seealso}
 \end{instruction}
 
@@ -1941,166 +1882,6 @@ END NotCongruent;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{stringcopy}
-  \info{Instruction}{Mmemory}{Mstringcopy}{Models the copy of an
-    ASCIIZ array of characters, or a string constant, to an array of
-    characters.}{Mstringcopy}{stringcopy}{Mmemory}
-
-  \begin{notes}
-    \gsainst{stringcopy} is only generated when the standard procedure
-    \code{COPY} is used.
-
-    \gsainst{stringcopy} is a high level enough instruction that it
-    can be implemented with hardware constructs such as string
-    instructions, or small loops; the actual selection of machine
-    instructions will be performed when the \ac{ir} is lowered to the
-    \ac{mr}.
-  \end{notes}
-
-  \begin{results}
-  \item The result is a copy of the source.  The current value of the
-    destination will be assigned the copy of the source.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the destination
-      variable.}
-  \item \operand{Usable}{The address of the destination.}
-  \item \operand{ConstInt}{\code{LEN(dest)}.}
-  \item \operand{Usable}{The current value of the source.}
-  \item \operand{Usable}{The address of the source.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{arraycopy}{Mmemory}, \refgsainst{recordcopy}{Mmemory}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{arraycopy}
-  \info{Instruction}{Mmemory}{Marraycopy}{Models the
-    copying of a source array to a destination
-    array.}{Marraycopy.Mod}{arraycopy}{Mmemory}
-
-  \begin{notes}
-    The \ac{fe} ensures that the arrays are of the same size and are
-    assignment compatible.
-
-    When presented a \code{RECORD} with no fields, the \ac{fe} will
-    create \code{RECORD} and \code{ARRAY} types which are zero (0)
-    bytes in size; in this case the parameter indicating the number of
-    bytes in the destination will, of course, be zero (0).
-
-    There are two situations which cause this instruction to be
-    generated:
-    \begin{enumerate}
-    \item To copy \byval parameters into a local temporary.
-    \item To handle source-level array assignments.
-    \end{enumerate}
-  \end{notes}
-
-  \begin{results}
-  \item The result is a copy of the source.  The current value of the
-    destination will be assigned the copy of the source.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the destination
-      variable.}
-  \item \operand{Usable}{The address of the destination.}
-  \item \operand{ConstInt}{\code{LEN(dest)}.}
-  \item \operand{Usable}{The current value of the source array.}
-  \item \operand{Usable}{The address of the current value of the
-      source array.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{stringcopy}{Mmemory}, \refgsainst{recordcopy}{Mmemory}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{recordcopy}
-  \info{Instruction}{Mmemory}{Mrecordcopy}{Models the assignment of
-    one record to another
-    record}{Mrecordcopy.Mod}{recordcopy}{Mmemory}
-
-  \begin{notes}
-    The \ac{fe} ensures that the source and destination are assignment
-    compatible with static type tests and with dynamically-typed
-    runtime tests generated into the \ac{gsa} \ac{ir}.
-
-    If the control flow of the program reaches a \gsainst{recordcopy},
-    the types are entirely compatible.
-
-    When presented a \code{RECORD} with no fields, the \ac{fe} will
-    create \code{RECORD} and \code{ARRAY} types which are zero (0)
-    bytes in size; in this case the parameter indicating the number of
-    bytes in the destination will, of course, be zero (0).
-
-    There are two situations which cause this instruction to be
-    generated:
-    \begin{enumerate}
-    \item To copy \byval parameters into a local temporary.
-    \item To handle source-level record assignments.
-    \end{enumerate}
-  \end{notes}
-
-  \begin{results}
-  \item The result is a copy of the, truncated to fit the size of the
-    destination.  The copy will be assigned to the destination variable.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The current value of the destination
-      variable.}
-  \item \operand{Usable}{The address of the destination.}
-  \item \operand{ConstInt}{The number of bytes available in the
-      destination variable.}
-  \item \operand{Usable}{The current value of the source.}
-  \item \operand{Usable}{The address of the source.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{stringcopy}{Mmemory}, \refgsainst{arraycopy}{Mmemory}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{newrecord}
-  \info{Instruction}{Mmemory}{Mnewrecord}{Models the allocation of a
-    new record on the heap}{Mnewrecord.Mod}{newrecord}{Mmemory}
-
-  \begin{notes}
-    This instruction will always return a unique value.  \todo{This
-      instruction should be changed to not take an address; that would
-      allow more efficient use of local variables for allocation,
-      since their address would not need to be taken.  However, this
-      will require a change in the allocators in \code{Kernel}.}
-
-    When presented a \code{RECORD} with no fields, the \ac{fe} will
-    create \code{RECORD} and \code{ARRAY} types which are zero (0)
-    bytes in size.  The memory allocator must ensure that each
-    allocation request for zero (0) bytes will return a unique
-    value\footnote{It is possible for an allocation to return a value
-      that was previously returned, but this will only occur after the
-      \ac{gc} has reclaimed the memory.}  In practice, this is not a
-    problem since each memory allocation request\footnote{Except for
-      \code{SYSTEM.NEW}} must include space for a pointer to the block
-    descriptor; as a consequence of this, each allocation will be
-    rounded up to the nearest \emph{heap block size}.
-  \end{notes}
-
-  \begin{results}
-  \item The result is the address of the newly allocated record.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The address of the \ac{td} for the record.}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
 \begin{instruction}{newarray}
   \info{Instruction}{Mmemory}{Mnewarray}{Models the creation of a new
     statically-sized array on the
@@ -2173,23 +1954,266 @@ END NotCongruent;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{access-mem}
-  \info{Instruction}{Maccess}{Mmem}{Models direct read access to
-    memory through the Oberon \code{SYSTEM} module}{}{nop}{Mmem}
+\begin{instruction}{newrecord}
+  \info{Instruction}{Mmemory}{Mnewrecord}{Models the allocation of a
+    new record on the heap}{Mnewrecord.Mod}{newrecord}{Mmemory}
+
   \begin{notes}
-    This instruction is not yet implemented.
+    This instruction will always return a unique value.  \todo{This
+      instruction should be changed to not take an address; that would
+      allow more efficient use of local variables for allocation,
+      since their address would not need to be taken.  However, this
+      will require a change in the allocators in \code{Kernel}.}
+
+    When presented a \code{RECORD} with no fields, the \ac{fe} will
+    create \code{RECORD} and \code{ARRAY} types which are zero (0)
+    bytes in size.  The memory allocator must ensure that each
+    allocation request for zero (0) bytes will return a unique
+    value\footnote{It is possible for an allocation to return a value
+      that was previously returned, but this will only occur after the
+      \ac{gc} has reclaimed the memory.}  In practice, this is not a
+    problem since each memory allocation request\footnote{Except for
+      \code{SYSTEM.NEW}} must include space for a pointer to the block
+    descriptor; as a consequence of this, each allocation will be
+    rounded up to the nearest \emph{heap block size}.
   \end{notes}
+
+  \begin{results}
+  \item The result is the address of the newly allocated record.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The address of the \ac{td} for the record.}
+  \end{operands}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{update-mem}
-  \info{Instruction}{Mupdate}{Mmem}{Models direct write access to
-  memory through the Oberon \code{SYSTEM} module}{}{nop}{Mmem}
+\begin{instruction}{nlmctor}
+  \info{Instruction}{Mmemory}{Mnlmctor}{Models read and write
+    access to non-local
+    variables.}{Mnlmctor.Mod}{nlmctor}{Mmemory}
 
   \begin{notes}
-    This instruction is not yet implemented.
+    \gsavar{nlm} models \emph{nonlocal variables}, \emph{\byref
+      parameters} and \emph{heap-based objects}.  This instruction,
+    coupled with \refgsainst{nlmdtor}{Mmemory} ensures that all
+    such items are written back to their home memory location at the
+    appropriate times.
+
+    Every \ac{greg} will have a \gsainst{nlmctor} instruction as
+    part of the \gsainst{enter} region.
   \end{notes}
+
+  \begin{results}
+  \item The current value of the the pseudo-variable
+    \gsavar{nlm}.
+  \end{results}
+
+  \noperands
+
+  \begin{seealso}
+    \refgsainst{nlmdtor}{Mmemory}, \refgsavar{nlm},
+    \refgsainst{enter}{Mregion}
+  \end{seealso}
 \end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{nlmdtor}
+  \info{Instruction}{Mmemory}{Mnlmdtor}{Ensures that all non-local
+    variables are written back to their home memory
+   location}{Mnlmdtor.Mod}{nlmdtor}{Mmemory}
+
+  \begin{notes}
+    \todo{The semantics of this instruction have not yet been
+      implemented.}
+
+    In conjunction with \refgsainst{nlmctor}{Mmemory}, this
+    instruction ensures that non-local variables are written back to
+    their home memory location at appropriate times.
+
+    Every \ac{greg} will have a \gsainst{nlmdtor} in the
+    \gsainst{exit} region; each such instruction will be marked as
+    \emph{always live}.
+
+  \end{notes}
+
+  \begin{results}
+  \item A consistent view of \gsavar{nlm} is implied by this
+    instruction.
+  \end{results}
+
+  \noperands
+
+  \begin{seealso}
+    \refgsainst{nlmctor}{Mmemory}, \refgsavar{nlm},
+    \refgsainst{exit}{Mregion}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{recordcopy}\label{memory:recordcopy}
+  \info{Instruction}{Mmemory}{Mrecordcopy}{Models the assignment of
+    one record to another
+    record}{Mrecordcopy.Mod}{recordcopy}{Mmemory}
+
+  \begin{notes}
+    The \ac{fe} ensures that the source and destination are assignment
+    compatible with static type tests and with dynamically-typed
+    runtime tests generated into the \ac{gsa} \ac{ir}.
+
+    If the control flow of the program reaches a \gsainst{recordcopy},
+    the types are entirely compatible.
+
+    When presented a \code{RECORD} with no fields, the \ac{fe} will
+    create \code{RECORD} and \code{ARRAY} types which are zero (0)
+    bytes in size; in this case the parameter indicating the number of
+    bytes in the destination will, of course, be zero (0).
+
+    There are two situations which cause this instruction to be
+    generated:
+    \begin{enumerate}
+    \item To copy \byval parameters into a local temporary.
+    \item To handle source-level record assignments.
+    \end{enumerate}
+  \end{notes}
+
+  \begin{results}
+  \item The result is a copy of the, truncated to fit the size of the
+    destination.  The copy will be assigned to the destination variable.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The current value of the destination
+      variable.}
+  \item \operand{Usable}{The address of the destination.}
+  \item \operand{ConstInt}{The number of bytes available in the
+      destination variable.}
+  \item \operand{Usable}{The current value of the source.}
+  \item \operand{Usable}{The address of the source.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{stringcopy}{Mmemory}, \refgsainst{arraycopy}{Mmemory}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{stringcopy}
+  \info{Instruction}{Mmemory}{Mstringcopy}{Models the copy of an
+    ASCIIZ array of characters, or a string constant, to an array of
+    characters.}{Mstringcopy}{stringcopy}{Mmemory}
+
+  \begin{notes}
+    \gsainst{stringcopy} is only generated when the standard procedure
+    \code{COPY} is used.
+
+    \gsainst{stringcopy} is a high level enough instruction that it
+    can be implemented with hardware constructs such as string
+    instructions, or small loops; the actual selection of machine
+    instructions will be performed when the \ac{ir} is lowered to the
+    \ac{mr}.
+  \end{notes}
+
+  \begin{results}
+  \item The result is a copy of the source.  The current value of the
+    destination will be assigned the copy of the source.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The current value of the destination
+      variable.}
+  \item \operand{Usable}{The address of the destination.}
+  \item \operand{ConstInt}{\code{LEN(dest)}.}
+  \item \operand{Usable}{The current value of the source.}
+  \item \operand{Usable}{The address of the source.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{arraycopy}{Mmemory}, \refgsainst{recordcopy}{Mmemory}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{tbpadr}
+  \info{Instruction}{Mmemory}{Mtbpadr}{Models the address of a
+    \ac{tbp}.}{Mtbpadr.Mod}{tbpadr}{Mmemory}
+
+  \begin{notes}
+    This static type of the self symbol parameter prevents the taking
+    of the address of two different methods with identical names, from
+    two different type hierarchies extended from the same base, and
+    having the same \ac{mt} index from being considered
+    congruent\note{Consider two type hierarchies with the
+      characterstics stated above, then write this instruction without
+      this operand and notice that they would be considered
+      congruent}.
+
+    Consider:
+
+\begin{verbatim}
+TYPE
+  Base = POINTER TO BaseDesc;
+  BaseDesc = RECORD END;
+
+  Ext0 = POINTER TO Ext0Desc;
+  Ext0Desc = RECORD (BaseDesc) END;
+  Ext1 = POINTER TO Ext1Desc;
+  Ext1Desc = RECORD (BaseDesc) END;
+
+PROCEDURE (x : Ext0) Method(y : INTEGER);
+BEGIN END Method;
+
+PROCEDURE (x : Ext1) Method(y : INTEGER);
+BEGIN END Method;
+
+PROCEDURE NotCongruent;
+  VAR b : Base;
+BEGIN
+  b{Ext0}.Method(0);
+  b{Ext1}.Method(0);
+END NotCongruent;
+\end{verbatim}
+
+    Without the addition of the static type of the self parameter, the
+    two invocations of \code{Method} would be considered congruent.
+  \end{notes}
+
+  \begin{results}
+  \item The result of this instruction is the address of the specified
+    \ac{tbp}.
+  \end{results}
+
+  \todo{Ensure the fact that the static type descriptor symbol and the
+    output of \gsainst{heaptag} are identical in layout.}
+
+  \begin{operands}
+  \item \operand{Usable}{The address of the \ac{td} for record which
+      owns the specified method.
+
+      This instruction will be synthesized from either
+      \refgsainst{heaptag}{Mmemory}, or, in the case of statically
+      typed method references, by a direct reference to the address of
+      the \ac{td} symbol.}
+
+  \item The static type of the \emph{self} symbol being referenced.
+
+  \item The global symbol of the method; the compiler-generated symbol
+    which is used for relocations involving the method.  This can be
+    used to transform some method invocations into direct procedure
+    calls\todo{2001.08.03: The Oberon compiler does not generate
+      global symbols for methods; as of now, the symbol is only the
+      method symbol}.
+
+  \item The ordinal number of the method.
+  \item The physical offset, in bytes, from the beginning of the
+    \ac{mt} for the method.
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{adr}{Mmemory}
+  \end{seealso}
+\end{instruction}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2218,6 +2242,82 @@ disjunctive control into a single region, it contains actual code.
   \end{tabularx}
 \caption{Merge Instructions}\label{tab:instruction-merge}
 \end{table}
+
+\begin{instruction}{case}
+  \info{Merge}{Gmerge}{Gcase}{Models the closing of a \code{CASE}
+    statement.}{Gcase.Mod}{case}{Gmerge}
+
+  \begin{notes}
+    This region merges the control flow which was split over the
+    various conditions of the \code{CASE} statement.  For each
+    selection criteria in the \code{CASE} body, there will be an
+    operand of this merge.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Case}{The region which controls the whole \code{CASE}
+      statement.}
+  \item \operand{Usable}{$\gsainst{casesgl}_0$} Initially this will be
+    a \gsainst{casesgl}, but \ac{ccp} can replace it with a constant
+    value of \code{TRUE} or \code{FALSE}.
+  \item \operand{Usable}{$\gsainst{casesgl}_1$} Initially this will be
+    a \gsainst{casesgl}, but \ac{ccp} can replace it with a constant
+    value of \code{TRUE} or \code{FALSE}.
+  \item \operand{Usable}{$\vdots$}
+  \item \operand{Usable}{$\gsainst{casesgl}_{n-1}$} Initially this
+    will be a \gsainst{casesgl}, but \ac{ccp} can replace it with a
+    constant value of \code{TRUE} or \code{FALSE}.
+  \item \operand{Usable}{$\gsainst{else}$} Initially this will be an
+    \gsainst{caseelse}, but \ac{ccp} can replace it with a constant
+    value of \code{TRUE} or \code{FALSE}.
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{casereg}{Mregion}, \refgsainst{caseelse}{Gguard},
+    \refgsainst{casesgl}{Gguard}
+  \end{seealso}
+\end{instruction}
+
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{condmerge}
+  \info{CondMerge}{Gmerge}{Gcond}{Models a control flow merge
+  from a code path which failed a logical (\code{\&} and \code{OR})
+  operation}{Gif.Mod}{condmerge}{Gmerge}
+
+  \begin{notes}
+    The conditional merge region is used to ensure that the control
+    flow nicely joins in the case of conjunctive and disjunctive
+    logical tests, for example:
+
+\begin{verbatim}
+IF a & b THEN (* do something *)
+ELSE (* do something else *)
+END;
+\end{verbatim}
+
+    In this example, the conditional merge region will contain the
+    code corresponding to \code{(* do something else *)}.  In this
+    sense, the \gsainst{condmerge} is different than other merge
+    instructions: it merges the control flow for all false regions of
+    a complex conditional test into a single region.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Usable}{A boolean value, when \code{TRUE}, indicates
+      that the left expression of the boolean operator failed.}
+  \item \operand{Usable}{boolean value, when \code{TRUE}, indicates
+      that the right expression of the boolean operator failed.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{if}{Gif}
+  \end{seealso}
+\end{instruction}
 
 %-----------------------------------------------------------------------------
 \begin{instruction}{if}
@@ -2256,44 +2356,6 @@ disjunctive control into a single region, it contains actual code.
   \begin{seealso}
     \refgsainst{condmerge}{Gmerge}, \refgsainst{true}{Gguard},
     \refgsainst{false}{Gguard}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{condmerge}
-  \info{CondMerge}{Gmerge}{Gcond}{Models a control flow merge
-  from a code path which failed a logical (\code{\&} and \code{OR})
-  operation}{Gif.Mod}{condmerge}{Gmerge}
-
-  \begin{notes}
-    The conditional merge region is used to ensure that the control
-    flow nicely joins in the case of conjunctive and disjunctive
-    logical tests, for example:
-
-\begin{verbatim}
-IF a & b THEN (* do something *)
-ELSE (* do something else *)
-END;
-\end{verbatim}
-
-    In this example, the conditional merge region will contain the
-    code corresponding to \code{(* do something else *)}.  In this
-    sense, the \gsainst{condmerge} is different than other merge
-    instructions: it merges the control flow for all false regions of
-    a complex conditional test into a single region.
-  \end{notes}
-
-  \nresults
-
-  \begin{operands}
-  \item \operand{Usable}{A boolean value, when \code{TRUE}, indicates
-      that the left expression of the boolean operator failed.}
-  \item \operand{Usable}{boolean value, when \code{TRUE}, indicates
-      that the right expression of the boolean operator failed.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{if}{Gif}
   \end{seealso}
 \end{instruction}
 
@@ -2344,44 +2406,6 @@ END;
       construct will exit.}
   \end{operands}
 \end{instruction}
-
-\begin{instruction}{case}
-  \info{Merge}{Gmerge}{Gcase}{Models the closing of a \code{CASE}
-    statement.}{Gcase.Mod}{case}{Gmerge}
-
-  \begin{notes}
-    This region merges the control flow which was split over the
-    various conditions of the \code{CASE} statement.  For each
-    selection criteria in the \code{CASE} body, there will be an
-    operand of this merge.
-  \end{notes}
-
-  \nresults
-
-  \begin{operands}
-  \item \operand{Case}{The region which controls the whole \code{CASE}
-      statement.}
-  \item \operand{Usable}{$\gsainst{casesgl}_0$} Initially this will be
-    a \gsainst{casesgl}, but \ac{ccp} can replace it with a constant
-    value of \code{TRUE} or \code{FALSE}.
-  \item \operand{Usable}{$\gsainst{casesgl}_1$} Initially this will be
-    a \gsainst{casesgl}, but \ac{ccp} can replace it with a constant
-    value of \code{TRUE} or \code{FALSE}.
-  \item \operand{Usable}{$\vdots$}
-  \item \operand{Usable}{$\gsainst{casesgl}_{n-1}$} Initially this
-    will be a \gsainst{casesgl}, but \ac{ccp} can replace it with a
-    constant value of \code{TRUE} or \code{FALSE}.
-  \item \operand{Usable}{$\gsainst{else}$} Initially this will be an
-    \gsainst{caseelse}, but \ac{ccp} can replace it with a constant
-    value of \code{TRUE} or \code{FALSE}.
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{casereg}{Mregion}, \refgsainst{caseelse}{Gguard},
-    \refgsainst{casesgl}{Gguard}
-  \end{seealso}
-\end{instruction}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Miscellaneous}\label{class:misc}
@@ -2442,25 +2466,6 @@ END;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{copy}
-  \info{Instruction}{Gmisc}{Gcopy}{Models the use of a \emph{copy} of
-    the operand.}{Gcopy.Mod}{copy}{Gmisc}
-
-  \begin{notes}
-    The \gsainst{copy} is only used during the translation to \ac{gsa}
-    phase, and the \ac{cia} \ac{cp} will remove all these copies.
-  \end{notes}
-
-  \begin{results}
-  \item The result is a copy of the input operand.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value to be copied.}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
 \begin{instruction}{cap}
   \info{Instruction}{Gmisc}{Gcap}{Models the conversion of
   characters to their ASCII uppercase equivalent.}{Gcap.Mod}{cap}{Gmisc}
@@ -2493,15 +2498,21 @@ END;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{import}
-  \info{Instruction}{Gmisc}{Gimport}{Models the invocation of the
-    initialization code of an imported
-    module.}{Gimport.Mod}{import}{Gmisc}
+\begin{instruction}{copy}
+  \info{Instruction}{Gmisc}{Gcopy}{Models the use of a \emph{copy} of
+    the operand.}{Gcopy.Mod}{copy}{Gmisc}
 
-  \nresults
+  \begin{notes}
+    The \gsainst{copy} is only used during the translation to \ac{gsa}
+    phase, and the \ac{cia} \ac{cp} will remove all these copies.
+  \end{notes}
+
+  \begin{results}
+  \item The result is a copy of the input operand.
+  \end{results}
 
   \begin{operands}
-  \item \operand{Symbol}{The module which should be initialized.}
+  \item \operand{Usable}{The value to be copied.}
   \end{operands}
 \end{instruction}
 
@@ -2582,6 +2593,19 @@ END;
   \item \operand{Merge}{The merge which controls the gate.}
   \item \operand{Usable}{An operand for each region controlled by the
       merge.}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{import}
+  \info{Instruction}{Gmisc}{Gimport}{Models the invocation of the
+    initialization code of an imported
+    module.}{Gimport.Mod}{import}{Gmisc}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Symbol}{The module which should be initialized.}
   \end{operands}
 \end{instruction}
 
@@ -2694,56 +2718,6 @@ Table \ref{tab:instruction-region} shows all the instructions which
 are regions.
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{greg}
-  \info{GlobalRegion}{Mregion}{Mgreg}{Models an entire
-    procedure}{Mgreg.Mod}{greg}{Mregion}
-
-  \begin{notes}
-    \gsainst{greg} is a specialization of \gsainst{reg}: it contains
-    references to the procedure prologue (\gsainst{enter}) and
-    epilogue (\gsainst{exit}) regions.  However, in all other aspects
-    it is identical to \gsainst{reg}.
-
-    \gsainst{greg} models the entire body of each Oberon procedure
-    emitted by the compiler.
-  \end{notes}
-
-  \nresults
-
-  \begin{operands}
-  \item There are no operands for a \gsainst{greg}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{reg}{Mregion}, \refgsainst{enter}{Mregion},
-    \refgsainst{exit}{Mregion}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{reg}
-  \info{Region}{Mregion}{Mreg}{Models a region into which \ac{gsa}
-    instructions can be placed and
-    manipulated.}{none}{reg}{Mregion}
-
-  \begin{notes}
-    \gsainst{reg} implements a base class for use as a foundation for
-    other types of regions.  This type is not used explicitly in the
-    compiler for anything other than type extension or specialization.
-  \end{notes}
-
-  \nresults
-
-  \begin{operands}
-  \item There are no operands for \gsainst{reg}.
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{greg}{Mregion}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
 \begin{instruction}{casereg}
   \info{Case}{Mregion}{Mcasereg}{Models an Oberon \code{CASE}
     statement}{Mcasereg.Mod}{casereg}{Mregion}
@@ -2769,6 +2743,7 @@ are regions.
     \refgsainst{case}{Gmerge}.
   \end{seealso}
 \end{instruction}
+
 %-----------------------------------------------------------------------------
 \begin{instruction}{enter}
   \info{Instruction}{Mregion}{Menter}{Models the procedure prolog and
@@ -2894,6 +2869,57 @@ are regions.
   \end{seealso}
 \end{instruction}
 
+%-----------------------------------------------------------------------------
+\begin{instruction}{greg}
+  \info{GlobalRegion}{Mregion}{Mgreg}{Models an entire
+    procedure}{Mgreg.Mod}{greg}{Mregion}
+
+  \begin{notes}
+    \gsainst{greg} is a specialization of \gsainst{reg}: it contains
+    references to the procedure prologue (\gsainst{enter}) and
+    epilogue (\gsainst{exit}) regions.  However, in all other aspects
+    it is identical to \gsainst{reg}.
+
+    \gsainst{greg} models the entire body of each Oberon procedure
+    emitted by the compiler.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item There are no operands for a \gsainst{greg}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{reg}{Mregion}, \refgsainst{enter}{Mregion},
+    \refgsainst{exit}{Mregion}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{reg}
+  \info{Region}{Mregion}{Mreg}{Models a region into which \ac{gsa}
+    instructions can be placed and
+    manipulated.}{none}{reg}{Mregion}
+
+  \begin{notes}
+    \gsainst{reg} implements a base class for use as a foundation for
+    other types of regions.  This type is not used explicitly in the
+    compiler for anything other than type extension or specialization.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item There are no operands for \gsainst{reg}.
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{greg}{Mregion}
+  \end{seealso}
+\end{instruction}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Set Arithmetic}\label{class:set-arithmetic}
@@ -2922,23 +2948,45 @@ unsigned quantities.
 \begin{table}[h!]
   \begin{tabularx}{\linewidth}{|l|X|}
     \hline Instruction & Description \\
-    \hline \gsainst{diff} & Symmetric Difference \\
-    \hline \gsainst{union} & Union \\
-    \hline \gsainst{sub} & Subtraction \\
-    \hline \gsainst{intersection} & Intersection \\
-    \hline \gsainst{neg} & Negation \\
-    \hline \gsainst{incl} & Inclusion \\
-    \hline \gsainst{excl} & Exclusion \\
-    \hline \gsainst{range} & Set constructor; integer range \\
-    \hline \gsainst{element} & $\in$ test\\
-    \hline \gsainst{convert} & Set constructor; individual element \\
+    \hline \gsainst{set-convert} & Set constructor; individual element \\
+    \hline \gsainst{set-diff} & Symmetric Difference \\
+    \hline \gsainst{set-element} & $\in$ test\\
+    \hline \gsainst{set-excl} & Exclusion \\
+    \hline \gsainst{set-incl} & Inclusion \\
+    \hline \gsainst{set-intersect} & Intersection \\
+    \hline \gsainst{set-neg} & Negation \\
+    \hline \gsainst{set-range} & Set constructor; integer range \\
+    \hline \gsainst{set-sub} & Subtraction \\
+    \hline \gsainst{set-union} & Union \\
     \hline
   \end{tabularx}
 \caption{Set Arithmetic Instructions}\label{tab:instruction-set}
 \end{table}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{diff}
+\begin{instruction}{set-convert}
+  \info{Instruction}{Sconvert}{asU4}{Models set construction from a
+    single integer value.}{Sconvert.Mod}{set-convert}{sarithmetic}
+
+  \begin{notes}
+    \inv{$bit \in \{0..31\}$}
+  \end{notes}
+
+  \begin{results}
+  \item $2^\textrm{bit}$
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The integer to convert into a \code{SET} value.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{set-element}{sarithmetic}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{set-diff}
   \info{Instruction}{Sdiff}{asU4}{Models \emph{symmetric set
       difference}.}{Sdiff.Mod}{set-diff}{sarithmetic}
 
@@ -2961,110 +3009,60 @@ unsigned quantities.
   \begin{seealso}
     \refgsainst{set-sub}{sarithmetic}
     \refgsainst{set-union}{sarithmetic}
-    \refgsainst{set-intersection}{sarithmetic}
+    \refgsainst{set-intersect}{sarithmetic}
   \end{seealso}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{union}
-  \info{Instruction}{Sunion}{asU4}{Models \emph{set
-      union}.}{Sunion.Mod}{set-union}{sarithmetic}
+\begin{instruction}{set-element}
+  \info{Instruction}{Selement}{asU4}{Models a \emph{set existence
+      test}.}{Selement.Mod}{set-element}{sarithmetic}
 
   \begin{notes}
-    $$\code{a * b} \equiv (a \cup b) \equiv (a \vee b)$$
+    \inv{$bit \in \{0..31\}$}
   \end{notes}
 
   \begin{results}
-  \item $\textrm{op}_0 \vee \textrm{op}_1$
+  \item $\textrm{bit} \in \textrm{set}$
   \end{results}
 
   \begin{operands}
-  \item \operand{Usable}{The value of the left operand from the source.}
-  \item \operand{Usable}{The value of the right operand from the source.}
+  \item \operand{Usable}{The element to test for existence.}
+  \item \operand{Usable}{The set which is to be tested.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{set-incl}{sarithmetic}
+    \refgsainst{set-excl}{sarithmetic}
+    \refgsainst{set-convert}{sarithmetic}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{set-excl}
+  \info{Instruction}{Sexcl}{asU4}{Models \emph{set
+      exclusion}.}{Sexcl.Mod}{set-excl}{sarithmetic}
+
+  \begin{results}
+  \item $\textrm{set} \wedge \neg (2^\textrm{value})$
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The set value which should be modified.}
+  \item \operand{Usable}{The element number which should be removed
+      from the set.}
   \end{operands}
 
   \begin{seealso}
     \refgsainst{set-sub}{sarithmetic}
     \refgsainst{set-incl}{sarithmetic}
-    \refgsainst{set-intersection}{sarithmetic}
-    \refgsainst{set-diff}{sarithmetic}
-  \end{seealso}
-\end{instruction}
-
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{sub}
-  \info{Instruction}{Ssub}{asU4}{Models \emph{set
-      difference}.}{Ssub.Mod}{set-sub}{sarithmetic}
-
-  \begin{notes}
-    $$\code{a - b} \equiv (a \cap (-b)) \equiv (a \wedge (-b))$$
-  \end{notes}
-
-  \begin{results}
-  \item $\textrm{op}_0 \wedge (-\textrm{op}_1)$
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the left operand from the source.}
-  \item \operand{Usable}{The value of the right operand from the source.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{set-diff}{sarithmetic}
-    \refgsainst{set-union}{sarithmetic}
-    \refgsainst{set-intersection}{sarithmetic}
+    \refgsainst{set-element}{sarithmetic}
     \refgsainst{set-neg}{sarithmetic}
-    \refgsainst{set-excl}{sarithmetic}
   \end{seealso}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{intersection}
-  \info{Instruction}{Sintersection}{asU4}{Models \emph{set
-      intersection}.}{Sintersection.Mod}{set-intersection}{sarithmetic}
-
-  \begin{notes}
-    $$\code{a * b} \equiv (a \cap b) \equiv (a \wedge b)$$
-  \end{notes}
-
-  \begin{results}
-  \item $\textrm{op}_0 \wedge \textrm{op}_1$
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value of the left operand from the source.}
-  \item \operand{Usable}{The value of the right operand from the source.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{set-sub}{sarithmetic}
-    \refgsainst{set-union}{sarithmetic}
-    \refgsainst{set-diff}{sarithmetic}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{neg}
-  \info{Instruction}{Sneg}{asU4}{Models \emph{set
-      negation}.}{Sneg.Mod}{set-neg}{sarithmetic}
-
-  \begin{results}
-  \item $\neg \textrm{op}$
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Usable}{The value which should be negated.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{set-sub}{sarithmetic}
-    \refgsainst{set-excl}{sarithmetic}
-  \end{seealso}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{incl}
+\begin{instruction}{set-incl}
   \info{Instruction}{Sincl}{asU4}{Models \emph{set
       inclusion}.}{Sincl.Mod}{set-incl}{sarithmetic}
 
@@ -3090,30 +3088,51 @@ unsigned quantities.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{excl}
-  \info{Instruction}{Sexcl}{asU4}{Models \emph{set
-      exclusion}.}{Sexcl.Mod}{set-excl}{sarithmetic}
+\begin{instruction}{set-intersect}
+  \info{Instruction}{Sintersection}{asU4}{Models \emph{set
+      intersection}.}{Sintersection.Mod}{set-intersect}{sarithmetic}
+
+  \begin{notes}
+    $$\code{a * b} \equiv (a \cap b) \equiv (a \wedge b)$$
+  \end{notes}
 
   \begin{results}
-  \item $\textrm{set} \wedge \neg (2^\textrm{value})$
+  \item $\textrm{op}_0 \wedge \textrm{op}_1$
   \end{results}
 
   \begin{operands}
-  \item \operand{Usable}{The set value which should be modified.}
-  \item \operand{Usable}{The element number which should be removed
-      from the set.}
+  \item \operand{Usable}{The value of the left operand from the source.}
+  \item \operand{Usable}{The value of the right operand from the source.}
   \end{operands}
 
   \begin{seealso}
     \refgsainst{set-sub}{sarithmetic}
-    \refgsainst{set-incl}{sarithmetic}
-    \refgsainst{set-element}{sarithmetic}
-    \refgsainst{set-neg}{sarithmetic}
+    \refgsainst{set-union}{sarithmetic}
+    \refgsainst{set-diff}{sarithmetic}
   \end{seealso}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{range}
+\begin{instruction}{set-neg}
+  \info{Instruction}{Sneg}{asU4}{Models \emph{set
+      negation}.}{Sneg.Mod}{set-neg}{sarithmetic}
+
+  \begin{results}
+  \item $\neg \textrm{op}$
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Usable}{The value which should be negated.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{set-sub}{sarithmetic}
+    \refgsainst{set-excl}{sarithmetic}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{set-range}
   \info{Instruction}{Srange}{asU4}{Models \emph{set construction} from
     a range of integer values.}{Srange.Mod}{set-range}{sarithmetic}
 
@@ -3138,51 +3157,58 @@ unsigned quantities.
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{element}
-  \info{Instruction}{Selement}{asU4}{Models a \emph{set existence
-      test}.}{Selement.Mod}{set-element}{sarithmetic}
+\begin{instruction}{set-sub}
+  \info{Instruction}{Ssub}{asU4}{Models \emph{set
+      difference}.}{Ssub.Mod}{set-sub}{sarithmetic}
 
   \begin{notes}
-    \inv{$bit \in \{0..31\}$}
+    $$\code{a - b} \equiv (a \cap (-b)) \equiv (a \wedge (-b))$$
   \end{notes}
 
   \begin{results}
-  \item $\textrm{bit} \in \textrm{set}$
+  \item $\textrm{op}_0 \wedge (-\textrm{op}_1)$
   \end{results}
 
   \begin{operands}
-  \item \operand{Usable}{The element to test for existence.}
-  \item \operand{Usable}{The set which is to be tested.}
+  \item \operand{Usable}{The value of the left operand from the source.}
+  \item \operand{Usable}{The value of the right operand from the source.}
   \end{operands}
 
   \begin{seealso}
-    \refgsainst{set-incl}{sarithmetic}
+    \refgsainst{set-diff}{sarithmetic}
+    \refgsainst{set-union}{sarithmetic}
+    \refgsainst{set-intersect}{sarithmetic}
+    \refgsainst{set-neg}{sarithmetic}
     \refgsainst{set-excl}{sarithmetic}
-    \refgsainst{set-convert}{sarithmetic}
   \end{seealso}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{convert}
-  \info{Instruction}{Sconvert}{asU4}{Models set construction from a
-    single integer value.}{Sconvert.Mod}{set-convert}{sarithmetic}
+\begin{instruction}{set-union}
+  \info{Instruction}{Sunion}{asU4}{Models \emph{set
+      union}.}{Sunion.Mod}{set-union}{sarithmetic}
 
   \begin{notes}
-    \inv{$bit \in \{0..31\}$}
+    $$\code{a * b} \equiv (a \cup b) \equiv (a \vee b)$$
   \end{notes}
 
   \begin{results}
-  \item $2^\textrm{bit}$
+  \item $\textrm{op}_0 \vee \textrm{op}_1$
   \end{results}
 
   \begin{operands}
-  \item \operand{Usable}{The integer to convert into a \code{SET} value.}
+  \item \operand{Usable}{The value of the left operand from the source.}
+  \item \operand{Usable}{The value of the right operand from the source.}
   \end{operands}
 
   \begin{seealso}
-    \refgsainst{set-element}{sarithmetic}
+    \refgsainst{set-sub}{sarithmetic}
+    \refgsainst{set-incl}{sarithmetic}
+    \refgsainst{set-intersect}{sarithmetic}
+    \refgsainst{set-diff}{sarithmetic}
   \end{seealso}
 \end{instruction}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3201,6 +3227,7 @@ unsigned quantities.
   \end{tabularx}
 \caption{System Instructions}\label{tab:instruction-system}
 \end{table}
+
 %-----------------------------------------------------------------------------
 \begin{instruction}{bit}
   \info{Instruction}{Gsystem}{Gbit}{Models
@@ -3214,6 +3241,55 @@ unsigned quantities.
   \item \operand{Usable}{The address of the memory to test.}
   \item \operand{Usable}{The constant value of the bit to test.
       \inv{$\textrm{bit} \in {0..8}$}}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{condcode}
+  \info{Instruction}{Gmisc}{Gcondcode}{Models
+    \code{SYSTEM.CC}}{Gcondcode.Mod}{condcode}{Gsystem}
+
+  \begin{results}
+  \item The result is the value of the specified condition code.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{ConstInt}{The hardware condition code which is to be
+      tested.}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{finalize}
+  \info{Instruction}{Gsystem}{Gfinalize}{Models
+    \code{SYSTEM.FINALIZE}}{Gfinalize.Mod}{finalize}{Gsystem}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Symbol}{The \ac{td} for the record type in which a
+      finalization procedure is being installed.}
+  \item \operand{Result}{The address of the finalization procedure.}
+  \end{operands}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{move}
+  \info{Instruction}{Gsystem}{Gmove}{Models
+    \code{SYSTEM.MOVE}}{Gmove.Mod}{move}{Gsystem}
+
+  \begin{notes}
+    This instruction does not handle overlapping memory regions.
+
+    All the operands are \code{LONGINT} values.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Usable}{The source address.}
+  \item \operand{Usable}{The destination address.}
+  \item \operand{Usable}{The number of bytes to move.}
   \end{operands}
 \end{instruction}
 
@@ -3235,26 +3311,6 @@ unsigned quantities.
 
   \begin{operands}
   \item \operand{Usable}{The number of bytes to allocate.}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{move}
-  \info{Instruction}{Gsystem}{Gmove}{Models
-    \code{SYSTEM.MOVE}}{Gmove.Mod}{move}{Gsystem}
-
-  \begin{notes}
-    This instruction does not handle overlapping memory regions.
-
-    All the operands are \code{LONGINT} values.
-  \end{notes}
-
-  \nresults
-
-  \begin{operands}
-  \item \operand{Usable}{The source address.}
-  \item \operand{Usable}{The destination address.}
-  \item \operand{Usable}{The number of bytes to move.}
   \end{operands}
 \end{instruction}
 
@@ -3286,34 +3342,6 @@ unsigned quantities.
   \end{operands}
 \end{instruction}
 
-%-----------------------------------------------------------------------------
-\begin{instruction}{finalize}
-  \info{Instruction}{Gsystem}{Gfinalize}{Models
-    \code{SYSTEM.FINALIZE}}{Gfinalize.Mod}{finalize}{Gsystem}
-
-  \nresults
-
-  \begin{operands}
-  \item \operand{Symbol}{The \ac{td} for the record type in which a
-      finalization procedure is being installed.}
-  \item \operand{Result}{The address of the finalization procedure.}
-  \end{operands}
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{condcode}
-  \info{Instruction}{Gmisc}{Gcondcode}{Models
-    \code{SYSTEM.CC}}{Gcondcode.Mod}{condcode}{Gsystem}
-
-  \begin{results}
-  \item The result is the value of the specified condition code.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{ConstInt}{The hardware condition code which is to be
-      tested.}
-  \end{operands}
-\end{instruction}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3349,39 +3377,9 @@ Traps are implemented as simple \code{Instruction} records in the
 \end{table}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{index}
-  \info{Instruction}{Ttrap}{Tindex}{Models an \emph{out-of-bounds}
-    index value halt.}{Tindex.Mod}{trap-index}{Ttrap}
-
-  \nresults
-
-  \noperands
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{eguard}
-  \info{Instruction}{Ttrap}{Teguard}{Models an \emph{explicit type
-      guard failure} halt.}{Teguard.Mod}{trap-eguard}{Ttrap}
-
-  \nresults
-
-  \noperands
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{iguard}
-  \info{Instruction}{Ttrap}{Tiguard}{Models an \emph{implicit type
-      guard failure} halt.}{Tiguard.Mod}{trap-iguard}{Ttrap}
-
-  \nresults
-
-  \noperands
-\end{instruction}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{return}
-  \info{Instruction}{Ttrap}{Treturn}{Models a \emph{function procedure
-      without \code{RETURN}} halt.}{Treturn.Mod}{trap-return}{Ttrap}
+\begin{instruction}{assert}
+  \info{Instruction}{Ttrap}{Tassert}{This instruction models the
+    result of an assertion failure.}{Tassert.Mod}{trap-assert}{Ttrap}
 
   \nresults
 
@@ -3399,9 +3397,9 @@ Traps are implemented as simple \code{Instruction} records in the
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{with}
-  \info{Instruction}{Ttrap}{Twith}{Models a \emph{no match in
-      \code{WITH} statement} halt.}{Twith.Mod}{trap-with}{Ttrap}
+\begin{instruction}{eguard}
+  \info{Instruction}{Ttrap}{Teguard}{Models an \emph{explicit type
+      guard failure} halt.}{Teguard.Mod}{trap-eguard}{Ttrap}
 
   \nresults
 
@@ -3421,9 +3419,19 @@ Traps are implemented as simple \code{Instruction} records in the
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{assert}
-  \info{Instruction}{Ttrap}{Tassert}{This instruction models the
-    result of an assertion failure.}{Tassert.Mod}{trap-assert}{Ttrap}
+\begin{instruction}{iguard}
+  \info{Instruction}{Ttrap}{Tiguard}{Models an \emph{implicit type
+      guard failure} halt.}{Tiguard.Mod}{trap-iguard}{Ttrap}
+
+  \nresults
+
+  \noperands
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{index}
+  \info{Instruction}{Ttrap}{Tindex}{Models an \emph{out-of-bounds}
+    index value halt.}{Tindex.Mod}{trap-index}{Ttrap}
 
   \nresults
 
@@ -3434,6 +3442,26 @@ Traps are implemented as simple \code{Instruction} records in the
 \begin{instruction}{range}
   \info{Instruction}{Ttrap}{Trange}{Models \emph{calculation overflow}
     and \emph{calculation underflow} halt.}{Trange.Mod}{trap-range}{Ttrap}
+
+  \nresults
+
+  \noperands
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{return}
+  \info{Instruction}{Ttrap}{Treturn}{Models a \emph{function procedure
+      without \code{RETURN}} halt.}{Treturn.Mod}{trap-return}{Ttrap}
+
+  \nresults
+
+  \noperands
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{with}
+  \info{Instruction}{Ttrap}{Twith}{Models a \emph{no match in
+      \code{WITH} statement} halt.}{Twith.Mod}{trap-with}{Ttrap}
 
   \nresults
 
@@ -3454,34 +3482,6 @@ Traps are implemented as simple \code{Instruction} records in the
   \end{tabularx}
 \caption{Type Descriptor Instructions}\label{tab:instruction-td}
 \end{table}
-
-%-----------------------------------------------------------------------------
-\begin{instruction}{initrec}
-  \info{Instruction}{Gtypedesc}{Ginitrec}{Models the initialization of
-    fields in a record \ac{td} which are not set by the compiler or
-    linker.}{Ginitrec.Mod}{initrec}{Gtypedesc}
-
-  \begin{notes}
-    If no initialization is required a runtime, then this instruction
-    is a \emph{nop}, and it is assumed that the type descriptor is
-    initialized with generated data and relocations provided by the
-    linker or loader.
-  \end{notes}
-
-  \begin{results}
-  \item An initialized copy of the \ac{td}.
-  \end{results}
-
-  \begin{operands}
-  \item \operand{Symbol}{The type symbol which is to have its type
-      descriptor initialized.}
-  \end{operands}
-
-  \begin{seealso}
-    \refgsainst{initialize}{Mmemory}, \refgsainst{initarr}{Gtypedesc},
-    \refgsainst{initdarr}{Gtypedesc}
-  \end{seealso}
-\end{instruction}
 
 %-----------------------------------------------------------------------------
 \begin{instruction}{initarr}
@@ -3535,5 +3535,33 @@ Traps are implemented as simple \code{Instruction} records in the
   \begin{seealso}
     \refgsainst{initialize}{Mmemory}, \refgsainst{initrec}{Gtypedesc},
     \refgsainst{initarr}{Gtypedesc}
+  \end{seealso}
+\end{instruction}
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{initrec}
+  \info{Instruction}{Gtypedesc}{Ginitrec}{Models the initialization of
+    fields in a record \ac{td} which are not set by the compiler or
+    linker.}{Ginitrec.Mod}{initrec}{Gtypedesc}
+
+  \begin{notes}
+    If no initialization is required a runtime, then this instruction
+    is a \emph{nop}, and it is assumed that the type descriptor is
+    initialized with generated data and relocations provided by the
+    linker or loader.
+  \end{notes}
+
+  \begin{results}
+  \item An initialized copy of the \ac{td}.
+  \end{results}
+
+  \begin{operands}
+  \item \operand{Symbol}{The type symbol which is to have its type
+      descriptor initialized.}
+  \end{operands}
+
+  \begin{seealso}
+    \refgsainst{initialize}{Mmemory}, \refgsainst{initarr}{Gtypedesc},
+    \refgsainst{initdarr}{Gtypedesc}
   \end{seealso}
 \end{instruction}

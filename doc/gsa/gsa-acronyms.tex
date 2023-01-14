@@ -1,4 +1,4 @@
-% Copyright (c) 2001-2022 Logic Magicians Software
+% Copyright (c) 2001-2023 Logic Magicians Software
 \chapter{Acronyms}
 
 \begin{acronym}
@@ -12,26 +12,26 @@
   produce the optimal code for any given input.
 
   Instead, this document will use the more correct term \ac{cia}.
-  
+
   \acro{ast}[AST]{Abstract Symbol Tree}
   \acro{gsa}[GSA]{Guarded Static Assignment}
   \acro{ir}[IR]{Intermediate Representation}
   \acro{mr}[MR]{Machine Representation}
-  
+
   This intermediate form is a direct represention of the instructions
   which the target machine supports.  It is only amenable to peephole
   optimizations.
 
   \acro{tbp}[TBP]{Type Bound Procedure}
-  
+
   \acro{mt}[MT]{Method Table}
-  
+
   \acro{td}[TD]{Type Descriptor}
   \acro{fe}[FE]{Compiler Frontend}
   \acro{be}[BE]{Compiler Backend}
 
   \acro{lv}[lvalue]{left-hand-side value}
-  
+
   An \emph{lvalue} is an expression which appears on the
   left-hand-side of an assignment statement.  It must evaluate,
   ultimately, to a memory location, rather than a value.
@@ -63,7 +63,7 @@
   This document describes the method used to implement an Oberon compiler.
 
   \acro{phi}[$\phi$]{$\phi$}
-\marginpar{A better explanation here would be nice.}  
+\marginpar{A better explanation here would be nice.}
   In \ac{gsa}, a \emph{gate}.  A method of assigning a single value to
   a variable which is set to different values in different control
   paths.  Consider:
@@ -85,7 +85,7 @@
 
   \acro{ccp}[CCP] {Conditional Constant Propagation \& Unreachable
   Code Elimination}
-  
+
   This is a \ac{cia} in which copies of values are propogated
   throughout the \ac{ir}.  The result is a direct use of the original
   value rather than a copy of it.

@@ -1,4 +1,5 @@
-% Copyright (c) 2001-2022 Logic Magicians Software
+% Copyright (c) 2001-2023 Logic Magicians Software
+\renewcommand{\algorithmiccomment}[1]{\hskip1em--- #1}
 \newcommand{\code}[1] {\texttt{#1}\xspace}
 \newcommand{\gsainst}[1] {\texttt{\$#1}\xspace}
 \newcommand{\gsavar}[1] {\texttt{\%#1}\xspace}
@@ -6,6 +7,7 @@
 \newcommand{\byval} {by-value\xspace}
 
 %\refgsainst{instruction-name}{instruction-class}
+\newcommand{\xref}[1]{\S\ref{#1}\xspace}
 \newcommand{\refgsainst}[2] {\gsainst{#1} (\S\ref{inst:#2-#1})\xspace}
 \newcommand{\refgsaclass}[2] {#1 (\S\ref{class:#2})\xspace}
 \newcommand{\refgsavar}[1] {\S\ref{var:#1}\xspace}
@@ -27,6 +29,10 @@
 \newcommand{\Refobs}[1] {Observation \ref{#1}\xspace}
 \newcommand{\tableref}[1]{table \ref{#1}\xspace}
 \newcommand{\Tableref}[1]{Table \ref{#1}\xspace}
+\newcommand{\figref}[1] {figure~\ref{fig:#1}\xspace}
+\newcommand{\Figref}[1] {Figure~\ref{fig:#1}\xspace}
+
+
 
 % FIXME(2001.12.15; twh): algorithms are not properly labeled in an xref.  Instead
 % of giving the algorithm number, it gives the section number.  See

@@ -1,53 +1,230 @@
-% Copyright (c) 2001-2022 Logic Magicians Software
+% Copyright (c) 2001-2023 Logic Magicians Software
 \chapter{Alias Analysis}
 
 \ac{aa} is a process to determine if access to memory through two or
 more different data paths yields the same memory location.  For a
-compiler which does not invoke any \ac{cia}, this is generally not a
-problem since all access to data will directly access memory.
-However, for a compiler which does perform \ac{cia}, it may turn out
-that the value of an aliased memory be held in a register - in which
-case access to the physical memory can yield the wrong data.
+compiler which does not invoke any \ac{cia}, aliases are generally not
+a problem since all access to data will always access data through a
+variable's home memory location.
 
-Consider, for example:
+However, for a compiler that performs \ac{cia}, it may turn out that
+the value contained in aliased memory is currently held in a register
+- in which case access to the physical memory can yield the wrong
+value for the variable.  Consider, for example, the code presented in
+\figref{alias-example}.  For the invocation of procedure
+\texttt{P0(z,~z)}, both \texttt{x} and \texttt{y} refer to the same
+variable, \texttt{z}.  A write to either \texttt{x} or \texttt{y} will
+change the value of the other variable.  Without tracking when
+multiple variables can reference the same memory location, an compiler
+can generate incorrect machine code by enregistering one or more of
+the aliased variables.
 
-\begin{verbatim}
+
+\begin{figure}[h]
+\begin{alltt}
 PROCEDURE P0(VAR x, y : INTEGER);
 BEGIN
   y := 10;
   INC(x);
-  IF y = 10 THEN x := 0;
-  ELSE x := 1;
+  IF y = 10 THEN
+    x := 0;
+  ELSE
+    x := 1;
   END;
 END P0;
 
 PROCEDURE P1;
-  VAR z : INTEGER;
-BEGIN z := 0; P0(z, z); ASSERT(z = 1);
+VAR
+  z : INTEGER;
+BEGIN
+  z := 0;
+  P0(z, z);
+  ASSERT(z = 1);
 END P1;
-\end{verbatim}
+\end{alltt}
+  \caption{Example with aliased variables}\label{fig:alias-example}
+\end{figure}
 
-A non-\ac{ci} compiler would produce correct code because all access
-to both \code{x} and \code{y} would be directly to memory.  However,
-if a \ac{ci} compiler, without \ac{aa}, placed \code{y} into a
-register then the output value of \code{x} will be the, incorrect,
-value \code{0}.
 
 \section{Definition of Terms}
-\begin{description}
-\item[alias] An \emph{alias} occurs when two accesses to memory definitely
-  refer to the same memory location.
-\item[may alias] A \emph{may alias} occurs when two memory references
-  \emph{might} refer to the same memory location.
-\item[no alias] A \emph{no alias} indicates that two memory references
-  definitely do not refer to the same memory location.
-\end{description}
 
-\section{Definition of Work}
+\begin{enumerate}
+  \item Alias State
 
-\ac{aa} must ensure that access to memory always yields the current
-value of that memory.
+    The determination if two different variables refer to the same
+    memory location will result in one of three states: \emph{do not
+      alias}, \emph{may alias}, \emph{alias}.
 
-\section{Description of Work}
+    \begin{description}
+    \item{do not alias}
+
+      A \emph{do not alias} indicates that two memory references
+      definitely do not refer to the same memory location.
+
+    \item{may alias}
+
+      A \emph{may alias} occurs when two memory references \emph{might}
+      refer to the same memory location.
+
+    \item{alias}
+
+      An \emph{alias} occurs when two accesses to memory definitely
+      refer to the same memory location.
+    \end{description}
+
+  \item Alias Compatible
+
+    Two variables are \emph{alias compatible} when one or more of the
+    following holds:
+
+    \begin{enumerate}
+      \item The type of the first variable is identical to the type of
+        the second variable.
+
+      \item The type of the first variable is a \texttt{RECORD} and is
+        a base of the second variable's type.
+
+      \item The type of the first variable is a \texttt{RECORD} and is
+        an extension of the second variable's type.
+
+      \item The type of the first variable is a \texttt{RECORD} and
+        the second variable is a base of the first variable's type.
+
+      \item The type of the first variable is a \texttt{RECORD} and
+        the second variable is an extension of the first variable's
+        type.
+
+      \item The type of the first variable is a \emph{pointer to
+        record} and the second variable is a pointer to an alias
+        compatible type.
+
+    \end{enumerate}
+
+\end{enumerate}
+
+\section{Oberon-2 Aliasing}
+
+Aliasing in Oberon-2 is possible through the following venues:
+
+\begin{enumerate}
+\item \texttt{VAR} parameters can can alias to alias compatible global
+  variables.
+
+\item \texttt{VAR} parameters can alias to other, alias compatible,
+  \texttt{VAR} parameters.
+
+\item \texttt{VAR} parameters of a nested procedure can alias to alias
+  compatible variables from an enclosing procedure.
+
+\item \texttt{VAR} parameters can alias to alias compatible variables
+  via a pointer dereference.
+
+\item A pointer to an array type can alias a pointer to an
+  identically-sized, and typed, array.
+\end{enumerate}
+
+%% \begin{algorithm}[h!]
+%%   \label{algo:aa-gather-non-local}
+%%   \caption{Create worklist of non-local memory accesses}
+%%   \begin{algorithmic}[1]
+%%     \REQUIRE{greg $\neq$ nil}
 
 
+%%     \FORALL{rgn: rgn $\in$ greg}
+%%       \FORALL{inst: inst $\in$ rgn}
+%%         \IF{$\neg$(i is Region)}
+%%           \FORALL{opnd: opnd $\in$ inst}
+%%             \IF{NonLocalAccess(opnd.def)}
+%%             \STATE{Add opnd to worklist}
+%%             \ENDIF
+%%           \ENDFOR
+%%         \ENDIF
+%%       \ENDFOR
+%%     \ENDFOR
+%%   \end{algorithmic}
+%% \end{algorithm}
+
+
+\section{Basic Algorithm}
+
+Performing \ac{aa} is very straightforward given the small number of
+major steps.
+
+\begin{enumerate}
+\item Create a worklist of all \emph{non-local} memory access in a
+  region by examining the definition of each operand in the region
+  (\xref{th:operand}).  Refer to \algoref{aa-determine-non-local}
+
+\begin{algorithm}[h!]
+  \caption{Determining non-local access}\label{algo:aa-determine-non-local}
+  \begin{algorithmic}[1]
+    \REQUIRE{usable $\neq$ nil}
+
+    %%%% This Instruction test might need to be a Result test.  See
+    %%%% O3MGSA.AssignThruInstruction.
+
+    \IF{usable is Instruction}
+      \STATE{inst $=$ usable(Instruction)}
+      \IF{inst.opcode $\in$ \{ Hget, Hput, Hmemr, Hmemw, Gsystem\}}
+      \STATE{}\COMMENT{Accesses via SYSTEM always alias.}
+      \STATE{}\COMMENT{Hget (\xref{hardware:get}), Hput (\xref{hardware:put})}
+      \STATE{}\COMMENT{Hmemr (\xref{hardware:memr}), Hmemw (\xref{hardware:memw})}
+      \STATE{}\COMMENT{Gsystem (\xref{class:system})}
+      \ELSIF {inst.opcode $\in$ \{Maccess, Mupdate\}}
+        \STATE{}\COMMENT{Maccess, Mupdate \xref{class:memory-access}}
+        \IF{inst.subcl $\in$ \{Mfield, Melement\}}
+        \STATE{}\COMMENT{Mfield (\xref{memory-access:field}), Melement (\xref{memory-access:element})}
+          \STATE{operand $=$ first operand of inst}
+          \IF{operand is Instruction}
+            \STATE{}\COMMENT{Referencing a non-local object.}
+          \ELSE
+            \STATE{}\COMMENT{Referencing a local object.}
+          \ENDIF
+        \ELSE
+          \STATE{}\COMMENT{All other memory access opcodes are non-local.}
+        \ENDIF
+
+      \ELSIF {inst.opcode $=$ Mmemory}
+        \STATE{}\COMMENT{Marraycopy (\xref{memory:arraycopy}), Mrecordcopy (\xref{memory:recordcopy})}
+        \STATE{}\COMMENT{Copying an array or record aliases.}
+      \ENDIF
+    \ELSE
+      \STATE{}\COMMENT{Not an alias}
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+\item Permute pairs of memory access from the worklist.  The items
+  will be called \emph{left} and \emph{right}.
+
+  \begin{enumerate}
+    \item If both \emph{left} and \emph{right} refer to the same
+      address (determinable from the operands of the instructions
+      accessing memory), they \emph{do alias}.
+
+    \item If \emph{left} and \emph{right} are \emph{alias compatible},
+      then they two memory accesses \emph{may alias}.
+
+    \item If \emph{left} and \emph{right} are not \emph{alias
+      compatible}, then they two memory accesses \emph{do not alias}.
+  \end{enumerate}
+
+  \item For each pair, \emph{left} and \emph{right} that \emph{may
+    alias}:
+    \begin{enumerate}
+      \item For \emph{left}, create a \gsainst{mayalias} instruction
+        with two operands.  The first operand is the address
+        accessed by \emph{left}, and the second operand is the address
+        accessed by \emph{right}.  Replace the second operand of the
+        \emph{left} instruction (the computed address) with the
+        \gsainst{mayalias}.  See \xref{class:memory-access}.
+
+      \item For \emph{right}, create a \gsainst{mayalias} instruction
+        with two operands.  The first operand is the address accessed
+        by \emph{right}, and the second operand is the address
+        accessed by \emph{left}.  Replace the second operand of the
+        \emph{right} instruction (the computed address) with the
+        \gsainst{mayalias}.  See \xref{class:memory-access}.
+
+    \end{enumerate}
+\end{enumerate}
