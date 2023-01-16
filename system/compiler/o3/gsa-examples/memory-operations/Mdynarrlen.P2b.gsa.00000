@@ -1,22 +1,21 @@
 Initial GSA
 
-0.0 (0)  greg: P2b range=[-32768, -32751)
-  0.1 (16)  [1:[location=len], 2:[location=len/adr]] enter flags{} %nlm  range=[-32768, -32752) uses={}
-   0.2 (17)  %nlm := nlmctor flags{}  range=[-32754, -32753) uses={(11) (4)}
-   0.5 (18)  %return-2 := copy flags{} const{FALSE}  range=[-32754, -32754) uses={}
-  0.6 (2)  a0 := copy flags{} const{0}  range=[-32768, -32755) uses={(11)}
-  0.7 (3)  adr flags{} len  range=[-32768, -32756) uses={(4)}
-  0.4 (4)  %nlm := update-nonlocal flags{} len , result[(3)] , result[(17)] , result[(12)]  range=[-32768, -32757) uses={(15)}
-  0.10 (5)  neq.u1 flags{} a0 , const{0}  range=[-32768, -32758) uses={(22) (23)}
-  0.12 (23)  guard-true flags{live} result[(5)]  range=[-32768, -32759) uses={(19)}
-  0.11 (22)  guard-false flags{} result[(5)]  range=[-32768, -32760) uses={(20)}
-  0.14 (20)  merge-cond flags{live} result[(22)]  range=[-32768, -32761) uses={(19)}
-   0.15 (21)  trap-nil flags{live}  range=[-32762, -32762) uses={}
-  0.13 (19)  merge-if flags{live} result[(23)] , result[(20)]  range=[-32768, -32763) uses={}
-  0.16 (10)  adr flags{} a0  range=[-32768, -32764) uses={(11)}
-  0.3 (11)  access-deref flags{} result[(2)] , result[(10)] , result[(17)]  range=[-32768, -32765) uses={(12)}
-  0.8 (12)  dynarrlen flags{} result[(11)] , const{1} , const{12}  range=[-32768, -32766) uses={(4)}
-  0.17 (14)  exit flags{} result[(15)]  range=[-32768, -32767) uses={}
-   0.9 (15)  nlmdtor flags{live} result[(4)]  range=[-32768, -32768) uses={(14)}
+0.0 (0)  greg: P2b range=[-32768, -32752)
+  0.1 (15)  [1:[location=len], 2:[location=len/adr]] enter flags{} %nlm  range=[-32768, -32753) uses={}
+   0.2 (16)  %nlm := nlmctor flags{}  range=[-32755, -32754) uses={(10) (4)}
+   0.5 (17)  %return-2 := copy flags{} const{FALSE}  range=[-32755, -32755) uses={}
+  0.6 (2)  a0 := copy flags{} const{0}  range=[-32768, -32756) uses={(10) (5)}
+  0.8 (3)  adr flags{} len  range=[-32768, -32757) uses={(4)}
+  0.4 (4)  %nlm := update-nonlocal flags{} len , result[(3)] , result[(16)] , result[(11)]  range=[-32768, -32758) uses={(14)}
+  0.7 (5)  neq.u1 flags{} result[(2)] , const{0}  range=[-32768, -32759) uses={(19) (21)}
+  0.12 (21)  guard-true flags{live} result[(5)]  range=[-32768, -32760) uses={(18)}
+  0.11 (19)  guard-false flags{live} result[(5)]  range=[-32768, -32761) uses={(18)}
+   0.14 (20)  trap-nil flags{live}  range=[-32762, -32762) uses={}
+  0.13 (18)  merge-if flags{live} result[(21)] , result[(19)]  range=[-32768, -32763) uses={}
+  0.15 (9)  adr flags{} a0  range=[-32768, -32764) uses={(10)}
+  0.3 (10)  access-deref flags{} result[(2)] , result[(9)] , result[(16)]  range=[-32768, -32765) uses={(11)}
+  0.9 (11)  dynarrlen flags{} result[(10)] , const{1} , const{12}  range=[-32768, -32766) uses={(4)}
+  0.16 (13)  exit flags{} result[(14)]  range=[-32768, -32767) uses={}
+   0.10 (14)  nlmdtor flags{live} result[(4)]  range=[-32768, -32768) uses={(13)}
 
 

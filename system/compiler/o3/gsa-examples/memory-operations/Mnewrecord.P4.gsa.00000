@@ -1,27 +1,26 @@
 Initial GSA
 
-0.0 (0)  greg: P4 range=[-32768, -32746)
-  0.1 (21)  [1:[location=p], 2:[location=p/adr], 3:[location=.%0], 4:[location=.BaseDesc-BaseDesc], 5:[location=.BaseDesc-BaseDesc/adr]] enter flags{} %nlm  range=[-32768, -32747) uses={}
-   0.2 (22)  %nlm := nlmctor flags{}  range=[-32749, -32748) uses={(3)}
-   0.4 (23)  %return-2 := copy flags{} const{FALSE}  range=[-32749, -32749) uses={}
-  0.5 (2)  adr flags{} p  range=[-32768, -32750) uses={(3)}
-  0.3 (3)  %nlm := update-varparm flags{} p , result[(2)] , result[(22)] , result[(4)]  range=[-32768, -32751) uses={(13) (6)}
-  0.6 (4)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32752) uses={(3)}
-  0.9 (5)  adr flags{} p  range=[-32768, -32753) uses={(6)}
-  0.8 (6)  access-varparm flags{} p , result[(5)] , result[(3)]  range=[-32768, -32754) uses={(13) (12) (7)}
-  0.11 (7)  neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32755) uses={(27) (28)}
-  0.13 (28)  guard-true flags{live} result[(7)]  range=[-32768, -32756) uses={(24)}
-  0.12 (27)  guard-false flags{} result[(7)]  range=[-32768, -32757) uses={(25)}
-  0.15 (25)  merge-cond flags{live} result[(27)]  range=[-32768, -32758) uses={(24)}
-   0.16 (26)  trap-nil flags{live}  range=[-32759, -32759) uses={}
-  0.14 (24)  merge-if flags{live} result[(28)] , result[(25)]  range=[-32768, -32760) uses={}
-  0.10 (12)  adr flags{} result[(6)]  range=[-32768, -32761) uses={(13)}
-  0.7 (13)  access-deref flags{} result[(6)] , result[(12)] , result[(3)]  range=[-32768, -32762) uses={(16) (14)}
-  0.18 (14)  adr flags{} result[(13)]  range=[-32768, -32763) uses={(15)}
-  0.19 (15)  add.u4 flags{} result[(14)] , const{4}  range=[-32768, -32764) uses={(16)}
-  0.17 (16)  %nlm := update-field flags{} result[(13)] , result[(15)] , const{4} , result[(17)]  range=[-32768, -32765) uses={(20)}
-  0.20 (17)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32766) uses={(16)}
-  0.22 (19)  exit flags{} result[(20)]  range=[-32768, -32767) uses={}
-   0.21 (20)  nlmdtor flags{live} result[(16)]  range=[-32768, -32768) uses={(19)}
+0.0 (0)  greg: P4 range=[-32768, -32747)
+  0.1 (20)  [1:[location=p], 2:[location=p/adr], 3:[location=.%0], 4:[location=.BaseDesc-BaseDesc], 5:[location=.BaseDesc-BaseDesc/adr]] enter flags{} %nlm  range=[-32768, -32748) uses={}
+   0.2 (21)  %nlm := nlmctor flags{}  range=[-32750, -32749) uses={(3)}
+   0.4 (22)  %return-2 := copy flags{} const{FALSE}  range=[-32750, -32750) uses={}
+  0.5 (2)  adr flags{} p  range=[-32768, -32751) uses={(3)}
+  0.3 (3)  %nlm := update-varparm flags{} p , result[(2)] , result[(21)] , result[(4)]  range=[-32768, -32752) uses={(12) (6)}
+  0.6 (4)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32753) uses={(3)}
+  0.9 (5)  adr flags{} p  range=[-32768, -32754) uses={(6)}
+  0.8 (6)  access-varparm flags{} p , result[(5)] , result[(3)]  range=[-32768, -32755) uses={(12) (11) (7)}
+  0.11 (7)  neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32756) uses={(24) (26)}
+  0.13 (26)  guard-true flags{live} result[(7)]  range=[-32768, -32757) uses={(23)}
+  0.12 (24)  guard-false flags{live} result[(7)]  range=[-32768, -32758) uses={(23)}
+   0.15 (25)  trap-nil flags{live}  range=[-32759, -32759) uses={}
+  0.14 (23)  merge-if flags{live} result[(26)] , result[(24)]  range=[-32768, -32760) uses={}
+  0.10 (11)  adr flags{} result[(6)]  range=[-32768, -32761) uses={(12)}
+  0.7 (12)  access-deref flags{} result[(6)] , result[(11)] , result[(3)]  range=[-32768, -32762) uses={(15) (13)}
+  0.17 (13)  adr flags{} result[(12)]  range=[-32768, -32763) uses={(14)}
+  0.18 (14)  add.u4 flags{} result[(13)] , const{4}  range=[-32768, -32764) uses={(15)}
+  0.16 (15)  %nlm := update-field flags{} result[(12)] , result[(14)] , const{4} , result[(16)]  range=[-32768, -32765) uses={(19)}
+  0.19 (16)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32766) uses={(15)}
+  0.21 (18)  exit flags{} result[(19)]  range=[-32768, -32767) uses={}
+   0.20 (19)  nlmdtor flags{live} result[(15)]  range=[-32768, -32768) uses={(18)}
 
 

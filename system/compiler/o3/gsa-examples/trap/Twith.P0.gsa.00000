@@ -1,27 +1,26 @@
 Initial GSA
 
-0.0 (0)  greg: P0 range=[-32768, -32746)
-  0.1 (19)  [1:[location=b], 2:[location=b/adr], 3:[location=.%0], 4:[location=.Twith-ExtDesc], 5:[location=.Twith-ExtDesc/adr]] enter flags{} %nlm  range=[-32768, -32747) uses={}
-   0.2 (20)  %nlm := nlmctor flags{}  range=[-32750, -32748) uses={(18) (10) (3)}
-   0.6 (21)  %return-2 := copy flags{} const{FALSE}  range=[-32750, -32749) uses={}
-   0.7 (22)  %result-3 := copy flags{} const{FALSE}  range=[-32750, -32750) uses={(17)}
-  0.9 (2)  adr flags{} b  range=[-32768, -32751) uses={(3)}
-  0.5 (3)  access-varparm flags{} b , result[(2)] , result[(20)]  range=[-32768, -32752) uses={(11) (10) (9) (4)}
-  0.12 (4)  neq.u1 flags{} result[(3)] , const{0}  range=[-32768, -32753) uses={(30) (31)}
-  0.14 (31)  guard-true flags{live} result[(4)]  range=[-32768, -32754) uses={(27)}
-  0.13 (30)  guard-false flags{} result[(4)]  range=[-32768, -32755) uses={(28)}
-  0.16 (28)  merge-cond flags{live} result[(30)]  range=[-32768, -32756) uses={(27)}
-   0.17 (29)  trap-nil flags{live}  range=[-32757, -32757) uses={}
-  0.15 (27)  merge-if flags{live} result[(31)] , result[(28)]  range=[-32768, -32758) uses={}
-  0.11 (9)  adr flags{} result[(3)]  range=[-32768, -32759) uses={(10)}
-  0.4 (10)  access-deref flags{} result[(3)] , result[(9)] , result[(20)]  range=[-32768, -32760) uses={(11)}
-  0.10 (11)  heaptag flags{} result[(3)] , result[(10)]  range=[-32768, -32761) uses={(12)}
-  0.18 (12)  eql.u4 flags{} result[(11)] , result{4 of (19)}  range=[-32768, -32762) uses={(24) (26)}
-  0.20 (26)  guard-true flags{} result[(12)]  range=[-32768, -32763) uses={(23)}
-  0.19 (24)  guard-false flags{} result[(12)]  range=[-32768, -32764) uses={(23)}
-   0.22 (25)  trap-with flags{live}  range=[-32765, -32765) uses={}
-  0.21 (23)  merge-if flags{} result[(26)] , result[(24)]  range=[-32768, -32766) uses={}
-  0.8 (17)  exit flags{} result[(22)] [location=%result-3], result[(18)]  range=[-32768, -32767) uses={}
-   0.3 (18)  nlmdtor flags{live} result[(20)]  range=[-32768, -32768) uses={(17)}
+0.0 (0)  greg: P0 range=[-32768, -32747)
+  0.1 (18)  [1:[location=b], 2:[location=b/adr], 3:[location=.%0], 4:[location=.Twith-ExtDesc], 5:[location=.Twith-ExtDesc/adr]] enter flags{} %nlm  range=[-32768, -32748) uses={}
+   0.2 (19)  %nlm := nlmctor flags{}  range=[-32751, -32749) uses={(17) (9) (3)}
+   0.6 (20)  %return-2 := copy flags{} const{FALSE}  range=[-32751, -32750) uses={}
+   0.7 (21)  %result-3 := copy flags{} const{FALSE}  range=[-32751, -32751) uses={(16)}
+  0.9 (2)  adr flags{} b  range=[-32768, -32752) uses={(3)}
+  0.5 (3)  access-varparm flags{} b , result[(2)] , result[(19)]  range=[-32768, -32753) uses={(10) (9) (8) (4)}
+  0.12 (4)  neq.u1 flags{} result[(3)] , const{0}  range=[-32768, -32754) uses={(27) (29)}
+  0.14 (29)  guard-true flags{live} result[(4)]  range=[-32768, -32755) uses={(26)}
+  0.13 (27)  guard-false flags{live} result[(4)]  range=[-32768, -32756) uses={(26)}
+   0.16 (28)  trap-nil flags{live}  range=[-32757, -32757) uses={}
+  0.15 (26)  merge-if flags{live} result[(29)] , result[(27)]  range=[-32768, -32758) uses={}
+  0.11 (8)  adr flags{} result[(3)]  range=[-32768, -32759) uses={(9)}
+  0.4 (9)  access-deref flags{} result[(3)] , result[(8)] , result[(19)]  range=[-32768, -32760) uses={(10)}
+  0.10 (10)  heaptag flags{} result[(3)] , result[(9)]  range=[-32768, -32761) uses={(11)}
+  0.17 (11)  eql.u4 flags{} result[(10)] , result{4 of (18)}  range=[-32768, -32762) uses={(23) (25)}
+  0.19 (25)  guard-true flags{} result[(11)]  range=[-32768, -32763) uses={(22)}
+  0.18 (23)  guard-false flags{} result[(11)]  range=[-32768, -32764) uses={(22)}
+   0.21 (24)  trap-with flags{live}  range=[-32765, -32765) uses={}
+  0.20 (22)  merge-if flags{} result[(25)] , result[(23)]  range=[-32768, -32766) uses={}
+  0.8 (16)  exit flags{} result[(21)] [location=%result-3], result[(17)]  range=[-32768, -32767) uses={}
+   0.3 (17)  nlmdtor flags{live} result[(19)]  range=[-32768, -32768) uses={(16)}
 
 

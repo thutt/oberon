@@ -1,24 +1,23 @@
 Initial GSA
 
-0.0 (0)  greg: AccessHeap range=[-32768, -32749)
-  0.1 (18)  enter flags{} %nlm  range=[-32768, -32750) uses={}
-   0.2 (19)  %nlm := nlmctor flags{}  range=[-32752, -32751) uses={(17) (11)}
-   0.5 (20)  %return-2 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
-  0.6 (2)  adr flags{} y  range=[-32768, -32753) uses={(3)}
-  0.7 (3)  y := initialize flags{} y , result[(2)] , const{2}  range=[-32768, -32754) uses={}
-  0.8 (4)  py := copy flags{} const{0}  range=[-32768, -32755) uses={(11)}
-  0.9 (5)  neq.u1 flags{} py , const{0}  range=[-32768, -32756) uses={(24) (25)}
-  0.11 (25)  guard-true flags{live} result[(5)]  range=[-32768, -32757) uses={(21)}
-  0.10 (24)  guard-false flags{} result[(5)]  range=[-32768, -32758) uses={(22)}
-  0.13 (22)  merge-cond flags{live} result[(24)]  range=[-32768, -32759) uses={(21)}
-   0.14 (23)  trap-nil flags{live}  range=[-32760, -32760) uses={}
-  0.12 (21)  merge-if flags{live} result[(25)] , result[(22)]  range=[-32768, -32761) uses={}
-  0.15 (10)  adr flags{} py  range=[-32768, -32762) uses={(11)}
-  0.4 (11)  access-deref flags{} result[(4)] , result[(10)] , result[(19)]  range=[-32768, -32763) uses={(14) (12)}
-  0.17 (12)  y := recordcopy flags{} y , result[(13)] , const{2} , result[(11)] , result[(14)]  range=[-32768, -32764) uses={}
-  0.18 (13)  adr flags{} y  range=[-32768, -32765) uses={(12)}
-  0.16 (14)  adr flags{} result[(11)]  range=[-32768, -32766) uses={(12)}
-  0.19 (16)  exit flags{} result[(17)]  range=[-32768, -32767) uses={}
-   0.3 (17)  nlmdtor flags{live} result[(19)]  range=[-32768, -32768) uses={(16)}
+0.0 (0)  greg: AccessHeap range=[-32768, -32750)
+  0.1 (17)  enter flags{} %nlm  range=[-32768, -32751) uses={}
+   0.2 (18)  %nlm := nlmctor flags{}  range=[-32753, -32752) uses={(16) (10)}
+   0.5 (19)  %return-2 := copy flags{} const{FALSE}  range=[-32753, -32753) uses={}
+  0.6 (2)  adr flags{} y  range=[-32768, -32754) uses={(3)}
+  0.7 (3)  y := initialize flags{} y , result[(2)] , const{2}  range=[-32768, -32755) uses={}
+  0.8 (4)  py := copy flags{} const{0}  range=[-32768, -32756) uses={(10) (5)}
+  0.9 (5)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32757) uses={(21) (23)}
+  0.11 (23)  guard-true flags{live} result[(5)]  range=[-32768, -32758) uses={(20)}
+  0.10 (21)  guard-false flags{live} result[(5)]  range=[-32768, -32759) uses={(20)}
+   0.13 (22)  trap-nil flags{live}  range=[-32760, -32760) uses={}
+  0.12 (20)  merge-if flags{live} result[(23)] , result[(21)]  range=[-32768, -32761) uses={}
+  0.14 (9)  adr flags{} py  range=[-32768, -32762) uses={(10)}
+  0.4 (10)  access-deref flags{} result[(4)] , result[(9)] , result[(18)]  range=[-32768, -32763) uses={(13) (11)}
+  0.16 (11)  y := recordcopy flags{} y , result[(12)] , const{2} , result[(10)] , result[(13)]  range=[-32768, -32764) uses={}
+  0.17 (12)  adr flags{} y  range=[-32768, -32765) uses={(11)}
+  0.15 (13)  adr flags{} result[(10)]  range=[-32768, -32766) uses={(11)}
+  0.18 (15)  exit flags{} result[(16)]  range=[-32768, -32767) uses={}
+   0.3 (16)  nlmdtor flags{live} result[(18)]  range=[-32768, -32768) uses={(15)}
 
 

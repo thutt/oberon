@@ -1,22 +1,21 @@
 Initial GSA
 
-0.0 (0)  greg: ParmCaller range=[-32768, -32751)
-  0.1 (16)  [1:[location=b], 2:[location=.%0]] enter flags{} %nlm  range=[-32768, -32752) uses={}
-   0.2 (17)  %nlm := nlmctor flags{}  range=[-32754, -32753) uses={(15) (8)}
-   0.5 (18)  %return-2 := copy flags{} const{FALSE}  range=[-32754, -32754) uses={}
-  0.6 (2)  neq.u1 flags{} b , const{0}  range=[-32768, -32755) uses={(22) (23)}
-  0.8 (23)  guard-true flags{live} result[(2)]  range=[-32768, -32756) uses={(19)}
-  0.7 (22)  guard-false flags{} result[(2)]  range=[-32768, -32757) uses={(20)}
-  0.10 (20)  merge-cond flags{live} result[(22)]  range=[-32768, -32758) uses={(19)}
-   0.11 (21)  trap-nil flags{live}  range=[-32759, -32759) uses={}
-  0.9 (19)  merge-if flags{live} result[(23)] , result[(20)]  range=[-32768, -32760) uses={}
-  0.12 (7)  adr flags{} b  range=[-32768, -32761) uses={(8)}
-  0.4 (8)  access-deref flags{} result{1 of (16)} , result[(7)] , result[(17)]  range=[-32768, -32762) uses={(9)}
-  0.13 (9)  heaptag flags{} b , result[(8)]  range=[-32768, -32763) uses={(10)}
-  0.14 (10)  tbpadr flags{} result[(9)] , Base , PtrMethod , const{1} , const{-8}  range=[-32768, -32764) uses={(12)}
-  0.16 (11)  convert.s2 flags{} const{20}  range=[-32768, -32765) uses={(12)}
-  0.15 (12)  call flags{} result[(10)] , result{1 of (16)} , result[(11)]  range=[-32768, -32766) uses={(14)}
-  0.17 (14)  exit flags{} result[(12)] , result[(15)]  range=[-32768, -32767) uses={}
-   0.3 (15)  nlmdtor flags{live} result[(17)]  range=[-32768, -32768) uses={(14)}
+0.0 (0)  greg: ParmCaller range=[-32768, -32752)
+  0.1 (15)  [1:[location=b], 2:[location=.%0]] enter flags{} %nlm  range=[-32768, -32753) uses={}
+   0.2 (16)  %nlm := nlmctor flags{}  range=[-32755, -32754) uses={(14) (7)}
+   0.5 (17)  %return-2 := copy flags{} const{FALSE}  range=[-32755, -32755) uses={}
+  0.6 (2)  neq.u1 flags{} result{1 of (15)} , const{0}  range=[-32768, -32756) uses={(19) (21)}
+  0.8 (21)  guard-true flags{live} result[(2)]  range=[-32768, -32757) uses={(18)}
+  0.7 (19)  guard-false flags{live} result[(2)]  range=[-32768, -32758) uses={(18)}
+   0.10 (20)  trap-nil flags{live}  range=[-32759, -32759) uses={}
+  0.9 (18)  merge-if flags{live} result[(21)] , result[(19)]  range=[-32768, -32760) uses={}
+  0.11 (6)  adr flags{} b  range=[-32768, -32761) uses={(7)}
+  0.4 (7)  access-deref flags{} result{1 of (15)} , result[(6)] , result[(16)]  range=[-32768, -32762) uses={(8)}
+  0.12 (8)  heaptag flags{} b , result[(7)]  range=[-32768, -32763) uses={(9)}
+  0.13 (9)  tbpadr flags{} result[(8)] , Base , PtrMethod , const{1} , const{-8}  range=[-32768, -32764) uses={(11)}
+  0.15 (10)  convert.s2 flags{} const{20}  range=[-32768, -32765) uses={(11)}
+  0.14 (11)  call flags{} result[(9)] , result{1 of (15)} , result[(10)]  range=[-32768, -32766) uses={(13)}
+  0.16 (13)  exit flags{} result[(11)] , result[(14)]  range=[-32768, -32767) uses={}
+   0.3 (14)  nlmdtor flags{live} result[(16)]  range=[-32768, -32768) uses={(13)}
 
 
