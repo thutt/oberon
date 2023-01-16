@@ -1,4 +1,4 @@
-% Copyright (c) 2001-2022 Logic Magicians Software
+% Copyright (c) 2001-2023 Logic Magicians Software
 \newcommand{\vnopclass}[1] {\emph{opcode}[#1]\xspace}
 \chapter{Value Numbering}
 \begin{quote}
@@ -82,8 +82,8 @@ these instructions collapsed into the first.
   \caption{Partitioning \emph{unique results}}\label{fig:unique-results}
 \end{figure}
 
-Further, since this compiler only has one \gsainst{loop} type, all
-looping constructs must be explicitly partitioned into their own
+Further, since this compiler only has one \gsainst{merge-loop} type,
+all looping constructs must be explicitly partitioned into their own
 partitions to prevent all loops from being considered congruent.
 
 \section{Partitioning by Operands}
@@ -177,5 +177,5 @@ instruction.  Consequently, a pass over all the partitions is required
 to ensure that \emph{unique result} instructions are placed into their
 own partition.
 
-Similarly, \gsainst{loop} can never be congruent with any other
+Similarly, \gsainst{merge-loop} can never be congruent with any other
 instruction, so they are placed into unique paritions.

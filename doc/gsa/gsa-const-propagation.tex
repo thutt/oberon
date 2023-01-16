@@ -1,4 +1,4 @@
-% Copyright (c) 2001-2022 Logic Magicians Software
+% Copyright (c) 2001-2023 Logic Magicians Software
 \chapter{Constant Propagation}
 \todo{Document which algorithm is implemented and give a bib ref}
 
@@ -466,18 +466,18 @@ being merged will be considered \emph{unreachable}.
 %    from the controlled
 %    region. \\
 
-\subsubsection{\gsainst{if}}
+\subsubsection{\gsainst{merge-if}}
 
 \begin{observation}\label{obs:ccp-if-merge}
   If the guard controlling the two (2) paths merged by
-  \refgsainst{if}{Gif} evaluates to a constant value, one path will be
+  \refgsainst{merge-if}{Gif} evaluates to a constant value, one path will be
   taken and one path will not be taken.  However, if the guard does
   not evaluate to a constant, then it cannot be determined which path
   will be taken.
 \end{observation}
 
 \Refobs{obs:ccp-if-merge} lays the foundation for the possible lattice
-values for an \gsainst{if} shown in table
+values for an \gsainst{merge-if} shown in table
 \ref{table:const-prop-if-merge-lattice}.
 
 \begin{table}[h!]
@@ -507,13 +507,13 @@ values for an \gsainst{if} shown in table
     \emph{unreachable}. \\
   \hline
   \end{tabularx}
-  \caption{\gsainst{if} Lattice Values}\label{table:const-prop-if-merge-lattice}
+  \caption{\gsainst{merge-if} Lattice Values}\label{table:const-prop-if-merge-lattice}
 \end{table}
 
-\subsubsection{\gsainst{condmerge}}
+\subsubsection{\gsainst{merge-cond}}
 \todo{Need more explanation here}
 \begin{observation}
-  When either of the operands of a \gsainst{condmerge} are
+  When either of the operands of a \gsainst{merge-cond} are
   \code{TRUE}, the code in the region will be executed.  If both
   operands evaluate to \code{FALSE}, the code in the region is
   unreachable.  Otherwise, the region is non-constant.
@@ -588,7 +588,7 @@ iterations of the loop.
   \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{\gsainst{case}}
+\subsubsection{\gsainst{merge-case}}
 \begin{observation}\label{obs:ccp-case-merge}
   If the selector controlling the \refgsainst{casesgl}{Gguard} and
   \refgsainst{caseelse}{Gguard} regions evaluates to a constant value,
@@ -602,7 +602,7 @@ iterations of the loop.
 \end{observation}
 
 \Refobs{obs:ccp-case-merge} lays the foundation for the possible lattice
-values for an \gsainst{case} shown in table
+values for an \gsainst{merge-case} shown in table
 \ref{table:const-prop-case-merge-lattice}.
 
 \begin{table}[h!]
@@ -625,7 +625,7 @@ values for an \gsainst{case} shown in table
     \emph{unreachable}. \\
   \hline
   \end{tabularx}
-  \caption{\gsainst{case} Lattice Values}\label{table:const-prop-case-merge-lattice}
+  \caption{\gsainst{merge-case} Lattice Values}\label{table:const-prop-case-merge-lattice}
 \end{table}
 
 %-----------------------------------------------------------------------------
@@ -648,11 +648,11 @@ While there is only one real \refgsainst{gate}{Gmisc} instruction, the
 number of operands which are present depends on the type of the
 controlling merge instruction: \refgsainst{if}{Gmerge},
 \refgsainst{case}{Gmerge}, \refgsainst{loop}{Gmerge},
-\refgsainst{condmerge}{Gmerge}.  Because of this, each specialization of
+\refgsainst{merge-cond}{Gmerge}.  Because of this, each specialization of
 the \gsainst{gate} will be treated separately in the following
 sections.
 
-\subsubsection{\gsainst{if}}
+\subsubsection{\gsainst{merge-if}}
 
 \begin{observation}
   An \refgsainst{if}{Gif} merge has two (2) operands: one for the true
@@ -666,10 +666,10 @@ sections.
 \end{observation}
 
 Once all nodes in the \ac{ir} have been classified by this algorithm,
-an \gsainst{if} merge can only have three (3) values:
+an \gsainst{merge-if} merge can only have three (3) values:
 \emph{non-constant}, \emph{$\textrm{const-op}_0$}, or
 \emph{$\textrm{const-op}_1$}; knowing this, it is easy to show what a
-gate controlled by an \gsainst{if} merge will produce.
+gate controlled by an \gsainst{merge-if} merge will produce.
 \Tableref{table:const-prop-gate-if-lattice} shows the values which can
 be produced.
 
@@ -695,16 +695,16 @@ be produced.
     be marked as non-constant. \\
     \hline
   \end{tabularx}
-  \caption{Gate Controlled By \gsainst{if} Lattice Values}\label{table:const-prop-gate-if-lattice}
+  \caption{Gate Controlled By \gsainst{merge-if} Lattice Values}\label{table:const-prop-gate-if-lattice}
 \end{table}
 
 \todo{Provide three four (4) examples here which demonstrate all
   conditions of the if-gate.  Should the examples be graphic or just a
   gsa dump?}
 
-\subsubsection{\gsainst{condmerge}}
+\subsubsection{\gsainst{merge-cond}}
 
-A \gsainst{condmerge} instruction does not dominate gates the way that
+A \gsainst{merge-cond} instruction does not dominate gates the way that
 other merge regions do; since there are no gates contained in such a
 region, there is nothing requiring discussion.
 
@@ -721,9 +721,9 @@ evaluates to a constant value.  Gates which are controlled by this
 merge will never directly evaluate to a constant value during
 \ac{ccp}.
 
-\todo{This section (gates for \gsainst{loop}) is incomplete.}
+\todo{This section (gates for \gsainst{merge-loop}) is incomplete.}
 
-\subsubsection{\gsainst{case}}
+\subsubsection{\gsainst{merge-case}}
 
 \subsection{Case}\label{const-prop:classification-of-case}
 

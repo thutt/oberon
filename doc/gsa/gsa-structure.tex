@@ -2223,29 +2223,29 @@ A merge in \ac{gsa} form is used to join a control flow which has been
 split using guards (see \S\ref{class:guard}).  Essentially, a merge is
 a conjunctive-or of the output of several different regions.  Typically
 a merge will contain only \ac{phi} nodes.  However, since
-\gsainst{condmerge} coalesces all the false regions of conjunctive and
+\gsainst{merge-cond} coalesces all the false regions of conjunctive and
 disjunctive control into a single region, it contains actual code.
 
 \begin{table}[h!]
   \begin{tabularx}{\linewidth}{|l|X|}
     \hline Instruction & Description \\
-    \hline \gsainst{if} & A conditional guard which models the closing
-    of an Oberon \code{IF} statement. \\
-    \hline \gsainst{condmerge} & A conditional guard which models the
+    \hline \gsainst{merge-case} & A conditional guard for modeling the
+    closing of \code{CASE} statements. \\
+    \hline \gsainst{merge-cond} & A conditional guard which models the
     closing of complex boolean expressions involving the
     conditional operators \code{\&} and \code{OR}. \\
-    \hline \gsainst{loop} & A conditional guard for modeling the
+    \hline \gsainst{merge-if} & A conditional guard which models the closing
+    of an Oberon \code{IF} statement. \\
+    \hline \gsainst{merge-loop} & A conditional guard for modeling the
     closing of looping constructs. \\
-    \hline \gsainst{case} & A conditional guard for modeling the
-    closing of \code{CASE} statements. \\
     \hline
   \end{tabularx}
 \caption{Merge Instructions}\label{tab:instruction-merge}
 \end{table}
 
-\begin{instruction}{case}
+\begin{instruction}{merge-case}
   \info{Merge}{Gmerge}{Gcase}{Models the closing of a \code{CASE}
-    statement.}{Gcase.Mod}{case}{Gmerge}
+    statement.}{Gcase.Mod}{merge-case}{Gmerge}
 
   \begin{notes}
     This region merges the control flow which was split over the
@@ -2282,10 +2282,10 @@ disjunctive control into a single region, it contains actual code.
 
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{condmerge}
+\begin{instruction}{merge-cond}
   \info{CondMerge}{Gmerge}{Gcond}{Models a control flow merge
   from a code path which failed a logical (\code{\&} and \code{OR})
-  operation}{Gif.Mod}{condmerge}{Gmerge}
+  operation}{Gif.Mod}{merge-cond}{Gmerge}
 
   \begin{notes}
     The conditional merge region is used to ensure that the control
@@ -2300,7 +2300,7 @@ END;
 
     In this example, the conditional merge region will contain the
     code corresponding to \code{(* do something else *)}.  In this
-    sense, the \gsainst{condmerge} is different than other merge
+    sense, the \gsainst{merge-cond} is different than other merge
     instructions: it merges the control flow for all false regions of
     a complex conditional test into a single region.
   \end{notes}
@@ -2320,16 +2320,16 @@ END;
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{if}
+\begin{instruction}{merge-if}
   \info{Merge}{Gmerge}{Gif}{Models the merging of the control regions
     for the \code{THEN} and \code{ELSE} sections of an \code{IF}
-    statement.}{Gif.Mod}{if}{Gif}
+    statement.}{Gif.Mod}{merge-if}{Gif}
 
   \begin{notes}
     This instruction merges control flow which was conditionally split
     into only two (2) paths - a \refgsainst{true}{Gguard} and a
     \refgsainst{false}{Gguard}, and with conjunctive and disjunctive
-    conditional, an additional \refgsainst{condmerge}{Gmerge} can be
+    conditional, an additional \refgsainst{merge-cond}{Gmerge} can be
     present.
 
     Instructions placed into this region are executed through all
@@ -2354,15 +2354,15 @@ END;
   \end{operands}
 
   \begin{seealso}
-    \refgsainst{condmerge}{Gmerge}, \refgsainst{true}{Gguard},
+    \refgsainst{merge-cond}{Gmerge}, \refgsainst{true}{Gguard},
     \refgsainst{false}{Gguard}
   \end{seealso}
 \end{instruction}
 
 %-----------------------------------------------------------------------------
-\begin{instruction}{loop}
+\begin{instruction}{merge-loop}
   \info{Merge}{Gmerge}{Gloop}{Models the top and backedges of the
-    looping construct.}{Gloop.Mod}{loop}{Gmerge}
+    looping construct.}{Gloop.Mod}{merge-loop}{Gmerge}
 
   \begin{notes}
     This compiler implements a single type of loop, one in which the
@@ -3367,7 +3367,7 @@ Traps are implemented as simple \code{Instruction} records in the
     \hline \gsainst{eguard} & Explicit type guard failure. \\
     \hline \gsainst{iguard} & Implicit type guard failure.\\
     \hline \gsainst{return} & Function procedure ends without \code{RETURN} \\
-    \hline \gsainst{case} & No match for \code{CASE} selections. \\
+    \hline \gsainst{merge-case} & No match for \code{CASE} selections. \\
     \hline \gsainst{assert} & \code{ASSERT} failure. \\
     \hline \gsainst{halt} & \code{HALT} \\
     \hline \gsainst{with} & No match for \code{WITH} selections. \\
