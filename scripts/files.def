@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022 Logic Magicians Software
+# Copyright (c) 2021, 2022, 2023 Logic Magicians Software
 #
 # Source file file.
 #
@@ -90,6 +90,7 @@ O3=(${SKL_DIR}/system/compiler/o3/O3Errors.Mod                  \
     ${SKL_DIR}/system/compiler/o3/O3GSAData.Mod                 \
     ${SKL_DIR}/system/compiler/o3/O3GSANames.Mod                \
     ${SKL_DIR}/system/compiler/o3/O3GSADump.Mod                 \
+    ${SKL_DIR}/system/compiler/o3/O3GSALiveRange.Mod            \
     ${SKL_DIR}/system/compiler/o3/O3GSACanon.Mod                \
     ${SKL_DIR}/system/compiler/o3/O3GSADeadCode.Mod             \
     ${SKL_DIR}/system/compiler/o3/O3GSAValueNumber.Mod          \
@@ -116,7 +117,7 @@ O3=(${SKL_DIR}/system/compiler/o3/O3Errors.Mod                  \
 #   o 'manual' means the test is only run manually (due to long runtimes).
 #
 declare -A COMPILER_TESTS;
-COMPILER_TESTS=(                                                        \
+COMPILER_TESTS=(                                                         \
     [${SKL_DIR}/system/compiler/skl/tests/CTArrayTrap.Mod]="pass"        \
     [${SKL_DIR}/system/compiler/skl/tests/CTAssertTrap.Mod]="fail"       \
     [${SKL_DIR}/system/compiler/skl/tests/CTBitsetRangeFail.Mod]="fail"  \
@@ -124,6 +125,7 @@ COMPILER_TESTS=(                                                        \
     [${SKL_DIR}/system/compiler/skl/tests/CTDivZero.Mod]="fail"          \
     [${SKL_DIR}/system/compiler/skl/tests/CTDumpHeap.Mod]="pass,manual"  \
     [${SKL_DIR}/system/compiler/skl/tests/CTDynArrLength.Mod]="fail"     \
+    [${SKL_DIR}/system/compiler/skl/tests/CTDynamicArray.Mod]="fail"     \
     [${SKL_DIR}/system/compiler/skl/tests/CTEmpty.Mod]="pass,manual"     \
     [${SKL_DIR}/system/compiler/skl/tests/CTEnvironment.Mod]="pass"      \
     [${SKL_DIR}/system/compiler/skl/tests/CTExclude.Mod]="pass"          \
@@ -137,6 +139,7 @@ COMPILER_TESTS=(                                                        \
     [${SKL_DIR}/system/compiler/skl/tests/CTInstructionCount.Mod]="pass" \
     [${SKL_DIR}/system/compiler/skl/tests/CTInvalidOpcode.Mod]="fail"    \
     [${SKL_DIR}/system/compiler/skl/tests/CTMissingMethod.Mod]="fail"    \
+    [${SKL_DIR}/system/compiler/skl/tests/CTMultidim.Mod]="fail"         \
     [${SKL_DIR}/system/compiler/skl/tests/CTNest.Mod]="pass"             \
     [${SKL_DIR}/system/compiler/skl/tests/CTOOBRead.Mod]="fail"          \
     [${SKL_DIR}/system/compiler/skl/tests/CTOOBWrite.Mod]="fail"         \

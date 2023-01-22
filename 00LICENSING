@@ -757,6 +757,9 @@ The files contained here are provided under the corresponding software license.
   system/compiler/skl/tests/CTDynArrLength.Obj
   system/compiler/skl/tests/CTDynArrLength.Sym
   system/compiler/skl/tests/CTDynArrNew.Mod
+  system/compiler/skl/tests/CTDynamicArray.Mod
+  system/compiler/skl/tests/CTDynamicArray.Obj
+  system/compiler/skl/tests/CTDynamicArray.Sym
   system/compiler/skl/tests/CTEmpty.Mod
   system/compiler/skl/tests/CTEmpty.Obj
   system/compiler/skl/tests/CTEmpty.Sym
@@ -795,6 +798,9 @@ The files contained here are provided under the corresponding software license.
   system/compiler/skl/tests/CTInvalidOpcode.Obj
   system/compiler/skl/tests/CTInvalidOpcode.Sym
   system/compiler/skl/tests/CTMissingMethod.Mod
+  system/compiler/skl/tests/CTMultidim.Mod
+  system/compiler/skl/tests/CTMultidim.Obj
+  system/compiler/skl/tests/CTMultidim.Sym
   system/compiler/skl/tests/CTNest.Mod
   system/compiler/skl/tests/CTNest.Obj
   system/compiler/skl/tests/CTNest.Sym
