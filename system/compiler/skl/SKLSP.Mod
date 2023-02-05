@@ -31,7 +31,8 @@ IMPORT
       sf: LONGINT;
   BEGIN
     IF PU.token = OPS.lbrak THEN
-      OPS.Get(PU.token); x := E.ConstExpression();
+      OPS.Get(PU.token);
+      x := E.ConstExpression();
       sf := default;
       IF x.type.form IN ST.IntSet THEN
         sf := x.val.i0;
@@ -39,9 +40,11 @@ IMPORT
         err(EL.NotInteger);
       END ;
       IF (sf < 0) OR (sf > OPM.MaxSysFlag) THEN
-        sf := default; err(EL.IllegalValue);
+        sf := default;
+        err(EL.IllegalValue);
       END;
-      sysflag := SHORT(sf); PU.Match(OPS.rbrak);
+      sysflag := SHORT(sf);
+      PU.Match(OPS.rbrak);
       IF ~ST.SYSimported THEN
         err(EL.SystemNotImported);
       END;
@@ -63,7 +66,9 @@ IMPORT
         PU.SetParmMode(mode);
         LOOP
           IF PU.token = OPS.ident THEN
-            par := ST.NewBasicSym(mode); ST.Insert(OPS.name, par); OPS.Get(PU.token);
+            par := ST.NewBasicSym(mode);
+            ST.Insert(OPS.name, par);
+            OPS.Get(PU.token);
             IF first = NIL THEN
               first := par;
             END;
@@ -75,9 +80,15 @@ IMPORT
           END;
 
           CASE PU.token OF
-          | OPS.comma: OPS.Get(PU.token);
-          | OPS.ident: err(EL.CommaExpected);
-          | OPS.var: err(EL.CommaExpected); OPS.Get(PU.token);
+          | OPS.comma:
+            OPS.Get(PU.token);
+
+          | OPS.ident:
+            err(EL.CommaExpected);
+
+          | OPS.var:
+            err(EL.CommaExpected);
+            OPS.Get(PU.token);
           ELSE
             EXIT;
           END;
@@ -110,7 +121,8 @@ IMPORT
       END;
     END;
 
-    PU.Match(OPS.rparen); resTyp := ST.notyp;
+    PU.Match(OPS.rparen);
+    resTyp := ST.notyp;
     IF PU.token = OPS.colon THEN
       (* result type *)
       OPS.Get(PU.token);
@@ -137,10 +149,13 @@ IMPORT
 
     PROCEDURE RecordType(banned: ST.Type) : ST.Type;
       VAR
-        type : ST.Record; base : ST.Symbol; sysflag: INTEGER;
+        type : ST.Record;
+        base : ST.Symbol;
+        sysflag: INTEGER;
         fld, first : ST.Symbol;
     BEGIN
-      type := ST.NewRecordType(); CheckSysFlag(sysflag, OPM.DefaultSysFlag);
+      type := ST.NewRecordType();
+      CheckSysFlag(sysflag, OPM.DefaultSysFlag);
       IF PU.token = OPS.lparen THEN
         OPS.Get(PU.token); (*record extension*)
         IF PU.token = OPS.ident THEN
@@ -155,7 +170,8 @@ IMPORT
                 (* remove for version 2 type descriptor layout *)
                 err(EL.TooManyExtensions);
               END;
-              type.sysflag := base.type.sysflag; (* should not be allowed to override base sysflag *)
+              (* should not be allowed to override base sysflag *)
+              type.sysflag := base.type.sysflag;
             ELSE
               err(EL.RecursiveType);
             END;
@@ -198,7 +214,8 @@ IMPORT
               EXIT;
             END;
           END;
-          PU.Match(OPS.colon); PU.DistributeType(first, fld, Type(banned), TRUE);
+          PU.Match(OPS.colon);
+          PU.DistributeType(first, fld, Type(banned), TRUE);
           INCL(fld.type.flags, ST.pvused);
         END;
 
@@ -215,7 +232,8 @@ IMPORT
 
     PROCEDURE ArrayType(banned: ST.Type) : ST.Type;
       VAR
-        x: T.Expr; n: LONGINT;
+        x: T.Expr;
+        n: LONGINT;
         sysflag: INTEGER;
         atyp : ST.Array;
     BEGIN
@@ -227,16 +245,18 @@ IMPORT
         OPS.Get(PU.token);
         atyp.of := Type(banned);
         INCL(atyp.of.flags, ST.pvused);
-        (* XXX document the fact that each dimension of a dynamic array shares the same td.
-          this is not the way for static arrays and I'm not sure why *)
+        (* Each dimension of a dynamic array shares the same td.
+           It is not the same for static arrays. *)
         IF atyp.of.form = ST.dynarr THEN
-          atyp.n := atyp.of(ST.Array).n + 1; ST.SetTD(atyp, ST.GetTD(atyp.of));
+          atyp.n := atyp.of(ST.Array).n + 1;
+          ST.SetTD(atyp, ST.GetTD(atyp.of));
         ELSE
           atyp.n := 0
         END
       ELSE
         (* regular array *)
-        atyp := ST.NewArrayType(ST.array); x := E.ConstExpression();
+        atyp := ST.NewArrayType(ST.array);
+        x := E.ConstExpression();
         IF (x.type.form IN ST.IntSet) THEN
           n := x.val.i0;
           IF (n <= 0) OR (n > OPM.MaxIndex) THEN
@@ -274,7 +294,9 @@ IMPORT
         id: ST.Symbol;
         ptyp : ST.Pointer;
     BEGIN
-      ptyp := ST.NewPointerType(); CheckSysFlag(ptyp.sysflag, 0); PU.Match(OPS.to);
+      ptyp := ST.NewPointerType();
+      CheckSysFlag(ptyp.sysflag, 0);
+      PU.Match(OPS.to);
       IF PU.token = OPS.ident THEN
         id := ST.Find(OPS.name);
         IF id = NIL THEN
@@ -286,7 +308,8 @@ IMPORT
             IF id.type.form IN ST.AggregateSet THEN
               ptyp.to := id.type;
             ELSE
-              ptyp.to := ST.undftyp; err(EL.IllegalPointsTo);
+              ptyp.to := ST.undftyp;
+              err(EL.IllegalPointsTo);
             END;
           ELSE
             err(EL.NotAType);
@@ -309,7 +332,9 @@ IMPORT
         ptype : ST.Procedure;
         dummy : ST.SymbolScope;
     BEGIN
-      OPS.Get(PU.token); ptype := ST.NewProcedureType(); CheckSysFlag(ptype.sysflag, 0);
+      OPS.Get(PU.token);
+      ptype := ST.NewProcedureType();
+      CheckSysFlag(ptype.sysflag, 0);
       IF PU.token = OPS.lparen THEN
         OPS.Get(PU.token);
         ST.OpenProcedureScope(PU.level, NIL);
@@ -345,11 +370,24 @@ IMPORT
     type := ST.undftyp;
     PU.Sync(OPS.lparen, 12);
     CASE PU.token OF
-    | OPS.ident: type := TypeId();
-    | OPS.array: OPS.Get(PU.token); type := ArrayType(banned);
-    | OPS.pointer: OPS.Get(PU.token); type := PointerType();
-    | OPS.record: OPS.Get(PU.token); type := RecordType(banned); PU.Match(OPS.end);
-    | OPS.procedure: type := ProcedureType();
+    | OPS.ident:
+      type := TypeId();
+
+    | OPS.array:
+      OPS.Get(PU.token);
+      type := ArrayType(banned);
+
+    | OPS.pointer:
+      OPS.Get(PU.token);
+      type := PointerType();
+
+    | OPS.record:
+      OPS.Get(PU.token);
+      type := RecordType(banned);
+      PU.Match(OPS.end);
+
+    | OPS.procedure:
+      type := ProcedureType();
     ELSE
       err(EL.BadTypeStart);
     END;
@@ -428,13 +466,19 @@ IMPORT
         stmt, else : T.StmtList;
         if, elsif, tif : T.IfBody;
     BEGIN
-      test := CheckBool(E.Expression()); PU.Match(OPS.then); StatSeq(stmt);
-      if := T.NewIfBodyNode(test, stmt); tif := if;
+      test := CheckBool(E.Expression());
+      PU.Match(OPS.then);
+      StatSeq(stmt);
+      if := T.NewIfBodyNode(test, stmt);
+      tif := if;
       WHILE PU.token = OPS.elsif DO
         OPS.Get(PU.token);
-        test := CheckBool(E.Expression()); PU.Match(OPS.then);
-        StatSeq(stmt); elsif := T.NewIfBodyNode(test, stmt);
-        T.BindIfElsif(tif, elsif); tif := elsif;
+        test := CheckBool(E.Expression());
+        PU.Match(OPS.then);
+        StatSeq(stmt);
+        elsif := T.NewIfBodyNode(test, stmt);
+        T.BindIfElsif(tif, elsif);
+        tif := elsif;
       END;
       IF PU.token = OPS.else THEN
         OPS.Get(PU.token);
@@ -448,7 +492,9 @@ IMPORT
 
     PROCEDURE  CaseStat() : T.StmtList;
       TYPE
-        CaseEntry = RECORD low, high: LONGINT; END;
+        CaseEntry = RECORD
+          low, high: LONGINT;
+        END;
         CaseTable = ARRAY OPM.MaxCases OF CaseEntry;
 
       VAR
@@ -474,11 +520,13 @@ IMPORT
       BEGIN
         head := NIL;
         LOOP
-          lo := E.ConstExpression(); f := lo.type.form;
+          lo := E.ConstExpression();
+          f := lo.type.form;
           IF f IN ST.IntSet + {ST.char} THEN
             loval := lo.val.i0;
           ELSE
-            err(EL.IllegalLabelType); loval := 1;
+            err(EL.IllegalLabelType);
+            loval := 1;
           END;
 
           IF f IN ST.IntSet THEN
@@ -491,7 +539,8 @@ IMPORT
 
           IF PU.token = OPS.upto THEN
             OPS.Get(PU.token);
-            hi := E.ConstExpression(); hival := hi.val.i0;
+            hi := E.ConstExpression();
+            hival := hi.val.i0;
             hf := hi.type.form;
             IF (hf # f) & ~((f IN ST.IntSet) & (hf IN ST.IntSet)) THEN
               err(EL.WrongLabelType);
@@ -521,7 +570,9 @@ IMPORT
               tab[i] := tab[i - 1];
               DEC(i);
             END ;
-            tab[i].low := loval; tab[i].high := hival; INC(n)
+            tab[i].low := loval;
+            tab[i].high := hival;
+            INC(n)
           ELSE
             err(EL.TooManyCases)
           END;
@@ -539,15 +590,22 @@ IMPORT
       END CaseLabelList;
 
     BEGIN
-      n := 0; cases := NIL; caseTail := NIL; expr := E.Expression(); PU.Match(OPS.of);
+      n := 0;
+      cases := NIL;
+      caseTail := NIL;
+      expr := E.Expression();
+      PU.Match(OPS.of);
       IF ~(expr.type.form IN {ST.char..ST.lint}) THEN
-        err(EL.InvalidCaseType); expr := TB.NewIntConst(0);
+        err(EL.InvalidCaseType);
+        expr := TB.NewIntConst(0);
       END;
       LOOP
         IF (PU.token = OPS.ident) OR (PU.token = OPS.number) THEN
           label := CaseLabelList(expr.type.form, n, tab);
-          PU.Match(OPS.colon); StatSeq(stmt);
-          caseTail := T.BindSingleCase(caseTail, T.NewSingleCaseNode(label, stmt));
+          PU.Match(OPS.colon);
+          StatSeq(stmt);
+          caseTail := T.BindSingleCase(caseTail,
+                                       T.NewSingleCaseNode(label, stmt));
           IF cases = NIL THEN
             cases := caseTail;
           END;
@@ -560,12 +618,14 @@ IMPORT
       END;
 
       IF n > 0 THEN
-        low := tab[0].low; high := tab[n - 1].high;
+        low := tab[0].low;
+        high := tab[n - 1].high;
         IF high - low > OPM.MaxCaseRange THEN
           err(EL.CaseRangeTooLarge)
         END;
       ELSE
-        low := 1; high := 0;
+        low := 1;
+        high := 0;
       END;
 
       IF PU.token = OPS.else THEN
@@ -584,7 +644,10 @@ IMPORT
         x : T.Expr;
         s : T.StmtList;
     BEGIN
-      x := CheckBool(E.Expression()); PU.Match(OPS.do); StatSeq(s); PU.Match(OPS.end);
+      x := CheckBool(E.Expression());
+      PU.Match(OPS.do);
+      StatSeq(s);
+      PU.Match(OPS.end);
       RETURN TB.NewWhile(x, s);
     END WhileStat;
 
@@ -593,14 +656,21 @@ IMPORT
         x : T.Expr;
         s : T.StmtList;
     BEGIN
-      StatSeq(s); PU.Match(OPS.until); x := CheckBool(E.Expression()); RETURN TB.NewRepeat(x, s);
+      StatSeq(s);
+      PU.Match(OPS.until);
+      x := CheckBool(E.Expression());
+      RETURN TB.NewRepeat(x, s);
     END RepeatStat;
 
     PROCEDURE  LoopStat() : T.StmtList;
       VAR
         s : T.StmtList;
     BEGIN
-      INC(LoopLevel); StatSeq(s); PU.Match(OPS.end); DEC(LoopLevel); RETURN T.NewLoopNode(s);
+      INC(LoopLevel);
+      StatSeq(s);
+      PU.Match(OPS.end);
+      DEC(LoopLevel);
+      RETURN T.NewLoopNode(s);
     END LoopStat;
 
     PROCEDURE ForStat() : T.StmtList;
@@ -611,10 +681,15 @@ IMPORT
         body : T.StmtList;
     BEGIN
       IF PU.token = OPS.ident THEN
-        PU.qualident(ctrlV); control := TB.NewDesign(ctrlV); PU.Match(OPS.becomes);
-        lower := E.Expression(); PU.Match(OPS.to); upper := E.Expression();
+        PU.qualident(ctrlV);
+        control := TB.NewDesign(ctrlV);
+        PU.Match(OPS.becomes);
+        lower := E.Expression();
+        PU.Match(OPS.to);
+        upper := E.Expression();
         IF PU.token = OPS.by THEN
-          OPS.Get(PU.token); step := E.ConstExpression();
+          OPS.Get(PU.token);
+          step := E.ConstExpression();
           IF ~(step.type.form IN ST.IntSet) OR (step.val.i0 = 0) THEN
             err(EL.IllegalValue);
             step := TB.NewIntConst(1);
@@ -640,21 +715,26 @@ IMPORT
         withL, curWith, lastWith : T.WithList;
         ctrl, testtype : T.Design;
     BEGIN
-      origType := NIL; withL := NIL;
+      origType := NIL;
+      withL := NIL;
       LOOP
         IF PU.token = OPS.ident THEN
-          PU.qualident(cvar); ctrl := TB.NewDesign(cvar); PU.Match(OPS.colon);
+          PU.qualident(cvar);
+          ctrl := TB.NewDesign(cvar);
+          PU.Match(OPS.colon);
           IF PU.token = OPS.ident THEN
             PU.qualident(typ);
             testtype := TB.NewDesign(typ);
-            origType := cvar.type; cvar.type := typ.type;
+            origType := cvar.type;
+            cvar.type := typ.type;
           ELSE
             err(EL.IdentExpected);
           END;
         ELSE
           err(EL.IdentExpected);
         END;
-        PU.Match(OPS.do); StatSeq(stmt);
+        PU.Match(OPS.do);
+        StatSeq(stmt);
         IF origType # NIL THEN
           cvar.type := origType;
           origType := NIL;
@@ -675,9 +755,11 @@ IMPORT
         END;
       END;
       IF PU.token = OPS.else THEN
-        OPS.Get(PU.token); StatSeq(else);
+        OPS.Get(PU.token);
+        StatSeq(else);
       ELSE
-        else := T.NewHaltNode(TB.NewBoolConst(FALSE), TB.NewIntConst(OPM.HaltWith));
+        else := T.NewHaltNode(TB.NewBoolConst(FALSE),
+                              TB.NewIntConst(OPM.HaltWith));
       END;
       PU.Match(OPS.end);
       RETURN T.NewWithNode(withL, else);
@@ -691,8 +773,8 @@ IMPORT
       RETURN TB.NewExit();
     END ExitStat;
 
-    PROCEDURE  ReturnStat() : T.Return; (* this allows a type name to be returned:
-                                         * RETURN TypeName! error *)
+    PROCEDURE  ReturnStat() : T.Return; (* this allows a type name to be
+                                         * returned RETURN TypeName! error *)
       VAR
         ret : T.Return;
         x : T.Expr;
@@ -705,7 +787,8 @@ IMPORT
         x := NIL;
       END;
       IF PU.level > 0 THEN
-        sym := ST.ScopeOwner(ST.topScope); ASSERT(sym # NIL);
+        sym := ST.ScopeOwner(ST.topScope);
+        ASSERT(sym # NIL);
         proc := sym(ST.SymbolProc);
         IF x # NIL THEN
           x := E.AssignCompat(proc.type(ST.Procedure).result, x);
@@ -724,7 +807,8 @@ IMPORT
     END ReturnStat;
 
   BEGIN
-    lastStmt := TB.NewNullStmt(); headStmt := NIL;
+    lastStmt := TB.NewNullStmt();
+    headStmt := NIL;
     LOOP
       PU.Sync(OPS.ident, 14);
       IF PU.token = OPS.ident THEN
@@ -755,15 +839,41 @@ IMPORT
         END;
       ELSE
         CASE PU.token OF
-        | OPS.if: OPS.Get(PU.token); curStmt := IfStat();
-        | OPS.case: OPS.Get(PU.token); curStmt := CaseStat();
-        | OPS.while: OPS.Get(PU.token); curStmt := WhileStat();
-        | OPS.repeat: OPS.Get(PU.token); curStmt := RepeatStat();
-        | OPS.loop: OPS.Get(PU.token); curStmt := LoopStat();
-        | OPS.for: OPS.Get(PU.token); curStmt := ForStat();
-        | OPS.with: OPS.Get(PU.token); curStmt := WithStat();
-        | OPS.exit: OPS.Get(PU.token); curStmt := ExitStat();
-        | OPS.return: OPS.Get(PU.token); curStmt := ReturnStat();
+        | OPS.if:
+          OPS.Get(PU.token);
+          curStmt := IfStat();
+
+        | OPS.case:
+          OPS.Get(PU.token);
+          curStmt := CaseStat();
+
+        | OPS.while:
+          OPS.Get(PU.token);
+          curStmt := WhileStat();
+
+        | OPS.repeat:
+          OPS.Get(PU.token);
+          curStmt := RepeatStat();
+
+        | OPS.loop:
+          OPS.Get(PU.token);
+          curStmt := LoopStat();
+
+        | OPS.for:
+          OPS.Get(PU.token);
+          curStmt := ForStat();
+
+        | OPS.with:
+          OPS.Get(PU.token);
+          curStmt := WithStat();
+
+        | OPS.exit:
+          OPS.Get(PU.token);
+          curStmt := ExitStat();
+
+        | OPS.return:
+          OPS.Get(PU.token);
+          curStmt := ReturnStat();
         ELSE
           EXIT;
         END;
@@ -802,12 +912,17 @@ IMPORT
         c: LONGINT;
         cproc : ST.SymbolCodeProc;
     BEGIN
-      cproc := proc(ST.SymbolCodeProc); ext := cproc.code; n := 0;
+      cproc := proc(ST.SymbolCodeProc);
+      ext := cproc.code;
+      n := 0;
       LOOP
         IF PU.token = OPS.number THEN
-          c := OPS.intval; INC(n);
+          c := OPS.intval;
+          INC(n);
           IF (c < 0) OR (c > 255) OR (n = ST.MaxCodeProcLen) THEN
-            err(EL.TooManyAparm); c := 1; n := 1;
+            err(EL.TooManyAparm);
+            c := 1;
+            n := 1;
           END ;
           OPS.Get(PU.token); ext[n] := CHR(c)
         END ;
@@ -816,7 +931,8 @@ IMPORT
         | OPS.comma: OPS.Get(PU.token);
         | OPS.number: err(EL.CommaExpected);
         ELSE
-          ext[0] := CHR(n); EXIT;
+          ext[0] := CHR(n);
+          EXIT;
         END;
       END ;
       INCL(cproc.flags, ST.body);
@@ -827,8 +943,10 @@ IMPORT
         ptype : ST.Procedure;
         dummy : ST.SymbolScope;
     BEGIN
-      proc.vis := vis; proc.kind := mode;
-      ptype := proc.type(ST.Procedure); ptype.result := ST.notyp;
+      proc.vis := vis;
+      proc.kind := mode;
+      ptype := proc.type(ST.Procedure);
+      ptype.result := ST.notyp;
       proc.flags := proc.flags - ST.symSpecificFlags;
       IF PU.token = OPS.lparen THEN
         OPS.Get(PU.token);
@@ -838,12 +956,15 @@ IMPORT
         ptype.parms := ST.FirstScopeVar(ST.topScope);
       END;
       IF fwd # NIL THEN
-        E.CheckParamMatch(proc.type(ST.Procedure).parms, fwd.type(ST.Procedure).parms, TRUE);
+        E.CheckParamMatch(proc.type(ST.Procedure).parms,
+                          fwd.type(ST.Procedure).parms, TRUE);
         IF proc.type(ST.Procedure).result # fwd.type(ST.Procedure).result THEN
           err(EL.ResultMismatch);
         END;
-        (* we have a forward procedure, drop newly created scope and use existing one *)
-        proc := fwd(ST.SymbolProc); dummy := ST.CloseScope();
+        (* we have a forward procedure, drop newly created scope and use
+           existing one *)
+        proc := fwd(ST.SymbolProc);
+        dummy := ST.CloseScope();
         ST.ReopenScope(fwd(ST.SymbolProc).scope, fwd);
       END;
     END GetParams;
@@ -855,9 +976,12 @@ IMPORT
         c: LONGINT;
         decl : T.Declaration;
     BEGIN
-      OPM.GetCurrentSourcePos(c); INCL(proc.flags, ST.body); PU.Match(OPS.semicolon);
+      OPM.GetCurrentSourcePos(c);
+      INCL(proc.flags, ST.body);
+      PU.Match(OPS.semicolon);
       DeclarationSequence(lProc, stmt, decl);
-      x := T.NewEnterNode(proc, lProc, stmt, decl, NIL, NIL); x.pos := c;
+      x := T.NewEnterNode(proc, lProc, stmt, decl, NIL, NIL);
+      x.pos := c;
       IF PU.token = OPS.ident THEN
         IF OPS.name # proc.name^ THEN
           err(EL.IdentMismatch);
@@ -872,7 +996,8 @@ IMPORT
       VAR
         self, oldSelf, baseProc, ovrrideParms, baseParms: ST.Symbol;
         objTyp, recTyp, baseSelfType : ST.Type;
-        selfName: OPS.Name; objMode: SHORTINT;
+        selfName: OPS.Name;
+        objMode: SHORTINT;
 
       PROCEDURE Receiver(VAR mode: SHORTINT;
                          VAR self: OPS.Name;
@@ -882,16 +1007,23 @@ IMPORT
           tf, rf : SHORTINT;
 
       BEGIN
-        typ := ST.undftyp; rec := NIL;
-        PU.SetParmMode(mode); self := OPS.name; PU.Match(OPS.ident); PU.Match(OPS.colon);
+        typ := ST.undftyp;
+        rec := NIL;
+        PU.SetParmMode(mode);
+        self := OPS.name;
+        PU.Match(OPS.ident);
+        PU.Match(OPS.colon);
         IF PU.token = OPS.ident THEN
-          obj := ST.Find(OPS.name); OPS.Get(PU.token);
+          obj := ST.Find(OPS.name);
+          OPS.Get(PU.token);
           IF obj = NIL THEN
             err(EL.UndeclaredIdent); (* no record *)
           ELSIF obj.kind # ST.type THEN
             err(EL.BadReceiver);
           ELSE
-            typ := obj.type; rec := typ; tf := typ.form;
+            typ := obj.type;
+            rec := typ;
+            tf := typ.form;
             IF tf = ST.pointer THEN
               rec := typ(ST.Pointer).to;
             END;
@@ -913,19 +1045,22 @@ IMPORT
         END;
         PU.Match(OPS.rparen);
         IF rec = NIL THEN
-          rec := ST.NewRecordType(); ST.OpenRecordScope();
+          rec := ST.NewRecordType();
+          ST.OpenRecordScope();
           rec(ST.Record).scope := ST.CloseScope();
         END;
       END Receiver;
 
     BEGIN
-      OPS.Get(PU.token); mode := ST.tproc;
+      OPS.Get(PU.token);
+      mode := ST.tproc;
       IF PU.level > 0 THEN
         err(EL.MustBeGlobalProc);
       END;
       Receiver(objMode, selfName, objTyp, recTyp);
       IF PU.token = OPS.ident THEN
-        name := OPS.name; PU.SetVis(vis);
+        name := OPS.name;
+        PU.SetVis(vis);
         fwd := ST.FindField(name, recTyp(ST.Record));
         baseProc := ST.FindField(name, recTyp(ST.Record).ancestor);
 
@@ -936,7 +1071,8 @@ IMPORT
           fwd := NIL;
         END;
 
-        proc := ST.NewProcedureSym(); INCL(proc.flags, ST.leaf);
+        proc := ST.NewProcedureSym();
+        INCL(proc.flags, ST.leaf);
         IF (fwd # NIL) & (fwd.mnolev # PU.level) THEN
           fwd := NIL;
         END;
@@ -974,7 +1110,8 @@ IMPORT
           E.CheckParamMatch(ST.NextParm(ovrrideParms),
                             ST.NextParm(baseParms),
                             FALSE);
-          IF proc.type(ST.Procedure).result # baseProc.type(ST.Procedure).result THEN
+          IF proc.type(ST.Procedure).result #
+             baseProc.type(ST.Procedure).result THEN
             err(EL.ResultMismatch)
           END;
           IF (baseProc.vis = ST.export) &
@@ -998,7 +1135,11 @@ IMPORT
     END TProcDecl;
 
   BEGIN
-    proc := NIL; forward := FALSE; x := NIL; mode := ST.lproc; sysflag := 0;
+    proc := NIL;
+    forward := FALSE;
+    x := NIL;
+    mode := ST.lproc;
+    sysflag := 0;
 
     IF (PU.token # OPS.ident) & (PU.token # OPS.lparen) THEN
       (* tproc or lexical mark *)
@@ -1006,7 +1147,7 @@ IMPORT
       | OPS.times: (* used as proc variable, no effect *)
       | OPS.arrow: forward := TRUE;
       | OPS.minus: mode := ST.cproc; (* code proc *)
-      | OPS.plus: mode := ST.iproc; (* interrupt proc *) (* XXX -- obsolete? remove? do we really need this? 97.09.06 *)
+      | OPS.plus: mode := ST.iproc; (* interrupt proc *)
       | OPS.lbrak: CheckSysFlag(sysflag, 0);
       ELSE
         err(EL.IdentExpected);
@@ -1014,7 +1155,8 @@ IMPORT
       IF (mode IN {ST.cproc, ST.iproc}) & ~ST.SYSimported THEN
         err(EL.SystemNotImported);
       END;
-      IF (PU.token <= MAX(SET)) & (PU.token IN {OPS.times, OPS.arrow, OPS.minus, OPS.plus}) THEN
+      IF (PU.token <= MAX(SET)) & (PU.token IN {OPS.times, OPS.arrow,
+                                                OPS.minus, OPS.plus}) THEN
         OPS.Get(PU.token); (* CheckSysFlag positions at correct token *)
       END;
     END;
@@ -1022,7 +1164,9 @@ IMPORT
     IF PU.token = OPS.lparen THEN
       TProcDecl;
     ELSIF PU.token = OPS.ident THEN
-      fwd := ST.Find(OPS.name); name := OPS.name; PU.SetVis(vis);
+      fwd := ST.Find(OPS.name);
+      name := OPS.name;
+      PU.SetVis(vis);
       IF (vis IN {ST.export, ST.exportR}) & (mode = ST.lproc) THEN
         mode := ST.xproc;
       END;
@@ -1030,9 +1174,13 @@ IMPORT
       IF (fwd # NIL) & (fwd.mnolev # PU.level) THEN
         fwd := NIL;
       END;
-      IF (fwd # NIL) & (fwd.kind IN {ST.lproc, ST.xproc}) & ~(ST.body IN fwd.flags) THEN
-        (* there exists a corresponding forward declaration; don't include in PU.symtab *)
-        proc := ST.NewProcedureSym(); INCL(proc.flags, ST.leaf);
+      IF (fwd # NIL) &
+         (fwd.kind IN {ST.lproc, ST.xproc}) &
+         ~(ST.body IN fwd.flags) THEN
+        (* there exists a corresponding forward declaration;
+         * don't include in PU.symtab *)
+        proc := ST.NewProcedureSym();
+        INCL(proc.flags, ST.leaf);
         IF fwd.vis # vis THEN
           err(EL.ExportMismatch);
         END;
@@ -1139,9 +1287,11 @@ IMPORT
             IF PU.token # OPS.eql THEN
               err(EL.EqlExpected);
             END;
-            OPS.Get(PU.token); expr := E.ConstExpression();
+            OPS.Get(PU.token);
+            expr := E.ConstExpression();
           ELSE
-            err(EL.EqlExpected); expr := TB.NewIntConst(1);
+            err(EL.EqlExpected);
+            expr := TB.NewIntConst(1);
           END;
           NewDeclaration(symconst);
           symconst.val := expr.val;
@@ -1155,7 +1305,8 @@ IMPORT
           LOOP
             IF PU.token = OPS.ident THEN
               symbol := ST.NewBasicSym(ST.var);
-              ST.Insert(OPS.name, symbol); PU.SetVis(symbol.vis);
+              ST.Insert(OPS.name, symbol);
+              PU.SetVis(symbol.vis);
               IF symbol.vis = ST.internal THEN
                 INCL(symbol.flags, ST.leaf);
               END;
@@ -1174,8 +1325,10 @@ IMPORT
               EXIT;
             END;
           END;
-          PU.Match(OPS.colon); PU.DistributeType(firstSym, symbol, Type(ST.notyp), TRUE);
-          INCL(symbol.type.flags, ST.pvused); PU.Match(OPS.semicolon);
+          PU.Match(OPS.colon);
+          PU.DistributeType(firstSym, symbol, Type(ST.notyp), TRUE);
+          INCL(symbol.type.flags, ST.pvused);
+          PU.Match(OPS.semicolon);
         END;
       ELSE
         EXIT; (* ~(token IN {var, const, type}) *)
@@ -1185,15 +1338,18 @@ IMPORT
 
     nestedProcs := NIL;
     WHILE PU.token = OPS.procedure DO
-      OPS.Get(PU.token); ProcDecl(proc);
+      OPS.Get(PU.token);
+      ProcDecl(proc);
       IF proc # NIL THEN
-        nested := T.BindStmtList(proc, nestedProcs); nestedProcs := proc(T.Enter);
+        nested := T.BindStmtList(proc, nestedProcs);
+        nestedProcs := proc(T.Enter);
       END;
       PU.Match(OPS.semicolon);
     END;
 
     IF PU.token = OPS.begin THEN
-      OPS.Get(PU.token); StatSeq(body);
+      OPS.Get(PU.token);
+      StatSeq(body);
     ELSE
       body := TB.NewNullStmt();
     END;
@@ -1230,17 +1386,22 @@ IMPORT
     IF PU.token = OPS.module THEN
       OPS.Get(PU.token);
       IF PU.token = OPS.ident THEN
-        COPY(OPS.name, modname); ST.SetModuleName(modname);
-        OPS.Get(PU.token); PU.Match(OPS.semicolon);
+        COPY(OPS.name, modname);
+        ST.SetModuleName(modname);
+        OPS.Get(PU.token);
+        PU.Match(OPS.semicolon);
         IF PU.token = OPS.import THEN
           OPS.Get(PU.token);
           LOOP
             IF PU.token = OPS.ident THEN
-              COPY(OPS.name, alias); COPY(alias, name); OPS.Get(PU.token);
+              COPY(OPS.name, alias);
+              COPY(alias, name);
+              OPS.Get(PU.token);
               IF PU.token = OPS.becomes THEN
                 OPS.Get(PU.token);
                 IF PU.token = OPS.ident THEN
-                  COPY(OPS.name, name); OPS.Get(PU.token);
+                  COPY(OPS.name, name);
+                  OPS.Get(PU.token);
                 ELSE
                   err(EL.IdentExpected);
                 END;
@@ -1251,16 +1412,21 @@ IMPORT
               ELSE
                 impSym :=  ST.Find(alias);
                 IF impSym.name^ # "SYSTEM" THEN
-                  (* init procedure from imported module needs to be used instead of the scope symbol
-                    so that CGH.Enter can handle fixups to externals properly *)
-                  impSym := ST.FindImport(impSym(ST.SymbolProc), name); (* aliased import init codes still have original name *)
+                  (* init procedure from imported module needs to be used
+                     instead of the scope symbol so that CGH.Enter can handle
+                     fixups to externals properly *)
+                  (* aliased import init codes still have original name *)
+                  impSym := ST.FindImport(impSym(ST.SymbolProc), name);
                   import := T.NewImportNode(impSym);
                 ELSE
-                  import := T.NewImportNode(impSym); INCL(import.flags, T.noinit); (* SYSTEM has no init code *)
+                  import := T.NewImportNode(impSym);
+                  INCL(import.flags, T.noinit); (* SYSTEM has no init code *)
                 END;
-                import.next := ImportList; ImportList := import;
+                import.next := ImportList;
+                ImportList := import;
                 IF ImportListTail = NIL THEN
-                  ImportListTail := import; END;
+                  ImportListTail := import;
+                END;
               END;
             ELSE
               err(EL.IdentExpected);
@@ -1283,7 +1449,8 @@ IMPORT
       IF OPM.noerr THEN
         MakeModuleSymbol();
         DeclarationSequence(localproc, body, decl);
-        tree := T.NewEnterNode(ST.topScope, localproc, body, decl, NIL, ImportList);
+        tree := T.NewEnterNode(ST.topScope, localproc, body, decl,
+                               NIL, ImportList);
         INCL(tree.flags, T.main);
 
         IF PU.token = OPS.ident THEN
