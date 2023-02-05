@@ -93,12 +93,6 @@ IMPORT
       offset* : LONGINT;  (* form = array => 0; form = dynarr => offset of LEN() in descriptor *)
     END;
 
-    ArrayInfoDesc* = RECORD
-      form : SHORTINT;
-      nofdim : LONGINT;
-      eltype : Type;
-    END;
-
     Pointer* = POINTER TO PointerDesc;
     PointerDesc* = RECORD (TypeDesc)
       to* : Type;
@@ -1387,25 +1381,6 @@ IMPORT
     s.mnolev := 0;
     RETURN s;
   END MakeStringConst;
-
-  PROCEDURE GetArrayInfo*(arr : Type; VAR info : ArrayInfoDesc);  (* 1998.11.16: obsolete *)
-    VAR
-      t : Type;
-      nofdim : LONGINT;
-      f : SHORTINT;
-  BEGIN
-    nofdim := 0;
-    f := arr.form;
-    ASSERT(f IN {dynarr, array});
-    t := arr;
-    WHILE t.form = f DO
-      INC(nofdim);
-      t := t(Array).of;
-    END;
-    info.form := f;
-    info.nofdim := nofdim;
-    info.eltype := t;
-  END GetArrayInfo;
 
   (* retrieve full procedure name, format is: (Object).proc or proc *)
   PROCEDURE GetFullProcedureName*(proc : SymbolProc; VAR name : OPS.FullName);

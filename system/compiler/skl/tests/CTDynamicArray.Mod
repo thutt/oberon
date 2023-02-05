@@ -6,6 +6,7 @@ MODULE CTDynamicArray;
 
 TYPE
   Data = POINTER TO ARRAY OF ARRAY OF BOOLEAN;
+  SmallData = POINTER TO ARRAY OF BOOLEAN;
 
 VAR
   v : Data;
@@ -16,16 +17,11 @@ BEGIN
   RETURN (i MOD 3 = 0) & ~ODD(j);
 END fn;
 
-
-PROCEDURE Test*;
+PROCEDURE Set(v : Data);
   VAR
     i : INTEGER;
     j : INTEGER;
 BEGIN
-  NEW(v, 9, 6);
-  ASSERT(LEN(v^, 0) = 9, 1024);
-  ASSERT(LEN(v^, 1) = 6, 1025);
-
   i := 0;
   WHILE i < LEN(v^, 0) DO
     j := 0;
@@ -36,7 +32,13 @@ BEGIN
     END;
     INC(i);
   END;
-  
+END Set;
+
+PROCEDURE Verify(v : Data);
+  VAR
+    i : INTEGER;
+    j : INTEGER;
+BEGIN
   i := 0;
   WHILE i < LEN(v^, 0) DO
     j := 0;
@@ -46,6 +48,20 @@ BEGIN
     END;
     INC(i);
   END;
+END Verify;
+
+
+PROCEDURE Test*;
+BEGIN
+  NEW(v, 9, 6);
+  ASSERT(LEN(v^, 0) = 9, 1024);
+  ASSERT(LEN(v^, 1) = 6, 1025);
+
+  Set(v);
+  ASSERT(LEN(v^, 0) = 9, 1026);
+  ASSERT(LEN(v^, 1) = 6, 1027);
+
+  Verify(v);
 END Test;
 
 END CTDynamicArray.
