@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +19,7 @@ namespace dialog
         vfprintf(stderr, fmt, args);
         fprintf(stderr, "\n");
         va_end(args);
-        config::quit(-1);
+        config::quit(118);
     }
 
 
@@ -34,7 +34,7 @@ namespace dialog
         vfprintf(stderr, fmt, args);
         fprintf(stderr, "\n");
         va_end(args);
-        config::quit(-1);
+        config::quit(117);
     }
 
 
@@ -49,7 +49,7 @@ namespace dialog
         vfprintf(stderr, fmt, args);
         fprintf(stderr, "\n");
         va_end(args);
-        config::quit(-1);
+        config::quit(116);
     }
 
 
@@ -64,7 +64,7 @@ namespace dialog
         vfprintf(stderr, fmt, args);
         fprintf(stderr, "\n");
         va_end(args);
-        config::quit(-1);
+        config::quit(115);
     }
 
 

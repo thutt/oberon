@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
 
 #if !defined(_CONFIG_H)
 #define _CONFIG_H
@@ -35,6 +35,7 @@ namespace config
 
     void option_set(options_t opt);
     void option_clear(options_t opt);
-    void NORETURN quit(int rc); /* Quit interpreter with return code. */
+    void NORETURN quit(unsigned char rc); /* Quit interpreter with 8-bit
+                                           * return code. */
 }
 #endif

@@ -1,4 +1,4 @@
-(* Copyright (c) 2021 Logic Magicians Software
+(* Copyright (c) 2021, 2023 Logic Magicians Software
  *)
 MODULE CTAssertTrap;
 IMPORT Console;
@@ -9,7 +9,7 @@ CONST
 
 PROCEDURE Test*;
 BEGIN
-  ASSERT(FnLength < 100);
+  ASSERT(FnLength < 100, 2049);
 END Test;
 
 END CTAssertTrap.

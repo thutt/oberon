@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
 /* $Id: loader.cpp,v 1.15 2002/02/05 04:40:22 thutt Exp $ */
 #include <assert.h>
 #include <getopt.h>
@@ -212,7 +212,24 @@ main(int argc, char *argv[])
         if (setjmp(config::exit_data.jmpbuf) == 0) {
             if (setjmp(signal_buf) == 0) {
                 return_value = bootstrap::bootstrap(cmdline);
-                config::quit(return_value);
+                /* POSIX only supplies eight (8) bits of return value.
+                 * Often values above 128 are treated specially by the shell.
+                 *
+                 * The loader will always return an 8-bit value.  If
+                 * the actual return code is out-of-range for POSIX,
+                 * then '119' is returned.  The full value will be
+                 * printed to stderr.
+                 *
+                 * The Oberon interpreter reserves 115..120 for its
+                 * own exit codes.
+                 */
+                if (return_value < 115) {
+                    config::quit(static_cast<unsigned char>(return_value));
+                } else {
+                    fprintf(stderr, "Oberon loader with return code: %u\n",
+                            return_value);
+                    config::quit(static_cast<unsigned char>(119));
+                }
             } else {
                 fsync(1);
                 return_value = -1;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
 #include <assert.h>
 #include "config.h"
 
@@ -22,7 +22,7 @@ namespace config
     }
 
     void
-    quit(int rc)
+    quit(unsigned char rc)
     {
         exit_data.rc = rc;
         longjmp(exit_data.jmpbuf, 1);
