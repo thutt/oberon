@@ -176,7 +176,7 @@ IMPORT
       type := type(ST.Array).of;
       IF (index.class = T.Econst) & (base.type.form = ST.array) THEN
         i := index.val.i0;
-        IF (i < 0) OR (i >= base.type(ST.Array).n) THEN
+        IF (i < 0) OR (i >= base.type(ST.Array).len) THEN
           err(EL.IllegalIndexValue);
         END;
       END;

@@ -5,29 +5,39 @@
 MODULE CTDynamicArray;
 
 TYPE
-  Data = POINTER TO ARRAY OF ARRAY OF BOOLEAN;
-  SmallData = POINTER TO ARRAY OF BOOLEAN;
+  Data = POINTER TO ARRAY OF ARRAY OF ARRAY OF BOOLEAN;
 
 VAR
   v : Data;
 
 
-PROCEDURE fn(i, j : INTEGER) : BOOLEAN;
+PROCEDURE fn(i, j, k : INTEGER) : BOOLEAN;
 BEGIN
-  RETURN (i MOD 3 = 0) & ~ODD(j);
+  RETURN (i MOD 3 = 0) & ~ODD(j + k) OR ODD(k);
 END fn;
 
 PROCEDURE Set(v : Data);
   VAR
     i : INTEGER;
     j : INTEGER;
+    k : INTEGER;
+    b : BOOLEAN;
 BEGIN
+  ASSERT(LEN(v^, 0) = 9, 1024);
+  ASSERT(LEN(v^, 1) = 6, 1025);
+  ASSERT(LEN(v^, 2) = 3, 1026);
+
   i := 0;
   WHILE i < LEN(v^, 0) DO
     j := 0;
     WHILE j < LEN(v^, 1) DO
-      v[i][j] := fn(i, j);
-      ASSERT(v[i][j] = fn(i, j), 1027);
+      k := 0;
+      WHILE k < LEN(v^, 2) DO
+        b := fn(i, j, k);
+        v[i][j][k] := b;
+        ASSERT(v[i][j][k] = fn(i, j, k), 1027);
+        INC(k);
+      END;
       INC(j);
     END;
     INC(i);
@@ -36,14 +46,27 @@ END Set;
 
 PROCEDURE Verify(v : Data);
   VAR
-    i : INTEGER;
-    j : INTEGER;
+    i   : INTEGER;
+    j   : INTEGER;
+    k   : INTEGER;
+    b   : BOOLEAN;
+    val : BOOLEAN;
 BEGIN
+  ASSERT(LEN(v^, 0) = 9, 2048);
+  ASSERT(LEN(v^, 1) = 6, 2049);
+  ASSERT(LEN(v^, 2) = 3, 2050);
+
   i := 0;
   WHILE i < LEN(v^, 0) DO
     j := 0;
     WHILE j < LEN(v^, 1) DO
-      ASSERT(v[i][j] = fn(i, j), 1028);
+      k := 0;
+      WHILE k < LEN(v^, 2) DO
+        b := fn(i, j, k);
+        val := v[i][j][k];
+        ASSERT(val = b, 2051);
+        INC(k);
+      END;
       INC(j);
     END;
     INC(i);
@@ -53,15 +76,10 @@ END Verify;
 
 PROCEDURE Test*;
 BEGIN
-  NEW(v, 9, 6);
-  ASSERT(LEN(v^, 0) = 9, 1024);
-  ASSERT(LEN(v^, 1) = 6, 1025);
-
   Set(v);
-  ASSERT(LEN(v^, 0) = 9, 1026);
-  ASSERT(LEN(v^, 1) = 6, 1027);
-
   Verify(v);
 END Test;
 
+BEGIN
+  NEW(v, 9, 6, 3);
 END CTDynamicArray.

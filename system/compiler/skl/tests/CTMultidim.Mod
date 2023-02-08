@@ -47,4 +47,5 @@ BEGIN
   END;
 END Test;
 
+BEGIN
 END CTMultidim.

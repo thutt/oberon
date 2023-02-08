@@ -110,13 +110,14 @@ IMPORT
   TYPE
     Array* = POINTER TO ArrayDesc;
     ArrayDesc* = RECORD (TypeDesc)
-      n* : LONGINT;  (* form = array => n = elems; form IN {openarr, dynarr} => n = dims (0 based) *)
+      len* : LONGINT;        (* form = array => length of array;
+                              * otherwise unused. *)
       of* : Type;
       td* : SymbolTypeDesc; (* type descriptor (use GetTD to read) *)
-      offset* : LONGINT;  (* form = array => 0;
-                           * form = dynarr => offset of LEN() in descriptor;
-                           * form = openarr = offset of LEN() on stack
-                           *)
+      lenTDOffs* : LONGINT; (* form = array => 0;
+                             * form = dynarr => offset of LEN() in descriptor;
+                             * form = openarr = offset of LEN() on stack
+                             *)
     END;
 
     Pointer* = POINTER TO PointerDesc;
@@ -616,10 +617,10 @@ IMPORT
   BEGIN
     NEW(t);
     InitBasicType(t, f);
-    t.n := 0;
+    t.len := 0;
     t.of := undftyp;
     t.td := NIL;
-    t.offset := 0;
+    t.lenTDOffs := MAX(LONGINT); (* Sentinel, out-of-bounds. *)
     RETURN t;
   END NewArrayType;
 
@@ -1667,7 +1668,7 @@ IMPORT
         base := arr.of;
         Size(base);
         IF f = array THEN
-          arr.size := arr.n * base.size;
+          arr.size := arr.len * base.size;
         ELSE
           IF base.form = dynarr THEN
             (* determine location of array bound offset *)
@@ -1676,12 +1677,14 @@ IMPORT
             ELSE
               offs := -4;
             END;
-            (* DOC: a section on calculating array bound offsets coupled with array layout *)
             arr.size := base.size + 4;
-            arr.offset := base(Array).offset + offs; (* offset to next array bound  *)
+            (* Refer to the 'memory' documentation to see the layout of
+               memory blocks for dynamic arrays.  The LEN for each dimension
+               is stored before the array data. *)
+            arr.lenTDOffs := base(Array).lenTDOffs + offs;
           ELSIF typDynArrParm IN arr.flags THEN (* parameter dynarr *)
             arr.size := 8; (* data pointer + LEN(arr, 0) *)
-            arr.offset := 4; (* LEN(arr, 0) offset *)
+            arr.lenTDOffs := 4; (* LEN(arr, 0) offset *)
           ELSE (* heap dynarr *)
             elem := ElemType(arr);
             IF elem.form = array THEN
@@ -1690,13 +1693,13 @@ IMPORT
             IF elem.form IN {bool, byte, char, sint, int,
                              lint, real, lreal, set, procedure} THEN
               arr.size := OPM.DynArrSmpElemSize;
-              arr.offset := OPM.DynArrSmpLen0Offs;
+              arr.lenTDOffs := OPM.DynArrSmpLen0Offs;
             ELSIF elem.form = pointer THEN
               arr.size := OPM.DynArrPtrElemSize;
-              arr.offset := OPM.DynArrPtrLen0Offs;
+              arr.lenTDOffs := OPM.DynArrPtrLen0Offs;
             ELSE (* elem.form = record *)
               arr.size := OPM.DynArrRecElemSize;
-              arr.offset := OPM.DynArrRecLen0Offs;
+              arr.lenTDOffs := OPM.DynArrRecLen0Offs;
             END;
           END;
         END;

@@ -217,8 +217,8 @@ MODULE SKLMD; (* Machine Description *)
     RFext      = ".Ref";
     OFext    = ".Obj";
     SFtag      = 0F0X;  (* SKL symbol file tag *)
-    SFversion = "0";
-    OFversion  = 11161967H; (* SKL 32-bit+ *)
+    SFversion = "1";
+    OFversion  = 11161967H; (* SKL 32-bit. *)
     OFtag      = 0F8320000H;  (* SKL 32-bit object file tag *)
 
   VAR

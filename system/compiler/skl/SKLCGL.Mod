@@ -1,4 +1,4 @@
-MODULE SKLCGL; (* Code Generation (low-level) for Intel 80x86 *)
+MODULE SKLCGL; (* Code Generation (low-level) for SKL virtual processor. *)
 (* XXX ensure labellist and fixuplist are set to NIL at end of compilation *)
 IMPORT
   SYSTEM,
@@ -2960,9 +2960,9 @@ IMPORT
       END
     ELSIF type.form = ST.array THEN
       base := type(ST.Array).of;
-      n := type(ST.Array).n;
+      n := type(ST.Array).len;
       WHILE base.form = ST.array DO
-        n := base(ST.Array).n * n;
+        n := base(ST.Array).len * n;
         base := base(ST.Array).of;
       END;
       IF (base.form = ST.pointer) OR (base.form = ST.record) THEN
@@ -3327,7 +3327,7 @@ IMPORT
         OPM.ObjWNum(nofDim);
         element := type;
         WHILE element.form = ST.array DO
-          OPM.ObjWNum(element(ST.Array).n);
+          OPM.ObjWNum(element(ST.Array).len);
           element := element(ST.Array).of;
         END; (* write LEN(arr, n) *)
       END;
@@ -3357,22 +3357,22 @@ IMPORT
         IF f IN {ST.bool, ST.byte, ST.char, ST.sint, ST.int,
                  ST.lint, ST.real, ST.lreal, ST.set, ST.procedure} THEN
           OPM.ObjW(1X);
-          OPM.ObjWNum(type(ST.Array).n + 1);
+          OPM.ObjWNum(type(ST.Array).len + 1);
           OPM.ObjWNum(f);
         ELSIF f = ST.pointer THEN
           OPM.ObjW(2X);
-          OPM.ObjWNum(type(ST.Array).n + 1);
+          OPM.ObjWNum(type(ST.Array).len + 1);
           OPM.ObjWNum(f);
         ELSIF f = ST.record THEN
           OPM.ObjW(3X);
-          OPM.ObjWNum(type(ST.Array).n + 1);
+          OPM.ObjWNum(type(ST.Array).len + 1);
           OPM.ObjWNum(eltype.mno);
           tdSym := ST.GetTD(eltype);
           WSymbolName(tdSym);
           OPM.ObjWNum(tdSym.fprint);
         ELSIF f = ST.array THEN
           OPM.ObjW(4X);
-          OPM.ObjWNum(type(ST.Array).n + 1);
+          OPM.ObjWNum(type(ST.Array).len + 1);
           arrtype := eltype;
           nofDim := 0;
           WHILE arrtype.form = ST.array DO
@@ -3398,7 +3398,7 @@ IMPORT
           OPM.ObjWNum(nofDim);
           arrtype := eltype;
           WHILE arrtype.form = ST.array DO
-            OPM.ObjWNum(arrtype(ST.Array).n);
+            OPM.ObjWNum(arrtype(ST.Array).len);
             arrtype := arrtype(ST.Array).of;
           END; (* write LEN(arr, n) *)
         END;

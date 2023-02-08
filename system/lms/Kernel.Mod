@@ -1,4 +1,4 @@
-(* Copyright (c) 1997-2000, 2021-2022 Logic Magicians Software *)
+(* Copyright (c) 1997-2000, 2021-2023 Logic Magicians Software *)
  MODULE Kernel; (* 97.01.20 *)
   IMPORT SYSTEM;
 
@@ -1431,7 +1431,9 @@
     WHILE nofDim > 0 DO
       SYSTEM.GET(srcBounds, len);
       INC(arrayData, SIZE(ADDRESS));
+(* GUNGLA -- change to LEN *)
       SYSTEM.MEMW(arrayData, daLen0, len - 1); (* Store max index, not LEN. *)
+(* GUNGLA -- change to LEN *)
       INC(srcBounds, SIZE(ADDRESS));
       DEC(nofDim);
     END;

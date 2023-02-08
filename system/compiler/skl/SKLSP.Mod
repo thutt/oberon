@@ -238,7 +238,6 @@ IMPORT
         atyp : ST.Array;
     BEGIN
       CheckSysFlag(sysflag, 0);
-
       IF PU.token = OPS.of THEN
         (*dynamic array*)
         atyp := ST.NewArrayType(ST.dynarr);
@@ -248,10 +247,10 @@ IMPORT
         (* Each dimension of a dynamic array shares the same td.
            It is not the same for static arrays. *)
         IF atyp.of.form = ST.dynarr THEN
-          atyp.n := atyp.of(ST.Array).n + 1;
+          atyp.len := atyp.of(ST.Array).len + 1;
           ST.SetTD(atyp, ST.GetTD(atyp.of));
         ELSE
-          atyp.n := 0
+          atyp.len := 0
         END
       ELSE
         (* regular array *)
@@ -266,7 +265,7 @@ IMPORT
         ELSE
           err(EL.NotInteger); n := 1
         END ;
-        atyp.n := n;
+        atyp.len := n;
 
         IF PU.token = OPS.of THEN
           OPS.Get(PU.token);

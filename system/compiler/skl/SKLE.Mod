@@ -945,7 +945,7 @@ BEGIN
       (* string length valid? *)
       ASSERT(from.class = T.Ndsgn, 1000);
       ASSERT(from.subcl = T.Dconst, 1001);
-      IF from(T.Design).sym(ST.SymbolConst).val.i0 > toArr.n THEN
+      IF from(T.Design).sym(ST.SymbolConst).val.i0 > toArr.len THEN
         err(EL.StringDoesNotFit);
       END;
     ELSE

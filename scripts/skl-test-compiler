@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022 Logic Magicians Software
+# Copyright (c) 2021, 2022, 2023 Logic Magicians Software
 #
 # Compile OS using x86-based SKL-targeting compiler.
 #
@@ -17,9 +17,9 @@ function compile()
     local cmd="skl-skl-oc ${pathname}";
     local output="$(skl-build-path)/${module}.compile.out"
 
-    echo "Executing: ${cmd}";
+    echo "Compiling: ${cmd}";
     if ! ${cmd} 2>&1 >"${output}"; then
-        echo "**** Compiling '${module} failed";
+        echo -e "**** Compiling '${module} failed\n\n";
         return 1;
     fi;
     return 0;
@@ -36,17 +36,17 @@ function run()
 
     echo "Executing: ${cmd}";
     if [[ ${value} == *manual* ]] ; then # Substring check
-        echo "**** Module '${module} is only run manually";
+        echo -e "**** Module '${module} is only run manually\n\n";
     elif [[ "${value}" == *pass* ]] ; then
-        if ! ${cmd} 2>&1 >"${output}"; then
-            echo "**** $?: Module '${module} expected to pass, but did not.";
+        if ! (${cmd} 2>&1) >"${output}"; then
+            echo -e "**** $?: Module '${module} expected to pass, but did not.\n\n";
         fi;
     elif [[ "${value}" == *fail* ]] ; then
-        if ${cmd} 2>&1 >"${output}"; then
-            echo "**** $?: Module '${module} expected to fail, but did not.";
+        if (${cmd} 2>&1) >"${output}"; then
+            echo -e "**** $?: Module '${module} expected to fail, but did not.\n\n";
         fi;
     else
-        echo "No recognizable arguments for '${module}' in '${value}'";
+        echo -e "No recognizable arguments for '${module}' in '${value}'\n\n";
         false;
     fi;
 }

@@ -741,7 +741,7 @@ BEGIN
 
     IF (t # NIL) & (i >= 0) THEN
       IF t.form = ST.array THEN
-        RETURN TB.NewIntConst(t(ST.Array).n); (* else dynarr *)
+        RETURN TB.NewIntConst(t(ST.Array).len); (* else dynarr *)
       END;
     ELSE
       err(EL.InvalidLen);

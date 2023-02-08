@@ -186,7 +186,7 @@ IMPORT
         base := type(ST.Array).of;
         FPrintId(base);
         FP.FPrint(idfp, base.idfp);
-        FP.FPrint(idfp, type(ST.Array).n);
+        FP.FPrint(idfp, type(ST.Array).len);
 
       | ST.procedure:
         FPrintSignature(idfp, type(ST.Procedure));
@@ -209,9 +209,9 @@ IMPORT
       FPrintFlds(type(ST.Record), adr, FALSE, pbfp, pvfp);
     ELSIF type.form = ST.array THEN
       baseT := type(ST.Array).of;
-      n := type(ST.Array).n;
+      n := type(ST.Array).len;
       WHILE baseT.form = ST.array DO (* why is this done? it is not used! *)
-        n := n * baseT(ST.Array).n;
+        n := n * baseT(ST.Array).len;
         baseT := baseT(ST.Array).of;
       END;
       IF (baseT.form = ST.pointer) OR (baseT.form = ST.record) THEN
@@ -876,8 +876,8 @@ IMPORT
 
     | sftARR, sftDARR, sftOARR:
       InType(t(ST.Array).of);
-      OPM.SymRInt(t(ST.Array).n);
-      OPM.SymRInt(t(ST.Array).offset);
+      OPM.SymRInt(t(ST.Array).len);
+      OPM.SymRInt(t(ST.Array).lenTDOffs);
       OPM.SymRInt(t.size);
       InTypeDescriptor(t, mno);
 
@@ -1334,9 +1334,9 @@ IMPORT
       OutFlds(type(ST.Record), adr, FALSE);
     ELSIF type.form = ST.array THEN
       base := type(ST.Array).of;
-      n := type(ST.Array).n;
+      n := type(ST.Array).len;
       WHILE base.form = ST.array DO
-        n := n * base(ST.Array).n;
+        n := n * base(ST.Array).len;
         base := base(ST.Array).of;
       END;
       IF base.form IN {ST.pointer, ST.record} THEN
@@ -1496,8 +1496,8 @@ IMPORT
             OPM.SymWInt(sftOARR);
           END;
           OutType(type(ST.Array).of);
-          OPM.SymWInt(type(ST.Array).n);
-          OPM.SymWInt(type(ST.Array).offset);
+          OPM.SymWInt(type(ST.Array).len);
+          OPM.SymWInt(type(ST.Array).lenTDOffs);
           OPM.SymWInt(type.size);
           OutTypeDescriptor(type(ST.Array).td);
 

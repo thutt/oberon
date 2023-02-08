@@ -980,8 +980,11 @@ IMPORT
     END;
   END CheckSetRange;
 
-
-  PROCEDURE GetLenDesc(VAR x, y : CGL.Item; arr : ST.Array); (* set y to LEN(x, arr.n) *)
+  (* GetArrayDimLen
+   *
+   *   Set y to 'LEN(x, arr.n)' (bound is one (1) less than the length).
+   *)
+  PROCEDURE GetArrayDimLen(VAR x, y : CGL.Item; arr : ST.Array);
     VAR f : SHORTINT;
   BEGIN
     f := arr.form;
@@ -991,22 +994,27 @@ IMPORT
       y.type := ST.linttyp;
       CASE x.mode OF
       |  CGL.Ivar: (* variable *)
-         y.adr    := arr.offset;
+         y.adr    := arr.lenTDOffs;
          y.offset := 0;
 
       |  CGL.Ivarpar, CGL.Ipar: (* [var] dynarr parm *)
          y.mode := CGL.Ivar;
-         INC(y.adr, arr.offset);
+         INC(y.adr, arr.lenTDOffs);
 
-      |  CGL.Iregi, CGL.Iregix, CGL.Iind, CGL.Iindx:
+      | CGL.Iregix:
+        y.mode := CGL.Iregi;
+        CGL.DoubleRef(y);
+        INC(y.offset, arr.lenTDOffs);
+
+      |  CGL.Iregi, CGL.Iind, CGL.Iindx:
          (* pointing at data or a variable (which must be a pointer) *)
          CGL.DoubleRef(x);
-         INC(y.offset, arr.offset);
+         INC(y.offset, arr.lenTDOffs);
       END;
     ELSE
-      MakeConstItem(y, arr.n, ST.linttyp);
+      MakeConstItem(y, arr.len, ST.linttyp);
     END;
-  END GetLenDesc;
+  END GetArrayDimLen;
 
 
   (* Field: Produce the address of a record field.
@@ -1123,9 +1131,9 @@ IMPORT
   END Deref;
 
 
-  PROCEDURE Index*(VAR x, index : CGL.Item); (* x[index] *)
+  PROCEDURE Index*(VAR x, index : CGL.Item); (* set x to ADR(x[index]) *)
     VAR
-      bound, inxreg : CGL.Item;
+      len, inxreg, one : CGL.Item;
       open : BOOLEAN;
       arr : ST.Array;
       label : CGL.Label;
@@ -1142,17 +1150,21 @@ IMPORT
       open := TRUE;
     END;
 
-    IF ((OPM.InxChk IN OPM.options) &
-        ((index.mode # CGL.Iconst) OR (index.val.i0 # 0))) THEN (* bounds check *)
+    IF ((OPM.InxChk IN OPM.options) & (* Bounds check. *)
+        ((index.mode # CGL.Iconst) OR
+         (index.val.i0 # 0))) THEN
       IF open THEN
-        GetLenDesc(x, bound, arr); (* [bound] = address of bounds *)
+        GetArrayDimLen(x, len, arr); (* [len] = address of bounds *)
+        Load(len);
+        MakeConstItem(one, 1, ST.linttyp);
+        CGL.PutAddConstant(len, one, len);
       ELSE
-        MakeConstItem(bound, arr.n, ST.linttyp);
+        MakeConstItem(len, arr.len, ST.linttyp);
+        Load(len);
       END;
-      Load(bound);
       Load(index);
-      CGL.PutSysTrapArray(index, bound);
-      CGL.Release(bound);
+      CGL.PutSysTrapArray(index, len);
+      CGL.Release(len);
     END;
 
     CASE x.mode OF
@@ -1220,16 +1232,31 @@ IMPORT
        END;
 
     |  CGL.Ivarx, CGL.Iindx, CGL.Iregix:
-       GetLenDesc(x, bound, arr); (* [bound] = address of bounds (or the bound itself)*)
+       (* This is a dynamic heap-based array.  The
+        * length stored in the internal type descriptor is
+        * LEN(x, dim) - 1.  This needs to be added back so
+        * the multiplication comes out correctly.
+        *)
+       GetArrayDimLen(x, len, arr);
+       IF open THEN
+         Load(len);
+         MakeConstItem(one, 1, ST.linttyp);
+         CGL.PutAddConstant(len, one, len);
+       END;
+       (* len is now the length of the arrray. *)
+
        CGL.InitItem(inxreg);
        inxreg.mode := CGL.Ireg;
        inxreg.reg  := x.inxreg;
        inxreg.type := ST.linttyp;
        CGL.DoubleRef(inxreg);
-       CGL.DoubleRef(bound);
-       Mul(inxreg, bound);
+       CGL.DoubleRef(len);
+
+       Mul(inxreg, len);
        Add(inxreg, index);
-       CGL.Release(bound);
+       CGL.DoubleRef(inxreg);
+       x.inxreg := inxreg.reg;
+       CGL.Release(len);
        CGL.Release(inxreg);
     END;
   END Index;
@@ -1874,7 +1901,7 @@ IMPORT
        IF at.form # ST.dynarr THEN (* Static length. *)
          MakeConstItem(y,  at.size - 1, ST.linttyp);
        ELSE (* dynamic length *)
-         GetLenDesc(ap, y, at(ST.Array));
+         GetArrayDimLen(ap, y, at(ST.Array));
          oneless := TRUE;
          at := at(ST.Array).of;
          WHILE at.form = ST.dynarr DO
@@ -1882,7 +1909,7 @@ IMPORT
              Load(y);
              CGL.PutGenReg(CGL.opcADD, y, one, y);
            END;
-           GetLenDesc(ap, z, at(ST.Array));
+           GetArrayDimLen(ap, z, at(ST.Array));
            Load(z);
            CGL.PutGenReg(CGL.opcADD, z, one, z);
            Mul(y, z);
@@ -1912,9 +1939,9 @@ IMPORT
      ELSE
        WHILE ft.form = ST.dynarr DO
          IF at.form = ST.dynarr THEN
-           GetLenDesc(ap, y, at(ST.Array));
+           GetArrayDimLen(ap, y, at(ST.Array));
          ELSE (* array *)
-           MakeConstItem(y, at(ST.Array).n - 1, ST.linttyp);
+           MakeConstItem(y, at(ST.Array).len - 1, ST.linttyp);
          END;
          Move(stk, y); (* final length of the array to stack *)
          ft := ft(ST.Array).of;
@@ -2200,7 +2227,7 @@ IMPORT
           CGL.InitItem(len);
           DynArrSize(type(ST.Array).of, size, round);
           parm.type := type;
-          GetLenDesc(parm, len, type(ST.Array));
+          GetArrayDimLen(parm, len, type(ST.Array));
           Load(len);
 
           IF (size.mode # CGL.Iconst) OR (size.val.i0 # 1) THEN
@@ -2779,7 +2806,7 @@ IMPORT
       MakeConstItem(cnt, 0, ST.chartyp);
       Move(dest, cnt);
     ELSE (* copy string to array *)
-      GetLenDesc(dest, cnt, dest.type(ST.Array));
+      GetArrayDimLen(dest, cnt, dest.type(ST.Array));
       TakeAddress(source, {1}, TRUE);
       TakeAddress(dest, {2}, TRUE);
       CGL.InitItem(len);
@@ -2911,7 +2938,7 @@ IMPORT
       DEC(i);
     END;
     MakeConstItem(one, 1, ST.linttyp);
-    GetLenDesc(arr, y, t);
+    GetArrayDimLen(arr, y, t);
     Load(y);
     CGL.Release(arr);
     arr := y;
@@ -3082,17 +3109,17 @@ IMPORT
         IF tf IN SimpleElemSet THEN
           t0 := GenFlags(OPM.DescFlagsDynArray0);
           t0 := CGL.TDGenDWord(tf);  (* type form of element *)
-          t0 := CGL.TDGenDWord(type(ST.Array).n + 1); (* nofDim *)
+          t0 := CGL.TDGenDWord(type(ST.Array).len + 1); (* nofDim *)
           t0 := CGL.TDGenDWord(eltype.size); (* element size *)
         ELSIF tf = ST.pointer THEN
           t0 := GenFlags(OPM.DescFlagsDynArray1);
           t0 := CGL.TDGenDWord(0);  (* reserved for GC *)
-          t0 := CGL.TDGenDWord(type(ST.Array).n + 1); (* nofDim *)
+          t0 := CGL.TDGenDWord(type(ST.Array).len + 1); (* nofDim *)
           t0 := CGL.TDGenDWord(eltype.size); (* element size *)
         ELSIF tf = ST.record THEN
           t0 := GenFlags(OPM.DescFlagsDynArray2);
           t0 := CGL.TDGenSym(ST.GetTD(eltype)); (* address of record TD *)
-          t0 := CGL.TDGenDWord(type(ST.Array).n + 1); (* nofDim *)
+          t0 := CGL.TDGenDWord(type(ST.Array).len + 1); (* nofDim *)
           t0 := CGL.TDGenDWord(eltype.size); (* element size *)
         ELSE
           ASSERT(tf = ST.array);
@@ -3123,7 +3150,7 @@ IMPORT
             t0 := CGL.TDGenSym(ST.GetTD(arrtype)); (* type descriptor of final element (q.cnt) *)
           END;
 
-          t0 := CGL.TDGenDWord(type(ST.Array).n + 1); (* nofDim (dynamic array) *)
+          t0 := CGL.TDGenDWord(type(ST.Array).len + 1); (* nofDim (dynamic array) *)
           t0 := CGL.TDGenDWord(eltype.size); (* element size *)
 
           arrtype := eltype; nofDim := 0;
@@ -3135,7 +3162,7 @@ IMPORT
 
           arrtype := eltype;
           WHILE arrtype.form = ST.array DO
-            t0 := CGL.TDGenDWord(arrtype(ST.Array).n); (* LEN(arr, nofDim) *)
+            t0 := CGL.TDGenDWord(arrtype(ST.Array).len); (* LEN(arr, nofDim) *)
             arrtype := arrtype(ST.Array).of;
           END;
         END;
@@ -3178,7 +3205,7 @@ IMPORT
         t0 := CGL.TDGenDWord(elType.size); (* element size in bytes *)
         t0 := CGL.TDGenDWord(nofDim); (* number of static array dimensions *)
         WHILE type.form = ST.array DO
-          t0 := CGL.TDGenDWord(type(ST.Array).n);
+          t0 := CGL.TDGenDWord(type(ST.Array).len);
           type := type(ST.Array).of;
         END;
       END ArrayTD;
