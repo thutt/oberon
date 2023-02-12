@@ -1,4 +1,4 @@
-(* Copyright (c) 2022 Logic Magicians Software *)
+(* Copyright (c) 2022, 2023 Logic Magicians Software *)
 MODULE FileDir;
 IMPORT
   SYSTEM,
@@ -138,9 +138,6 @@ IMPORT
   CONST (* res values *)
     NoError* = 0; (* must match Files.NoError *)
     FileNotFound* = -1;
-
-  TYPE
-    CloseDirProc = PROCEDURE [SYSTEM.C] (dir : LONGINT (* POINTER TO DIR *)) : LONGINT; (* int *)
 
   CONST (* File Descriptor *)
     InvalidHandle = -1;

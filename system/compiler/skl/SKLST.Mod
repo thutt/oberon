@@ -34,14 +34,14 @@ IMPORT
     real*      = 7;
     lreal*     = 8;
     set*       = 9;
-    string*    = 10;
+    string*    = 10; (* ConstExt string *)
     nil*       = 11;
     void*      = 12;
     pointer*   = 13;
     procedure* = 14;
-    array*     = 15;
-    openarr*   = 16;
-    dynarr*    = 17;
+    array*     = 15; (* Static-sized array. *)
+    openarr*   = 16; (* Used in GSA compiler; not this compiler. *)
+    dynarr*    = 17; (* Open array argument & heap-based dynamic array. *)
     record*    = 18;
     nofTypes*  = 19;
 
@@ -105,13 +105,24 @@ IMPORT
   CONST
     typDynArrParm* = 16; (* Dynamic array type a parameter, not heap-based;
                           * size calculated diferently.
-                          * (openarr in GSA compiler) *)
+                          * (openarr type 'form' in GSA compiler) *)
 
   TYPE
     Array* = POINTER TO ArrayDesc;
     ArrayDesc* = RECORD (TypeDesc)
-      len* : LONGINT;        (* form = array => length of array;
-                              * otherwise unused. *)
+      len* : LONGINT;        (* form = array  => length of array;
+                              *
+                              * form = dynarr => Dimensions of this array.
+                              *                  Dim 0: 1 + Dim 1 value.
+                              *                  Dim 1: 1 + Dim 2 value.
+                              *                  ...
+                              *                  Dim n: 0 (open array leaf)
+                              *        Ultimately, dimension 0 holds the
+                              *        overall number of dimensions of the
+                              *        array.
+                              *
+                              * form = openarr is unused; used by GSA compiler.
+                              *)
       of* : Type;
       td* : SymbolTypeDesc; (* type descriptor (use GetTD to read) *)
       lenTDOffs* : LONGINT; (* form = array => 0;

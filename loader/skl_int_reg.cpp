@@ -51,7 +51,7 @@ namespace skl {
             const md::uint32 r     = read_integer_register(cpu, R1);
             md::uint32       v     = l & r;
 
-            dialog::trace("%s: %s  R%u, R%u, R%u",
+            dialog::trace("%s: %s  R%u, R%u, R%u\n",
                           decoded_pc, mne, R0, R1, Rd);
 
             write_integer_register(cpu, Rd, v);
@@ -146,6 +146,7 @@ namespace skl {
                 write_integer_register(cpu, Rd, v);
                 increment_pc(cpu, 1);
             } else {
+                dialog::trace("\n");
                 hardware_trap(cpu, CR2_OUT_OF_BOUNDS_READ);
             }
         }
@@ -186,6 +187,7 @@ namespace skl {
                 write_integer_register(cpu, Rd, v);
                 increment_pc(cpu, 1);
             } else {
+                dialog::trace("\n");
                 software_trap(cpu, 12);
             }
         }
@@ -233,7 +235,7 @@ namespace skl {
             const md::uint32 r = read_integer_register(cpu, R1);
             md::uint32       v = ~(l | r);
 
-            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
+            dialog::trace("%s: %s  R%u, R%u, R%u\n", decoded_pc, mne, R0, R1, Rd);
 
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -254,7 +256,7 @@ namespace skl {
             const md::uint32 r = read_integer_register(cpu, R1);
             md::uint32       v = l | r;
 
-            dialog::trace("%s: %s  R%u, R%u, R%u", decoded_pc, mne, R0, R1, Rd);
+            dialog::trace("%s: %s  R%u, R%u, R%u\n", decoded_pc, mne, R0, R1, Rd);
 
             write_integer_register(cpu, Rd, v);
             increment_pc(cpu, 1);
@@ -316,7 +318,7 @@ namespace skl {
             const md::uint32 r = read_integer_register(cpu, R1);
             md::uint32       v = l ^ r;
 
-            dialog::trace("%s: %s  R%u, R%u, R%u",
+            dialog::trace("%s: %s  R%u, R%u, R%u\n",
                           decoded_pc, mne, R0, R1, Rd);
 
             write_integer_register(cpu, Rd, v);

@@ -96,7 +96,7 @@ IMPORT
         PU.Match(OPS.colon);
         parmType := Type(ST.notyp);
         IF parmType.form = ST.dynarr THEN
-          (* set flags so type size can calculate properly *)
+          (* Set flags so type size can be calculated properly. *)
           pt := parmType;
           WHILE pt.form = ST.dynarr DO
             INCL(pt.flags, ST.typDynArrParm);
@@ -250,7 +250,7 @@ IMPORT
           atyp.len := atyp.of(ST.Array).len + 1;
           ST.SetTD(atyp, ST.GetTD(atyp.of));
         ELSE
-          atyp.len := 0
+          atyp.len := 0;
         END
       ELSE
         (* regular array *)
@@ -263,7 +263,8 @@ IMPORT
             n := 1;
           END
         ELSE
-          err(EL.NotInteger); n := 1
+          err(EL.NotInteger);
+          n := 1;
         END ;
         atyp.len := n;
 

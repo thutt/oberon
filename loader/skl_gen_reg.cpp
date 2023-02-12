@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2021, 2022, 2023 Logic Magicians Software */
 
 #include <math.h>
 #include <stdlib.h>
@@ -132,7 +132,7 @@ namespace skl {
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
-            md::uint32 v;
+            md::uint32 v = 0;
 
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
@@ -162,7 +162,7 @@ namespace skl {
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
-            md::uint32 v;
+            md::uint32 v = 0;
 
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
@@ -324,7 +324,7 @@ namespace skl {
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
-            md::uint32 v;
+            md::uint32 v = 0;
 
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,
@@ -356,7 +356,7 @@ namespace skl {
         {
             md::uint32 l = read_integer_register(cpu, R0);
             md::uint32 r = read_integer_register(cpu, R1);
-            md::uint32 v;
+            md::uint32 v = 0;
 
             dialog::trace("%s: %s  %s%u, %s%u, %s%u", decoded_pc, mne,
                           reg_bank[b0], R0,

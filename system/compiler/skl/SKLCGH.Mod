@@ -49,6 +49,7 @@ IMPORT
 
   VAR
     True, False, One : CGL.Item;
+    MinusOne : CGL.Item;
 
   PROCEDURE ^ Simplify(VAR x : CGL.Item; Rx : SET);
   PROCEDURE ^ Convert*(VAR x : CGL.Item; to, from: SHORTINT);
@@ -114,11 +115,11 @@ IMPORT
     x.mode := CGL.Iconst;
     x.type := type;
     CASE type.form OF
-    |  ST.byte, ST.bool, ST.char, ST.sint, ST.int, ST.lint:
-       x.val.i0 := n;
+    | ST.byte, ST.bool, ST.char, ST.sint, ST.int, ST.lint:
+      x.val.i0 := n;
 
-    |  ST.set:
-       x.val.set := SYSTEM.VAL(SET, n);
+    | ST.set:
+      x.val.set := SYSTEM.VAL(SET, n);
     ELSE OPM.internal("H", 1200);
     END;
   END MakeConstItem;
@@ -189,7 +190,9 @@ IMPORT
 
 
   PROCEDURE MoveCoc(VAR x, y : CGL.Item); (* x = Coc(y) *)
-    VAR z : CGL.Item; lab : CGL.Label;
+    VAR
+      z : CGL.Item;
+      lab : CGL.Label;
 
     PROCEDURE SetBoolFromCC(VAR x, y : CGL.Item);
     BEGIN
@@ -254,45 +257,45 @@ IMPORT
       CGL.Iind, CGL.Iindx, CGL.Iregi, CGL.Iregix: (* Move to memory *)
 
       CASE source.mode OF
-      |  CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Ivarx, CGL.Iind,
-         CGL.Iindx, CGL.Iregi, CGL.Iregix:
-         Load(source);
-         StoreMem(dest, source);
-         CGL.Release(source);
+      | CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Ivarx, CGL.Iind,
+        CGL.Iindx, CGL.Iregi, CGL.Iregix:
+        Load(source);
+        StoreMem(dest, source);
+        CGL.Release(source);
 
-      |  CGL.Ireg:
-         StoreMem(dest, source);
+      | CGL.Ireg:
+        StoreMem(dest, source);
 
-      |  CGL.Iconst:
-         Load(source);
-         StoreMem(dest, source);
+      | CGL.Iconst:
+        Load(source);
+        StoreMem(dest, source);
       END;
 
-    |  CGL.Ireg:
-       CASE source.mode OF
-       |  CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Ivarx,
-          CGL.Iind, CGL.Iindx, CGL.Iregi, CGL.Iregix:
-          CGL.PutLoad(dest, source);
+    | CGL.Ireg:
+      CASE source.mode OF
+       | CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Ivarx,
+         CGL.Iind, CGL.Iindx, CGL.Iregi, CGL.Iregix:
+         CGL.PutLoad(dest, source);
 
-       |  CGL.Ireg:
-          LoadZero(zero);
-          CGL.PutGenReg(CGL.opcADD, zero, source, dest);
+       | CGL.Ireg:
+         LoadZero(zero);
+         CGL.PutGenReg(CGL.opcADD, zero, source, dest);
        END;
 
-    |  Itos:
-       ASSERT(source.mode IN {CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Ivarx,
-                              CGL.Iind, CGL.Iindx, CGL.Ireg, CGL.Iregi,
-                              CGL.Iregix, CGL.Iconst});
+    | Itos:
+      ASSERT(source.mode IN {CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Ivarx,
+                             CGL.Iind, CGL.Iindx, CGL.Ireg, CGL.Iregi,
+                             CGL.Iregix, CGL.Iconst});
 
-       Load(source);
-       IF source.type.form = ST.real THEN
-         opc := CGL.opcPUSHF;
-       ELSE
-         ASSERT(source.type.form = ST.lreal);
-         opc := CGL.opcPUSHD;
-       END;
+      Load(source);
+      IF source.type.form = ST.real THEN
+        opc := CGL.opcPUSHF;
+      ELSE
+        ASSERT(source.type.form = ST.lreal);
+        opc := CGL.opcPUSHD;
+      END;
 
-       CGL.PutStack(opc, source);
+      CGL.PutStack(opc, source);
     END;
   END moveF;
 
@@ -337,62 +340,62 @@ IMPORT
     ASSERT(dest.type.size <= SIZE(LONGINT), 1000);
     sm := source.mode;
     CASE dest.mode OF
-    |  CGL.Ivar, CGL.Ipar, CGL.Ivarx: (* Simple write to memory. *)
-       Load(source);
-       StoreMem(dest, source);
+    | CGL.Ivar, CGL.Ipar, CGL.Ivarx: (* Simple write to memory. *)
+      Load(source);
+      StoreMem(dest, source);
 
-    |  CGL.Ivarpar, CGL.Iind, CGL.Iindx: (* Indirect, Indirect-indexed. *)
-       LoadSource({CGL.Ireg, CGL.Iconst, CGL.Icoc, Itos}, source);
-       ASSERT(sm IN {CGL.Ireg, CGL.Iconst, CGL.Icoc, Itos}, 204);
+    | CGL.Ivarpar, CGL.Iind, CGL.Iindx: (* Indirect, Indirect-indexed. *)
+      LoadSource({CGL.Ireg, CGL.Iconst, CGL.Icoc, Itos}, source);
+      ASSERT(sm IN {CGL.Ireg, CGL.Iconst, CGL.Icoc, Itos}, 204);
 
-       temp := dest;
-       temp.type := ST.linttyp;
-       SimplifyIndirect(temp);
-       temp.mode := CGL.Iregi;
+      temp := dest;
+      temp.type := ST.linttyp;
+      SimplifyIndirect(temp);
+      temp.mode := CGL.Iregi;
 
-       IF sm IN {CGL.Ireg, CGL.Iconst, CGL.Ilproc, CGL.Ixproc,
-                 CGL.Iiproc, CGL.Itproc} THEN
-         Load(source);
-         StoreMem(temp, source);
-       ELSE
-         ASSERT(sm = CGL.Icoc, 1024);
-         MoveCoc(dest, source);
-       END;
+      IF sm IN {CGL.Ireg, CGL.Iconst, CGL.Ilproc, CGL.Ixproc,
+                CGL.Iiproc, CGL.Itproc} THEN
+        Load(source);
+        StoreMem(temp, source);
+      ELSE
+        ASSERT(sm = CGL.Icoc, 1024);
+        MoveCoc(dest, source);
+      END;
 
-    |  CGL.Ireg:
-       ASSERT(sm IN {CGL.Iadr, CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Iconst,
-                     CGL.Ivarx, CGL.Iind, CGL.Iindx, CGL.Ireg,
-                     CGL.Icoc, CGL.Iregi, CGL.Iregix}, 206);
-       LoadSource({CGL.Iadr, CGL.Ivar, CGL.Ipar, CGL.Iconst, CGL.Ivarx, CGL.Iind,
-                   CGL.Iindx, CGL.Ireg, CGL.Iregi, CGL.Iregix, CGL.Icoc,
-                   Itos}, source);
-       IF sm IN {CGL.Iadr, CGL.Ivar, CGL.Ipar, CGL.Iconst, CGL.Ivarx, CGL.Iind,
-                 CGL.Iindx, CGL.Iregi, CGL.Iregix} THEN
-         CGL.PutLoad(dest, source);
-       ELSIF sm = CGL.Ireg THEN
-         LoadZero(zero);
-         CGL.PutGenReg(CGL.opcADD, zero, source, dest);
-       ELSIF sm = CGL.Icoc THEN
-         MoveCoc(dest, source);
-       ELSIF sm = Itos THEN
-         ASSERT(dest.type.size = 4, 207);
-         CGL.PutStack(CGL.opcPOP, dest);
-       END;
+    | CGL.Ireg:
+      ASSERT(sm IN {CGL.Iadr, CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Iconst,
+                    CGL.Ivarx, CGL.Iind, CGL.Iindx, CGL.Ireg,
+                    CGL.Icoc, CGL.Iregi, CGL.Iregix}, 206);
+      LoadSource({CGL.Iadr, CGL.Ivar, CGL.Ipar, CGL.Iconst, CGL.Ivarx, CGL.Iind,
+                  CGL.Iindx, CGL.Ireg, CGL.Iregi, CGL.Iregix, CGL.Icoc,
+                  Itos}, source);
+      IF sm IN {CGL.Iadr, CGL.Ivar, CGL.Ipar, CGL.Iconst, CGL.Ivarx, CGL.Iind,
+                CGL.Iindx, CGL.Iregi, CGL.Iregix} THEN
+        CGL.PutLoad(dest, source);
+      ELSIF sm = CGL.Ireg THEN
+        LoadZero(zero);
+        CGL.PutGenReg(CGL.opcADD, zero, source, dest);
+      ELSIF sm = CGL.Icoc THEN
+        MoveCoc(dest, source);
+      ELSIF sm = Itos THEN
+        ASSERT(dest.type.size = 4, 207);
+        CGL.PutStack(CGL.opcPOP, dest);
+      END;
 
-    |  CGL.Iregi, CGL.Iregix:
-       LoadSource({CGL.Ireg, CGL.Iconst, CGL.Icoc, Itos}, source);
-       ASSERT(sm IN {CGL.Ireg, CGL.Iconst, CGL.Icoc}, 208);
-       IF sm IN {CGL.Ireg, CGL.Iconst} THEN
-         Load(source);
-         StoreMem(dest, source);
-       ELSE
-         ASSERT(sm = CGL.Icoc);
-         MoveCoc(dest, source);
-       END;
+    | CGL.Iregi, CGL.Iregix:
+      LoadSource({CGL.Ireg, CGL.Iconst, CGL.Icoc, Itos}, source);
+      ASSERT(sm IN {CGL.Ireg, CGL.Iconst, CGL.Icoc}, 208);
+      IF sm IN {CGL.Ireg, CGL.Iconst} THEN
+        Load(source);
+        StoreMem(dest, source);
+      ELSE
+        ASSERT(sm = CGL.Icoc);
+        MoveCoc(dest, source);
+      END;
 
-    |  Itos:
-       Load(source);
-       CGL.PutStack(CGL.opcPUSH, source);
+    | Itos:
+      Load(source);
+      CGL.PutStack(CGL.opcPUSH, source);
     END;
   END moveI;
 
@@ -465,90 +468,90 @@ IMPORT
                            * (i.e. indexing in CGL) *)
 
     CASE x.mode OF
-    |  CGL.Ivar, CGL.Ilproc, CGL.Ixproc, CGL.Iiproc:
-       IF global THEN
-         x.mode := CGL.Iadr;
-       ELSE
-         CGL.GetReg(x, rs);
-         CGL.PutLoadAddress(x, y);
-       END;
+    | CGL.Ivar, CGL.Ilproc, CGL.Ixproc, CGL.Iiproc:
+      IF global THEN
+        x.mode := CGL.Iadr;
+      ELSE
+        CGL.GetReg(x, rs);
+        CGL.PutLoadAddress(x, y);
+      END;
 
-    |  CGL.Ipar:
-       IF y.type.form = ST.dynarr THEN (* passed by address; Ivarpar *)
-         y.type := ST.linttyp;
-         CGL.GetReg(x, rs);
-         Load(y);
-         LoadZero(zero);
-         CGL.PutGenReg(CGL.opcADD, zero, y, x);
-       ELSE
-         CGL.GetReg(x, rs);
-         CGL.PutLoadAddress(x, y);
-       END;
+    | CGL.Ipar:
+      IF y.type.form = ST.dynarr THEN (* passed by address; Ivarpar *)
+        y.type := ST.linttyp;
+        CGL.GetReg(x, rs);
+        Load(y);
+        LoadZero(zero);
+        CGL.PutGenReg(CGL.opcADD, zero, y, x);
+      ELSE
+        CGL.GetReg(x, rs);
+        CGL.PutLoadAddress(x, y);
+      END;
 
-    |  CGL.Ivarpar:
-       y.mode := CGL.Ipar;
-       y.type := ST.linttyp;
-       TemporaryReg(x, x.type);
-       Load(y);
-       LoadZero(zero);
-       CGL.PutGenReg(CGL.opcADD, y, zero, x); (* add Ry, Rzero, Rx *)
+    | CGL.Ivarpar:
+      y.mode := CGL.Ipar;
+      y.type := ST.linttyp;
+      TemporaryReg(x, x.type);
+      Load(y);
+      LoadZero(zero);
+      CGL.PutGenReg(CGL.opcADD, y, zero, x); (* add Ry, Rzero, Rx *)
 
-    |  CGL.Ivarx:
-       TemporaryReg(x, x.type);
-       CGL.PutLoadAddress(x, y);
-       CGL.Release(y);
+    | CGL.Ivarx:
+      TemporaryReg(x, x.type);
+      CGL.PutLoadAddress(x, y);
+      CGL.Release(y);
 
-    |  CGL.Iind:
-       CGL.GetReg(x, CGL.RegWord);
-       y.mode := CGL.Ivar;
-       offset := y.offset;
-       y.type := ST.linttyp;
-       x.type := ST.linttyp;
-       CGL.PutLoad(x, y);
-       IF offset # 0 THEN
-         y := x;
-         y.mode := CGL.Iregi;
-         CGL.DoubleRef(y);
-         y.offset := offset;
-         CGL.PutLoadAddress(x, y);
-         CGL.Release(y);
-       END;
-       x.mode := CGL.Ireg;
+    | CGL.Iind:
+      CGL.GetReg(x, CGL.RegWord);
+      y.mode := CGL.Ivar;
+      offset := y.offset;
+      y.type := ST.linttyp;
+      x.type := ST.linttyp;
+      CGL.PutLoad(x, y);
+      IF offset # 0 THEN
+        y := x;
+        y.mode := CGL.Iregi;
+        CGL.DoubleRef(y);
+        y.offset := offset;
+        CGL.PutLoadAddress(x, y);
+        CGL.Release(y);
+      END;
+      x.mode := CGL.Ireg;
 
-    |  CGL.Iregi:(* TODO: Iregi, Iregix _ARE_ addresses.
-                  *       Was this loading done for a limitation of x86 registers?
-                  *)
-       IF (x.offset # 0) OR ~(x.reg IN rs) OR (rs * CGL.GRegFree # {}) THEN
-         IF ~(x.reg IN rs) OR (rs * CGL.GRegFree # {}) THEN
-           (* If current register not appropriate or cannot
-            * accomodate, get new reg *)
-           CGL.GetReg(x, rs);
-         ELSE
-           x.mode := CGL.Ireg;
-           CGL.DoubleRef(x);
-         END;
-         CGL.PutLoadAddress(x, y);
-         CGL.Release(y);
-       ELSE
-         x.mode := CGL.Ireg;
-       END;
-       x.offset := 0;
+    | CGL.Iregi:(* TODO: Iregi, Iregix _ARE_ addresses.
+                 *       Was this loading done for a limitation of x86 registers?
+                 *)
+      IF (x.offset # 0) OR ~(x.reg IN rs) OR (rs * CGL.GRegFree # {}) THEN
+        IF ~(x.reg IN rs) OR (rs * CGL.GRegFree # {}) THEN
+          (* If current register not appropriate or cannot
+           * accomodate, get new reg *)
+          CGL.GetReg(x, rs);
+        ELSE
+          x.mode := CGL.Ireg;
+          CGL.DoubleRef(x);
+        END;
+        CGL.PutLoadAddress(x, y);
+        CGL.Release(y);
+      ELSE
+        x.mode := CGL.Ireg;
+      END;
+      x.offset := 0;
 
-    |  CGL.Iregix:
-       IF ~(x.reg IN rs) THEN
-         CGL.GetReg(x, rs);
-       ELSE
-         x.mode := CGL.Ireg;
-         CGL.DoubleRef(x);
-       END;
-       CGL.PutLoadAddress(x, y); (* la (Ry+offset), Rx *)
-       CGL.Release(y);
-       x.offset := 0;
+    | CGL.Iregix:
+      IF ~(x.reg IN rs) THEN
+        CGL.GetReg(x, rs);
+      ELSE
+        x.mode := CGL.Ireg;
+        CGL.DoubleRef(x);
+      END;
+      CGL.PutLoadAddress(x, y); (* la (Ry+offset), Rx *)
+      CGL.Release(y);
+      x.offset := 0;
 
-    |  Itos:
-       x.mode := CGL.Ireg;
-       x.reg  := CGL.SP;
-       CGL.DoubleRef(x);
+    | Itos:
+      x.mode := CGL.Ireg;
+      x.reg  := CGL.SP;
+      CGL.DoubleRef(x);
     END;
     IF force OR ~global & (rs # {}) & ((x.mode = CGL.Ireg) & ~(x.reg IN rs)) THEN
       LoadItem(x, rs);
@@ -826,86 +829,88 @@ IMPORT
 
   (* Load an item into one of a specific set of registers *)
   PROCEDURE LoadItem(VAR x : CGL.Item; Rx : SET); (* Rx <=> register set which x can use *)
-    VAR y : CGL.Item; s : SET;
+    VAR
+      y : CGL.Item;
+      s : SET;
   BEGIN
     ASSERT(~(x.type.form IN ST.RealSet), 212);
     y := x;
     CASE x.mode OF
-    |  CGL.Ivar, CGL.Ipar:
-       CGL.GetReg(x, Rx);
-       Move(x, y);
+    | CGL.Ivar, CGL.Ipar:
+      CGL.GetReg(x, Rx);
+      Move(x, y);
 
-    |  CGL.Ivarpar, CGL.Iind:
-       CGL.GetReg(x, Rx);
-       Move(x, y);
+    | CGL.Ivarpar, CGL.Iind:
+      CGL.GetReg(x, Rx);
+      Move(x, y);
 
-    |  CGL.Iconst:
-       CGL.GetReg(x, Rx);
-       Move(x, y);
+    | CGL.Iconst:
+      CGL.GetReg(x, Rx);
+      Move(x, y);
 
-    |  CGL.Ivarx:
-       IF x.inxreg IN Rx THEN
-         CGL.DoubleRef(y);
-         x.mode := CGL.Ireg;
-         x.reg  := x.inxreg;
-         Move(x, y);
-         CGL.Release(y);
-       ELSE
-         CGL.GetReg(x, Rx);
-         Move(x, y);
-         CGL.Release(y);
-       END;
+    | CGL.Ivarx:
+      IF x.inxreg IN Rx THEN
+        CGL.DoubleRef(y);
+        x.mode := CGL.Ireg;
+        x.reg  := x.inxreg;
+        Move(x, y);
+        CGL.Release(y);
+      ELSE
+        CGL.GetReg(x, Rx);
+        Move(x, y);
+        CGL.Release(y);
+      END;
 
-    |  CGL.Iindx:
-       IF x.inxreg IN Rx THEN
-         CGL.DoubleRef(y);
-         x.mode := CGL.Ireg;
-         x.reg  := x.inxreg;
-         Move(x, y);
-         CGL.Release(y);
-       ELSE
-         CGL.GetReg(x, Rx);
-         Move(x, y);
-         CGL.Release(y);
-       END;
+    | CGL.Iindx:
+      IF x.inxreg IN Rx THEN
+        CGL.DoubleRef(y);
+        x.mode := CGL.Ireg;
+        x.reg  := x.inxreg;
+        Move(x, y);
+        CGL.Release(y);
+      ELSE
+        CGL.GetReg(x, Rx);
+        Move(x, y);
+        CGL.Release(y);
+      END;
 
-    |  CGL.Ireg, CGL.Iregi:
-       IF ~(x.reg IN Rx) THEN
-         CGL.GetReg(x, Rx);
-         Move(x, y);
-         CGL.Release(y);
-       END;
+    | CGL.Ireg, CGL.Iregi:
+      IF ~(x.reg IN Rx) THEN
+        CGL.GetReg(x, Rx);
+        Move(x, y);
+        CGL.Release(y);
+      END;
 
-    |  CGL.Iregix:
-       s := {};
-       INCL(s, SHORT(SHORT(x.reg)));
-       INCL(s, SHORT(SHORT(x.inxreg)));
+    | CGL.Iregix:
+      s := {};
+      INCL(s, SHORT(SHORT(x.reg)));
+      INCL(s, SHORT(SHORT(x.inxreg)));
 
-       IF s * Rx # s THEN
-         x.mode := CGL.Ireg;
-         IF x.reg IN Rx THEN
-           CGL.DoubleRef(x);
-           Move(x, y);
-           CGL.Release(y);
-         ELSIF x.inxreg IN Rx THEN
-           x.reg := x.inxreg;
-           CGL.DoubleRef(x);
-           Move(x, y);
-           CGL.Release(y);
-         ELSE
-           CGL.GetReg(x, Rx);
-           Move(x, y);
-           CGL.Release(y);
-         END;
-       END;
+      IF s * Rx # s THEN
+        x.mode := CGL.Ireg;
+        IF x.reg IN Rx THEN
+          CGL.DoubleRef(x);
+          Move(x, y);
+          CGL.Release(y);
+        ELSIF x.inxreg IN Rx THEN
+          x.reg := x.inxreg;
+          CGL.DoubleRef(x);
+          Move(x, y);
+          CGL.Release(y);
+        ELSE
+          CGL.GetReg(x, Rx);
+          Move(x, y);
+          CGL.Release(y);
+        END;
+      END;
 
     | CGL.Iadr:
       CGL.GetReg(x, Rx);
       CGL.PutLoadAddress(x, y);
 
-    |  Itos:
-       CGL.GetReg(x, Rx);
-       Move(x, y);
+    | Itos:
+      CGL.GetReg(x, Rx);
+      Move(x, y);
     END;
   END LoadItem;
 
@@ -917,19 +922,20 @@ IMPORT
     targ := CGL.RegWord - Rx;
     IF free * Rx = {} THEN
       CASE y.mode OF
-      |  CGL.Ivarx, CGL.Iindx:
-         IF y.inxreg IN Rx THEN
-           Simplify(y, targ);
-         END;
+      | CGL.Ivarx, CGL.Iindx:
+        IF y.inxreg IN Rx THEN
+          Simplify(y, targ);
+        END;
 
-      |  CGL.Iregi:
-         IF y.reg IN Rx THEN
-           Simplify(y, targ);
-         END;
-      |  CGL.Iregix:
-         IF (y.reg IN Rx) OR (y.inxreg IN Rx) THEN
-           Simplify(y, targ);
-         END;
+      | CGL.Iregi:
+        IF y.reg IN Rx THEN
+          Simplify(y, targ);
+        END;
+
+      | CGL.Iregix:
+        IF (y.reg IN Rx) OR (y.inxreg IN Rx) THEN
+          Simplify(y, targ);
+        END;
       ELSE (* nop; we will get an error on register allocation *)
       END;
     END;
@@ -970,7 +976,8 @@ IMPORT
 
   PROCEDURE CheckSetRange(VAR x : CGL.Item);
     VAR
-      zero, result, y : CGL.Item; fail, pass: CGL.Label;
+      zero, result, y : CGL.Item;
+      fail, pass: CGL.Label;
   BEGIN
     IF (OPM.RanChk IN OPM.options) & (x.mode # CGL.Iconst) THEN
       IF x.mode # CGL.Ireg THEN
@@ -993,23 +1000,23 @@ IMPORT
       y := x;
       y.type := ST.linttyp;
       CASE x.mode OF
-      |  CGL.Ivar: (* variable *)
-         y.adr    := arr.lenTDOffs;
-         y.offset := 0;
+      | CGL.Ivar: (* variable *)
+        y.adr    := arr.lenTDOffs;
+        y.offset := 0;
 
-      |  CGL.Ivarpar, CGL.Ipar: (* [var] dynarr parm *)
-         y.mode := CGL.Ivar;
-         INC(y.adr, arr.lenTDOffs);
+      | CGL.Ivarpar, CGL.Ipar: (* [var] dynarr parm *)
+        y.mode := CGL.Ivar;
+        INC(y.adr, arr.lenTDOffs);
 
       | CGL.Iregix:
         y.mode := CGL.Iregi;
         CGL.DoubleRef(y);
         INC(y.offset, arr.lenTDOffs);
 
-      |  CGL.Iregi, CGL.Iind, CGL.Iindx:
-         (* pointing at data or a variable (which must be a pointer) *)
-         CGL.DoubleRef(x);
-         INC(y.offset, arr.lenTDOffs);
+      | CGL.Iregi, CGL.Iind, CGL.Iindx:
+        (* pointing at data or a variable (which must be a pointer) *)
+        CGL.DoubleRef(x);
+        INC(y.offset, arr.lenTDOffs);
       END;
     ELSE
       MakeConstItem(y, arr.len, ST.linttyp);
@@ -1026,25 +1033,26 @@ IMPORT
   PROCEDURE Field*(VAR x : CGL.Item; offset : LONGINT);
   BEGIN
     CASE x.mode OF
-    |  CGL.Ivar:
-       INC(x.adr, offset);
+    | CGL.Ivar:
+      INC(x.adr, offset);
 
-    |  CGL.Ipar:
-       IF x.type.form = ST.dynarr THEN (* Ivarpar *)
-         x.mode := CGL.Iind;
-         x.offset := offset;
-       ELSE
-         INC(x.adr, offset);
-       END;
+    | CGL.Ipar:
+      IF x.type.form = ST.dynarr THEN (* Dynamic arrays are copied and treated like
+                                       * Ivarpar (data on stack). *)
+        x.mode := CGL.Iind;
+        x.offset := offset;
+      ELSE
+        INC(x.adr, offset);
+      END;
 
-    |  CGL.Ivarpar:
-       x.mode := CGL.Iind;
-       x.offset := offset;
+    | CGL.Ivarpar:
+      x.mode := CGL.Iind;
+      x.offset := offset;
 
-    |  CGL.Ivarx, CGL.Iind, CGL.Iindx:
-       TakeAddress(x, CGL.RegWord, TRUE);
-       x.mode := CGL.Iregi;
-       x.offset := offset;
+    | CGL.Ivarx, CGL.Iind, CGL.Iindx:
+      TakeAddress(x, CGL.RegWord, TRUE);
+      x.mode := CGL.Iregi;
+      x.offset := offset;
 
     | CGL.Iregi, CGL.Iregix:
       x.offset := offset;
@@ -1078,53 +1086,54 @@ IMPORT
       x.mode := CGL.Iregi;
     ELSE
       CASE x.mode OF
-      |  CGL.Ivar:
-         x.mode := CGL.Iind;
+      | CGL.Ivar:
+        x.mode := CGL.Iind;
 
-      |  CGL.Ipar:
-         IF x.type.form = ST.dynarr THEN (* Ivarpar *)
-           Load(x);
-           x.mode := CGL.Iregi;
-           x.offset := 0;
-         ELSE
-           x.mode := CGL.Iind;
-         END;
+      | CGL.Ipar:
+        IF x.type.form = ST.dynarr THEN (* Ivarpar *)
+          Load(x);
+          x.mode := CGL.Iregi;
+          x.offset := 0;
+        ELSE
+          x.mode := CGL.Iind;
+        END;
 
-      |  CGL.Ivarpar:
-         Load(x);
-         x.mode := CGL.Iregi;
-         x.offset := 0;
+      | CGL.Ivarpar:
+        Load(x);
+        x.mode := CGL.Iregi;
+        x.offset := 0;
 
-      |  CGL.Ivarx:
-         (* 98.03.24: this cannot be transformed into an Iindx because the
-          * type of the derefed data is going to be stored into the Item;
-          * this will have dire consequences on the address calculation.
-          * The only solution is to actually perform the deref here and
-          * create an Iregi Item *)
-         y := x;
-         CGL.GetReg(x, CGL.RegWord);
-         Move(x, y);
-         x.mode := CGL.Iregi;
-         CGL.Release(y);
+      | CGL.Ivarx:
+        (* 98.03.24: this cannot be transformed into an Iindx because the
+         * type of the derefed data is going to be stored into the Item;
+         * this will have dire consequences on the address calculation.
+         * The only solution is to actually perform the deref here and
+         * create an Iregi Item *)
+        y := x;
+        CGL.GetReg(x, CGL.RegWord);
+        Move(x, y);
+        x.mode := CGL.Iregi;
+        CGL.Release(y);
 
-      |  CGL.Iind:
-         y := x;
-         CGL.GetReg(x, CGL.RegWord);
-         Move(x, y);
-         x.mode := CGL.Iregi;
+      | CGL.Iind:
+        y := x;
+        CGL.GetReg(x, CGL.RegWord);
+        Move(x, y);
+        x.mode := CGL.Iregi;
 
-      |  CGL.Iindx:
-         y := x;
-         CGL.GetReg(x, CGL.RegWord);
-         Move(x, y);
-         x.mode := CGL.Iregi;
-         CGL.Release(y);
-      |  CGL.Iregi, CGL.Iregix:
-         y := x;
-         CGL.GetReg(x, CGL.RegWord);
-         Move(x, y);
-         x.mode := CGL.Iregi;
-         CGL.Release(y);
+      | CGL.Iindx:
+        y := x;
+        CGL.GetReg(x, CGL.RegWord);
+        Move(x, y);
+        x.mode := CGL.Iregi;
+        CGL.Release(y);
+
+      | CGL.Iregi, CGL.Iregix:
+        y := x;
+        CGL.GetReg(x, CGL.RegWord);
+        Move(x, y);
+        x.mode := CGL.Iregi;
+        CGL.Release(y);
       END;
     END;
     x.offset := 0;
@@ -1168,96 +1177,96 @@ IMPORT
     END;
 
     CASE x.mode OF
-    |  CGL.Ivar:
-       IF index.mode = CGL.Iconst THEN
-         INC(x.adr, index.val.i0);
-       ELSE
-         Load(index);
-         x.mode := CGL.Ivarx;
-         x.inxreg := index.reg;
-       END;
+    | CGL.Ivar:
+      IF index.mode = CGL.Iconst THEN
+        INC(x.adr, index.val.i0);
+      ELSE
+        Load(index);
+        x.mode := CGL.Ivarx;
+        x.inxreg := index.reg;
+      END;
 
-    |  CGL.Ipar:
-       IF x.type.form = ST.dynarr THEN (* Implied Ivarpar. *)
-         IF index.mode = CGL.Iconst THEN
-           x.mode := CGL.Iind;
-           x.offset := index.val.i0;
-         ELSE
-           Load(index);
-           TakeAddress(x, CGL.RegWord, TRUE);
-           x.mode   := CGL.Iregix;
-           x.offset := 0;
-           x.inxreg := index.reg;
-         END;
-       ELSE
-         IF index.mode = CGL.Iconst THEN
-           INC(x.adr, index.val.i0);
-         ELSE
-           Load(index);
-           x.mode   := CGL.Ivarx;
-           x.inxreg := index.reg;
-         END;
-       END;
+    | CGL.Ipar:
+      IF x.type.form = ST.dynarr THEN (* Implied Ivarpar. *)
+        IF index.mode = CGL.Iconst THEN
+          x.mode := CGL.Iind;
+          x.offset := index.val.i0;
+        ELSE
+          Load(index);
+          TakeAddress(x, CGL.RegWord, TRUE);
+          x.mode   := CGL.Iregix;
+          x.offset := 0;
+          x.inxreg := index.reg;
+        END;
+      ELSE
+        IF index.mode = CGL.Iconst THEN
+          INC(x.adr, index.val.i0);
+        ELSE
+          Load(index);
+          x.mode   := CGL.Ivarx;
+          x.inxreg := index.reg;
+        END;
+      END;
 
-    |  CGL.Ivarpar:
-       IF index.mode = CGL.Iconst THEN
-         x.mode := CGL.Iind;
-         x.offset := index.val.i0;
-       ELSE
-         Load(index);
-         TakeAddress(x, CGL.RegWord, TRUE);
-         x.mode   := CGL.Iregix;
-         x.offset := 0;
-         x.inxreg := index.reg;
-       END;
+    | CGL.Ivarpar:
+      IF index.mode = CGL.Iconst THEN
+        x.mode := CGL.Iind;
+        x.offset := index.val.i0;
+      ELSE
+        Load(index);
+        TakeAddress(x, CGL.RegWord, TRUE);
+        x.mode   := CGL.Iregix;
+        x.offset := 0;
+        x.inxreg := index.reg;
+      END;
 
-    |  CGL.Iind:
-       IF index.mode = CGL.Iconst THEN
-         INC(x.offset, index.val.i0);
-       ELSE
-         Load(index);
-         TakeAddress(x, CGL.RegWord, TRUE);
-         x.mode   := CGL.Iregix;
-         x.offset := 0;
-         x.inxreg := index.reg;
-       END;
+    | CGL.Iind:
+      IF index.mode = CGL.Iconst THEN
+        INC(x.offset, index.val.i0);
+      ELSE
+        Load(index);
+        TakeAddress(x, CGL.RegWord, TRUE);
+        x.mode   := CGL.Iregix;
+        x.offset := 0;
+        x.inxreg := index.reg;
+      END;
 
-    |  CGL.Iregi:
-       IF index.mode = CGL.Iconst THEN
-         INC(x.offset, index.val.i0 * x.type(ST.Array).of.size);
-       ELSE
-         Load(index);
-         x.mode   := CGL.Iregix;
-         x.inxreg := index.reg;
-       END;
+    | CGL.Iregi:
+      IF index.mode = CGL.Iconst THEN
+        INC(x.offset, index.val.i0 * x.type(ST.Array).of.size);
+      ELSE
+        Load(index);
+        x.mode   := CGL.Iregix;
+        x.inxreg := index.reg;
+      END;
 
-    |  CGL.Ivarx, CGL.Iindx, CGL.Iregix:
-       (* This is a dynamic heap-based array.  The
-        * length stored in the internal type descriptor is
-        * LEN(x, dim) - 1.  This needs to be added back so
-        * the multiplication comes out correctly.
-        *)
-       GetArrayDimLen(x, len, arr);
-       IF open THEN
-         Load(len);
-         MakeConstItem(one, 1, ST.linttyp);
-         CGL.PutAddConstant(len, one, len);
-       END;
-       (* len is now the length of the arrray. *)
+    | CGL.Ivarx, CGL.Iindx, CGL.Iregix:
+      (* This is a dynamic heap-based array.  The
+       * length stored in the internal type descriptor is
+       * LEN(x, dim) - 1.  This needs to be added back so
+       * the multiplication comes out correctly.
+       *)
+      GetArrayDimLen(x, len, arr);
+      IF open THEN
+        Load(len);
+        MakeConstItem(one, 1, ST.linttyp);
+        CGL.PutAddConstant(len, one, len);
+      END;
+      (* len is now the length of the arrray. *)
 
-       CGL.InitItem(inxreg);
-       inxreg.mode := CGL.Ireg;
-       inxreg.reg  := x.inxreg;
-       inxreg.type := ST.linttyp;
-       CGL.DoubleRef(inxreg);
-       CGL.DoubleRef(len);
+      CGL.InitItem(inxreg);
+      inxreg.mode := CGL.Ireg;
+      inxreg.reg  := x.inxreg;
+      inxreg.type := ST.linttyp;
+      CGL.DoubleRef(inxreg);
+      CGL.DoubleRef(len);
 
-       Mul(inxreg, len);
-       Add(inxreg, index);
-       CGL.DoubleRef(inxreg);
-       x.inxreg := inxreg.reg;
-       CGL.Release(len);
-       CGL.Release(inxreg);
+      Mul(inxreg, len);
+      Add(inxreg, index);
+      CGL.DoubleRef(inxreg);
+      x.inxreg := inxreg.reg;
+      CGL.Release(len);
+      CGL.Release(inxreg);
     END;
   END Index;
 
@@ -1298,7 +1307,9 @@ IMPORT
 
     (* if there is interference, the entire dword register must be assumed to be needed *)
     PROCEDURE uninterfere(VAR r0 : LONGINT; taken : CGL.GRegSet);
-      VAR y, z : CGL.Item; r1 : LONGINT;
+      VAR
+        y, z : CGL.Item;
+        r1 : LONGINT;
     BEGIN
       IF r0 IN taken THEN
         CGL.InitItem(y);
@@ -1319,10 +1330,18 @@ IMPORT
   BEGIN
     IF regs # {} THEN
       CASE x.mode OF
-      |  CGL.Imethod: uninterfere(x.td.reg, regs);
-      |  CGL.Ivarx, CGL.Iindx: uninterfere(x.inxreg, regs);
-      |  CGL.Ireg, CGL.Iregi: uninterfere(x.reg, regs);
-      |  CGL.Iregix: uninterfere(x.reg, regs); uninterfere(x.inxreg, regs);
+      | CGL.Imethod:
+        uninterfere(x.td.reg, regs);
+
+      | CGL.Ivarx, CGL.Iindx:
+        uninterfere(x.inxreg, regs);
+
+      | CGL.Ireg, CGL.Iregi:
+        uninterfere(x.reg, regs);
+
+      | CGL.Iregix:
+        uninterfere(x.reg, regs);
+        uninterfere(x.inxreg, regs);
       ELSE (* nop, no registers for Item *)
       END;
     END;
@@ -1360,14 +1379,14 @@ IMPORT
   BEGIN
     IF x.mode = CGL.Iconst THEN
       CASE x.type.form OF
-      |  ST.sint, ST.int, ST.lint:
-         x.val.i0 := -x.val.i0;
+      | ST.sint, ST.int, ST.lint:
+        x.val.i0 := -x.val.i0;
 
-      |  ST.set:
-         x.val.set := -x.val.set;
+      | ST.set:
+        x.val.set := -x.val.set;
 
-      |  ST.real, ST.lreal:
-         x.val.real := -x.val.real;
+      | ST.real, ST.lreal:
+        x.val.real := -x.val.real;
       END;
     ELSE
       MakeConstItem(zero, 0, ST.linttyp);
@@ -1407,10 +1426,10 @@ IMPORT
   BEGIN (* integer to set <=> SetElem *)
     IF to # from THEN
       CASE to OF
-      |  ST.char:
-         Load(x);
-         x.type := ST.chartyp;
-         CheckRange(x, 0, MaxChar);
+      | ST.char:
+        Load(x);
+        x.type := ST.chartyp;
+        CheckRange(x, 0, MaxChar);
 
       | ST.sint:
         IF ~(from IN {ST.char, ST.byte}) THEN
@@ -1420,30 +1439,30 @@ IMPORT
         END;
         CheckRange(x, OPM.MinSInt, OPM.MaxSInt);
 
-      |  ST.int:
-         IF from IN {ST.char, ST.sint} THEN
-           Widen(x, ST.inttyp);
-         ELSE
-           Shorten(x, ST.inttyp);
-           CheckRange(x, OPM.MinInt, OPM.MaxInt);
-         END;
+      | ST.int:
+        IF from IN {ST.char, ST.sint} THEN
+          Widen(x, ST.inttyp);
+        ELSE
+          Shorten(x, ST.inttyp);
+          CheckRange(x, OPM.MinInt, OPM.MaxInt);
+        END;
 
-      |  ST.lint:
-         IF from IN {ST.sint, ST.int} THEN
-           Widen(x, ST.linttyp);
-         ELSIF from IN ST.RealSet THEN
-           Load(x);
-           TemporaryReg(temp, ST.linttyp);
-           Move(temp, x);
-           CGL.Release(x);
-           x := temp;
-         END;
+      | ST.lint:
+        IF from IN {ST.sint, ST.int} THEN
+          Widen(x, ST.linttyp);
+        ELSIF from IN ST.RealSet THEN
+          Load(x);
+          TemporaryReg(temp, ST.linttyp);
+          Move(temp, x);
+          CGL.Release(x);
+          x := temp;
+        END;
 
-      |  ST.real:
-         loadF(x, ST.realtyp);
+      | ST.real:
+        loadF(x, ST.realtyp);
 
-      |  ST.lreal:
-         loadF(x, ST.lrltyp);
+      | ST.lreal:
+        loadF(x, ST.lrltyp);
       END;
     END;
   END Convert;
@@ -1646,47 +1665,49 @@ IMPORT
   END Or;
 
   PROCEDURE Compare*(VAR x, y : CGL.Item; rel : SHORTINT); (* synth: x rel y *)
-    VAR Rt, R0, z  : CGL.Item; f : SHORTINT;
+    VAR
+      Rt, R0, z  : CGL.Item;
+      f : SHORTINT;
   BEGIN
     (* 'rel' is a CGL relational opcode for a compare instruction *)
     ASSERT(rel IN CGL.ccSet, 200);
     TemporaryReg(Rt, ST.booltyp);
     f := x.type.form;
     CASE f OF
-    |  ST.byte, ST.char, ST.sint, ST.int, ST.lint, ST.set, ST.pointer, ST.procedure:
-       Load(x);
-       Load(y);
-       (* change to unsigned comparison for char, byte and set *)
-       IF f IN {ST.char, ST.byte, ST.set} THEN
-         IF rel = CGL.ccLT THEN
-           rel := CGL.ccLTU;
-         ELSIF rel = CGL.ccLE THEN
-           rel := CGL.ccLEU;
-         ELSIF rel = CGL.ccGT THEN
-           rel := CGL.ccGTU;
-         ELSIF rel = CGL.ccGE THEN
-           rel := CGL.ccGEU;
-         ELSE
-           ASSERT(rel IN { CGL.ccEQ, CGL.ccNE }, 201); (* nop *)
-         END;
-       END;
-       CGL.PutCompare(x, y, Rt);
+    | ST.byte, ST.char, ST.sint, ST.int, ST.lint, ST.set, ST.pointer, ST.procedure:
+      Load(x);
+      Load(y);
+      (* change to unsigned comparison for char, byte and set *)
+      IF f IN {ST.char, ST.byte, ST.set} THEN
+        IF rel = CGL.ccLT THEN
+          rel := CGL.ccLTU;
+        ELSIF rel = CGL.ccLE THEN
+          rel := CGL.ccLEU;
+        ELSIF rel = CGL.ccGT THEN
+          rel := CGL.ccGTU;
+        ELSIF rel = CGL.ccGE THEN
+          rel := CGL.ccGEU;
+        ELSE
+          ASSERT(rel IN { CGL.ccEQ, CGL.ccNE }, 201); (* nop *)
+        END;
+      END;
+      CGL.PutCompare(x, y, Rt);
 
-    |  ST.real, ST.lreal:
-       Load(x);
-       Load(y);
-       CGL.PutCompare(x, y, Rt);
+    | ST.real, ST.lreal:
+      Load(x);
+      Load(y);
+      CGL.PutCompare(x, y, Rt);
 
-    |  ST.bool:
-       Load(x);
-       IF y.mode = CGL.Icoc THEN
-         z := y;
-         z.mode := CGL.Ireg;
-         CGL.PutCompare(x, z, Rt);
-       ELSE
-         Load(y);
-         CGL.PutCompare(x, y, Rt);
-       END;
+    | ST.bool:
+      Load(x);
+      IF y.mode = CGL.Icoc THEN
+        z := y;
+        z.mode := CGL.Ireg;
+        CGL.PutCompare(x, z, Rt);
+      ELSE
+        Load(y);
+        CGL.PutCompare(x, y, Rt);
+      END;
     ELSE (* string *)
       TakeAddress(x, CGL.RegWord, TRUE);
       TakeAddress(y, CGL.RegWord, TRUE);
@@ -1885,7 +1906,7 @@ IMPORT
   (* push dynamic array bound (not LEN()) onto the stack *)
   PROCEDURE DynArrBnd(VAR fp, ap : CGL.Item);
     VAR
-      one, stk, x, y, z : CGL.Item;
+      stk, x, y, z : CGL.Item;
       ft, at : ST.Type;
       oneless: BOOLEAN;
   BEGIN
@@ -1896,8 +1917,6 @@ IMPORT
     stk.type := ST.linttyp;
 
      IF ft(ST.Array).of = ST.bytetyp THEN (* ARRAY OF SYSTEM.BYTE *)
-       MakeConstItem(one, 1, ST.linttyp);
-       Load(one);
        IF at.form # ST.dynarr THEN (* Static length. *)
          MakeConstItem(y,  at.size - 1, ST.linttyp);
        ELSE (* dynamic length *)
@@ -1907,11 +1926,11 @@ IMPORT
          WHILE at.form = ST.dynarr DO
            IF oneless THEN
              Load(y);
-             CGL.PutGenReg(CGL.opcADD, y, one, y);
+             CGL.PutAddConstant(y, One, y);
            END;
            GetArrayDimLen(ap, z, at(ST.Array));
            Load(z);
-           CGL.PutGenReg(CGL.opcADD, z, one, z);
+           CGL.PutAddConstant(z, One, z);
            Mul(y, z);
            oneless := FALSE;
            at := at(ST.Array).of;
@@ -1932,7 +1951,7 @@ IMPORT
              CGL.PutGenReg(CGL.opcADD, y, z, y);
            END;
          ELSE
-           CGL.PutGenReg(CGL.opcSUB, y, one, y);
+           CGL.PutAddConstant(y, MinusOne, y);
          END;
        END;
        Move(stk, y);
@@ -1951,7 +1970,11 @@ IMPORT
   END DynArrBnd;
 
   PROCEDURE Assign*(VAR dest, source : CGL.Item);
-    VAR param : BOOLEAN; t : CGL.Item; l : LONGINT; df : SHORTINT; (* destination type form *)
+    VAR
+      param : BOOLEAN;
+      t : CGL.Item;
+      l : LONGINT;
+      df : SHORTINT; (* destination type form *)
   BEGIN
     param := dest.mode = Itos;  (* Parameters get assigned to stack. *)
     df := dest.type.form;
@@ -1962,93 +1985,94 @@ IMPORT
     END;
 
     CASE df OF
-    |  ST.bool:
-       IF source.mode = CGL.Icoc THEN
-         MoveCoc(dest, source);
-       ELSE (* regular boolean value *)
-         Move(dest, source);
-       END;
-
-    |  ST.byte:
-       IF param THEN
-         Widen(source, ST.linttyp);
-       END;
-       Move(dest, source);
-
-    |  ST.char, ST.sint:
-       IF param THEN
-         Widen(source, ST.linttyp);
-       END;
-       Move(dest, source);
-
-    |  ST.int:
-       IF param THEN
-         Widen(source, ST.linttyp);
-       END;
-       Move(dest, source);
-
-    |  ST.lint, ST.real, ST.lreal, ST.set, ST.pointer:
-       Move(dest, source);
-
-    |  ST.procedure:
-       IF ((dest.type # source.type) &
-           (source.type # ST.niltyp) &
-           (source.mode IN {CGL.Ilproc, CGL.Ixproc, CGL.Iiproc})) THEN
-         TakeAddress(source, CGL.RegWord, FALSE); (* address of real procedure *)
-       END;
-       Move(dest, source);
-
-    |  ST.record:
-       IF param THEN
-         TakeAddress(source, CGL.RegWord, FALSE);
-         dest.type := ST.linttyp;
-         Move(dest, source); (* see Param *)
-       ELSE
-         MoveMemMemBlock(dest, source, source.type.size);
+    | ST.bool:
+      IF source.mode = CGL.Icoc THEN
+        MoveCoc(dest, source);
+      ELSE (* regular boolean value *)
+        Move(dest, source);
       END;
 
-    |  ST.array:
-       l := dest.type.size;
-       IF param THEN
-         TakeAddress(source, CGL.RegWord, FALSE);
-         dest.type := ST.linttyp;
-         Move(dest, source); (* see Param *)
-       ELSE (* copy memory block *)
-         IF source.type.form = ST.string THEN
-           l := source.sym(ST.SymbolConst).val.i0; (* string literal may be shorter
-                                                    * than dest; copy only to end of literal *)
-         END;
-         MoveMemMemBlock(dest, source, l);
-       END;
-
-    |  ST.dynarr:
-       ASSERT(param, 1000); (* dynamic arrays cannot be assigned to each other,
-                             *  only passed as parm *)
-       df := dest.type(ST.Array).of.form;
-       IF (source.type.form = ST.string) & (df = ST.char) THEN
-
-         (* Char constants already converted to string constants.
-          *
-          * The length of the string literal in the symbol table includes 0X.
-          * But it is removed from the assignment, because '0X' isn't part of
-          * the string.  Instead, the 0X is added at the destination end.
-          *)
-         dest.mode := Itos;
-         dest.type := ST.linttyp;
-         ASSERT(source.mode = CGL.Ivar, 1001);
-         MakeConstItem(t, source.sym(ST.SymbolConst).val.i0 - 1, ST.linttyp);
-         Move(dest, t); (* string len - 1 *)
-       ELSE
-         DynArrBnd(dest, source);
+    | ST.byte:
+      IF param THEN
+        Widen(source, ST.linttyp);
       END;
-       TakeAddress(source, CGL.RegWord, FALSE);
-       dest.type := ST.linttyp;
-       Move(dest, source); (* push address *)
+      Move(dest, source);
+
+    | ST.char, ST.sint:
+      IF param THEN
+        Widen(source, ST.linttyp);
+      END;
+      Move(dest, source);
+
+    | ST.int:
+      IF param THEN
+        Widen(source, ST.linttyp);
+      END;
+      Move(dest, source);
+
+    | ST.lint, ST.real, ST.lreal, ST.set, ST.pointer:
+      Move(dest, source);
+
+    | ST.procedure:
+      IF ((dest.type # source.type) &
+          (source.type # ST.niltyp) &
+          (source.mode IN {CGL.Ilproc, CGL.Ixproc, CGL.Iiproc})) THEN
+        TakeAddress(source, CGL.RegWord, FALSE); (* address of real procedure *)
+      END;
+      Move(dest, source);
+
+    | ST.record:
+      IF param THEN
+        TakeAddress(source, CGL.RegWord, FALSE);
+        dest.type := ST.linttyp;
+        Move(dest, source); (* see Param *)
+      ELSE
+        MoveMemMemBlock(dest, source, source.type.size);
+      END;
+
+    | ST.array:
+      l := dest.type.size;
+      IF param THEN
+        TakeAddress(source, CGL.RegWord, FALSE);
+        dest.type := ST.linttyp;
+        Move(dest, source); (* see Param *)
+      ELSE (* copy memory block *)
+        IF source.type.form = ST.string THEN
+          l := source.sym(ST.SymbolConst).val.i0; (* string literal may be shorter
+                                                   * than dest; copy only to end of literal *)
+        END;
+        MoveMemMemBlock(dest, source, l);
+      END;
+
+    | ST.dynarr:
+      ASSERT(param, 1000); (* dynamic arrays cannot be assigned to each other,
+                            *  only passed as parm *)
+      df := dest.type(ST.Array).of.form;
+      IF (source.type.form = ST.string) & (df = ST.char) THEN
+        (* Char constants already converted to string constants.
+         *
+         * The length of the string literal in the symbol table includes 0X.
+         * But it is removed from the assignment, because '0X' isn't part of
+         * the string.  Instead, the 0X is added at the destination end.
+         *)
+        dest.mode := Itos;
+        dest.type := ST.linttyp;
+        ASSERT(source.mode = CGL.Ivar, 1001);
+        MakeConstItem(t, source.sym(ST.SymbolConst).val.i0 - 1, ST.linttyp);
+        Move(dest, t); (* string len - 1 *)
+      ELSE
+        DynArrBnd(dest, source);
+      END;
+      TakeAddress(source, CGL.RegWord, FALSE);
+      dest.type := ST.linttyp;
+      Move(dest, source); (* push address *)
     END;
   END Assign;
 
   PROCEDURE Param*(VAR ap : CGL.Item; fp : ST.Symbol; deref : BOOLEAN) : INTEGER;
-    VAR stk : CGL.Item; bytes : INTEGER;
+    VAR
+      stk : CGL.Item;
+      bytes : INTEGER;
 
       PROCEDURE VarParDynarr(f : ST.Symbol; VAR ap : CGL.Item);
       VAR fp : CGL.Item;
@@ -2129,12 +2153,11 @@ IMPORT
   BEGIN
     IF fp.kind = ST.varpar THEN
       CASE fp.type.form OF
-      |  ST.dynarr:
-         VarParDynarr(fp, ap);
+      | ST.dynarr:
+        VarParDynarr(fp, ap);
 
-      |  ST.record:
-         VarParRecord(fp, ap, deref);
-
+      | ST.record:
+        VarParRecord(fp, ap, deref);
       ELSE
         VarParOther(fp, ap);
       END;
@@ -2157,7 +2180,9 @@ IMPORT
 
   PROCEDURE LoadVMT*(VAR self, proc : CGL.Item; deref : BOOLEAN);
     (* super <=> CGL.super IN proc.flags *)
-    VAR r, tag : CGL.Item; type : ST.Type;
+    VAR
+      r, tag : CGL.Item;
+      type : ST.Type;
   BEGIN
     tag := self;
     CGL.DoubleRef(self);
@@ -2209,7 +2234,6 @@ IMPORT
         x, ptr, size, round : CGL.Item;
         temp : CGL.Item;
         zero : CGL.Item;
-        one  : CGL.Item;
         elem : CGL.Item;
         four : CGL.Item;
         parm : CGL.Item;
@@ -2233,9 +2257,9 @@ IMPORT
           IF (size.mode # CGL.Iconst) OR (size.val.i0 # 1) THEN
             IF (round = 4) & (size.mode = CGL.Ireg) THEN
               Load(size);
-              CGL.PutGenReg(CGL.opcADD, size, one, size);  (* add Rsize, Rone, Rsize *)
+              CGL.PutAddConstant(size, One, size);  (* la (Rsize + 1), Rsize *)
             END;
-            CGL.PutGenReg(CGL.opcADD, len, one, len);      (* add Rlen, Rone, Rlen *)
+            CGL.PutAddConstant(len, One, len);      (* la (Rsize + 1), Rlen *)
             round := 3; (* 3 <=> array bound + 3, 1 already added *)
             Mul(len, size);
           ELSE
@@ -2252,23 +2276,23 @@ IMPORT
       CGL.InitItem(size);
       TemporaryReg(four, ST.linttyp);               (* SIZE(LONGINT) *)
       MakeConstItem(zero, 0, ST.linttyp);
-      MakeConstItem(one, 1, ST.linttyp);
       MakeConstItem(four, 4, ST.linttyp);
       Load(zero);
-      Load(one);
 
       TemporaryReg(loopCond, ST.linttyp);
 
       size.mode := CGL.Ivar;
-      r := 3;
       CGL.InitItem(parm);
       parm.mode := CGL.Ivar;
       parm.sym := sym;
       parm.mnolev := sym.mnolev;
+
+      r := 3;
       DynArrSize(sym.type, size, r);
 
       MakeConstItem(round, r, ST.linttyp);
       Load(round);
+
       Load(four);
       CGL.PutGenReg(CGL.opcADD, size, round, size); (* add Rsize, Rround, Rsize *)
       CGL.PutGenReg(CGL.opcDIV, size, four, size);   (* div Rsize, Rfour, Rsize *)
@@ -2296,11 +2320,10 @@ IMPORT
                                         * -SIZE(LONGINT) is to offset the index
                                         * register, which holds number of words
                                         * to copy. *)
-      CGL.PutGenReg(CGL.opcSUB, size, one, size);
+      CGL.PutAddConstant(size, MinusOne, size);
       CGL.PutCompare(size, zero, loopCond);
       SetCC(loopCond, CGL.ccNE);
       CGL.PutJump(CGL.ccNE, loopCond, loop);
-
 
       x.mode   := CGL.Ivar;
       x.adr    := 0;
@@ -2319,7 +2342,10 @@ IMPORT
     END CopyDynArr;
 
     PROCEDURE CopyParmToStack(sym : ST.Symbol);
-      VAR dest, source : CGL.Item; s : LONGINT; type : ST.Type;
+      VAR
+        dest, source : CGL.Item;
+        s : LONGINT;
+      type : ST.Type;
     BEGIN
       (* Copies 'sym' to the stack, and provides the on-stack
        * address as the procedure parameter.  This results in a
@@ -2391,7 +2417,9 @@ IMPORT
   END Enter;
 
   PROCEDURE Leave*(proc : ST.SymbolProc);
-    VAR dsize : CGL.Item; parsize : LONGINT;
+    VAR
+      dsize : CGL.Item;
+      parsize : LONGINT;
 
   BEGIN
     ASSERT(proc # NIL, 148);
@@ -2402,23 +2430,23 @@ IMPORT
       parsize := proc.parsize;
       ASSERT(parsize MOD SIZE(LONGINT) = 0);
       CASE proc.kind OF
-      |  ST.lproc, ST.cproc:
-         IF proc.mnolev > 0 THEN
-           ASSERT(proc.kind # ST.cproc);
-           INC(parsize, SIZE(LONGINT));
-         END; (* remove static link when present *)
-         (* 'parsize': number of bytes parameters occupy on the stack. *)
-         CGL.PutCloseStackFrame(SHORT(parsize DIV SIZE(LONGINT)), CGL.SFP);
-         CGL.PutReturn(FALSE);
+      | ST.lproc, ST.cproc:
+        IF proc.mnolev > 0 THEN
+          ASSERT(proc.kind # ST.cproc);
+          INC(parsize, SIZE(LONGINT));
+        END; (* remove static link when present *)
+        (* 'parsize': number of bytes parameters occupy on the stack. *)
+        CGL.PutCloseStackFrame(SHORT(parsize DIV SIZE(LONGINT)), CGL.SFP);
+        CGL.PutReturn(FALSE);
 
-      |  ST.xproc, ST.tproc:
-         CGL.PutCloseStackFrame(SHORT(parsize DIV SIZE(LONGINT)), CGL.SFP);
-         CGL.PutReturn(FALSE);
+      | ST.xproc, ST.tproc:
+        CGL.PutCloseStackFrame(SHORT(parsize DIV SIZE(LONGINT)), CGL.SFP);
+        CGL.PutReturn(FALSE);
 
-      |  ST.iproc:
-         ASSERT(parsize = 0); (* cannot have parms, or we have to pop them
-                               * at the point of the call *)
-         CGL.PutReturn(TRUE);
+      | ST.iproc:
+        ASSERT(parsize = 0); (* cannot have parms, or we have to pop them
+                              * at the point of the call *)
+        CGL.PutReturn(TRUE);
       END;
     END;
   END Leave;
@@ -2467,80 +2495,80 @@ IMPORT
     CGL.InitItem(Rx);
     CGL.InitItem(base);
     CASE x.mode OF
-    |  CGL.Ilproc:
-       base.mode   := CGL.Iregi;
-       base.reg    := CGL.SFP;
-       base.offset := 0;
-       base.type   := ST.linttyp;
-       base.mnolev := 1;
+    | CGL.Ilproc:
+      base.mode   := CGL.Iregi;
+      base.reg    := CGL.SFP;
+      base.offset := 0;
+      base.type   := ST.linttyp;
+      base.mnolev := 1;
 
-       IF x.mnolev > 0 THEN
-         n := CGL.level - x.mnolev;
-         (* note that the static base must also be removed from the stack.
-          * This can either be done by the caller or by the callee.
-          * This compiler has the callee remove
-          * the static link as part of its parameter popping mechanism
-          *)
-         IF n = 0 THEN
-           TemporaryReg(Rx, ST.linttyp);
-           CGL.PutLoadAddress(Rx, base);
-           CGL.PutStack(CGL.opcPUSH, Rx); (* push address of stack base *)
-           CGL.Release(Rx);
-         ELSIF n = 1 THEN
-           base.mode   := CGL.Iregi;
-           base.reg    := CGL.SFP;
-           base.offset := 2 * SIZE(LONGINT);
-           base.mnolev := x.mnolev;
-           base.type   := ST.linttyp;
-           Load(base);
-           CGL.PutStack(CGL.opcPUSH, base); (* push static base *)
-         ELSE (* Call from nested function to enclosing function. *)
-           CGL.GetReg(Rx, CGL.RegWord);
-           Rx.type     := ST.linttyp;
-           Rx.offset   := 0;
-           Rx.mnolev   := CGL.level;
+      IF x.mnolev > 0 THEN
+        n := CGL.level - x.mnolev;
+        (* note that the static base must also be removed from the stack.
+         * This can either be done by the caller or by the callee.
+         * This compiler has the callee remove
+         * the static link as part of its parameter popping mechanism
+         *)
+        IF n = 0 THEN
+          TemporaryReg(Rx, ST.linttyp);
+          CGL.PutLoadAddress(Rx, base);
+          CGL.PutStack(CGL.opcPUSH, Rx); (* push address of stack base *)
+          CGL.Release(Rx);
+        ELSIF n = 1 THEN
+          base.mode   := CGL.Iregi;
+          base.reg    := CGL.SFP;
+          base.offset := 2 * SIZE(LONGINT);
+          base.mnolev := x.mnolev;
+          base.type   := ST.linttyp;
+          Load(base);
+          CGL.PutStack(CGL.opcPUSH, base); (* push static base *)
+        ELSE (* Call from nested function to enclosing function. *)
+          CGL.GetReg(Rx, CGL.RegWord);
+          Rx.type     := ST.linttyp;
+          Rx.offset   := 0;
+          Rx.mnolev   := CGL.level;
 
-           base.mode   := CGL.Iregi;
-           base.reg    := CGL.SFP;
-           base.offset := 8;
-           base.mnolev := x.mnolev;
-           base.type   := ST.linttyp;
-           LoadZero(R0);
+          base.mode   := CGL.Iregi;
+          base.reg    := CGL.SFP;
+          base.offset := 8;
+          base.mnolev := x.mnolev;
+          base.type   := ST.linttyp;
+          LoadZero(R0);
 
-           Move(Rx, base);
-           base.reg := Rx.reg;
-           WHILE n > 1 DO  (* Follow the dynamic frames, loading each. *)
-             Move(Rx, base);
-             DEC(n);
-           END;
-           CGL.PutStack(CGL.opcPUSH, Rx); (* push static base *)
-           CGL.Release(Rx);
-         END;
-       END;
-       CGL.PutJAL(x);
+          Move(Rx, base);
+          base.reg := Rx.reg;
+          WHILE n > 1 DO  (* Follow the dynamic frames, loading each. *)
+            Move(Rx, base);
+            DEC(n);
+          END;
+          CGL.PutStack(CGL.opcPUSH, Rx); (* push static base *)
+          CGL.Release(Rx);
+        END;
+      END;
+      CGL.PutJAL(x);
 
-    |  CGL.Ixproc:
-       CGL.PutJAL(x);
+    | CGL.Ixproc:
+      CGL.PutJAL(x);
 
-    |  CGL.Icproc:
-       (* Code procedure: Insert code directly *)
-       code := proc(ST.SymbolCodeProc).code;
-       i := ORD(code[0]); (* Number of bytes in code procedure *)
-       n := 1;
-       WHILE i > 0 DO
-         CGL.PutByte(code[n]);
-         INC(n);
-         DEC(i);
-       END;
+    | CGL.Icproc:
+      (* Code procedure: Insert code directly *)
+      code := proc(ST.SymbolCodeProc).code;
+      i := ORD(code[0]); (* Number of bytes in code procedure *)
+      n := 1;
+      WHILE i > 0 DO
+        CGL.PutByte(code[n]);
+        INC(n);
+        DEC(i);
+      END;
 
-    |  CGL.Imethod:
-       ASSERT(x.td.mode = CGL.Iregi);
-       Rx.mode   := CGL.Iregi;
-       Rx.type   := ST.linttyp;
-       Rx.reg    := x.td.reg;
-       Rx.offset := CGL.TBPOffset  - 4 * x.methno;
-       Load(Rx);
-       CGL.PutJRAL(Rx); (* jral Rx, R31 *)
+    | CGL.Imethod:
+      ASSERT(x.td.mode = CGL.Iregi);
+      Rx.mode   := CGL.Iregi;
+      Rx.type   := ST.linttyp;
+      Rx.reg    := x.td.reg;
+      Rx.offset := CGL.TBPOffset  - 4 * x.methno;
+      Load(Rx);
+      CGL.PutJRAL(Rx); (* jral Rx, R31 *)
     ELSE (* procedure variable *)
       Rx := x;
       Load(Rx);
@@ -2650,7 +2678,9 @@ IMPORT
   END StdAssert;
 
   PROCEDURE StdNew*(VAR x : CGL.Item); (* new record *)
-    VAR td : CGL.Item; tdSym : ST.Symbol;
+    VAR
+      td : CGL.Item;
+      tdSym : ST.Symbol;
   BEGIN
     MakeVar(td, ST.GetTD(x.type), ST.linttyp);
     TakeAddress(x, {1}, TRUE);
@@ -2715,7 +2745,8 @@ IMPORT
 
   PROCEDURE StdMemRW*(VAR base, index, var : CGL.Item; read : BOOLEAN);
   BEGIN
-    Load(base); base.mode := CGL.Iregi;
+    Load(base);
+    base.mode := CGL.Iregi;
     IF index.mode = CGL.Iconst THEN
       base.offset := index.val.i0;
     ELSE
@@ -2927,7 +2958,6 @@ IMPORT
       i : LONGINT;
       t : ST.Array;
       y : CGL.Item;
-      one : CGL.Item;
   BEGIN
     ASSERT(dim.mode = CGL.Iconst, 215);
     ASSERT(arr.type.form = ST.dynarr, 216);
@@ -2937,12 +2967,11 @@ IMPORT
       t := t.of(ST.Array);
       DEC(i);
     END;
-    MakeConstItem(one, 1, ST.linttyp);
     GetArrayDimLen(arr, y, t);
     Load(y);
     CGL.Release(arr);
     arr := y;
-    CGL.PutAddConstant(arr, one, arr);
+    CGL.PutAddConstant(arr, One, arr);
   END StdLen;
 
   (* StdBit:
@@ -2992,7 +3021,9 @@ IMPORT
   END StdBitSetReset;
 
   PROCEDURE InitTypeDescriptor*(tdNum : LONGINT; td : ST.SymbolTypeDesc);
-    VAR tf : SHORTINT; type : ST.Type;
+    VAR
+      tf : SHORTINT;
+      type : ST.Type;
 
       PROCEDURE GenFlags(kind : LONGINT) : LONGINT;
         VAR
@@ -3153,7 +3184,8 @@ IMPORT
           t0 := CGL.TDGenDWord(type(ST.Array).len + 1); (* nofDim (dynamic array) *)
           t0 := CGL.TDGenDWord(eltype.size); (* element size *)
 
-          arrtype := eltype; nofDim := 0;
+          arrtype := eltype;
+          nofDim := 0;
           WHILE arrtype.form = ST.array DO
             INC(nofDim);
             arrtype := arrtype(ST.Array).of;
@@ -3169,7 +3201,10 @@ IMPORT
       END DynArrTD;
 
       PROCEDURE ArrayTD(type : ST.Type);
-        VAR t0, nofDim : LONGINT; tf : SHORTINT; elType : ST.Type;
+        VAR
+          t0, nofDim : LONGINT;
+          tf : SHORTINT;
+          elType : ST.Type;
       BEGIN
         elType := type(ST.Array).of;
         WHILE elType.form = ST.array DO
@@ -3325,10 +3360,13 @@ IMPORT
     MakeConstItem(False, OPM.FalseVal, ST.booltyp);
     MakeConstItem(True, OPM.TrueVal, ST.booltyp);
     MakeConstItem(One, 1, ST.sinttyp); (* XXX remove?? *)
+    MakeConstItem(MinusOne, -1, ST.sinttyp);
   END ModuleBegin;
 
   PROCEDURE ModuleEnd*;
-  BEGIN ASSERT(False.type.form = ST.bool, 1075); ASSERT(True.type.form = ST.bool, 1076);
+  BEGIN
+    ASSERT(False.type.form = ST.bool, 1075);
+    ASSERT(True.type.form = ST.bool, 1076);
   END ModuleEnd;
 
 END SKLCGH.

@@ -405,11 +405,39 @@ IMPORT
 
 
   CONST
+    (* Indirect with offset
+     *
+     *  The address must be loaded into a register and dereferenced
+     *  before use.
+     *
+     * The offset is applied post dereference.
+     *
+     *   mode  : Ireg
+     *   mnolev: global: mnolev <= 0, local: mnolev > 0.
+     *   cc    : n/a
+     *   td    : n/a
+     *   inxreg: n/a
+     *   reg   : Register number.
+     *   adr   : n/a
+     *   offset: bytes offset from 'sym'.
+     *   flags : { various }
+     *   val   : n/a
+     *   type  : Type of symbol.
+     *   jump  : n/a
+     *   sym   : symbol
+     *)
     Iind*      = 11;   (* indirect *)
 
 
   CONST
-    Iindx*     = 12;   (* indirect indexed (unused in SKL) *)
+    (* Indirect with offset + index register.
+     *
+     *  The offset and index register are applied after the indirection
+     *  is resolved.
+     *
+     *  Mutates into an Iregix with loading the value.
+     *)
+    Iindx*     = 12;   (* indirect with index register *)
 
 
   CONST
@@ -1630,8 +1658,10 @@ IMPORT
     END;
   END PutByte;
 
+
   PROCEDURE PutOpBytes(opsize : INTEGER; opc : LONGINT);
   END PutOpBytes;
+
 
   PROCEDURE PutD*(dsize : INTEGER; data : LONGINT);
     VAR i : INTEGER;
@@ -1644,10 +1674,29 @@ IMPORT
     END;
   END PutD;
 
+
   PROCEDURE PutWord(data : LONGINT);
   BEGIN
     PutD(SIZE(LONGINT), data);
   END PutWord;
+
+
+  (* PutSentinel
+   *
+   * Emit sentinel instruction into code to help assess code generation.
+   * The sentinel will be, which is a NOP:
+   *
+   *   ADD reg, reg, R0 
+   *)
+  PROCEDURE PutSentinel*(reg : SHORTINT);
+    VAR
+      d : SET;
+  BEGIN
+    ASSERT((reg >= 0) & (reg < MaxRegister + 1));
+    d := (SYSTEM.VAL(SET, SYSTEM.LSH(reg, 16)) +
+          SYSTEM.VAL(SET, SYSTEM.LSH(reg, 11)));
+    PutWord(SYSTEM.VAL(LONGINT, d)); (* add r0, r0, reg *)
+  END PutSentinel;
 
 
   PROCEDURE PutByteAt(pc, data : LONGINT);
@@ -1866,7 +1915,7 @@ IMPORT
       (* Conditional branches *)
       ASSERT(inst.opc IN comparisons, 202);
       IF inst.R0 = -1 THEN
-        DumpInstruction(inst, "GenerateRegMemImmed");
+        DumpInstruction(inst, "GenerateBranch");
         OPM.internal("L", 202);
       END;
       d := (SYSTEM.VAL(SET, SYSTEM.LSH(inst.opclass, 26)) +
@@ -2960,7 +3009,7 @@ IMPORT
       END
     ELSIF type.form = ST.array THEN
       base := type(ST.Array).of;
-      n := type(ST.Array).len;
+      n := type(ST.Array).len; (* Number of elements in array. *)
       WHILE base.form = ST.array DO
         n := base(ST.Array).len * n;
         base := base(ST.Array).of;
