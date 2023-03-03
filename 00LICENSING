@@ -196,6 +196,7 @@ The files contained here are provided under the corresponding software license.
   system/s3.System.Mod
 
 
+
 **** licenses/gpl-3.0.text
   00README.text
   Makefile
@@ -268,11 +269,14 @@ The files contained here are provided under the corresponding software license.
   scripts/make-cscope
   scripts/python-wrapper
   scripts/setup
+  scripts/skl-compile-os
   scripts/skl-compile-os-skl
   scripts/skl-compile-skl
   scripts/skl-compile-skl-compiler-tests
   scripts/skl-size
   scripts/skl-size.py
+  scripts/skl-skl-codegen-changes
+  scripts/skl-system-codegen-changes
   scripts/skl-test-compiler
   scripts/skl-test-modules
   scripts/skl-test-system

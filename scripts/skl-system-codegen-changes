@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# Copyright (c) 2023 Logic Magicians Software
+#
+# This script is used to examine code generation differences in the
+# Oberon system after SKL codegen has been updated by facilitating
+# comparison of the 'before' and 'after' disassembly of each system
+# module.  It does this by:
+#
+#   o Checking out all the Oberon object files.
+#
+#   o Disassembling the object files to 'before' files in /tmp.
+#
+#   o Compiling the Oberon system.
+#
+#     This creates the an OS with a new generated code.
+#
+#   o Disassemble the object files to 'after' files in /tmp.
+#
+#   o Use md5sum to determine the differences in the 'before' and
+#     'after' object files files.
+#
+#   Following this, a diff program, like 'ediff' in emacs, or 'tkdiff'
+#   from the command line can be used to vet the code generation
+#   differences.  When all the differences are acceptable, the
+#   compiler can be committed.
+#
+set -o errexit;
+set -o pipefail;
+set -o nounset;
+source ${SKL_DIR}/scripts/functions
+source ${SKL_DIR}/scripts/files.def
+
+function disassemble ()
+{
+    local suffix="${1}";
+    for f in ${OS[*]/.Mod/.Obj}; do
+        disasm ${f} >"/tmp/$(basename ${f}).${suffix}";
+    done;
+}
+
+
+function compare ()
+{
+    # Sort on the second column (IFS=' ')
+    (
+        for fname in ${OS[*]/.Mod/.Obj}; do
+            local gungla=/tmp/$(basename ${fname});
+            md5sum ${gungla}.{before,after};
+        done
+    )|sort --key=2|sed -e 's/.before//g' |sed -e 's/.after//g'|uniq -u;
+}
+
+
+function main ()
+{
+    git checkout ${OS[*]/.Mod/.Obj};
+    disassemble "before";
+
+    ${SKL_DIR}/scripts/skl-compile-os;
+    disassemble "after";
+
+    compare;
+}
+
+main "${@}";
