@@ -135,6 +135,7 @@ The files contained here are provided under the corresponding software license.
   system/Syntax8m.Pr3.Fnt
   system/Syntax8m.Scn.Fnt
   system/Syntax9m.Scn.Fnt
+  system/System.Mod
   system/System.Obj
   system/System.Sym
   system/TextFrames.Mod
@@ -193,8 +194,6 @@ The files contained here are provided under the corresponding software license.
   system/Viewers.Mod
   system/Viewers.Obj
   system/Viewers.Sym
-  system/s3.System.Mod
-
 
 
 **** licenses/gpl-3.0.text
