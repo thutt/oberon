@@ -39,7 +39,7 @@ function disassemble ()
 {
     local suffix="${1}";
     for f in ${SKL[*]/.Mod/.Obj}; do
-        disasm ${f} >"/tmp/$(basename ${f}).${suffix}";
+        disasm --show-dashes ${f} >"/tmp/$(basename ${f}).${suffix}";
     done;
 }
 

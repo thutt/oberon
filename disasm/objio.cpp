@@ -1,3 +1,4 @@
+/* Copyright (c) 2000, 2021-2023 Logic Magicians Software */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

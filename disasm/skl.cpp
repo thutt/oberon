@@ -1,9 +1,12 @@
+/* Copyright (c) 2000, 2021-2023 Logic Magicians Software */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 
+#include "global.h"
 #include "buildenv.h"
 #include "objio.h"
+#include "skl.h"
 
 namespace skl
 {
@@ -107,6 +110,17 @@ namespace skl
     }
 
 
+    static const char *
+    _format_hex(int v)
+    {
+        if (!::show_dashes) {
+            return format_hex(v);
+        } else {
+            return "-----";
+        }
+    }
+
+
     static inline word_t
     get_next_word(void)
     {
@@ -130,7 +144,11 @@ namespace skl
     {
         /* pc is incremented with each instruction fetch; adjust for
          * display */
-        printf("%4.4x:  %8.8x %8s %8s   ", pc - 4, inst, " ", " ");
+        if (!::show_dashes) {
+            printf("%4.4x:  %8.8x %8s %8s   ", pc - 4, inst, " ", " ");
+        } else {
+            printf("%4s   %8s %8s %8s   ", " ", " ", " ", " ");
+        }
     }
 
 
@@ -138,7 +156,11 @@ namespace skl
     {
         /* pc is incremented with each instruction fetch; adjust for
          * display */
-        printf("%4.4x:  %8.8x %8.8x %8s   ", pc - 4, i0, i1, " ");
+        if (!::show_dashes) {
+            printf("%4.4x:  %8.8x %8.8x %8s   ", pc - 4, i0, i1, " ");
+        } else {
+            printf("%4s   %8s %8s %8s   ", " ", " ", " ", " ");
+        }
     }
 
 
@@ -146,7 +168,11 @@ namespace skl
     {
         /* pc is incremented with each instruction fetch; adjust for
          * display */
-        printf("%4.4x:  %8.8x %8.8x %8.8x   ", pc - 4, i0, i1, i2);
+        if (!::show_dashes) {
+            printf("%4.4x:  %8.8x %8.8x %8.8x   ", pc - 4, i0, i1, i2);
+        } else {
+            printf("%4s   %8s %8s %8s   ", " ", " ", " ", " ");
+        }
     }
 
 
@@ -586,19 +612,19 @@ namespace skl
         case 8:
         case 9: {
             unsigned R0 = field(inst, 20, 16);
+
             print_header_2(pc - 4, inst, dest);
             printf("%-*s  R%u, %s\n", mnemonic_width, mne[opc], R0,
-                   format_hex(pc + static_cast<int>(dest)));
+                   _format_hex(pc + static_cast<int>(dest)));
             break;
         }
 
         case 10:                 // j
-        case 11:                 // jal
-        {
+        case 11: {               // jal
             print_header_2(pc - 4, inst, dest);
             printf("%-*s  %s\n",
                    mnemonic_width, mne[opc],
-                   format_hex(pc + static_cast<int>(dest)));
+                   _format_hex(pc + static_cast<int>(dest)));
             break;
         }
 
@@ -705,7 +731,7 @@ namespace skl
         } else if (opc == 13) {
             printf("%s%-*s  R%u, R%u\n",
                    prefix, mnemonic_width, mne, R0, Rd);
-            
+
         } else {
             assert(opc == 12);
             printf("%s%-*s  R%u, %u\n",
@@ -731,10 +757,10 @@ namespace skl
             "sne",              // 1
             "slt",              // 2
             "sge",              // 3
-            "sle",              // 4 
-            "sgt",              // 5 
+            "sle",              // 4
+            "sgt",              // 5
             "sltu",             // 6
-            "sgeu",             // 7 
+            "sgeu",             // 7
             "sleu",             // 8
             "sgtu",             // 9
         };

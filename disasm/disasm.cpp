@@ -1,22 +1,25 @@
+/* Copyright (c) 2000, 2021-2023 Logic Magicians Software */
 #include <stdlib.h>
 #include <stdio.h>
 #include <getopt.h>
+
+#include "global.h"
 #include "objio.h"
 #include "dump.h"
 
+bool show_dashes = false;
+
 int main(int argc, char *argv[])
 {
-    static struct option opt[] =
-    {
-	{ "help",       0,       NULL,   'h' },
+    static struct option opt[] = {
+	{ "help",        no_argument,       NULL,   'h' },
+        { "show-dashes", no_argument,       NULL,   256 },
     };
-    int opt_index = 1;
     int c;
     objio::file_mode_t mode;
     
-    while (1)
-    {
-	c = getopt_long(argc, argv, "h", opt, &opt_index);
+    while (1) {
+	c = getopt_long(argc, argv, "h", opt, NULL);
 	if (c == EOF)
 	    break;
 
@@ -27,12 +30,16 @@ int main(int argc, char *argv[])
 	    exit(0);
 	    break;
 	    
+        case 256:
+            ::show_dashes = true;
+            break;
+
         case '?':
 	default:
             break;
 	}
     }
-    mode = objio::open(argv[opt_index]);
+    mode = objio::open(argv[optind]);
     objio::read();
     objio::close();
     dump::file(mode);

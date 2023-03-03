@@ -1,3 +1,4 @@
+/* Copyright (c) 2000, 2021-2023 Logic Magicians Software */
 #if !defined(SKL_H)
 #define SKL_H
 

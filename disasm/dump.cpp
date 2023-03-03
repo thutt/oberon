@@ -1,5 +1,7 @@
+/* Copyright (c) 2000, 2021-2023 Logic Magicians Software */
 #include <assert.h>
 #include <stdio.h>
+#include "global.h"
 #include "objio.h"
 #include "dump.h"
 #include "skl.h"
@@ -19,6 +21,23 @@ namespace dump
             fprintf(fp, "0%XH", i);
         }
     }
+
+    static void
+    put_dashes(void)
+    {
+        fprintf(fp, "-----");
+    }
+
+    static inline void
+    put_hex_or_dashes(int i)
+    {
+        if (!::show_dashes) {
+            put_hex(i);
+        } else {
+            put_dashes();
+        }
+    }
+
 
     static void
     header(void)
@@ -618,9 +637,10 @@ namespace dump
 
         if (sym != NULL) {
             code(mode, sym->next);
-            fprintf(fp, "["); put_hex(sym->adr);
+            fprintf(fp, "[");
+            put_hex_or_dashes(sym->adr);
             fprintf(fp, ", ");
-            put_hex(sym->adr + sym->len);
+            put_hex_or_dashes(sym->adr + sym->len);
             fprintf(fp, ") %s\n", sym->name);
             locals = sym->locals;
             while (locals != NULL) {

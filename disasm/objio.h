@@ -1,3 +1,4 @@
+/* Copyright (c) 2000, 2021-2023 Logic Magicians Software */
 #if !defined(OBJIO_H)
 #define OBJIO_H
 #include <stdlib.h>
