@@ -35,24 +35,39 @@ set -o nounset;
 source ${SKL_DIR}/scripts/functions
 source ${SKL_DIR}/scripts/files.def
 
+function output_directory ()
+{
+    local name="${1}";
+    echo "/tmp/codegen/${1}";
+}
+
 function disassemble ()
 {
     local suffix="${1}";
+    local destdir="$(output_directory "${suffix}")";
+
+    mkdir --parents "${destdir}";
     for f in ${SKL[*]/.Mod/.Obj}; do
-        disasm --show-dashes ${f} >"/tmp/$(basename ${f}).${suffix}";
+        disasm --show-dashes ${f} >"${destdir}/$(basename ${f})";
     done;
 }
 
 
 function compare ()
 {
+    local before="${1}";
+    local after="${2}";
+
     # Sort on the second column (IFS=' ')
     (
-        for fname in ${SKL[*]/.Mod/.Obj}; do
-            local gungla=/tmp/$(basename ${fname});
-            md5sum ${gungla}.{before,after};
+        for stage in "${before}" "${after}"; do
+            local destdir="$(output_directory "${stage}")";
+            for fname in ${SKL[*]/.Mod/.Obj}; do
+                local pathname="${destdir}/$(basename ${fname})"
+                md5sum ${pathname};
+            done;
         done
-    )|sort --key=2|sed -e 's/.before//g' |sed -e 's/.after//g'|uniq -u;
+    )|sort --key=2|sed -e "s./${before}..g" |sed -e "s./${after}..g"|sort|uniq -u;
 }
 
 
@@ -62,10 +77,14 @@ function main ()
     disassemble "before";
 
     ${SKL_DIR}/scripts/skl-compile-skl;
+    disassemble "middle";
+
+    compare "before" "middle"|tee "/tmp/codegen/skl-diffs.1st";
+
     ${SKL_DIR}/scripts/skl-compile-skl;
     disassemble "after";
 
-    compare;
+    compare "before" "after"|tee "/tmp/codegen/skl-diffs.2nd";
 }
 
 main "${@}";
