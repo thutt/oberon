@@ -101,10 +101,15 @@ IMPORT
       x.type := n.type;
 
     | T.Dindex:
+      ASSERT((n(T.Index).base # NIL) & (n(T.Index).index # NIL));
       dsgn(n(T.Index).base, x);
       expr(n(T.Index).index, y);
-      CGH.Index(x, y);
-      x.type := n.type;
+      IF n(T.Index).synthType = NIL THEN
+        CGH.Index(x, y);
+        x.type := n.type;
+      ELSE
+        x.type := n(T.Index).synthType;
+      END;
 
     | T.Diguard, T.Deguard:
       dsgn(n(T.Guard).design, x);

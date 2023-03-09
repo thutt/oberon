@@ -302,21 +302,30 @@ IMPORT
 
   PROCEDURE SimplifyIndirect(VAR x : CGL.Item);
     VAR
-      temp : CGL.Item;
-      type : ST.Type;
+      indexed : BOOLEAN;
+      temp    : CGL.Item;
+      type    : ST.Type;
+
   BEGIN
+    (* On SKL, indirect access to memory must be simplified to a
+     * register indirect addressing mode. *)
     IF x.mode IN { CGL.Ivarpar, CGL.Iind, CGL.Iindx } THEN
-      (* On SKL, indirect access to memory must be simplified to a
-       * register indirect addressing mode. *)
-      type := x.type;
       TemporaryReg(temp, ST.linttyp);
-      x.type    := ST.linttyp;
-      x.mode    := CGL.Ivar;
-      CGL.PutLoad(temp, x);
-      temp.mode   := CGL.Iregi;
-      temp.offset := x.offset;
-      temp.type   := type;
-      x := temp;
+
+      indexed := x.mode = CGL.Iindx;
+      type    := x.type;
+      x.type := ST.linttyp;
+      x.mode := CGL.Ivar;
+
+      CGL.PutLoad(temp, x); (* Load first indirection. *)
+
+      IF indexed THEN
+        x.mode := CGL.Iregix;
+      ELSE
+        x.mode := CGL.Iregi;
+      END;
+      x.reg  := temp.reg;
+      x.type := type;
     END;
   END SimplifyIndirect;
 
@@ -337,7 +346,8 @@ IMPORT
     END LoadSource;
 
   BEGIN
-    ASSERT(dest.type.size <= SIZE(LONGINT), 1000);
+    ASSERT((dest.type.size <= SIZE(LONGINT)) OR
+           (dest.type.form IN PassedByAddress), 1000);
     sm := source.mode;
     CASE dest.mode OF
     | CGL.Ivar, CGL.Ipar, CGL.Ivarx: (* Simple write to memory. *)
@@ -349,10 +359,7 @@ IMPORT
       ASSERT(sm IN {CGL.Ireg, CGL.Iconst, CGL.Icoc, Itos}, 204);
 
       temp := dest;
-      temp.type := ST.linttyp;
       SimplifyIndirect(temp);
-      temp.mode := CGL.Iregi;
-
       IF sm IN {CGL.Ireg, CGL.Iconst, CGL.Ilproc, CGL.Ixproc,
                 CGL.Iiproc, CGL.Itproc} THEN
         Load(source);
@@ -458,9 +465,11 @@ IMPORT
       zero : CGL.Item;
       offset : LONGINT;
       global : BOOLEAN;
+      type : ST.Type;
   BEGIN
     ASSERT((x.sym # NIL) & (x.sym.mnolev <= 0) OR
-           (x.mode IN {CGL.Iregi, CGL.Iregix}) OR (rs # {}));
+           (x.mode IN {CGL.Iregi, CGL.Iregix}) OR (rs # {}), 1024);
+    type := x.type;
     y := x;
     global := (x.sym # NIL) & (x.sym.mnolev <= 0); (* global object; can have a fixup *)
     x.type := ST.linttyp; (* Type of y should not be changed unless necessary,
@@ -495,19 +504,17 @@ IMPORT
       Load(y);
       LoadZero(zero);
       CGL.PutGenReg(CGL.opcADD, y, zero, x); (* add Ry, Rzero, Rx *)
-
-    | CGL.Ivarx:
-      TemporaryReg(x, x.type);
-      CGL.PutLoadAddress(x, y);
       CGL.Release(y);
+      x.mode := CGL.Ireg;
 
     | CGL.Iind:
-      CGL.GetReg(x, CGL.RegWord);
+      CGL.GetReg(x, rs);
       y.mode := CGL.Ivar;
       offset := y.offset;
       y.type := ST.linttyp;
       x.type := ST.linttyp;
       CGL.PutLoad(x, y);
+
       IF offset # 0 THEN
         y := x;
         y.mode := CGL.Iregi;
@@ -517,6 +524,27 @@ IMPORT
         CGL.Release(y);
       END;
       x.mode := CGL.Ireg;
+
+
+    | CGL.Iindx:
+      y.mode := CGL.Ivar;
+      y.type := ST.linttyp;
+      x.type := ST.linttyp;
+      Load(y);
+      x.mode := CGL.Iregix;
+      x.reg  := y.reg;
+      IF type.form IN {ST.array, ST.dynarr} THEN
+        x.type := ST.ElemType(type(ST.Array)); (* Ensure correct scaling. *)
+      ELSE
+        x.type := type;
+      END;
+      CGL.PutLoadAddress(y, x);
+      x.mode := CGL.Ireg;
+
+    | CGL.Ivarx:
+      TemporaryReg(x, x.type);
+      CGL.PutLoadAddress(x, y);
+      CGL.Release(y);
 
     | CGL.Iregi:(* TODO: Iregi, Iregix _ARE_ addresses.
                  *       Was this loading done for a limitation of x86 registers?
@@ -556,6 +584,7 @@ IMPORT
     IF force OR ~global & (rs # {}) & ((x.mode = CGL.Ireg) & ~(x.reg IN rs)) THEN
       LoadItem(x, rs);
     END;
+    ASSERT(x.mode IN {CGL.Ireg, CGL.Iadr}, 1025);
   END TakeAddress;
 
   PROCEDURE MoveMemMemBlock(VAR dest, source : CGL.Item; s : LONGINT);
@@ -1001,10 +1030,12 @@ IMPORT
       y.type := ST.linttyp;
       CASE x.mode OF
       | CGL.Ivar: (* variable *)
-        y.adr    := arr.lenTDOffs;
-        y.offset := 0;
+        y.adr := arr.lenTDOffs;
 
-      | CGL.Ivarpar, CGL.Ipar: (* [var] dynarr parm *)
+      | CGL.Ivarpar, CGL.Ivarx, CGL.Ipar, CGL.Iind, CGL.Iindx:
+        (* [var] dynarr parm; lengths are on stack.
+         * Convert to stack variable with the proper offset.
+         *)
         y.mode := CGL.Ivar;
         INC(y.adr, arr.lenTDOffs);
 
@@ -1013,7 +1044,7 @@ IMPORT
         CGL.DoubleRef(y);
         INC(y.offset, arr.lenTDOffs);
 
-      | CGL.Iregi, CGL.Iind, CGL.Iindx:
+      | CGL.Iregi:
         (* pointing at data or a variable (which must be a pointer) *)
         CGL.DoubleRef(x);
         INC(y.offset, arr.lenTDOffs);
@@ -1139,8 +1170,17 @@ IMPORT
     x.offset := 0;
   END Deref;
 
-
-  PROCEDURE Index*(VAR x, index : CGL.Item); (* set x to ADR(x[index]) *)
+  (* Index
+   *
+   *  Set 'x' to be offset by 'index'.
+   *  The offset is generally not scaled by the size of the datatype.
+   *  The datatype scaling is applied when the low-level code generator
+   *  is employed.
+   *
+   *  Will also generate code to perform array index bounds checking,
+   *  if enabled.
+   *)
+  PROCEDURE Index*(VAR x, index : CGL.Item); (*  *)
     VAR
       len, inxreg, one : CGL.Item;
       open : BOOLEAN;
@@ -1178,6 +1218,11 @@ IMPORT
 
     CASE x.mode OF
     | CGL.Ivar:
+      (* If the index is a constant (for all dimensions), then the index
+       * operation can be performed totally as an offset to the base variable.
+       * The first dimension that does not use a constant index, the Items's
+       * mode will be changed and an index register is used.
+       *)
       IF index.mode = CGL.Iconst THEN
         INC(x.adr, index.val.i0);
       ELSE
@@ -1193,8 +1238,7 @@ IMPORT
           x.offset := index.val.i0;
         ELSE
           Load(index);
-          TakeAddress(x, CGL.RegWord, TRUE);
-          x.mode   := CGL.Iregix;
+          x.mode   := CGL.Iindx; (* Dynamic arrays are implied Ivarpar. *)
           x.offset := 0;
           x.inxreg := index.reg;
         END;
@@ -1208,26 +1252,13 @@ IMPORT
         END;
       END;
 
-    | CGL.Ivarpar:
+    | CGL.Ivarpar, CGL.Iind:
       IF index.mode = CGL.Iconst THEN
         x.mode := CGL.Iind;
         x.offset := index.val.i0;
       ELSE
         Load(index);
-        TakeAddress(x, CGL.RegWord, TRUE);
-        x.mode   := CGL.Iregix;
-        x.offset := 0;
-        x.inxreg := index.reg;
-      END;
-
-    | CGL.Iind:
-      IF index.mode = CGL.Iconst THEN
-        INC(x.offset, index.val.i0);
-      ELSE
-        Load(index);
-        TakeAddress(x, CGL.RegWord, TRUE);
-        x.mode   := CGL.Iregix;
-        x.offset := 0;
+        x.mode   := CGL.Iindx;
         x.inxreg := index.reg;
       END;
 
@@ -1263,10 +1294,8 @@ IMPORT
 
       Mul(inxreg, len);
       Add(inxreg, index);
-      CGL.DoubleRef(inxreg);
       x.inxreg := inxreg.reg;
       CGL.Release(len);
-      CGL.Release(inxreg);
     END;
   END Index;
 
@@ -2075,7 +2104,8 @@ IMPORT
       bytes : INTEGER;
 
       PROCEDURE VarParDynarr(f : ST.Symbol; VAR ap : CGL.Item);
-      VAR fp : CGL.Item;
+        VAR
+          fp : CGL.Item;
       BEGIN
         CGL.InitItem(fp);
         fp.type := f.type;
@@ -2169,6 +2199,7 @@ IMPORT
       CGL.Release(ap);
       CASE fp.type.form OF
       | ST.array, ST.record:
+        ASSERT(PassedByAddress - {ST.array, ST.record} = { });
         bytes := SIZE(LONGINT); (* always passed by reference; see Assign *)
       ELSE
         bytes := SHORT(fp.type.size);

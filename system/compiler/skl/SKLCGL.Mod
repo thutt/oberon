@@ -2419,7 +2419,7 @@ IMPORT
   PROCEDURE PutLoadAddress*(VAR x, y : Item); (* Load address of 'y' into register 'x' *)
     VAR inst : Instruction;
   BEGIN
-    ASSERT(x.mode IN {Ireg, Iregi}, 200);
+    ASSERT(x.mode IN {Ireg, Iregi, Iregix}, 200);
     DefaultInst(inst);
     inst.opclass := ocREGMEMIMM;
     inst.opc     := opcLA;

@@ -1,6 +1,5 @@
 MODULE SKLE;
 IMPORT
-  SYSTEM,
   ST:=SKLST,
   TB:=SKLTB,
   T:=SKLT,
@@ -1064,7 +1063,7 @@ BEGIN
         IF e.type = ST.undftyp THEN
           e.type := ST.linttyp;
         END;
-        x := TB.NewIndex(x, e);
+        x := TB.NewIndex(FALSE, x, e);
         IF PU.token = OPS.comma THEN
           OPS.Get(PU.token)
         ELSE
@@ -1117,7 +1116,6 @@ PROCEDURE ActualParameters*(fpar: ST.Symbol; parms : T.Arg) : T.Arg;
 
 
   PROCEDURE CheckParam(VAR ap: T.Expr; fp: ST.Symbol);
-
 
     PROCEDURE DynArrParCheck(ftyp : ST.Array; atyp: ST.Type; fvarpar: BOOLEAN);
       VAR
@@ -1183,22 +1181,23 @@ PROCEDURE ActualParameters*(fpar: ST.Symbol; parms : T.Arg) : T.Arg;
 BEGIN
   aparlist := parms;
   IF PU.token # OPS.rparen THEN
-    LOOP par := Expression();
-         IF (fpar # NIL) & (fpar.kind IN {ST.par, ST.varpar}) THEN
-           CheckParam(par, fpar);
-           apar := T.NewArgNode(par);
-           aparlist := T.BindArg(aparlist, apar);
-           fpar := ST.NextParm(fpar);
-         ELSE
-           err(EL.TooManyAparm);
-         END;
-         IF PU.token = OPS.comma THEN
-           OPS.Get(PU.token);
-         ELSIF (PU.token >= OPS.lparen) & (PU.token <= OPS.ident) THEN
-           err(EL.CommaExpected)
-         ELSE
-           EXIT;
-         END;
+    LOOP
+      par := Expression();
+      IF (fpar # NIL) & (fpar.kind IN {ST.par, ST.varpar}) THEN
+        CheckParam(par, fpar);
+        apar := T.NewArgNode(par);
+        aparlist := T.BindArg(aparlist, apar);
+        fpar := ST.NextParm(fpar);
+      ELSE
+        err(EL.TooManyAparm);
+      END;
+      IF PU.token = OPS.comma THEN
+        OPS.Get(PU.token);
+      ELSIF (PU.token >= OPS.lparen) & (PU.token <= OPS.ident) THEN
+        err(EL.CommaExpected)
+      ELSE
+        EXIT;
+      END;
     END;
     T.ReverseArgList(aparlist);
   END;
@@ -1212,8 +1211,8 @@ END ActualParameters;
 PROCEDURE Expression*() : T.Expr;
   VAR
     lhs : T.Expr;
-  typename : ST.Symbol;
-  op : T.NODECLASS;
+    typename : ST.Symbol;
+    op : T.NODECLASS;
 
 
   PROCEDURE SimpleExpression() : T.Expr;
@@ -1282,6 +1281,24 @@ PROCEDURE Expression*() : T.Expr;
           RETURN l;
         END Set;
 
+        PROCEDURE CompleteDynarrIndex(x : T.Design) : T.Design;
+          VAR
+            index : T.Design;
+            type : ST.Type;
+        BEGIN
+          (* x is the last dimension indexed. *)
+          IF x.type.form = ST.dynarr THEN
+            type := x.type;
+            WHILE x.type.form = ST.dynarr DO
+              index := TB.NewIndex(TRUE, x, TB.NewIntConst(0));
+              x := index;
+            END;
+            x := T.NewSyntheticIndexNode(x, 0, 0, TB.NewIntConst(0), type);
+            x(T.Index).synthType := type;
+          END;
+          RETURN x;
+        END CompleteDynarrIndex;
+
       BEGIN
         PU.Sync(OPS.lparen, EL.BadFactorStart);
 
@@ -1289,6 +1306,10 @@ PROCEDURE Expression*() : T.Expr;
          | OPS.ident:
            PU.qualident(ident);
            x := selector(TB.NewDesign(ident));
+           IF x.subcl = T.Dindex THEN
+             x := CompleteDynarrIndex(x(T.Design));
+           END;
+
            IF x.subcl = T.Dstdproc THEN
              x := SP.StdFuncCall(x(T.Design), StdArgs());
            ELSIF PU.token = OPS.lparen THEN
