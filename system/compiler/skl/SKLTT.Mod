@@ -100,16 +100,16 @@ IMPORT
       CGH.Deref(x);
       x.type := n.type;
 
+    | T.Dcast: (* Change type of node.  Used for synthetic index. *)
+      dsgn(n(T.DesignCast).node, x);
+      x.type := n.type;
+      
     | T.Dindex:
       ASSERT((n(T.Index).base # NIL) & (n(T.Index).index # NIL));
       dsgn(n(T.Index).base, x);
       expr(n(T.Index).index, y);
-      IF n(T.Index).synthType = NIL THEN
-        CGH.Index(x, y);
-        x.type := n.type;
-      ELSE
-        x.type := n(T.Index).synthType;
-      END;
+      CGH.Index(x, y);
+      x.type := n.type;
 
     | T.Diguard, T.Deguard:
       dsgn(n(T.Guard).design, x);

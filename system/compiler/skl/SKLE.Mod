@@ -1063,7 +1063,7 @@ BEGIN
         IF e.type = ST.undftyp THEN
           e.type := ST.linttyp;
         END;
-        x := TB.NewIndex(FALSE, x, e);
+        x := TB.NewIndex(x, e);
         IF PU.token = OPS.comma THEN
           OPS.Get(PU.token)
         ELSE
@@ -1290,11 +1290,10 @@ PROCEDURE Expression*() : T.Expr;
           IF x.type.form = ST.dynarr THEN
             type := x.type;
             WHILE x.type.form = ST.dynarr DO
-              index := TB.NewIndex(TRUE, x, TB.NewIntConst(0));
+              index := TB.NewIndex(x, TB.NewIntConst(0));
               x := index;
             END;
-            x := T.NewSyntheticIndexNode(x, 0, 0, TB.NewIntConst(0), type);
-            x(T.Index).synthType := type;
+            x := T.NewDesignCast(x, type);
           END;
           RETURN x;
         END CompleteDynarrIndex;

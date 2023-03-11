@@ -152,6 +152,9 @@ IMPORT
       | T.Diguard, T.Deguard:
         PN(n(T.Guard).design);
 
+      | T.Dcast:
+        PN(n(T.DesignCast).node);
+
       | T.Dproc:
       END;
 
@@ -197,8 +200,6 @@ IMPORT
         WN(n(T.Field).offset);
         L('s');
         WN(n(T.Index).scale);
-        L('y');
-        WB(n(T.Index).synthetic);
 
       | T.Diguard, T.Deguard:
         PNR('d', n(T.Guard).design);
@@ -207,6 +208,9 @@ IMPORT
 
       | T.Dstdproc, T.Dproc:
         WS(n.sym.name^);
+
+      | T.Dcast:
+        PNR('n', n(T.DesignCast).node);
       END;
     END;
   END PrintDesign;
@@ -692,14 +696,16 @@ BEGIN
   dsgn[T.Dtype        ] := 'Dtype      ';
   dsgn[T.Dmodule      ] := 'Dmodule    ';
   dsgn[T.Dscope       ] := 'Dscope     ';
-  dsgn[T.Ddarrdesc       ] := 'Ddarrdesc  ';
-  dsgn[T.Darrdesc       ] := 'Darrdesc   ';
-  dsgn[T.Drecdesc       ] := 'Drecdesc   ';
+  dsgn[T.Ddarrdesc    ] := 'Ddarrdesc  ';
+  dsgn[T.Darrdesc     ] := 'Darrdesc   ';
+  dsgn[T.Drecdesc     ] := 'Drecdesc   ';
   dsgn[T.Dderef       ] := 'Dderef     ';
   dsgn[T.Dindex       ] := 'Dindex     ';
   dsgn[T.Diguard      ] := 'Diguard    ';
   dsgn[T.Deguard      ] := 'Deguard    ';
   dsgn[T.Dproc        ] := 'Dproc      ';
+  dsgn[T.Dcommon      ] := 'Dcommon    ';
+  dsgn[T.Dcast        ] := 'Dcast      ';
 
   stmt[T.Snull        ] := 'Snull      ';
   stmt[T.Senter       ] := 'Senter     ';

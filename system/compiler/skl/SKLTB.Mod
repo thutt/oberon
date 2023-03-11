@@ -160,8 +160,7 @@ IMPORT
     RETURN T.NewDerefNode(base, type);
   END NewDeref;
 
-  PROCEDURE NewIndex*(synthetic : BOOLEAN;
-                      base : T.Design; index : T.Expr) : T.Index;
+  PROCEDURE NewIndex*(base : T.Design; index : T.Expr) : T.Index;
     VAR
       type : ST.Type;
       i : LONGINT;
@@ -182,11 +181,7 @@ IMPORT
         END;
       END;
     END;
-    IF synthetic THEN
-      RETURN T.NewSyntheticIndexNode(base, 0, 0, index, type);
-    ELSE
-      RETURN T.NewIndexNode(base, 0, 0, index, type);
-    END;
+    RETURN T.NewIndexNode(base, 0, 0, index, type);
   END NewIndex;
 
   (**** Designators ****)
@@ -315,7 +310,7 @@ IMPORT
       (* replace string-"" assignment w/ 0X *)
       r := T.NewConstExprNode(ST.chartyp);
       r.val.i0 := 0;
-      l := NewIndex(FALSE, l, NewIntConst(0));
+      l := NewIndex(l, NewIntConst(0));
     END;
     RETURN T.NewAssignNode(l, r);
   END NewAssign;

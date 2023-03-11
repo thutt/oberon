@@ -81,11 +81,12 @@ IMPORT
     Dcommon*   = ST.nofSymbols + 5;       (* common designator in:
                                            *   variable := variable [op] expr;
                                            *)
-    Dlast*     = ST.nofSymbols + 6;
+    Dcast*     = ST.nofSymbols + 6;
+    Dlast*     = ST.nofSymbols + 7;
 
-    (* Designators which can be assigned, or yield, a value. *)
+    (* Designators which can be assigned (lvalue), or yield (rvalue), a value. *)
     RValueSet* = {Dvar..Dconst, Dfield, Dderef..Deguard};
-    LValueSet* = {Dvar..Dvarpar, Dfield, Dderef..Deguard};
+    LValueSet* = {Dvar..Dvarpar, Dfield, Dderef..Deguard, Dcast};
 
     (*  LValue(n) <=> (n.class = Ndsgn) &
      *                (n.subcl IN LValueSet) &
@@ -274,8 +275,11 @@ IMPORT
     IndexDesc* = RECORD (FieldDesc)
       index*     : Expr;
       scale*     : SHORTINT;     (* {1, 2, 4, 8}; multiplicative of index *)
-      synthType* : ST.Type;
-      synthetic- : BOOLEAN;
+    END;
+
+    DesignCast* = POINTER TO DesignCastDesc;
+    DesignCastDesc* = RECORD (DesignDesc)
+      node- : Design;
     END;
 
     Deref* = POINTER TO DerefDesc;
@@ -803,6 +807,17 @@ IMPORT
     RETURN n;
   END NewDesignNode;
 
+  (* Cast of node type.  Can be applied to an rvalue. *)
+  PROCEDURE NewDesignCast*(x : Design; type : ST.Type) : Design;
+    VAR
+      n : DesignCast;
+  BEGIN
+    NEW(n);
+    InitDesignNode(n, Dcast, type, NIL);
+    n.node := x;
+    RETURN n;
+  END NewDesignCast;
+
   PROCEDURE NewFieldNode*(base   : Design;
                           offset : LONGINT;
                           field  : ST.Symbol) : Field;
@@ -836,23 +851,8 @@ IMPORT
     n.index     := index;
     n.flags     := base.flags;
     n.flags     := base.flags - {super, used, main};
-    n.synthetic := FALSE;
-    n.synthType := NIL;
     RETURN n;
   END NewIndexNode;
-
-  PROCEDURE NewSyntheticIndexNode*(base   : Design;
-                                   offset : LONGINT;
-                                   scale  : SHORTINT;
-                                   index  : Expr;
-                                   type   : ST.Type) : Index;
-    VAR
-      n : Index;
-  BEGIN
-    n := NewIndexNode(base, offset, scale, index, type);
-    n.synthetic := TRUE;
-    RETURN n;
-  END NewSyntheticIndexNode;
 
   PROCEDURE NewDerefNode*(base : Design; type : ST.Type) : Deref;
     VAR
@@ -1270,7 +1270,7 @@ IMPORT
         | Dderef:
           l := l(Deref).base;
           r := r(Deref).base;
-        | Diguard, Deguard:
+        | Diguard, Deguard, Dcast:
           RETURN FALSE;
         | Dindex:
           RETURN SameDesign(l(Index).index, r(Index).index);
