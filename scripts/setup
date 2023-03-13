@@ -1,12 +1,31 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022 Logic Magicians Software
+# Copyright (c) 2021, 2022, 2023 Logic Magicians Software
 #
 # Do not run.  Use 'source' to load into environment.
 #
 #
 #
-SRC_DIR=$(dirname "${BASH_SOURCE[0]}");
+SCRIPT="${BASH_SOURCE[0]}"
+SRC_DIR=$(dirname "${SCRIPT}");
 source $(readlink -f "${SRC_DIR}/functions");
+
+
+# Named _help() to not override Bash builtin 'help'.
+function _help()
+{
+    cat <<EOF
+
+This script sets the environment for using the SKL Oberon system.
+
+It must be loaded via 'source', like so:
+
+  source ${SCRIPT} \\
+    --architecture (Intel-x86-64 | Arm64) \\
+    --bod <build-output-directory> \\
+    --build-type (alpha | beta | release)
+
+EOF
+}
 
 
 function process_args ()
@@ -84,7 +103,7 @@ function main()
 
     if process_args ${@} ; then
         if [ -z "${BOD}" ] ; then
-            echo "Build output directory (-o) has not been set.";
+            _help;
         else
             local system="${SKL_DIR}/system"
             export SKL_BUILD_DIR="${BOD}";
@@ -96,6 +115,7 @@ function main()
             oberon-show-config;
         fi;
     else
+        _help;
         echo "Local work environment configuration failed."
     fi;
 }
