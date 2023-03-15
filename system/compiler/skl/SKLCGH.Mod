@@ -1204,13 +1204,10 @@ IMPORT
          (index.val.i0 # 0))) THEN
       IF open THEN
         GetArrayDimLen(x, len, arr); (* [len] = address of bounds *)
-        Load(len);
-        MakeConstItem(one, 1, ST.linttyp);
-        CGL.PutAddConstant(len, one, len);
       ELSE
         MakeConstItem(len, arr.len, ST.linttyp);
-        Load(len);
       END;
+      Load(len);
       Load(index);
       CGL.PutSysTrapArray(index, len);
       CGL.Release(len);
@@ -1280,8 +1277,6 @@ IMPORT
       GetArrayDimLen(x, len, arr);
       IF open THEN
         Load(len);
-        MakeConstItem(one, 1, ST.linttyp);
-        CGL.PutAddConstant(len, one, len);
       END;
       (* len is now the length of the arrray. *)
 
@@ -1932,12 +1927,11 @@ IMPORT
     var := result;
   END IsTest;
 
-  (* push dynamic array bound (not LEN()) onto the stack *)
+  (* Push dynamic array length (not last index!) onto the stack. *)
   PROCEDURE DynArrBnd(VAR fp, ap : CGL.Item);
     VAR
       stk, x, y, z : CGL.Item;
       ft, at : ST.Type;
-      oneless: BOOLEAN;
   BEGIN
     CGL.InitItem(stk);
     ft       := fp.type;
@@ -1947,40 +1941,20 @@ IMPORT
 
      IF ft(ST.Array).of = ST.bytetyp THEN (* ARRAY OF SYSTEM.BYTE *)
        IF at.form # ST.dynarr THEN (* Static length. *)
-         MakeConstItem(y,  at.size - 1, ST.linttyp);
+         MakeConstItem(y, at.size, ST.linttyp);
        ELSE (* dynamic length *)
          GetArrayDimLen(ap, y, at(ST.Array));
-         oneless := TRUE;
          at := at(ST.Array).of;
          WHILE at.form = ST.dynarr DO
-           IF oneless THEN
-             Load(y);
-             CGL.PutAddConstant(y, One, y);
-           END;
            GetArrayDimLen(ap, z, at(ST.Array));
-           Load(z);
-           CGL.PutAddConstant(z, One, z);
+           Load(z);             (* Load needed? *)
            Mul(y, z);
-           oneless := FALSE;
            at := at(ST.Array).of;
-         END;
-
-         IF oneless THEN
-           Load(y);
          END;
 
          IF at.size > 1 THEN
            MakeConstItem(z, at.size, ST.linttyp);
            Mul(y, z);
-         END;
-
-         IF oneless THEN
-           IF at.size > 1 THEN
-             MakeConstItem(z, at.size - 1, ST.linttyp);
-             CGL.PutGenReg(CGL.opcADD, y, z, y);
-           END;
-         ELSE
-           CGL.PutAddConstant(y, MinusOne, y);
          END;
        END;
        Move(stk, y);
@@ -1989,7 +1963,7 @@ IMPORT
          IF at.form = ST.dynarr THEN
            GetArrayDimLen(ap, y, at(ST.Array));
          ELSE (* array *)
-           MakeConstItem(y, at(ST.Array).len - 1, ST.linttyp);
+           MakeConstItem(y, at(ST.Array).len, ST.linttyp);
          END;
          Move(stk, y); (* final length of the array to stack *)
          ft := ft(ST.Array).of;
@@ -2087,8 +2061,8 @@ IMPORT
         dest.mode := Itos;
         dest.type := ST.linttyp;
         ASSERT(source.mode = CGL.Ivar, 1001);
-        MakeConstItem(t, source.sym(ST.SymbolConst).val.i0 - 1, ST.linttyp);
-        Move(dest, t); (* string len - 1 *)
+        MakeConstItem(t, source.sym(ST.SymbolConst).val.i0, ST.linttyp);
+        Move(dest, t); (* string len *)
       ELSE
         DynArrBnd(dest, source);
       END;
@@ -2290,7 +2264,6 @@ IMPORT
               Load(size);
               CGL.PutAddConstant(size, One, size);  (* la (Rsize + 1), Rsize *)
             END;
-            CGL.PutAddConstant(len, One, len);      (* la (Rsize + 1), Rlen *)
             round := 3; (* 3 <=> array bound + 3, 1 already added *)
             Mul(len, size);
           ELSE
@@ -3002,7 +2975,6 @@ IMPORT
     Load(y);
     CGL.Release(arr);
     arr := y;
-    CGL.PutAddConstant(arr, One, arr);
   END StdLen;
 
   (* StdBit:

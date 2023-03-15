@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
 /* $Id: heap.cpp,v 1.21 2002/02/05 04:41:02 thutt Exp $ */
 #include <assert.h>
 #include <ctype.h>
@@ -555,7 +555,7 @@ namespace heap
         const record_elem_open_array_t *arr = record_elem_array(array);
 
         if (arr != NULL) {
-            return arr->bound + 1;
+            return arr->bound;
         }
         dialog::fatal("array length attempted on NIL dynamic array of records");
         return 0;
@@ -568,7 +568,7 @@ namespace heap
         const simple_elem_open_array_t *arr = simple_elem_array(array);
 
         if (arr != NULL) {
-            return arr->bound + 1;
+            return arr->bound;
         }
         dialog::fatal("array length attempted on NIL dynamic array of integral type");
         return 0;
@@ -581,7 +581,7 @@ namespace heap
         const pointer_elem_open_array_t *arr = pointer_elem_array(array);
 
         if (arr != NULL) {
-            return arr->bound + 1;
+            return arr->bound;
         }
         dialog::fatal("array length attempted on NIL dynamic array of pointers");
         return 0;
@@ -772,7 +772,7 @@ namespace heap
             arr             = reinterpret_cast<simple_elem_open_array_t *>(blk);
             arr->block_size = static_cast<md::int32>(size_in_bytes);
             arr->pad        = 0xdeadbeef;
-            arr->bound      = n_elements - 1;
+            arr->bound      = n_elements;
             arr->td         = heap_address(td_adr) | (BlkMark | BlkAray);
             user_block      = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
             array_alloc_progress("SE",
@@ -823,7 +823,7 @@ namespace heap
             arr->arrpos     = 0;
             arr->pad0       = 0xdeadbeef;
             arr->pad1       = 0xdeadbeef;
-            arr->bound      = n_elements - 1;
+            arr->bound      = n_elements;
             arr->td         = heap_address(td_adr) | (BlkMark | BlkAray);
 
             data_adr = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
@@ -881,7 +881,7 @@ namespace heap
             arr->pad0       = 0xdeadbeef;
             arr->pad1       = 0xdeadbeef;
             arr->pad2       = 0xdeadbeef;
-            arr->bound      = n_elements - 1;
+            arr->bound      = n_elements;
             arr->td         = td;
 
             data_adr = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);

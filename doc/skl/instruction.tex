@@ -1215,7 +1215,7 @@ This instruction sets \texttt{R2} to the bitwise \texttt{not} of
      { % semantics
        \begin{math}
          \begin{array}{lcl}
-           \neg (\sr{0} >= 0 \wedge \sr{0} <= \sr{1}) & \implies &
+           \neg (0 <= \sr{0} \wedge \sr{0} < \sr{1}) & \implies &
            \left\lbrace
            \begin{array}{lcl}
              \asmreg{1} & = & 13 \\
@@ -1224,7 +1224,7 @@ This instruction sets \texttt{R2} to the bitwise \texttt{not} of
            \end{array}
            \right. \\
 
-           (\sr{0} >= 0 \wedge \sr{0} <= \sr{1}) & \implies & \pc = \pc + 4 \\
+           (0 <= \sr{0} \wedge \sr{0} < \sr{1}) & \implies & \pc = \pc + 4 \\
          \end{array}
        \end{math}
      }

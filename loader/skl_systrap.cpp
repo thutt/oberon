@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2021, 2022, 2023 Logic Magicians Software */
 #include <assert.h>
 #include "dialog.h"
 #include "o3.h"
@@ -171,7 +171,7 @@ namespace skl {
             bool       ok;
 
             ok = (static_cast<int>(r0) >= 0 && // Non-negative index
-                  r0 <= rd);                   // R0 is index (x[R0]). Rd is LEN(x).
+                  r0 < rd);                    // R0 is index (x[R0]). Rd is LEN(x).
 
             dialog::trace("%s: %s  R%u, R%u\n", decoded_pc, mne, R0, Rd);
             epilog(cpu, !ok);

@@ -1431,9 +1431,7 @@
     WHILE nofDim > 0 DO
       SYSTEM.GET(srcBounds, len);
       INC(arrayData, SIZE(ADDRESS));
-(* GUNGLA -- change to LEN *)
-      SYSTEM.MEMW(arrayData, daLen0, len - 1); (* Store max index, not LEN. *)
-(* GUNGLA -- change to LEN *)
+      SYSTEM.MEMW(arrayData, daLen0, len); (* Store LEN. *)
       INC(srcBounds, SIZE(ADDRESS));
       DEC(nofDim);
     END;

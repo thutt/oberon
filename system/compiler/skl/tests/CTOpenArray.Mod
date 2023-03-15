@@ -17,6 +17,28 @@ TYPE
   HeapData = POINTER TO ARRAY OF DataType;
 
 
+PROCEDURE Byte(VAR x: ARRAY OF SYSTEM.BYTE; len : LONGINT);
+BEGIN
+  ASSERT(LEN(x) = len);
+END Byte;
+
+
+PROCEDURE Bytes(VAR x: ARRAY OF ARRAY OF ARRAY OF CHAR);
+BEGIN
+  Byte(x, LEN(x, 0) * LEN(x, 1) * LEN(x, 2));
+END Bytes;
+
+
+PROCEDURE SystemBytes;
+  VAR
+    buffer3 : ARRAY 2 OF ARRAY 4 OF ARRAY 8 OF CHAR;
+    buffer1 : ARRAY 32 OF CHAR;
+BEGIN
+  Byte(buffer1, LEN(buffer1));
+  Bytes(buffer3);
+END SystemBytes;
+
+
 PROCEDURE VerifyAddress(base    : ADDRESS;
                         element : ADDRESS;
                         i, lenI : LONGINT;
@@ -47,11 +69,13 @@ BEGIN
   ASSERT(LEN(ss, 1) = Dim3, 1025);
 END P11;
 
+
 PROCEDURE P1(VAR s : ARRAY OF DataType); (* In-only open array *)
 BEGIN
   ASSERT(LEN(s) = Dim3, 1024);
   P0(s, LEN(s));
 END P1;
+
 
 PROCEDURE P2(s : HeapData); (* Heap-based open array *)
 BEGIN
@@ -87,7 +111,6 @@ BEGIN
                       i, LEN(s, 0),
                       j, LEN(s, 1),
                       k, LEN(s, 2));
-
         INC(k);
       END;
       INC(j);
@@ -135,6 +158,15 @@ BEGIN
 END P3;
 
 
+PROCEDURE Allocate;
+ VAR
+   p : POINTER TO ARRAY OF ARRAY OF ARRAY OF DataType;
+BEGIN
+  NEW(p, Dim1, Dim2, Dim3);
+  P3Var(SYSTEM.ADR(p^), p^);
+  P3(p^);
+END Allocate;
+
 
 PROCEDURE Test*;
  VAR
@@ -143,7 +175,10 @@ BEGIN
   Verify3D(s3);
   P3Var(SYSTEM.ADR(s3), s3);
   P3(s3);
+  Allocate;
+  SystemBytes;
 END Test;
+
 
 PROCEDURE Length(s : ARRAY OF CHAR) : INTEGER;
   VAR i : INTEGER; ch : CHAR;
