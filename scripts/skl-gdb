@@ -1,0 +1,46 @@
+#!/bin/bash
+# Copyright (c) 2023 Logic Magicians Software
+#
+#  This script run GDB on the Oberon interpreter inside emacs.
+# 
+set -o errexit;
+set -o pipefail;
+set -o nounset;
+
+function fatal ()
+{
+    local msg="${@}";
+    echo "fatal: ${msg}";
+    exit 1;
+}
+
+function main ()
+{
+    local GDB=$(which gdb);
+    local emacs=$(which emacs);
+    local interpreter=$(skl-oberon-path);
+    local geometry="--geometry 100x95";
+    local command="(gdb \"gdb -i=mi ${interpreter}\")";
+
+    if [ -z "${GDB}" ] ; then
+        fatal "gdb not on path.";
+    fi;
+
+    if [ ! -x "${interpreter}" ] ; then
+        fatal "'${interpreter} does not exist; build project with skl-build."
+    fi;
+
+    if [ -z "${SKL_SEARCH_PATH:-}" ] ; then
+        cat <<EOF
+'SKL_SEARCH_PATH' not set; modules will not be found.
+
+Use 'scripts/setup'.
+
+EOF
+    fi;
+
+    (cd ${SKL_DIR}/system;                                      \
+     ${emacs} ${geometry} --eval "${command}") &
+}
+
+main "${@}";
