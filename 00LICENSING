@@ -260,6 +260,9 @@ The files contained here are provided under the corresponding software license.
   loader/fileutils.cpp
   loader/fileutils.h
   loader/generic/skl_flags_alu.h
+  loader/skl_fp_reg.cpp
+  loader/skl_fp_reg.h
+  loader/skl_fp_reg_opc.h
   loader/x86/skl_flags_alu.h
   make/config.mk
   scripts/execute.py
@@ -284,6 +287,8 @@ The files contained here are provided under the corresponding software license.
   system/Prime.Mod
   system/Prime.Obj
   system/Prime.Sym
+  system/RandomNumbers.Obj
+  system/RandomNumbers.Sym
   system/compiler/o3/gsa-examples/arithmetic/Aabs.Aabs.gsa.00000
   system/compiler/o3/gsa-examples/arithmetic/Aabs.Mod
   system/compiler/o3/gsa-examples/arithmetic/Aabs.P0.gsa.00000
@@ -887,6 +892,12 @@ The files contained here are provided under the corresponding software license.
   system/lms/KernelTD.Mod
   system/lms/KernelTD.Obj
   system/lms/KernelTD.Sym
+  system/lms/Math.Mod
+  system/lms/Math.Obj
+  system/lms/Math.Sym
+  system/lms/MathL.Mod
+  system/lms/MathL.Obj
+  system/lms/MathL.Sym
   system/lms/ModuleInspector.Mod
   system/lms/ModuleInspector.Obj
   system/lms/ModuleInspector.Sym
@@ -906,9 +917,15 @@ The files contained here are provided under the corresponding software license.
   system/lms/tests/MkTree.Mod
   system/lms/tests/MkTree.Obj
   system/lms/tests/MkTree.Sym
+  system/lms/tests/RealMath.Mod
+  system/lms/tests/RealMath.Obj
+  system/lms/tests/RealMath.Sym
   system/lms/tests/StackOverflow.Mod
   system/lms/tests/StackOverflow.Obj
   system/lms/tests/StackOverflow.Sym
+  system/tests/Random.Mod
+  system/tests/Random.Obj
+  system/tests/Random.Sym
 
 
 **** licenses/gpl-v3.0.text

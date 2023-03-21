@@ -1,4 +1,4 @@
-# Copyright (c) 2000, 2020-2022 Logic Magicians Software
+# Copyright (c) 2000, 2020-2023 Logic Magicians Software
 MAKEFILE	:= $(lastword $(MAKEFILE_LIST))
 SRC_DIR		:= $(dir $(MAKEFILE))
 include $(SKL_DIR)/make/config.mk
@@ -33,6 +33,7 @@ SOURCE :=					\
 		skl_bit_test.cpp		\
 		skl_cond.cpp			\
 		skl_ctrl_reg.cpp		\
+		skl_fp_reg.cpp			\
 		skl_gen_reg.cpp			\
 		skl_instruction.cpp		\
 		skl_int_reg.cpp			\

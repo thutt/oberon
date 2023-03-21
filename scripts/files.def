@@ -12,6 +12,9 @@
 declare -a OS;
 OS=(${SKL_DIR}/system/lms/Kernel.Mod            \
     ${SKL_DIR}/system/lms/HostOS.Mod            \
+    ${SKL_DIR}/system/lms/Math.Mod              \
+    ${SKL_DIR}/system/lms/MathL.Mod             \
+    ${SKL_DIR}/system/RandomNumbers.Mod         \
     ${SKL_DIR}/system/Reals.Mod                 \
     ${SKL_DIR}/system/lms/Console.Mod           \
     ${SKL_DIR}/system/lms/Environment.Mod       \
@@ -173,8 +176,10 @@ COMPILER_TESTS=(                                                         \
 #
 declare -A MODULE_TESTS;
 MODULE_TESTS=(                                                  \
-    [${SKL_DIR}/system/lms/tests/MkTree.Mod]="pass"             \
     [${SKL_DIR}/system/lms/tests/MemoryExhaust.Mod]="pass"      \
+    [${SKL_DIR}/system/lms/tests/MkTree.Mod]="pass"             \
+    [${SKL_DIR}/system/lms/tests/RealMath.Mod]="pass"           \
+    [${SKL_DIR}/system/tests/Random.Mod]="pass"                 \
 );
 
 

@@ -131,9 +131,25 @@ converted and stored into the specified destination register.
 
 
 %%%%%%
+\section{Floating Point Register}
+
+\Figref{float-register-format} shows the encoding of instructions
+that operate upon integer registers. This class of instructions
+performs an operation with two integer registers and writes the result
+to the destination register.
+
+\begin{figure}[h!]
+  \centering
+  \fprbox{opc}\usebox{\fprtypebox}
+  \caption{Floating Point Register Instruction Format}
+  \label{fig:float-register-format}
+\end{figure}
+
+
+%%%%%%
 \section{Integer Register}
 
-\Figref{integer-register-format} show the encoding of instructions
+\Figref{integer-register-format} shows the encoding of instructions
 that operate upon integer registers. This class of instructions
 performs an operation with two integer registers and writes the result
 to the destination register.
@@ -156,7 +172,7 @@ shown in \figref{jump-register-and-link-format}.
 
 \begin{figure}[h!]
   \centering
-\jralbox\usebox{\jraltypebox}
+  \jralbox\usebox{\jraltypebox}
     \caption{Jump Register and Link Instruction Format}
     \label{fig:jump-register-and-link-format}
 \end{figure}

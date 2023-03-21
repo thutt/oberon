@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2021, 2022, 2023 Logic Magicians Software */
 #include <assert.h>
 
 #include "config.h"
@@ -9,6 +9,7 @@
 #include "skl_bit_test.h"
 #include "skl_cond.h"
 #include "skl_ctrl_reg.h"
+#include "skl_fp_reg.h"
 #include "skl_gen_reg.h"
 #include "skl_instruction.h"
 #include "skl_int_reg.h"
@@ -296,6 +297,10 @@ namespace skl {
 
         case OC_SYSTRAP:
             cinst = op_systrap(pc, inst);
+            break;
+
+        case OC_FP_REG:
+            cinst = op_fp_reg(pc, inst);
             break;
 
         default:

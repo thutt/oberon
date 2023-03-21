@@ -1,4 +1,4 @@
-/* Copyright (c) 2021 Logic Magicians Software */
+/* Copyright (c) 2021, 2023 Logic Magicians Software */
 OC(GEN_REG)
 OC(INT_REG)
 OC(SIGN_EXT)
@@ -12,3 +12,4 @@ OC(BIT_TEST)
 OC(STACK)
 OC(CONDITIONAL_SET)
 OC(SYSTRAP)
+OC(FP_REG)

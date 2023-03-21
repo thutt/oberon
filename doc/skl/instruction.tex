@@ -27,6 +27,24 @@ encoding and semantics are covered in this chapter.
 \end{instruction}
 
 
+\begin{instruction}{arctan}
+  \fprtype{arctan}
+     {\arctanopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \arctan(\sr{0})
+         \end{array}
+       \end{math}
+     }
+     {Takes the arctangent of the value in \sr{0}.  The domain of the
+     value in \texttt{\sr{0}}, as well as the result, conform to
+     the \texttt{ANSI C} \texttt{atan} library function.
+
+     \sr{0} and \dr are both floating point registers.}
+\end{instruction}
+
+
 \begin{instruction}{ash}
   \rtype{ash}{\rashopc}
      {
@@ -233,6 +251,22 @@ encoding and semantics are covered in this chapter.
 \end{instruction}
 
 
+\begin{instruction}{cos}
+  \fprtype{cos}
+     {\cosopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \cos(\sr{0})
+         \end{array}
+       \end{math}
+     }
+     {Takes the cosine of the value in \sr{0}.  The domain of the
+     value in \texttt{\sr{0}}, as well as the result, conform to
+     the \texttt{ANSI C} \texttt{cos} library function.
+
+     \sr{0} and \dr are both floating point registers.}
+\end{instruction}
 
 
 %%%%
@@ -323,6 +357,26 @@ encoding and semantics are covered in this chapter.
 %%   \todo{Describe that the \emph{source register 0} field must be zero,
 %%   becuase causes CR0 to be read for the return address.}
 %% \end{instruction}
+
+
+\begin{instruction}{exp}
+  \fprtype{exp}
+     {\expopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & $$e^{\sr{0}}$$
+         \end{array}
+       \end{math}
+     }
+     {Takes the value of \emph{e} and raises to the power of the value
+     in \sr{0}.  The domain of the value in \texttt{\sr{0}}, as well
+     as the result, conform to the \texttt{ANSI C} \texttt{exp}
+     library function.
+
+     \sr{0} and \dr are both floating point registers.}
+\end{instruction}
+
 
 \begin{instruction}{j}
   \jjumptype{j}{0}{0}{\jopc}
@@ -668,7 +722,24 @@ encoding and semantics are covered in this chapter.
        32-bit register.  To zero extend, zero is copied to bits
        ${16..31}$ of the destination register.
      }
-% gungla
+\end{instruction}
+
+
+\begin{instruction}{ln}
+  \fprtype{ln}
+     {\lnopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \ln(\sr{0})
+         \end{array}
+       \end{math}
+     }
+     {Takes the natural logarithm of the value in \sr{0}.  The domain
+     of the value in \texttt{\sr{0}}, as well as the result, conform
+     to the \texttt{ANSI C} \texttt{log} library function.
+
+     \sr{0} and \dr are both floating point registers.}
 \end{instruction}
 
 
@@ -1120,6 +1191,24 @@ This instruction sets \texttt{R2} to the bitwise \texttt{not} of
 \end{instruction}
 
 
+\begin{instruction}{sin}
+  \fprtype{sin}
+     {\sinopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sin(\sr{0})
+         \end{array}
+       \end{math}
+     }
+     {Takes the sine of the value in \sr{0}.  The domain of the value
+     in \texttt{\sr{0}}, as well as the result, conform to
+     the \texttt{ANSI C} \texttt{sin} library function.
+
+     \sr{0} and \dr are both floating point registers.}
+\end{instruction}
+
+
 \begin{instruction}{sle}
   \ctype{sle}
      {\sleopc}
@@ -1183,6 +1272,23 @@ This instruction sets \texttt{R2} to the bitwise \texttt{not} of
 \end{instruction}
 
 
+\begin{instruction}{sqrt}
+  \fprtype{sqrt}
+     {\sqrtopc}
+     {
+       \begin{math}
+         \begin{array}{lcl}
+           \dr & \becomes & \sqrt{\sr{0}}
+         \end{array}
+       \end{math}
+     }
+     {Takes the square root of the value in \sr{0}.  The domain of the value
+     in \texttt{\sr{0}}, as well as the result, conform to
+     the \texttt{ANSI C} \texttt{sqrt} library function.
+
+     \sr{0} and \dr are both floating point registers.}
+\end{instruction}
+
 
 \begin{instruction}{sub}
   \gregtype{sub}{\asubopc}{$\dr \becomes \sr{0} - \sr{1}$}{Subtracts
@@ -1205,6 +1311,18 @@ This instruction sets \texttt{R2} to the bitwise \texttt{not} of
      {
        Stores the word in \sr{0} to the address specified in the instruction.
      }
+\end{instruction}
+
+
+\begin{instruction}{tan}
+  \fprtype{tan} {\tanopc} { \begin{math} \begin{array}{lcl} \dr
+     & \becomes & \tan(\sr{0}) \end{array} \end{math} } {This
+     instruction produces the tangent of \texttt{\sr{0}}.  The value
+     in \sr{0} is given in radians.  The domain of the value
+     in \texttt{\sr{0}}, as well as the result, conform to
+     the \texttt{ANSI C} \texttt{tan} library function.
+
+     \sr{0} and \dr are both floating point registers.}
 \end{instruction}
 
 

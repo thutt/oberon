@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022 Logic Magicians Software
+# Copyright (c) 2021, 2022, 2023 Logic Magicians Software
 #
 # Compile OS using x86-based SKL-targeting compiler.
 #
@@ -54,20 +54,21 @@ function run()
 
 function main()
 {
-    local module;
-    local test_dir="${SKL_DIR}/system/lms/tests"
 
-    export SKL_SEARCH_PATH="${SKL_SEARCH_PATH}:${test_dir}";
 
     cd ${SKL_DIR}/system;
 
     # All keys: ${!MODULE_TESTS[@]}
     for test in ${!MODULE_TESTS[@]}; do
-        local module=$(basename ${test} .Mod);
-
-        if compile ${test}; then
-            run "${module}" "${MODULE_TESTS[${test}]}";
-        fi;
+        (                                                               \
+            local test_dir="$(dirname "${test}")";                      \
+            export SKL_SEARCH_PATH="${SKL_SEARCH_PATH}:${test_dir}";    \
+            local module=$(basename ${test} .Mod);                      \
+                                                                        \
+            if compile ${test}; then                                    \
+                run "${module}" "${MODULE_TESTS[${test}]}";             \
+            fi;                                                         \
+        );
     done;
 }
 main "${@}";

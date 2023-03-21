@@ -147,6 +147,16 @@
 \newcommand{\systraptypeclass}{12} % Systrap instruction class
 \newcommand{\trapnilopc}{0}        % trap if input is NIL
 
+\newcommand{\fprtypeclass}{13}  % Floating Point Register Instructions
+   \newcommand{\arctanopc}{0}
+   \newcommand{\cosopc}{1}
+   \newcommand{\expopc}{2}
+   \newcommand{\lnopc}{3}
+   \newcommand{\sinopc}{4}
+   \newcommand{\sqrtopc}{5}
+   \newcommand{\tanopc}{6}
+
+
 \newenvironment{InstructionInfo}[1]%
 {\begin{list}{}{\renewcommand{\makelabel}[1]{\textsf{##1:}\hfil}%
       \settowidth{\labelwidth}{\textsf{#1:}}%
@@ -273,6 +283,33 @@
   \item[Encoding] \rbox{#2}\usebox{\rtypebox}
   \item[Semantics]   #3
   \item[Syntax] \begin{alltt} #1 \sr{0}, \sr{1}, \dr \end{alltt}
+  \end{InstructionInfo}
+
+  #4
+}
+
+% Floating Point Register Instructions
+% \rtype{mnemonic}{opcode}{mathematical description}{semantics}
+\newsavebox{\fprtypebox}
+\newcommand{\fprbox}[1]{
+  \begin{lrbox}{\fprtypebox}
+  \begin{bytefield}{32}
+    \bitheader[endianness=big]{0-31}          \\
+    \bitbox{6}{\fprtypeclass}
+    \bitbox{5}{\dr}
+    \bitbox{5}{\sr{0}}
+    \bitbox{5}{0}
+    \bitbox{6}{0}
+    \bitbox{5}{#1}
+  \end{bytefield}
+  \end{lrbox}
+}
+
+\newcommand{\fprtype}[4]{ % {mnemonic}{opcode}{semantics}{description}
+  \begin{InstructionInfo}{Instruction Data}
+  \item[Encoding] \fprbox{#2}\usebox{\fprtypebox}
+  \item[Semantics]   #3
+  \item[Syntax] \begin{alltt} #1 \sr{0}, \dr \end{alltt}
   \end{InstructionInfo}
 
   #4

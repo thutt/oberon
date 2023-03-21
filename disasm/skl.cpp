@@ -28,6 +28,7 @@ namespace skl
         ic_stack                    = 10,
         ic_conditional_set          = 11,
         ic_systrap                  = 12,
+        ic_floating_point_reg       = 13,
 
         NUM_INSTRUCTION_CLASS
     } instruction_class_t;
@@ -43,6 +44,7 @@ namespace skl
 
     static void decode_general_register(word_t inst);
     static void decode_integer_register(word_t inst);
+    static void decode_floating_point_register(word_t inst);
     static void decode_sign_extension(word_t inst);
     static void decode_control_register(word_t inst);
     static void decode_system_register(word_t inst);
@@ -76,6 +78,7 @@ namespace skl
         /* [ic_stack] */                  decode_stack,
         /* [ic_conditional_set] */        decode_conditional_set,
         /* [ic_systrap] */                decode_systrap,
+        /* [ic_floating_point_reg] */     decode_floating_point_register,
         /* [NUM_INSTRUCTION_CLASS] */     decode_invalid_opcode,
     };
 
@@ -474,6 +477,32 @@ namespace skl
                prefix, mnemonic_width, mne[code], R0, R1, Rd);
     }
 
+
+    static void decode_floating_point_register(word_t inst)
+    {
+        static char const * const mne[] = {
+            "arctan",
+            "cos",
+            "exp",
+            "ln",
+            "sin",
+            "sqrt",
+            "tan",
+        };
+        const char *prefix = "";
+        unsigned    Rd     = field(inst, 25, 21);
+        unsigned    R0     = field(inst, 20, 16);
+        unsigned    R1     = field(inst, 15, 11);
+        unsigned    zero   = field(inst, 10, 6);
+        unsigned    code   = field(inst, 5, 0);
+
+        if (zero != 0 || R1 != 0) {
+            prefix = "(invalid encoding)";
+        }
+        print_header(pc, inst);
+        printf("%s%-*s  F%d, F%d\n",
+               prefix, mnemonic_width, mne[code], R0, Rd);
+    }
 
     static void decode_sign_extension(word_t inst)
     {

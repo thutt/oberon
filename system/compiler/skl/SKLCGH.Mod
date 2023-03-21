@@ -274,7 +274,7 @@ IMPORT
     | CGL.Ireg:
       CASE source.mode OF
        | CGL.Ivar, CGL.Ipar, CGL.Ivarpar, CGL.Ivarx,
-         CGL.Iind, CGL.Iindx, CGL.Iregi, CGL.Iregix:
+         CGL.Iind, CGL.Iindx, CGL.Iregi, CGL.Iregix, CGL.Iconst:
          CGL.PutLoad(dest, source);
 
        | CGL.Ireg:

@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2021, 2022, 2023 Logic Magicians Software */
 #include <string.h>
 
 #include "config.h"
@@ -298,7 +298,22 @@ namespace skl {
 
         virtual void interpret(skl::cpuid_t cpuid)
         {
-            dialog::not_implemented(__func__);
+            union {
+                md::uint32 i;
+                float f;
+            } v;
+            md::uint32 sp;
+
+            COMPILE_TIME_ASSERT(sizeof(float) == sizeof(md::uint32));
+            COMPILE_TIME_ASSERT(skl_endian_little);
+            dialog::trace("%s: %s  F%u", decoded_pc, mne, Rd);
+
+            v.i = pop_word(cpuid, sp);
+            if (LIKELY(!skl::exception_raised(cpuid))) {
+                dialog::trace("[ea: %xH  val: %f]\n", sp, v.f);
+                write_real_register(cpuid, Rd, static_cast<double>(v.f));
+                increment_pc(cpuid, 1);
+            }
         }
     };
 
