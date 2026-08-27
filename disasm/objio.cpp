@@ -1,3 +1,4 @@
+/* Copyright (c) 2000, 2021-2023, 2026 Logic Magicians Software */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -372,7 +373,7 @@ namespace objio
             } else if (ndata->darrtd.element_tag == '\1') {
                 read_num(ndata->darrtd.element_form); /* element form */
             } else {
-                (ndata->darrtd.element_tag == '\2');
+                assert(ndata->darrtd.element_tag == '\2');
                 ndata->darrtd.element_form = -1; /* sentinel */
                 read_num(ndata->darrtd.mno);
                 read_string(ndata->rectdname);
