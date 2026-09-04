@@ -1,5 +1,4 @@
 /* Copyright (c) 2000-2026 Logic Magicians Software */
-/* $Id: loader.cpp,v 1.15 2002/02/05 04:40:22 thutt Exp $ */
 #include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -61,8 +60,12 @@ version(void)
 
 
 static void
-segv_signal_handler(int signum, void *siginfo, void *uc)
+segv_signal_handler(int signum, siginfo_t *siginfo, void *uc)
 {
+    /* Getting the IP of the faulting instruction is not trivial, and
+     * not done at the time of this writing.
+     */
+    dialog::print("signal[%d]: Oberon interpreter.\n", signum);
     longjmp(signal_buf, 1);
 }
 
