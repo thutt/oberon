@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
+/* Copyright (c) 2000-2026 Logic Magicians Software */
 /* $Id: loader.cpp,v 1.15 2002/02/05 04:40:22 thutt Exp $ */
 #include <assert.h>
 #include <getopt.h>
@@ -236,6 +236,9 @@ main(int argc, char *argv[])
             }
         } else {
             /* All exit paths should come through here. */
+            if (config::options & config::opt_dump_heap) {
+                heap::dump(true);
+            }
             heap::release_heap(heap_size_in_megabytes, stack_size_in_megabytes);
             skl::release_instruction_cache();
             delete [] cmdline;

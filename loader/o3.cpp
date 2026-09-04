@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000-2026 Logic Magicians Software */
 #include <string.h>
 
 #include "fileutils.h"
@@ -1222,7 +1222,7 @@ namespace O3
 
         for (int i = 0; i < n_imports; ++i) {
             read_str(fp, mname);
-            dialog::diagnostic("module '%s' imports '%s'\n", module->name, mname);
+            dialog::diagnostic("Processing module '%s': IMPORT '%s'\n", module->name, mname);
 
             m = heap::heap_address(reinterpret_cast<md::HADDR>(find_module(mname)));
             assert(m != 0); // desired module not found?
@@ -1785,7 +1785,8 @@ namespace O3
 
         if (module == NULL) {
             /* module not found on list; load */
-            dialog::progress("Loading %s\n", name);
+            dialog::progress("Loading module %s\n", name);
+            dialog::diagnostic("Loading module %s\n", name);
             objF = open_object(name);
             if (objF != NULL) {
                 read_magic_block(objF);
@@ -1795,54 +1796,73 @@ namespace O3
                 new_module(module, header);
 
                 /* imports */
+                dialog::diagnostic("module '%s': %d imports.\n", module->name, header.nofImports);
                 read_tag(objF, '\x81');
                 read_imports(objF, module, header.nofImports);
 
                 /* exports */
+                dialog::diagnostic("module '%s': %d exports.\n", module->name, header.n_exports);
                 read_tag(objF, '\x82');
                 read_exports(objF, module, header.n_exports);
 
                 /* private */
+                dialog::diagnostic("module '%s': %d privates.\n", module->name, header.nofPrv);
                 read_tag(objF, '\x83');
                 read_privates(objF, module, header.nofPrv);
 
                 /* type desc */
+                dialog::diagnostic("module '%s': %d descriptors.\n", module->name, header.nofDesc);
                 read_tag(objF, '\x84');
                 read_typedescriptors(objF, module, header.nofDesc);
 
                 /* commands */
+                dialog::diagnostic("module '%s': %d commands.\n", module->name, header.nofCom);
                 read_tag(objF, '\x85');
                 read_commands(objF, module, header.nofCom);
 
                 /* pointers */
+                dialog::diagnostic("module '%s': %d pointers.\n", module->name, header.nofPtr);
                 read_tag(objF, '\x86');
                 read_pointers(objF, module, header.nofPtr);
 
                 /* constants */
+                dialog::diagnostic("module '%s': %d constant size.\n", module->name, header.constSize);
                 read_tag(objF, '\x87');
                 read_constants(objF, module, header.constSize);
 
                 /* type descriptor data */
+                dialog::diagnostic("module '%s': %d type descriptor size.\n",
+                                   module->name, header.typedescSize);
                 read_tag(objF, '\x88');
                 read_typedescdata(objF, module, header.typedescSize);
 
                 /* code */
+                dialog::diagnostic("module '%s': %d code size.\n", module->name,
+                                   header.codeSize);
                 read_tag(objF, '\x89');
                 read_code(objF, module, header.codeSize);
 
                 /* uses */
+                dialog::diagnostic("module '%s': %d import uses.\n", module->name,
+                                   header.nofImports);
                 read_tag(objF, '\x8A');
                 read_uses(objF, module, header.nofImports);
 
                 /* helper fixups */
+                dialog::diagnostic("module '%s': %d compiler helper fixups.\n",
+                                   module->name, header.nofHelpers);
                 read_tag(objF, '\x8B');
                 read_helper_fixups(objF, module, header.nofHelpers);
 
                 /* fixups */
+                dialog::diagnostic("module '%s': %d fixups.\n",
+                                   module->name, header.n_fixups);
                 read_tag(objF, '\x8C');
                 read_fixups(objF, module, header.n_fixups);
 
                 /* reference block */
+                dialog::diagnostic("module '%s': %d references size.\n",
+                                   module->name, header.refSize);
                 read_tag(objF, '\x8D');
                 read_reference(objF, module, header.refSize);
                 fclose(objF);
