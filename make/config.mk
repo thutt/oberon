@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Logic Magicians Software
+# Copyright (c) 2022, 2026 Logic Magicians Software
 SHELL	:=	\
 	bash
 
@@ -62,11 +62,10 @@ WARNINGS	:=				\
 	-Werror					\
 	-Wno-switch				\
 	-Wsign-conversion			\
-	-fdiagnostics-color=never		\
-	-fno-diagnostics-show-caret
+	$(SKL_CC_$(SKL_HOST_OS)_WARNINGS)
 
 
-CXXFLAGS	=				\
+export CXXFLAGS	=				\
 	-D$(HOSTOS)				\
 	-DBUILD_TYPE_$(SKL_BUILD_TYPE)		\
 	$(addprefix -I,$(INCLUDE))		\

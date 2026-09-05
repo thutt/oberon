@@ -1,4 +1,4 @@
-# Copyright (c) 2000, 2020-2023 Logic Magicians Software
+# Copyright (c) 2000-2026 Logic Magicians Software
 MAKEFILE	:= $(lastword $(MAKEFILE_LIST))
 SRC_DIR		:= $(dir $(MAKEFILE))
 include $(SKL_DIR)/make/config.mk
@@ -69,7 +69,7 @@ fail:
 oberon:	$(OBJ) $(TEST-FLAGS)
 	$(PROLOG);				\
 	$(CC)					\
-	    -Xlinker --gc-sections		\
+	    $(addprefix -Xlinker,$(CC_LD_$(SKL_HOST_OS)_OPTS))		\
 	    -g $(PROFILE)			\
 	    $(OBJ)				\
 	    $(LIBS)				\
