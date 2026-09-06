@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000-2026 Logic Magicians Software */
 #if !defined(_SKL_H)
 #define _SKL_H
 #include <assert.h>
@@ -294,6 +294,7 @@ namespace skl
     aligned(md::OADDR addr, int size)
     {
         assert((size & (size - 1)) == 0); // inv: power-of-2.
+        assert(size > 0);
 
         /* NOTE:
          *
@@ -307,7 +308,7 @@ namespace skl
          *   alignment can be turned on.  But, really, why?  There is
          *   no hardware penalty for not having it misaligned.
          */
-        return true || (addr & (size - 1)) == 0;
+        return true || (addr & (static_cast<unsigned>(size) - 1)) == 0;
     }
 
     /* address_valid

@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000-2026 Logic Magicians Software */
 /* $Id: heap.h,v 1.14 2002/09/23 13:33:06 thutt Exp $ */
 #if !defined(_HEAP_H)
 #define _HEAP_H
@@ -24,19 +24,26 @@ namespace heap
     static int const allocation_block_size = 16;
 
     const int default_heap_size_in_bytes = 64 * 1024 * 1024;
-    const int max_heap_size_in_megabytes = 127;
+    const int max_heap_size_in_megabytes = 127; /* Any much larger
+                                                 * than this, and
+                                                 * upper two address
+                                                 * bits being clear
+                                                 * can be
+                                                 * violated. */
 
     const int default_stack_size_in_bytes = 2 * 1024 * 1024;
     const int max_stack_size_in_megabytes = 64;
 
-    extern md::HADDR allocated_heap;
-    extern md::HADDR oberon_heap;
+    extern md::uint64 allocated_heap_upper_32;
 
-    extern md::HADDR oberon_stack; /* Address of stack allocation.
-                                    * This is the bottom of the stack
-                                    * (the lowest address).  The stack
-                                    * grows down.
-                                    */
+    extern md::HADDR  allocated_heap;
+    extern md::HADDR  oberon_heap;
+
+    extern md::HADDR  oberon_stack; /* Address of stack allocation.
+                                     * This is the bottom of the stack
+                                     * (the lowest address).  The
+                                     * stack grows down.
+                                     */
 
     extern int total_heap_size_in_bytes;
     extern int oberon_stack_size_in_bytes;
@@ -90,25 +97,31 @@ namespace heap
     static inline md::HADDR
     heap_to_host(md::OADDR heap)
     {
-        md::uint64 result = static_cast<md::uint64>(heap);
+        if (heap != 0) {        /* NIL pointer? */
+            md::uint64 intermed = (allocated_heap_upper_32 +
+                                   static_cast<md::uint64>(heap));
+            md::HADDR result    = reinterpret_cast<md::HADDR>(intermed);
 
-        COMPILE_TIME_ASSERT(sizeof(md::HADDR) == sizeof(md::uint64));
-
-        /* The Oberon heap is identity mapped to simplify address
-         * space conversions.
-         */
-        return reinterpret_cast<md::HADDR>(result);
+            COMPILE_TIME_ASSERT(sizeof(md::HADDR) == sizeof(md::uint64));
+            return result;
+        } else {
+            return NULL;
+        }
     }
 
 
     static inline md::OADDR
     host_to_heap(md::HADDR ptr)
     {
-        md::uint64 addr   = reinterpret_cast<md::uint64>(ptr);
-        md::OADDR  result = static_cast<md::OADDR>(addr);
+        if (ptr != NULL) {
+            md::uint64 addr   = reinterpret_cast<md::uint64>(ptr);
+            md::OADDR  result = static_cast<md::OADDR>(addr);
 
-        COMPILE_TIME_ASSERT(sizeof(md::HADDR) == sizeof(md::uint64));
-        return result;
+            COMPILE_TIME_ASSERT(sizeof(md::HADDR) == sizeof(md::uint64));
+            return result;
+        } else {
+            return 0;
+        }
     }
 
 
@@ -116,9 +129,15 @@ namespace heap
     static inline bool
     oberon_address_ok(md::OADDR addr, int n_bytes)
     {
-        md::OADDR end = addr + static_cast<md::OADDR>(n_bytes);
-        return (heap_pointer_ok(heap_to_host(addr)) &&
-                heap_pointer_ok(heap_to_host(end)));
+        if (addr != 0) {
+            bool result;
+            md::OADDR end = addr + static_cast<md::OADDR>(n_bytes);
+            result = (heap_pointer_ok(heap_to_host(addr)) &&
+                      heap_pointer_ok(heap_to_host(end)));
+            return result;
+        } else {
+            return true;        /* NIL */
+        }
     }
 
 
@@ -132,9 +151,12 @@ namespace heap
                     "good"
                 };
                 fprintf(stderr, "Heap beg [%p]  %p  %s\n",
-                        allocated_heap, p, status[allocated_heap <= p]);
+                        static_cast<void *>(allocated_heap),
+                        static_cast<void *>(p),
+                        status[allocated_heap <= p]);
                 fprintf(stderr, "Heap end [%p]  %p  %s\n",
-                        allocated_heap + total_heap_size_in_bytes, p,
+                        static_cast<void *>(allocated_heap + total_heap_size_in_bytes),
+                        static_cast<void *>(p),
                         status[p < allocated_heap + total_heap_size_in_bytes]);
                 dialog::fatal("%s: Pointer not inside heap.", __func__);
             }
@@ -148,11 +170,15 @@ namespace heap
     static inline md::HADDR
     host_address(md::OADDR offset)
     {
-        md::HADDR result = heap_to_host(offset);
+        if (offset != 0) {      /* NIL pointer? */
+            md::HADDR result = heap_to_host(offset);
 
-        validate_heap_pointer(result);
-        assert(offset == host_to_heap(result));
-        return result;
+            validate_heap_pointer(result);
+            assert(offset == host_to_heap(result));
+            return result;
+        } else {
+            return NULL;
+        }
     }
 
 
@@ -172,6 +198,7 @@ namespace heap
     {
         md::OADDR result = heap_address_unchecked(heap_ptr);
         validate_heap_pointer(heap_ptr);
+
         assert(heap_ptr == heap_to_host(result));
         return result;
     }
@@ -180,19 +207,30 @@ namespace heap
     /* Given an Oberon address, return the ordinal index from the
      * beginning of the Oberon heap.
      *
-     * Used by instruction cache system.
+     * Used by instruction cache system.  Because it is used for
+     * instruction caching, a NIL input address is invalid; an
+     * instruction cannot have address 0.
      */
-    static inline int
+    static inline unsigned int
     heap_offset(md::OADDR addr)
     {
-        int offset = 0;
+        long int full_offs;
+        unsigned int offset = 0;
+
+        if (addr == 0) {
+            return 0;
+        }
+        assert(addr != 0);
         assert((addr & (sizeof(md::OADDR) - 1)) == 0); /* Word aligned. */
         assert(oberon_address_ok(addr, sizeof(md::OADDR)));
         COMPILE_TIME_ASSERT(sizeof(allocated_heap) == 2 * sizeof(int));
-        offset = static_cast<int>(heap_to_host(addr) - allocated_heap);
+        full_offs = heap_to_host(addr) - allocated_heap;
+
         /* Index must not be bigger than number of words in heap. */
-        assert(offset < (total_heap_size_in_bytes /
-                         static_cast<int>(sizeof(md::OADDR))));
+        assert(full_offs >= 0 &&
+               full_offs < (total_heap_size_in_bytes /
+                            static_cast<int>(sizeof(md::OADDR))));
+        offset = static_cast<unsigned int>(full_offs);
         return offset;
     }
 

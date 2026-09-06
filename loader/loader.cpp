@@ -1,5 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
-/* $Id: loader.cpp,v 1.15 2002/02/05 04:40:22 thutt Exp $ */
+/* Copyright (c) 2000-2026 Logic Magicians Software */
 #include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -61,8 +60,12 @@ version(void)
 
 
 static void
-segv_signal_handler(int signum, void *siginfo, void *uc)
+segv_signal_handler(int signum, siginfo_t *siginfo, void *uc)
 {
+    /* Getting the IP of the faulting instruction is not trivial, and
+     * not done at the time of this writing.
+     */
+    dialog::print("signal[%d]: Oberon interpreter.\n", signum);
     longjmp(signal_buf, 1);
 }
 
@@ -184,8 +187,8 @@ main(int argc, char *argv[])
      */
     if (create_heap(heap_size_in_megabytes,
                     stack_size_in_megabytes)) {
-        char *cmdline = NULL;
-        int  len;
+        char          *cmdline = NULL;
+        unsigned long  len;
 
         /* Allocate stack as a system block at the beginning of the
          * memory allocated from the host OS. */
@@ -196,9 +199,9 @@ main(int argc, char *argv[])
          * processed by the bootstrap loader into a single command
          * line for passing to the Oberon system.
          */
-        len = static_cast<int>(strlen(argv[0]));
+        len = strlen(argv[0]);
         for (int i = optind; i < argc; ++i) {
-            len += static_cast<int>(strlen(argv[i]) + 1); /* argument + ' ' */
+            len += strlen(argv[i]) + 1; /* argument + ' ' */
         }
 
         cmdline = new char[len + 1]; /* total length + '\0' */
@@ -236,6 +239,9 @@ main(int argc, char *argv[])
             }
         } else {
             /* All exit paths should come through here. */
+            if (config::options & config::opt_dump_heap) {
+                heap::dump(true);
+            }
             heap::release_heap(heap_size_in_megabytes, stack_size_in_megabytes);
             skl::release_instruction_cache();
             delete [] cmdline;

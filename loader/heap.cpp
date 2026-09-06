@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2020, 2021, 2022, 2023 Logic Magicians Software */
+/* Copyright (c) 2000-2026 Logic Magicians Software */
 /* $Id: heap.cpp,v 1.21 2002/02/05 04:41:02 thutt Exp $ */
 #include <assert.h>
 #include <ctype.h>
@@ -89,6 +89,7 @@ namespace heap
     md::HADDR        oberon_heap    = NULL; /* Base address of Oberon heap. */
     md::HADDR        oberon_stack   = NULL;
     static md::HADDR curr_heap      = NULL; /* used for allocation */
+    md::uint64       allocated_heap_upper_32 = 0; /* Upper 32-bits of allocation_heap. */
 
     /* The allocation size of the entire Oberon heap, including the stack.
      *
@@ -112,6 +113,22 @@ namespace heap
          */
         COMPILE_TIME_ASSERT(sizeof(unsigned long) == 2 * sizeof(md::uint32));
         return static_cast<md::uint32>(reinterpret_cast<unsigned long>(p));
+    }
+
+
+    static md::uint64
+    ptr_to_uint64(void *p)
+    {
+        /* Convert a pointer to a 32-bit integer.  This allows the
+         * addresses contained in a heap dumps to be easily matched
+         * with data written by debugging statements from Oberon.
+         *
+         * If the compile time assert fails, it means that the
+         * static_cast<> is no longer correct for the target
+         * architecture of this program.
+         */
+        COMPILE_TIME_ASSERT(sizeof(unsigned long) == sizeof(md::uint64));
+        return static_cast<md::uint64>(reinterpret_cast<unsigned long>(p));
     }
 
 
@@ -266,16 +283,19 @@ namespace heap
         if (config::options & config::opt_dump_heap) {
             assert(sizeof(md::uint32) == 4); // inv: block tags are 4 bytes in size
             dialog::print("\n"
-                          "Heap begins at: %xH\n"
-                          "Heap length   : %xH\n"
-                          "Heap end      : %xH\n",
-                          ptr_to_uint32(hb), total_heap_size_in_bytes,
-                          ptr_to_uint32(he));
+                          "Heap begins at: %16p  (%xH)\n"
+                          "Heap length   : %16c  (%xH)\n"
+                          "Heap end      : %16p  (%xH)\n",
+                          hb, ptr_to_uint32(hb),
+                          ' ', total_heap_size_in_bytes,
+                          he, ptr_to_uint32(he));
 
             while (hb < he) {
                 md::HADDR   hp   = hb;
                 md::uint32 *blkp = reinterpret_cast<md::uint32 *>(hp);
                 htag             = reinterpret_cast<md::uint32 *>(hp)[0];
+
+                fflush(stdout); // XXX remove
 
                 if ((BlkSyst & htag) != 0) { /* sysblk */
                     bsize = static_cast<md::int32>(htag & TagMask);
@@ -283,9 +303,11 @@ namespace heap
                 } else if ((BlkAray & htag) != 0) { /* array block */
                     open_array_base_t *oab = reinterpret_cast<open_array_base_t *>(&(blkp[1]));
                     md::uint32 array_data;
+                    md::HADDR array_data_ptr;
 
-                    bsize      = oab->block_size;
-                    array_data = htag & TagMask; // inv: tdadr <-> address of array block
+                    bsize          = oab->block_size;
+                    array_data     = htag & TagMask; // inv: tdadr <-> address of array block
+                    array_data_ptr = heap::host_address(array_data);
 
                     /* Array-block heap tags contain:
                      * `address of array data' + {[BlkMark, ]BlkAray}
@@ -299,7 +321,7 @@ namespace heap
                     assert(O3::MOD(static_cast<md::int32>(array_data & TagMask),
                                    allocation_block_size) == 0); // TD validity check
 
-                    tdadr = reinterpret_cast<md::uint32 *>(array_data)[-1];
+                    tdadr = reinterpret_cast<md::uint32 *>(array_data_ptr)[-1];
                     dialog::diagnostic("hb=%xH, htag=%xH, array_data=%xH, tdadr=%xH\n",
                                        hb, reinterpret_cast<md::uint32 *>(hb)[0],
                                        array_data, tdadr);
@@ -313,10 +335,12 @@ namespace heap
                     bsize = static_cast<md::int32>(htag & TagMask);
                     basic_info("fblk", hb, bsize, htag, 0, false);
                 } else {   /* record block */
+                    md::HADDR td_addr;
                     tdadr = htag & TagMask;
+                    td_addr = host_address(tdadr);
 
                     // LMMD.RecBlockSize: allocated block size
-                    bsize = reinterpret_cast<md::int32 *>(tdadr)[4];
+                    bsize = reinterpret_cast<md::int32 *>(td_addr)[4];
                     basic_info("dblk", hb, bsize, htag, htag & TagMask, false);
                 }
                 dialog::print("\n");
@@ -399,32 +423,94 @@ namespace heap
         md::uint32 heap_size = static_cast<md::uint32>(((sz + HPAV) + page_size) &
                                                        ~(page_size - 1));
 
-        assert(page_size == 4096);
+        assert(page_size == 4096 || // Linux {x86, Arm64}
+               page_size == 16384); // MacOS Arm64
         assert(O3::MOD(static_cast<md::int32>(heap_size), page_size) == 0);
         return heap_size;
     }
 
 
-    static void
-    validate_heap_upper_bits(void)
+    static bool
+    validate_heap_upper_bits(md::HADDR heap, md::uint32 heap_size)
     {
-        const md::uint64 mask = static_cast<md::uint32>(~0);
-        const md::uint64 addr = reinterpret_cast<md::uint64>(allocated_heap);
+        const md::uint64 heap_        = ptr_to_uint64(heap);
+        const md::uint32 gc_bits      = (1U << 31) | (1U << 30);
+        bool             beg_gc_clear = (heap_               & gc_bits) == 0;
+        bool             end_gc_clear = ((heap_ + heap_size) & gc_bits) == 0;
 
-        /* The memory allocated with mmap() is specifcally placed in
-         * the 32-bit address space so that Oberon addresses and host
-         * addresses are the same.  This means the upper 32-bits of
-         * all host pointers must be 0.
+        /* The memory allocated with mmap() is specifically placed in
+         * the 64-bit address space so that Oberon addresses and host
+         * addresses are the mostly same.
          *
-         * If the addresses are not the same, special handling must be
-         * written to treat an address as a 'host address' OR an
-         * 'oberon address' depending on the context (a host address
-         * cannot directly be stored in the Oberon heap, nor can an
-         * Oberon address be used, without conversion.
+         * The main constraint imposed by Oberon is that bit 31 and
+         * bit 30 of an Oberon address must be clear.  This is because
+         * these two bits are used by teh garbage collector during
+         * Mark & Sweep operations.
+         *
+         * From the Oberon context the low 32-bits are the full
+         * address.
+         *
+         * From the host context, the upper 32-bits of the host
+         * address are to be combined with the Oberon address to give
+         * the full host address.
          */
-        if ((addr & ~mask) != 0) {
-            dialog::fatal("%s: mmap() memory above 4Gb boundary", __func__);
+        return beg_gc_clear && end_gc_clear;
+    }
+
+
+    static void
+    internal_heap_allocate(int s)
+    {
+        struct heap_unmap_list_t {
+            md::HADDR          region;
+            heap_unmap_list_t *next;
+            heap_unmap_list_t(md::HADDR heap) :
+                region(heap),
+                next(NULL)
+                {
+                }
+        };
+        md::HADDR          heap;
+        bool               ok        = false;
+        md::uint32         heap_size = compute_heap_size(s);
+        heap_unmap_list_t *fail      = NULL;
+
+        while (!ok) {
+            heap = static_cast<md::HADDR>(mmap(NULL,
+                                               heap_size,
+                                               (PROT_READ | PROT_WRITE),
+                                               (MAP_PRIVATE | MAP_ANONYMOUS),
+                                               -1, 0));
+            if (heap == MAP_FAILED) {
+                perror("mmap");
+                dialog::fatal("%s:  failed to mmap heap: errno: %d\n",
+                              __func__, errno);
+            }
+            ok = validate_heap_upper_bits(heap, heap_size);
+            if (!ok) {
+                heap_unmap_list_t *region = new heap_unmap_list_t(heap);
+                dialog::diagnostic("Allocation does not meet constraints: %p; "
+                                   "save to free.\n", heap);
+
+                region->next = fail;
+                fail         = region;
+            }
         }
+        allocated_heap = heap;
+        memset(heap, '\0', heap_size);
+        allocated_heap_upper_32 = (ptr_to_uint64(heap) &
+                                   ~static_cast<md::uint64>(0xffffffff));
+
+        while (fail != NULL) {
+            int result;
+            dialog::diagnostic("Releasing allocation: %p.\n", fail->region);
+            result = munmap(fail->region, heap_size);
+            assert(result == 0); // Success.  -1 + errno == failure
+            fail = fail->next;
+        }
+            
+        dialog::diagnostic("allocated   host heap: %16p\n", heap);
+        dialog::diagnostic("allocated Oberon heap: %16xH\n", heap_address(heap));
     }
 
 
@@ -432,22 +518,16 @@ namespace heap
     internal_make_heap(int s)
     {
         /* The Oberon garbage collection system uses the top two bits
-         * to signify information during traversal of pointers.
-         * Therefore, the Oberon heap cannot be mapped above
-         * 0x40000000.
+         * of the 32-bit address to signify information during GC
+         * traversal of pointers.  Therefore, the Oberon heap address
+         * cannot have those two bits be significant.
          *
          * See Kernel.Mod { DescFlagsValidBit, DescFlagsSignBit }.
          * The implementation documentation also talks about how these
          * two bits function.  Reading Project Oberon section 8.3 for
          * more details on the pointer traversal algorithm.
          */
-        UNUSED md::HADDR  heap_limit_address   = reinterpret_cast<md::HADDR>(0x40000000);
-        void             *heap_desired_address = reinterpret_cast<void *>(0x4000000);
-        md::uint32        heap_size            = compute_heap_size(s);
-        md::uint32        tag;
-
-        assert((reinterpret_cast<md::HADDR>(heap_desired_address) +
-                heap_size) < heap_limit_address);
+        md::uint32 tag;
 
         /* Since HPAV is added to the beginning of the heap to ensure
          * that all blocks are aligned at a [paragraph] address and
@@ -458,26 +538,9 @@ namespace heap
          * (since the size of the free block is placed in the tag
          * field).
          */
-        allocated_heap = static_cast<md::HADDR>(mmap(heap_desired_address,
-                                                     heap_size,
-                                                     (PROT_READ | PROT_WRITE),
-                                                     (MAP_PRIVATE |
-                                                      MAP_ANONYMOUS |
-                                                      MAP_FIXED),
-                                                     -1, 0));
-        if (allocated_heap == MAP_FAILED) {
-            perror("mmap");
-            dialog::fatal("%s:  failed to mmap heap: errno: %d\n",
-                          __func__, errno);
-        }
-        dialog::diagnostic("%s: allocated heap: %xH\n", __func__,
-                           heap_address(allocated_heap));
-        assert(allocated_heap + heap_size < heap_limit_address);
+        internal_heap_allocate(s);
         if (allocated_heap != NULL) {
             md::OADDR h = host_to_heap(allocated_heap);
-
-            memset(allocated_heap, '\0', heap_size);
-            validate_heap_upper_bits();
 
             /* Heap must be aligned to a power-of-two boundary to
              * make internal oberon alignment work correctly.
@@ -754,6 +817,8 @@ namespace heap
         md::HADDR                 user_block;
         md::HADDR                 blk;
         int                       size_in_bytes;
+        md::uint32               *td_base_addr;
+        md::HADDR                array_data_addr;
         simple_elem_open_array_t *arr;
 
         assert(sizeof(simple_elem_open_array_t) == 16);
@@ -774,7 +839,10 @@ namespace heap
             arr->pad        = 0xdeadbeef;
             arr->bound      = n_elements;
             arr->td         = heap_address(td_adr) | (BlkMark | BlkAray);
-            user_block      = reinterpret_cast<md::HADDR>(&reinterpret_cast<md::uint32 *>(&arr->td)[1]);
+
+            td_base_addr    = &arr->td;
+            array_data_addr = reinterpret_cast<md::HADDR>(&(td_base_addr[1]));
+            user_block      = reinterpret_cast<md::HADDR>(array_data_addr);
             array_alloc_progress("SE",
                                  blk,
                                  size_in_bytes,

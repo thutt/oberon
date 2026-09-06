@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2000-2026 Logic Magicians Software */
 #if !defined(_O3_H)
 #define _O3_H
 
@@ -13,7 +13,7 @@ namespace O3
 
     typedef struct bootstrap_symbols_t {
         const char *name;
-        md::OADDR adr;
+        md::OADDR   adr;
     } bootstrap_symbols_t;
 
     struct uses_info_t {
@@ -75,7 +75,7 @@ namespace O3
     void dump_module(module_t *module);
     void lookup_kernel_bootstrap_symbols(module_t *m);
     void verify_module_name(module_t *m, const char *mname);
-    const char *module_name(module_t *m);
+    char *module_name(module_t *m);
 
     md::OADDR lookup_command(module_t *m, const char *cmd);
 

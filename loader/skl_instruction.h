@@ -1,4 +1,4 @@
-/* Copyright (c) 2022 Logic Magicians Software */
+/* Copyright (c) 2022-2026 Logic Magicians Software */
 #if !defined(_SKL_INSTRUCTION_H)
 #define _SKL_INSTRUCTION_H
 
@@ -35,7 +35,7 @@ namespace skl {
     };
 
     extern instruction_t **cache;
-    extern int             cache_elements;
+    extern unsigned long   cache_elements;
 
     bool allocate_instruction_cache(int heap_mb, int stack_mb);
     void release_instruction_cache(void);
@@ -44,7 +44,7 @@ namespace skl {
     static inline instruction_t *
     lookup_instruction(md::OADDR addr)
     {
-        int offset = heap::heap_offset(addr);
+        unsigned offset = heap::heap_offset(addr);
 
         assert(((offset & (static_cast<int>(sizeof(md::uint32)) - 1)) == 0) &&
                offset < cache_elements);
