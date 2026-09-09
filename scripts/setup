@@ -1,127 +1,27 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, 2023 Logic Magicians Software
+# Copyright (c) 2026 Logic Magicians Software
 #
 # Do not run.  Use 'source' to load into environment.
 #
-#
-#
-SCRIPT="${BASH_SOURCE[0]}"
-SRC_DIR=$(dirname "${SCRIPT}");
-source $(readlink -f "${SRC_DIR}/functions");
+if [ -n "${BASH_SOURCE:-}" ]; then
+    SCRIPT_PATH="${BASH_SOURCE[0]}"
+    SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+    SCRIPT_PATH="${(%):-%x}"
+    SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+else
+    echo "Unrecognized shell.  Not Bash (Linux), nor Zsh (MacOS)." >&2
+    SCRIPT_DIR=""
+fi
 
+if [ ! -z "${SCRIPT_DIR}" ] ; then
+    case "$(uname -s)" in
+        Darwin)
+            source "${SCRIPT_DIR}/setup.macos" "${@}";
+        ;;
 
-# Named _help() to not override Bash builtin 'help'.
-function _help()
-{
-    cat <<EOF
-
-This script sets the environment for using the SKL Oberon system.
-
-It must be loaded via 'source', like so:
-
-  source ${SCRIPT} \\
-    --architecture (Intel-x86-64 | Arm64) \\
-    --bod <build-output-directory> \\
-    --build-type (alpha | beta | release)
-
-EOF
-}
-
-
-function process_args ()
-{
-    while true ; do
-        case "$1" in
-            -a|--architecture)
-                ARCHITECTURE=$(eval echo ${2});
-                case "${ARCHITECTURE}" in
-                    Intel-x86-64 | Arm64)
-                        # Architecture is ok.
-                        ;;
-
-                    *)
-                        echo "Invalid architecture '${ARCHITECTURE}'.";
-                        return 1;
-                        ;;
-                esac;
-                shift 2;
-                ;;
-
-            -b|--build-type)
-                BUILD=$(eval echo ${2});
-                case "${BUILD}" in
-                    alpha|beta|release)
-                        # Build type is ok.
-                        ;;
-
-                    *)
-                        echo "Invalid build type '${BUILD}'.";
-                        return 1;
-                        ;;
-                esac;
-                shift 2;
-                ;;
-
-            -o|--bod)
-                BOD=$(eval echo ${2});
-                shift 2;
-                ;;
-
-
-            --)                 # End of arguments
-                shift;
-                break;
-                ;;
-
-            *)
-                echo "Unknown option '${1}'";
-                return 1;
-                ;;
-        esac
-    done
-
-    return 0;
-}
-
-
-function main()
-{
-    ARCHITECTURE="Intel-x86-64";
-    BUILD="alpha";
-    BOD="";
-
-    export SKL_DIR=$(readlink -f $(dirname ${BASH_SOURCE})/..);
-
-    case ${PATH} in
-        *${SKL_DIR}*)
-            # PATH has already been updated.  Do nothing.
-            ;;
-        *)
-            export PATH=${SKL_DIR}/scripts:$PATH;
-            ;;
-    esac;
-
-    if process_args ${@} ; then
-        if [ -z "${BOD}" ] ; then
-            _help;
-        else
-            local system="${SKL_DIR}/system"
-            export SKL_BUILD_DIR="${BOD}";
-            export SKL_SEARCH_PATH="${system}:${system}/lms:${system}/compiler/skl:${system}/compiler/o3";
-            export SKL_BUILD_OPTIONS="";
-            export SKL_ARCHITECTURE="${ARCHITECTURE}";
-
-            build-set-type "${BUILD}";
-            oberon-show-config;
-        fi;
-    else
-        _help;
-        echo "Local work environment configuration failed."
-    fi;
-}
-
-args=$(/usr/bin/getopt -o a:b:o: --longoptions architecture:,bod:,build-type: -- "${@}")
-set -- "${args}"            # Set postional args to ${args}.
-unset args;
-
-main ${@};
+        Linux)
+            source "${SCRIPT_DIR}/setup.linux" "${@}";
+        ;;
+    esac
+fi;

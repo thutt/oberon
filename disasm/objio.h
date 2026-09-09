@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2021-2023 Logic Magicians Software */
+/* Copyright (c) 2000, 2021-2026 Logic Magicians Software */
 #if !defined(OBJIO_H)
 #define OBJIO_H
 #include <stdlib.h>
@@ -168,51 +168,56 @@ namespace objio
         unsigned char       *rectdname;
         unsigned char       *arrtdname;
         unsigned char       kind;
+
+        struct rectd_t          // e_rectd
+        {
+            int link;
+            int recsize;
+            int basemod;
+            int ancestorfp;
+            int n_meth;
+            int n_inhmeth;
+            int n_newmeth;
+            int n_ptr;
+            struct methinfo_t
+            {
+                int methno;
+                int entry;
+            } methinfo[128];
+            int ptroffs[512];   // OPM.MaxRecPtrs
+        };
+
+        struct darrtd_t
+        {
+            int           form; // type of descriptor (1, 2, 3)
+            int           n_dim; // number of dimensions
+            unsigned char element_tag; // 0 -> element_form, 1 -> element_form = TD
+            int           element_form; // element type form or type descriptor address
+            int           mno; // record type descriptor module number
+            int           fprint; // record type descriptor fingerprint
+            int           n_static_dim; // number of static array dimensions; inv: 0 < n_static_dim <= 33
+            int           static_dim[32];
+        };
+
+        struct arrtd_t
+        {
+            unsigned char tag;
+            int           kind; // type of descriptor (1, 2, 3)
+            int           form;
+            int           mno;
+            int           fprint;
+            int           n_dim;
+            int           dim[32]; // array dimensions
+        };
+
         union
         {
             int voffset;            // e_var
             int pentry;             // e_xproc
             int spvfprint;          // e_struct
-            struct                  // e_rectd
-            {
-                int link;
-                int recsize;
-                int basemod;
-                int ancestorfp;
-                int n_meth;
-                int n_inhmeth;
-                int n_newmeth;
-                int n_ptr;
-                struct
-                {
-                    int methno;
-                    int entry;
-                } methinfo[128];
-                int ptroffs[512];   // OPM.MaxRecPtrs
-            } rectd;
-
-            struct
-            {
-                int           form; // type of descriptor (1, 2, 3)
-                int           n_dim; // number of dimensions
-                unsigned char element_tag; // 0 -> element_form, 1 -> element_form = TD
-                int           element_form; // element type form or type descriptor address
-                int           mno; // record type descriptor module number
-                int           fprint; // record type descriptor fingerprint
-                int           n_static_dim; // number of static array dimensions; inv: 0 < n_static_dim <= 33
-                int           static_dim[32];
-            } darrtd;
-
-            struct
-            {
-                unsigned char tag;
-                int           kind; // type of descriptor (1, 2, 3)
-                int           form;
-                int           mno;
-                int           fprint;
-                int           n_dim;
-                int           dim[32]; // array dimensions
-            } arrtd;
+            rectd_t rectd;
+            darrtd_t darrtd;
+            arrtd_t arrtd;
         };
         symbol_info_desc_t(unsigned char ch) : next(NULL), name(NULL), ancestor(NULL), fprint(0),
                                                adr(0), rectdname(NULL), arrtdname(NULL), kind(ch) { }
@@ -229,10 +234,10 @@ namespace objio
         int               type_fprint;
         int               mno;
         unsigned char     kind;
-        union
-        {
-            // per-symbol-type storage
-        };
+        /* union
+           {
+               // Add per-symbol-type storage here, if needed.
+        }; */
         use_info_desc_t(unsigned char tag, int i) :
             next(NULL),
             name(NULL),

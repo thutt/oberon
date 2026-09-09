@@ -359,12 +359,28 @@ namespace O3
     }
 
 
+    char *
+    oberon_address_to_string(md::OADDR addr)
+    {
+        char *name = reinterpret_cast<char *>(heap::host_address(addr));
+        return name;
+    }
+
+
+    char *
+    module_name(module_t *m)
+    {
+        char *name = oberon_address_to_string((m->name));
+        return name;
+    }
+
+
     void
     dump_module(module_t *module)
     {
         if ((config::options & config::opt_progress) == config::opt_progress) {
             dialog::print("module: %s, next: %p, refcnt: %d\n",
-                          heap::host_address(module->name),
+                          module_name(module),
                           heap::host_address(module->next),
                           module->refcnt);
 
@@ -633,7 +649,7 @@ namespace O3
         module_t *m = reinterpret_cast<module_t *>(heap::host_address(module_list));
         while (m != NULL) {
             dialog::diagnostic("Fixup type descriptors for %s\n",
-                               heap::host_address(m->name));
+                               module_name(m));
             heap::fixup_td(reinterpret_cast<md::HADDR>(m), "mod",
                            heap::host_address(td_info[td_module].adr),   false);
             heap::fixup_td(heap::host_address(m->tdescs), "tdsc",
@@ -887,7 +903,7 @@ namespace O3
         module_t *m = reinterpret_cast<module_t *>(heap::host_address(module_list));
 
         while (m != NULL) {
-            const char *mname = reinterpret_cast<const char *>(heap::host_address(m->name));
+            const char *mname = reinterpret_cast<const char *>(module_name(m));
             if (strcmp(mname, name) == 0) {
                 break;
             }
@@ -917,6 +933,7 @@ namespace O3
         n = heap::new_simple_elem_array(static_cast<int>(strlen(str) + 1),
                                         static_cast<int>(sizeof(str[0])),
                                         heap::host_address(td_info[td_refs].adr));
+        dialog::diagnostic("%s: %d new simple array\n", __func__);
         name = reinterpret_cast<char *>(n);
         strcpy(name, str);
         return heap::heap_address(reinterpret_cast<md::HADDR>(name));
@@ -953,7 +970,8 @@ namespace O3
                                                    elem_size,
                                                    heap::host_address(td_info[td_tdescs].adr));
         dialog::diagnostic("%s: %d new TDesc; %d bytes; address %p\n",
-                           __func__, n_typedesc, n_typedesc * elem_size, td);
+                           __func__, n_typedesc, n_typedesc * elem_size,
+                           heap::heap_address(td));
         return heap::heap_address(td);
     }
 
@@ -976,6 +994,7 @@ namespace O3
         md::HADDR ptr = heap::new_simple_elem_array(n_pointers,
                                                     elem_size,
                                                     heap::host_address(td_info[td_pointers].adr));
+        dialog::diagnostic("%s: %d new pointers\n", __func__, n_pointers);
         return heap::heap_address(ptr);
     }
 
@@ -997,6 +1016,7 @@ namespace O3
                                                      elem_size,
                                                      heap::host_address(td_info[td_jumps].adr));
 
+        dialog::diagnostic("%s: %d new jumps\n", __func__, n_jumps);
         return heap::heap_address(jmps);
     }
 
@@ -1007,6 +1027,7 @@ namespace O3
         md::HADDR data = heap::new_simple_elem_array(n_bytes,
                                                      elem_size,
                                                      heap::host_address(td_info[td_data].adr));
+        dialog::diagnostic("%s: %d new data\n", __func__, n_bytes);
         return heap::heap_address(data);
     }
 
@@ -1017,6 +1038,7 @@ namespace O3
         md::HADDR tddata = heap::new_simple_elem_array(n_bytes,
                                                        elem_size,
                                                        heap::host_address(td_info[td_tddata].adr));
+        dialog::diagnostic("%s: %d new TD data\n", __func__, n_bytes);
         return heap::heap_address(tddata);
     }
 
@@ -1027,6 +1049,7 @@ namespace O3
         md::HADDR code = heap::new_simple_elem_array(n_bytes,
                                                      elem_size,
                                                      heap::host_address(td_info[td_code].adr));
+        dialog::diagnostic("%s: %d new code\n", __func__, n_bytes);
         return heap::heap_address(code);
     }
 
@@ -1037,6 +1060,7 @@ namespace O3
         md::HADDR ref = heap::new_simple_elem_array(n_bytes,
                                                     elem_size,
                                                     heap::host_address(td_info[td_refs].adr));
+        dialog::diagnostic("%s: %p %d new references\n", __func__, ref, n_bytes);
         return heap::heap_address(ref);
     }
 
@@ -1206,7 +1230,7 @@ namespace O3
         adr  = get_function_address(m, name);
 
         if (adr == 0) {
-            dialog::fatal("mod: %s, ind: %#x, name: %s", m->name, useIndex, name);
+            dialog::fatal("mod: %s, ind: %#x, name: %s", heap::host_address(m->name), useIndex, name);
         }
         return adr;
     }
@@ -1222,7 +1246,8 @@ namespace O3
 
         for (int i = 0; i < n_imports; ++i) {
             read_str(fp, mname);
-            dialog::diagnostic("Processing module '%s': IMPORT '%s'\n", module->name, mname);
+            dialog::diagnostic("Processing module '%s': IMPORT '%s'\n",
+                               heap::host_address(module->name), mname);
 
             m = heap::heap_address(reinterpret_cast<md::HADDR>(find_module(mname)));
             assert(m != 0); // desired module not found?
@@ -1574,7 +1599,7 @@ namespace O3
                     umod = reinterpret_cast<module_t *>(heap::host_address(uses_info[i].module));
                     dialog::diagnostic("use %#x: %s.%s pb: %#x\n",
                                        tag,
-                                       umod->name,
+                                       heap::host_address(umod->name),
                                        heap::host_address(name), pbfprint);
 
                     ++i;
@@ -1796,73 +1821,82 @@ namespace O3
                 new_module(module, header);
 
                 /* imports */
-                dialog::diagnostic("module '%s': %d imports.\n", module->name, header.nofImports);
+                dialog::diagnostic("module '%s': %d imports.\n",
+                                   heap::host_address(module->name), header.nofImports);
                 read_tag(objF, '\x81');
                 read_imports(objF, module, header.nofImports);
 
                 /* exports */
-                dialog::diagnostic("module '%s': %d exports.\n", module->name, header.n_exports);
+                dialog::diagnostic("module '%s': %d exports.\n",
+                                   heap::host_address(module->name), header.n_exports);
                 read_tag(objF, '\x82');
                 read_exports(objF, module, header.n_exports);
 
                 /* private */
-                dialog::diagnostic("module '%s': %d privates.\n", module->name, header.nofPrv);
+                dialog::diagnostic("module '%s': %d privates.\n",
+                                   heap::host_address(module->name), header.nofPrv);
                 read_tag(objF, '\x83');
                 read_privates(objF, module, header.nofPrv);
 
                 /* type desc */
-                dialog::diagnostic("module '%s': %d descriptors.\n", module->name, header.nofDesc);
+                dialog::diagnostic("module '%s': %d descriptors.\n",
+                                   heap::host_address(module->name), header.nofDesc);
                 read_tag(objF, '\x84');
                 read_typedescriptors(objF, module, header.nofDesc);
 
                 /* commands */
-                dialog::diagnostic("module '%s': %d commands.\n", module->name, header.nofCom);
+                dialog::diagnostic("module '%s': %d commands.\n",
+                                   heap::host_address(module->name), header.nofCom);
                 read_tag(objF, '\x85');
                 read_commands(objF, module, header.nofCom);
 
                 /* pointers */
-                dialog::diagnostic("module '%s': %d pointers.\n", module->name, header.nofPtr);
+                dialog::diagnostic("module '%s': %d pointers.\n",
+                                   heap::host_address(module->name), header.nofPtr);
                 read_tag(objF, '\x86');
                 read_pointers(objF, module, header.nofPtr);
 
                 /* constants */
-                dialog::diagnostic("module '%s': %d constant size.\n", module->name, header.constSize);
+                dialog::diagnostic("module '%s': %d constant size.\n",
+                                   heap::host_address(module->name), header.constSize);
                 read_tag(objF, '\x87');
                 read_constants(objF, module, header.constSize);
 
                 /* type descriptor data */
                 dialog::diagnostic("module '%s': %d type descriptor size.\n",
-                                   module->name, header.typedescSize);
+                                   heap::heap_to_host(module->name), header.typedescSize);
                 read_tag(objF, '\x88');
                 read_typedescdata(objF, module, header.typedescSize);
 
                 /* code */
-                dialog::diagnostic("module '%s': %d code size.\n", module->name,
+                dialog::diagnostic("module '%s': %d code size.\n",
+                                   heap::host_address(module->name),
                                    header.codeSize);
                 read_tag(objF, '\x89');
                 read_code(objF, module, header.codeSize);
 
                 /* uses */
-                dialog::diagnostic("module '%s': %d import uses.\n", module->name,
+                dialog::diagnostic("module '%s': %d import uses.\n",
+                                   heap::host_address(module->name),
                                    header.nofImports);
                 read_tag(objF, '\x8A');
                 read_uses(objF, module, header.nofImports);
 
                 /* helper fixups */
                 dialog::diagnostic("module '%s': %d compiler helper fixups.\n",
-                                   module->name, header.nofHelpers);
+                                   heap::host_address(module->name), header.nofHelpers);
                 read_tag(objF, '\x8B');
                 read_helper_fixups(objF, module, header.nofHelpers);
 
                 /* fixups */
                 dialog::diagnostic("module '%s': %d fixups.\n",
-                                   module->name, header.n_fixups);
+                                   heap::host_address(module->name), header.n_fixups);
                 read_tag(objF, '\x8C');
                 read_fixups(objF, module, header.n_fixups);
 
                 /* reference block */
                 dialog::diagnostic("module '%s': %d references size.\n",
-                                   module->name, header.refSize);
+                                   heap::host_address(module->name), header.refSize);
                 read_tag(objF, '\x8D');
                 read_reference(objF, module, header.refSize);
                 fclose(objF);
@@ -1899,7 +1933,9 @@ namespace O3
         module = NULL;
         while (m != NULL) {
             if (m->code == 0) {
-                dialog::print("module: '%s' no code  %p\n", m->name, &m->code);
+                dialog::print("module: '%s' no code  %p\n",
+                              heap::host_address(m->name),
+                              &m->code);
             }
             code_bytes = heap::simple_elem_array_len(heap::host_address(m->code));
             if (address >= m->code &&
@@ -1930,14 +1966,6 @@ namespace O3
         }
         dialog::fatal("Unable to find 'Kernel.%s'\n", helper);
         return 0;
-    }
-
-
-    const char *
-    module_name(module_t *m)
-    {
-        const char *name = reinterpret_cast<const char *>(heap::host_address(m->name));
-        return name;
     }
 
 

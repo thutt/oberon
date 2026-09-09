@@ -1,5 +1,5 @@
-/* Copyright (c) 2022 Logic Magicians Software */
-#include <malloc.h>
+/* Copyright (c) 2022-2026 Logic Magicians Software */
+#include <stdlib.h>
 
 #include "dialog.h"
 #include "heap.h"
@@ -7,7 +7,7 @@
 
 
 namespace skl {
-    int             cache_elements;
+    unsigned long   cache_elements;
     instruction_t **cache;
 
 
@@ -21,7 +21,7 @@ namespace skl {
              * allocated resources.  Disabling this decreases
              * prompt-to-prompt runtime characteristics.
              */
-            int i;
+            unsigned long i;
             for (i = 0; i < cache_elements; ++i) {
                 if (cache[i] != NULL) {
                     delete cache[i];
@@ -35,9 +35,11 @@ namespace skl {
     bool
     allocate_instruction_cache(int heap_mb, int stack_mb)
     {
-        int heap_bytes = heap::compute_heap_size(heap_mb, stack_mb);
+        unsigned long heap_bytes = static_cast<unsigned long>(heap::compute_heap_size(heap_mb,
+                                                                                      stack_mb));
+        unsigned long elements = heap_bytes / static_cast<unsigned long>(sizeof(md::uint32));
 
-        cache_elements = heap_bytes / static_cast<int>(sizeof(md::uint32));
+        cache_elements = elements;
         cache          = new instruction_t *[cache_elements](); // Zero-initialized with ().
         return cache != NULL;
     }
@@ -46,9 +48,9 @@ namespace skl {
     void
     cache_instruction(instruction_t *cinst)
     {
-        int offset = heap::heap_offset(cinst->pc);
+        unsigned int offset = heap::heap_offset(cinst->pc);
 
-        assert(((offset & (static_cast<int>(sizeof(md::uint32)) - 1)) == 0) &&
+        assert(((offset & (static_cast<unsigned int>(sizeof(md::uint32)) - 1)) == 0) &&
                offset < cache_elements &&
                cache[offset] == NULL);
         cache[offset] = cinst;

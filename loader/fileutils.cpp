@@ -1,4 +1,4 @@
-/* Copyright (c) 2022 Logic Magicians Software */
+/* Copyright (c) 2022-2026 Logic Magicians Software */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,9 +10,9 @@
 
 namespace fileutils {
     typedef struct search_info_t {
-        int    n;               // Number of elements in search path.
-        char  *env;             // strdup()-value of SKL_SEARCH_PATH
-        char **elements;
+        unsigned   n;           // Number of elements in search path.
+        char      *env;         // strdup()-value of SKL_SEARCH_PATH
+        char     **elements;
 
         search_info_t(void) : n(0), env(NULL), elements(NULL)
         {
@@ -27,7 +27,7 @@ namespace fileutils {
     find_file_and_open(const char *name)
     {
         FILE         *fp;
-        int           i        = 0;
+        unsigned      i        = 0;
         const size_t  name_len = strlen(name);
 
         while (i < search_info->n) {
@@ -60,7 +60,7 @@ namespace fileutils {
     {
         search_info_t *si = new search_info_t();
         char          *p;
-        int            i;
+        unsigned       i;
 
         si->env = strdup(getenv("SKL_SEARCH_PATH")); /* Deliberately
                                                       * not deallocated. */

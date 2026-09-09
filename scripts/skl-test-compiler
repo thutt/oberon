@@ -1,73 +1,26 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022, 2023 Logic Magicians Software
+# Copyright (c) 2021-2026 Logic Magicians Software
 #
-# Compile OS using x86-based SKL-targeting compiler.
+# Compile and test Oberon modules.
 #
 set -o errexit;
 set -o pipefail;
 set -o nounset;
 
-source ${SKL_DIR}/scripts/files.def;
-source ${SKL_DIR}/scripts/functions;
-
-function compile()
-{
-    local pathname="${1}";
-    local module="$(basename ${pathname})";
-    local cmd="skl-skl-oc ${pathname}";
-    local output="$(skl-build-path)/${module}.compile.out"
-
-    echo "Compiling: ${cmd}";
-    if ! ${cmd} 2>&1 >"${output}"; then
-        echo -e "**** Compiling '${module} failed\n\n";
-        return 1;
-    fi;
-    return 0;
-}
-
-
-function run()
-{
-    local pathname="${1}";
-    local module="$(basename ${pathname})";
-    local value="${2}";        # Value of dictionary for '${1}'.
-    local cmd="skl-oberon ${module}.Test";
-    local output="$(skl-build-path)/${module}.out"
-
-    echo "Executing: ${cmd}";
-    if [[ ${value} == *manual* ]] ; then # Substring check
-        echo -e "**** Module '${module} is only run manually\n\n";
-    elif [[ "${value}" == *pass* ]] ; then
-        if ! (${cmd} 2>&1) >"${output}"; then
-            echo -e "**** $?: Module '${module} expected to pass, but did not.\n\n";
-        fi;
-    elif [[ "${value}" == *fail* ]] ; then
-        if (${cmd} 2>&1) >"${output}"; then
-            echo -e "**** $?: Module '${module} expected to fail, but did not.\n\n";
-        fi;
-    else
-        echo -e "No recognizable arguments for '${module}' in '${value}'\n\n";
-        false;
-    fi;
-}
-
 
 function main()
 {
-    local module;
-    local test_dir="${SKL_DIR}/system/compiler/skl/tests"
+    # Without the following two Python environment variables, Python3
+    #   out-of-the-box on Arm-based MacOS fails with:
+    #
+    #  Fatal Python error: config_get_locale_encoding:  \
+    #    failed to get the locale encoding: nl_langinfo(CODESET) failed
+    #  Python runtime state: preinitialized
+    #
+    export PYTHONUTF8=1;
+    export PYTHONCOERCECLOCALE=0;
 
-    export SKL_SEARCH_PATH="${SKL_SEARCH_PATH}:${test_dir}";
-
-    cd ${SKL_DIR}/system;
-
-    # All keys: ${!COMPILER_TESTS[@]}
-    for test in ${!COMPILER_TESTS[@]}; do
-        local module=$(basename ${test} .Mod);
-
-        if compile ${test}; then
-            run "${module}" "${COMPILER_TESTS[${test}]}";
-        fi;
-    done;
+    cd ${SKL_DIR};
+    ${SKL_DIR}/scripts/skl-module-test-harness.py --compiler
 }
-main "${@}";
+main "${@:-}";

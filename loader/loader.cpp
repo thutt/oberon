@@ -187,8 +187,8 @@ main(int argc, char *argv[])
      */
     if (create_heap(heap_size_in_megabytes,
                     stack_size_in_megabytes)) {
-        char *cmdline = NULL;
-        int  len;
+        char          *cmdline = NULL;
+        unsigned long  len;
 
         /* Allocate stack as a system block at the beginning of the
          * memory allocated from the host OS. */
@@ -199,9 +199,9 @@ main(int argc, char *argv[])
          * processed by the bootstrap loader into a single command
          * line for passing to the Oberon system.
          */
-        len = static_cast<int>(strlen(argv[0]));
+        len = strlen(argv[0]);
         for (int i = optind; i < argc; ++i) {
-            len += static_cast<int>(strlen(argv[i]) + 1); /* argument + ' ' */
+            len += strlen(argv[i]) + 1; /* argument + ' ' */
         }
 
         cmdline = new char[len + 1]; /* total length + '\0' */

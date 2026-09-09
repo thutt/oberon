@@ -1,4 +1,4 @@
-(* Copyright (c) 2021 Logic Magicians Software
+(* Copyright (c) 2021, 2026 Logic Magicians Software
  *)
 MODULE CTArrayTrap;
 IMPORT Console;
@@ -169,7 +169,7 @@ VAR
 BEGIN
   Split(".DiagnosticOutput", info);
   v := 128;
-  p[14] := 0;
+  p[15] := 0;
 END Test;
 
 END CTArrayTrap.
