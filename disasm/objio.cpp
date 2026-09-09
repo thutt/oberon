@@ -111,7 +111,7 @@ namespace objio
         int i, len;
 
         read_num(len);
-        str = new unsigned char[len + 1];
+        str = new unsigned char[static_cast<unsigned long>(len + 1)];
         for (i = 0; i < len; ++i)
             read_char(str[i]);
         str[i] = '\0';
