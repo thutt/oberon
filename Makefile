@@ -11,7 +11,7 @@ include $(SKL_DIR)/make/config.mk
 
 
 .PHONY:	all disasm loader clean doc show-preprocessor-symbols
-all:	loader disasm doc
+all:	loader disasm doc_$(SKL_HOST_OS)
 	$(PROLOG);					\
 	echo "Master: All targets built.";
 
@@ -24,6 +24,14 @@ disasm loader doc:	build-directories
 	    VPATH=$(SKL_DIR)/$@				\
 	    _BUILD_DIR=$(_BUILD_DIR)/$@			\
 	    $@__;
+
+doc_linux:	doc
+	$(PROLOG);								\
+	echo "Linux documentation built.";
+
+doc_macos:
+	$(PROLOG);								\
+	echo "Documentation cannot build on Mac, because there is no LaTeX.";
 
 clean:
 	$(PROLOG);	\
