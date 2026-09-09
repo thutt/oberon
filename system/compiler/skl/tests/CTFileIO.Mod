@@ -1,4 +1,4 @@
-(* Copyright (c) 2021, 2022 Logic Magicians Software
+(* Copyright (c) 2021, 2022, 2026 Logic Magicians Software
  *
  * Test code around Files.Mod.
  *)
@@ -84,7 +84,9 @@ BEGIN
    *   + 4096 '3'
    *   + 4096 '4'
    *)
-  f := Files.Old("compiler/skl/tests/CTFileIO.data");
+
+  (* Pathname is relative to ${SKL_DIR} *)
+  f := Files.Old("system/compiler/skl/tests/CTFileIO.data");
   ASSERT(f # NIL);
   SingleByte(f);
   BlockRead(f);
