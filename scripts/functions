@@ -1,10 +1,22 @@
 #!/bin/bash
-# Copyright (c) 2021, 2022 Logic Magician Software
+# Copyright (c) 2021-2026 Logic Magician Software
 #
 # Do not run.  Use 'source' to load into environment.
 set -o pipefail;
 # Ubuntu bash completion appears to fail if 'unset' enabled.
 # set -o nounset;
+
+# 'export -f' (exporting a function into the environment) is a bash
+# feature; zsh's 'export' has no '-f'.  Nothing in the build consumes
+# exported functions -- make reads only the SKL_* variables -- so on
+# non-bash shells (zsh is the macOS default) this is simply a no-op.
+_skl_exportf ()
+{
+    if [ -n "${BASH_VERSION:-}" ] ; then
+        export "-f" "${@}";
+    fi;
+}
+
 
 declare -a SKL_BUILD_TYPE_VALID=(
     alpha                       # Developer.
@@ -29,7 +41,7 @@ function build-option-validate ()
     done;
     return 1;
 }
-export -f build-option-validate;
+_skl_exportf build-option-validate;
 
 
 function trim ()
@@ -40,7 +52,7 @@ function trim ()
     trimv="${trimv%"${trimv##*[![:space:]]}"}";
     echo "${trimv}";
 }
-export -f trim;
+_skl_exportf trim;
 
 
 function build-option-remove ()
@@ -48,7 +60,7 @@ function build-option-remove ()
     local opt="${1}";
     export SKL_BUILD_OPTIONS="$(trim "${SKL_BUILD_OPTIONS//${opt}}")";
 }
-export -f build-option-remove;
+_skl_exportf build-option-remove;
 
 
 function build-option-add ()
@@ -59,13 +71,12 @@ function build-option-add ()
     # If they are not sorted, the build output directory computed by
     # the SKL interpreter build process and skl-oberon-path() will
     # diverge.
-    boa=$((local v;
-           for v in "${SKL_BUILD_OPTIONS}" "${opt}"; do
-               echo ${v};
-           done)|sort|tr '\n' ' ');
+    boa=$(for v in "${SKL_BUILD_OPTIONS}" "${opt}"; do
+              echo "${v}";
+          done | sort | tr '\n' ' ');
     export SKL_BUILD_OPTIONS="$(trim "${boa}")";
 }
-export -f build-option-add;
+_skl_exportf build-option-add;
 
 
 function build-option-enable ()
@@ -80,7 +91,7 @@ function build-option-enable ()
         echo "**** Invalid build option '${opt}'";
     fi;
 }
-export -f build-option-enable;
+_skl_exportf build-option-enable;
 
 
 function build-option-disable ()
@@ -94,7 +105,7 @@ function build-option-disable ()
         echo "**** Invalid build option '${opt}'";
     fi;
 }
-export -f build-option-disable;
+_skl_exportf build-option-disable;
 
 
 function build-set-type ()
@@ -110,21 +121,21 @@ function build-set-type ()
     echo "Invalid build type: '${type}'";
     return 1;
 }
-export -f build-set-type;
+_skl_exportf build-set-type;
 
 
 function debug-enable ()
 {
     set -v -x;                  # Enable tracing of these shell functions.
 }
-export -f debug-enable;
+_skl_exportf debug-enable;
 
 
 function debug-disable ()
 {
     set +v +x;                  # Disable tracing of these shell functions.
 }
-export -f debug-disable;
+_skl_exportf debug-disable;
 
 
 # Produces the root of the current build output.
@@ -141,7 +152,7 @@ function skl-build-path ()
     fi;
     echo "${obd}${obt}${obo}";
 }
-export -f skl-build-path;
+_skl_exportf skl-build-path;
 
 
 function skl-oberon-path ()
@@ -153,7 +164,7 @@ function skl-oberon-path ()
     oberon_path="${obp}/loader/oberon";
     echo "${oberon_path}";
 }
-export -f skl-oberon-path;
+_skl_exportf skl-oberon-path;
 
 
 function skl-oberon
@@ -166,6 +177,9 @@ function skl-oberon
         local res;
         export LMS_OBERON_HEAP_SIZE="${heap_size}";
         export LMS_OBERON_STACK_SIZE="${stack_size}";
+        export PYTHONUTF8=1;          # For MacOS
+        export PYTHONCOERCECLOCALE=0; # For MacOS.
+
         "${op}" "${@}";
         res=$?;
         if [ ${res} != 0 ] ; then
@@ -178,7 +192,7 @@ function skl-oberon
     fi;
     return $?;
 }
-export -f skl-oberon
+_skl_exportf skl-oberon
 
 
 function skl-skl-oc ()
@@ -186,7 +200,7 @@ function skl-skl-oc ()
     # SKL-based compiler, targeting SKL.
     skl-oberon -- "SKL.Compile ${@}";
 }
-export -f skl-skl-oc;
+_skl_exportf skl-skl-oc;
 
 
 function o3c ()
@@ -194,7 +208,7 @@ function o3c ()
     # GSA-based compiler, targeting SKL.
     skl-oberon -- "O3.Compile -c GSA ${@}";
 }
-export -f o3c;
+_skl_exportf o3c;
 
 
 function disasm () # oberon disassembler invocation
@@ -210,11 +224,12 @@ function disasm () # oberon disassembler invocation
         false;
     fi;
 }
-export -f disasm;
+_skl_exportf disasm;
 
 
 function oberon-show-config ()
 {
+    echo "SKL_HOST_OS      : '${SKL_HOST_OS:?SKL_HOST_OS not set.}'";
     echo "SKL_DIR          : '${SKL_DIR:?SKL_DIR not set.}'";
     echo "SKL_ARCHITECTURE : '${SKL_ARCHITECTURE}'";
     echo "SKL_BUILD_TYPE   : '${SKL_BUILD_TYPE}'";
@@ -225,7 +240,7 @@ function oberon-show-config ()
     echo "Build types      : ${SKL_BUILD_TYPE_VALID[*]}";
     echo "Build options    : ${SKL_BUILD_OPTIONS_VALID[*]}";
 }
-export -f oberon-show-config;
+_skl_exportf oberon-show-config;
 
 
 function skl-gprof ()
@@ -242,7 +257,7 @@ function skl-gprof ()
         echo "";
     fi;
 }
-export -f skl-gprof;
+_skl_exportf skl-gprof;
 
 
 function skl-build-all-interpreters ()
@@ -259,7 +274,7 @@ function skl-build-all-interpreters ()
         done;                                           \
     )
 }
-export -f skl-build-all-interpreters;
+_skl_exportf skl-build-all-interpreters;
 
 
 function skl-build ()
@@ -268,7 +283,7 @@ function skl-build ()
     local arch;
 
     case "${architecture}" in
-        aarch64)
+        arm64|aarch64)          # 'arm64' is what macOS reports.
             arch="Arm64";
             ;;
 

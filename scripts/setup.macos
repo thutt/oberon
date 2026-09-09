@@ -1,0 +1,183 @@
+#!/bin/zsh
+# Copyright (c) 2021-2026 Logic Magicians Software
+#
+# Do not run.  Use 'source' to load into environment.
+#
+# macOS variant of 'setup', written for zsh (the default macOS shell).
+# Use 'setup.linux' when working under bash.  Differences from the
+# Linux 'setup':
+#
+#   * No GNU 'getopt' dependency: the BSD 'getopt' shipped by macOS has
+#     no '--longoptions', so arguments are parsed by process_args().
+#
+#   * No 'readlink -f': the ':A' and ':h' modifiers canonicalise and
+#     split the path of this sourced file.
+#
+#   * '${~n}' performs the '~' expansion that 'eval echo' did.
+#
+#   * The default --architecture follows 'uname -m', so Apple Silicon
+#     machines default to Arm64.
+
+# POSIX 'test' / 'echo' here on purpose: this guard must parse under
+# bash and sh too, so they bail cleanly instead of choking on the zsh
+# syntax below.
+if [ -z "${ZSH_VERSION:-}" ] ; then
+    echo "setup.macos must be sourced from zsh; use setup.linux for bash." 1>&2
+    return 1 2>/dev/null || exit 1;
+fi;
+
+SCRIPT="${${(%):-%x}:A}";       # Absolute path of this sourced file.
+SRC_DIR=$(dirname "${SCRIPT}");
+source "${SRC_DIR}/functions";
+
+
+# Named _help() to not override Bash builtin 'help'.
+function _help()
+{
+    cat <<EOF
+
+This script sets the environment for using the SKL Oberon system.
+
+It must be loaded via 'source', like so:
+
+  source ${SCRIPT} \\
+    --architecture (Intel-x86-64 | Arm64) \\
+    --bod <build-output-directory> \\
+    --build-type (alpha | beta | release)
+
+EOF
+}
+
+
+function process_args ()
+{
+    while [ ${#} -gt 0 ] ; do    # No getopt-supplied '--' sentinel.
+        case "$1" in
+            -a|--architecture)
+                if [ ${#} -lt 2 ] ; then
+                    echo "Option '${1}' requires a value.";
+                    return 1;
+                fi;
+                ARCHITECTURE=$(eval echo ${2});
+                shift 2;
+                ;;
+
+            --architecture=*)
+                ARCHITECTURE=$(eval echo "${1#*=}");
+                shift;
+                ;;
+
+            -b|--build-type)
+                if [ ${#} -lt 2 ] ; then
+                    echo "Option '${1}' requires a value.";
+                    return 1;
+                fi;
+                BUILD=$(eval echo ${2});
+                shift 2;
+                ;;
+
+            --build-type=*)
+                BUILD=$(eval echo "${1#*=}");
+                shift;
+                ;;
+
+            -o|--bod)
+                if [ ${#} -lt 2 ] ; then
+                    echo "Option '${1}' requires a value.";
+                    return 1;
+                fi;
+                BOD=$(eval echo ${2});
+                shift 2;
+                ;;
+
+            --bod=*)
+                BOD=$(eval echo "${1#*=}");
+                shift;
+                ;;
+
+            --)                 # End of arguments.
+                shift;
+                ;;
+
+            *)
+                echo "Unknown option '${1}'";
+                return 1;
+                ;;
+        esac
+    done
+
+    # Gnu getopt, for Linux, validated inline; without it, validate after parsing.
+    case "${ARCHITECTURE}" in
+        Intel-x86-64 | Arm64)
+            # Architecture is ok.
+            ;;
+
+        *)
+            echo "Invalid architecture '${ARCHITECTURE}'.";
+            return 1;
+            ;;
+    esac;
+
+    case "${BUILD}" in
+        alpha|beta|release)
+            # Build type is ok.
+            ;;
+
+        *)
+            echo "Invalid build type '${BUILD}'.";
+            return 1;
+            ;;
+    esac;
+
+    return 0;
+}
+
+
+function main ()
+{
+    case "$(uname -m)" in       # Apple Silicon reports 'arm64'.
+        arm64)
+            ARCHITECTURE="Arm64";
+            ;;
+
+        *)
+            ARCHITECTURE="Intel-x86-64";
+            ;;
+    esac;
+
+    BUILD="alpha";
+    BOD="";
+
+    export SKL_DIR=$(dirname "${SRC_DIR}");
+    export SKL_HOST_OS="macos";
+
+    case "${PATH}" in
+        *${SKL_DIR}*)
+            # PATH has already been updated.  Do nothing.
+            ;;
+        *)
+            export PATH="${SKL_DIR}/scripts:${PATH}";
+            ;;
+    esac;
+
+    if process_args "${@}" ; then
+        if [ -z "${BOD}" ] ; then
+            _help;
+        else
+            local system="${SKL_DIR}/system";
+            export SKL_BUILD_DIR="${BOD}";
+            export SKL_SEARCH_PATH="${system}:${system}/lms:${system}/compiler/skl:${system}/compiler/o3";
+            export SKL_BUILD_OPTIONS="";
+            export SKL_ARCHITECTURE="${ARCHITECTURE}";
+
+            build-set-type "${BUILD}";
+            oberon-show-config;
+        fi;
+    else
+        _help;
+        echo "Local work environment configuration failed.";
+    fi;
+}
+
+
+main ${@};
