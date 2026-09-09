@@ -506,6 +506,10 @@ namespace heap
             dialog::diagnostic("Releasing allocation: %p.\n", fail->region);
             result = munmap(fail->region, heap_size);
             assert(result == 0); // Success.  -1 + errno == failure
+            if (result != 0) {
+                fprintf(stderr, "Failed to release memory at '%p'\n",
+                        reinterpret_cast<void *>(fail->region));
+            }
             fail = fail->next;
         }
             
