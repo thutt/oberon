@@ -21,19 +21,23 @@ Usage:
       sudo apt update
 
       sudo apt install \
-        make
+        make           \
         g++
 
+    It is also known to run on Arm64-based MacOS, though Apple's poor
+    developer ecosystem renders it incapable of compiling the
+    documentation because there is no out-of-the-box LaTeX system.
 
   o Prerequisites
 
     To build the software and documentation, you will need the
     following items:
 
-    + The disassembler and loader / interpreter need Gnu G++.
+    + The disassembler and loader / interpreter need Gnu G++, or
+      Clang.
 
-    + To run the script that creates cscope files, cscope must be
-      installed.
+    + On Linux, to run the script that creates cscope files, cscope
+      must be installed.
 
           sudo apt install cscope
 
@@ -44,8 +48,8 @@ Usage:
       If you do not use cscope to find symbols in C code, you do not
       need to install this.
 
-    + The documentation requires a modern LaTeX installation, with a
-      few extra packages.
+    + On Linux, the documentation requires a modern LaTeX
+      installation, with a few extra packages.
 
       On Ubuntu and Raspbian the following should be sufficient:
 
@@ -55,13 +59,19 @@ Usage:
             texlive-metapost          \
             texlive-science
 
+      It is not possible to build the documentation on Mac due to lack
+      of support for proper development tools out-of-the-box.
 
   o Configure shell environment.
 
-    There is a set of Bash shell commands that allow easy invocation
-    of different parts of the system.  These shell commands simplify
-    the effort necessary to run the compiler or execute the
-    interpreter to run Oberon code you have written and compiled.
+    There is a set of shell commands that allow easy invocation of
+    different parts of the system.  These shell commands simplify the
+    effort necessary to run the compiler or execute the interpreter to
+    run Oberon code you have written and compiled.
+
+    These commands are nominally written in Bash, but some
+    accommodation has been made for Zsh so that the system can
+    actually work on Mac, too.
 
     The commands are loaded into the current shell environment by
     'source'-ing the file, using something the following template as a
@@ -96,7 +106,7 @@ Usage:
 
     Example:
 
-      cd <place where the software was cloned>
+      cd <place where the git repository was cloned>
       source ./scripts/setup \
         -a Intel-x86-64      \
         -b release           \
