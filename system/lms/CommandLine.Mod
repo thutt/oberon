@@ -1,4 +1,4 @@
-(* Copyright (c) 2000, 2021-2022 Logic Magicians Software *)
+(* Copyright (c) 2000-2026 Logic Magicians Software *)
 MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted arguments *)
   IMPORT Kernel, Console;
 
@@ -87,7 +87,7 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
   (* pre: defined(cmdline) *)
   (* post: (0 <= result < LEN(cmdline)) & (result is length of parameter) *)
   PROCEDURE ParseNextParm(i : INTEGER) : INTEGER;
-    VAR beg, j, len : INTEGER; ch : CHAR;
+    VAR ws, beg, j, len : INTEGER; ch : CHAR;
   BEGIN
     LOOP (* Skip leading tabs & spaces. *)
       ch := cmdline[i];
@@ -123,7 +123,21 @@ MODULE CommandLine;  (* A command line is a series of (tab, space)-delimitted ar
       END;
       NewParm(beg, len);
     END;
-    RETURN beg + len;
+    (* Accumulate whitespace at the end of the option.  It could be
+     * the only thing left on the line, and leaving it trailing
+     * induces another call to ParseNextParm, which will have no
+     * value to return.
+     *)
+    ws := 0;
+    LOOP
+      ch := cmdline[beg + len + ws];
+      IF (ch = 9X) OR (ch = ' ') THEN
+        INC(ws);
+      ELSE
+        EXIT;
+      END;
+    END;
+    RETURN beg + len + ws;
   END ParseNextParm;
 
   (* pre: There must be no trailing whitespace characters at the end of the command line. *)
