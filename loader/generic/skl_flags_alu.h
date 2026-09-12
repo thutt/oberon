@@ -1,4 +1,4 @@
-/* Copyright (c) 2022 Logic Magicians Software
+/* Copyright (c) 2022-2026 Logic Magicians Software
  *
  *  This file is a generic implementation of ALU flag synthesis.  It
  *  will work for any GCC target architecture that is not superceded
@@ -13,11 +13,12 @@ namespace skl {
     static inline unsigned
     synthesize_OF(md::int32 l, md::int32 r)
     {
-        unsigned sign_mask = left_shift(1, 31);
-        int      res       = l - r; // Result sign.
-        unsigned not_equal = static_cast<unsigned>(l ^ r);
-        unsigned sign_diff = static_cast<unsigned>(l ^ res);
-
+        md::uint32 ul        = static_cast<md::uint32>(l);
+        md::uint32 ur        = static_cast<md::uint32>(r);
+        md::uint32 res       = ul - ur;           // Defined: wraps mod 2^32.
+        unsigned   sign_mask = left_shift(1, 31);
+        unsigned   not_equal = ul ^ ur;
+        unsigned   sign_diff = ul ^ res;
         return !!((not_equal & sign_diff) & sign_mask);
     }
 
@@ -32,7 +33,11 @@ namespace skl {
     static inline unsigned
     synthesize_SF(md::int32 l, md::int32 r)
     {
-        return (l - r) < 0;
+        md::uint32 ul  = static_cast<md::uint32>(l);
+        md::uint32 ur  = static_cast<md::uint32>(r);
+        md::uint32 res = ul - ur;                 // Defined: wraps mod 2^32.
+
+        return !!(res & left_shift(1, 31));
     }
 
 

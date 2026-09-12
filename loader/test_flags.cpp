@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, 2022 Logic Magicians Software */
+/* Copyright (c) 2021-2026 Logic Magicians Software */
 
 /* This progrem tests synthesis of flags.
  *
@@ -96,6 +96,14 @@ static value_t values[] = {
           0                     // OF
       }
     },
+    { 100000, MinInt,
+      {
+          0,                    // ZF
+          1,                    // CF
+          1,                    // SF
+          1                     // OF
+      }
+    },
 };
 
 md::int32 global;               // Used to silence compiler errors.
@@ -131,10 +139,15 @@ hardware_flags(md::int32 l, md::int32 r, flags_t *flags)
 static unsigned
 synthesize_overflow_int32(md::int32 l, md::int32 r)
 {
-    unsigned sign_mask = 1 << 31;
-    unsigned res       = l - r;                 // Result sign.
+    md::uint32 ul        = static_cast<md::uint32>(l);
+    md::uint32 ur        = static_cast<md::uint32>(r);
+    md::uint32 res       = ul - ur;           // Defined: wraps mod 2^32.
+    unsigned   sign_mask = left_shift(1, 31);
+    unsigned   not_equal = ul ^ ur;
+    unsigned   sign_diff = ul ^ res;
 
-    return !!(((l ^ r) & (l ^ res)) & sign_mask);
+    return !!((not_equal & sign_diff) & sign_mask);
+
 }
 
 

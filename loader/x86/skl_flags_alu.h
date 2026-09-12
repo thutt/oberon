@@ -1,4 +1,4 @@
-/* Copyright (c) 2022 Logic Magicians Software
+/* Copyright (c) 2022-2026 Logic Magicians Software
  *
  *  This file is an x86-specific implementation of ALU flag synthesis.
  */
@@ -40,6 +40,12 @@ namespace skl {
                                [left] "r" (l)
                              : /* clobbers */ "cc");
 
+        /* All the flags are combined into ZF in the assembly.
+         *
+         * The combination is not done in only eight bits.
+         * But, the low byte of each value is either 1 or 0.
+         * And, the final result is zero extended to 32-bits from 8-bits.
+         */
         return static_cast<md::uint32>(ZF);
     }
 
