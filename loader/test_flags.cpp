@@ -8,221 +8,167 @@
  * by the CPU to compare with the software-synthesized values.
  */
 
+#include <assert.h>
 #include <stdio.h>
-
 #include "md.h"
+#include "skl_flags_alu.h"
+#include "test_flags.h"
 
 #define MinInt -0x80000000
 #define MaxInt  0x7fffffff
 
-typedef struct flags_t {
-    unsigned Z;
-    unsigned C;
-    unsigned S;
-    unsigned O;
-} flags_t;
+namespace test_flags {
+    typedef struct value_t {
+        md::int32 l;
+        md::int32 r;
+        flags_t   expected;
+    } value_t;
+
+   /* values: Test values to exercise flag synthesis.
+    *
+    *  Refer to: https://en.wikipedia.org/wiki/Overflow_flag
+    *
+    *    The overflow flag can be set when subtracting numbers with
+    *    differing sign bits.
+    *
+    *  Also note that only subtraction is needed to synthesize the
+    *  overflow flag for the comparison instructions.
+    */
+    value_t values[] = {
+        { 6, MinInt,
+          {
+              0,                    // ZF
+              1,                    // CF
+              1,                    // SF
+              1                     // OF
+          }
+        },
+        { MaxInt, MaxInt,
+          {
+              1,                    // ZF
+              0,                    // CF
+              0,                    // SF
+              0                     // OF
+          }
+        },
+        { -3, -3,
+          {
+              1,                    // ZF
+              0,                    // CF
+              0,                    // SF
+              0                     // OF
+          }
+        },
+        { -3, 3,
+          {
+              0,                    // ZF
+              0,                    // CF
+              1,                    // SF
+              0                     // OF
+          }
+        },
+        { 3, -3,
+          {
+              0,                    // ZF
+              1,                    // CF
+              0,                    // SF
+              0                     // OF
+          }
+        },
+        { -68, 0,
+          {
+              0,                    // ZF
+              0,                    // CF
+              1,                    // SF
+              0                     // OF
+          }
+        },
+        { 0, 0,
+          {
+              1,                    // ZF
+              0,                    // CF
+              0,                    // SF
+              0                     // OF
+          }
+        },
+        { 100000, MinInt,
+          {
+              0,                    // ZF
+              1,                    // CF
+              1,                    // SF
+              1                     // OF
+          }
+        },
+    };
+
+    md::uint32 global;               // Used to silence compiler errors.
+
+    static void
+    display(const value_t *v,
+            const flags_t *s,
+            const flags_t *h)
+    {
+        printf("\n");
+        printf("%8.8xH  %8.8xH  "
+               "E : { Z:%u  S:%u  C:%u  O:%u }\n"
+               "%9.9s  %9.9s  "
+               "SW: { Z:%u  S:%u  C:%u  O:%u }  "
+               "HW: { Z:%u  S:%u  C:%u  O:%u }\n",
+               v->l, v->r,
+               v->expected.Z, v->expected.S, v->expected.C, v->expected.O,
+               " ", " ",
+               s->Z, s->S, s->C, s->O,
+               h->Z, h->S, h->C, h->O);
+        printf("\n");
+    }
+
+    static void
+    map_software_eflags(md::uint32 swf, flags_t *flags)
+    {
+        flags->Z = !!(swf & 1);
+        flags->S = !!(swf & 2);
+        flags->C = !!(swf & 4);
+        flags->O = !!(swf & 8);
+    }
 
 
-typedef struct value_t {
-    md::int32 l;
-    md::int32 r;
-    flags_t   expected;
-} value_t;
+    static void
+    test(const value_t *v)
+    {
+        flags_t sflags;
+        flags_t hflags;
+        md::uint32 flags;
 
-/* values: Test values to exercise flag synthesis.
- *
- *  Refer to: https://en.wikipedia.org/wiki/Overflow_flag
- *
- *    The overflow flag can be set when subtracting numbers with
- *    differing sign bits.
- *
- *  Also note that only subtraction is needed to synthesize the
- *  overflow flag for the comparison instructions.
- */
-static value_t values[] = {
-    { 6, MinInt,
-      {
-          0,                    // ZF
-          1,                    // CF
-          1,                    // SF
-          1                     // OF
-      }
-    },
-    { MaxInt, MaxInt,
-      {
-          1,                    // ZF
-          0,                    // CF
-          0,                    // SF
-          0                     // OF
-      }
-    },
-    { -3, -3,
-      {
-          1,                    // ZF
-          0,                    // CF
-          0,                    // SF
-          0                     // OF
-      }
-    },
-    { -3, 3,
-      {
-          0,                    // ZF
-          0,                    // CF
-          1,                    // SF
-          0                     // OF
-      }
-    },
-    { 3, -3,
-      {
-          0,                    // ZF
-          1,                    // CF
-          0,                    // SF
-          0                     // OF
-      }
-    },
-    { -68, 0,
-      {
-          0,                    // ZF
-          0,                    // CF
-          1,                    // SF
-          0                     // OF
-      }
-    },
-    { 0, 0,
-      {
-          1,                    // ZF
-          0,                    // CF
-          0,                    // SF
-          0                     // OF
-      }
-    },
-    { 100000, MinInt,
-      {
-          0,                    // ZF
-          1,                    // CF
-          1,                    // SF
-          1                     // OF
-      }
-    },
-};
+        assert(sizeof(md::int32) == 4);
+        assert(sizeof(int) == 4);
 
-md::int32 global;               // Used to silence compiler errors.
+        flags = skl::synthesize_flags_int32(v->l, v->r);
+        map_software_eflags(flags, &sflags);
+        hardware_flags(v->l, v->r, &hflags);
 
+        display(v, &sflags, &hflags);
 
-void
-map_x86_eflags(unsigned long eflags, flags_t *flags)
-{
-    flags->C = (eflags >> 0) & 1;
-    flags->Z = (eflags >> 6) & 1;
-    flags->S = (eflags >> 7) & 1;
-    flags->O = (eflags >> 11) & 1;
+        if (v->expected.Z != sflags.Z || sflags.Z != hflags.Z) {
+            printf("%9s  %9s  fail[ZF]:  { exp: %u  synth: %u  hwd: %u }\n",
+                   "", "", v->expected.Z, sflags.Z, hflags.Z);
+        }
+
+        if (v->expected.S != sflags.S || sflags.S != hflags.S) {
+            printf("%9s  %9s  fail[SF]:  { exp: %u  synth: %u  hwd: %u }\n",
+                   "", "", v->expected.S, sflags.S, hflags.S);
+        }
+
+        if (v->expected.O != sflags.O || sflags.O != hflags.O) {
+            printf("%9s  %9s  fail[OF]:  { exp: %u  synth: %u  hwd: %u }\n",
+                   "", "", v->expected.O, sflags.O, hflags.O);
+        }
+
+        if (v->expected.C != sflags.C || sflags.C != hflags.C) {
+            printf("%9s  %9s  fail[CF]:  { exp: %u  synth: %u  hwd: %u }\n",
+                   "", "", v->expected.C, sflags.C, hflags.C);
+        }
+    }
 }
-
-
-void
-hardware_flags(md::int32 l, md::int32 r, flags_t *flags)
-{
-    md::uint32    x;
-    unsigned long eflags;
-
-    x = l - r;
-    __asm__ __volatile__("pushf\n"
-            "popq %[reg]"
-            : [reg] "=r" (eflags));
-
-
-    map_x86_eflags(eflags, flags);
-    global = x;
-}
-
-
-static unsigned
-synthesize_overflow_int32(md::int32 l, md::int32 r)
-{
-    md::uint32 ul        = static_cast<md::uint32>(l);
-    md::uint32 ur        = static_cast<md::uint32>(r);
-    md::uint32 res       = ul - ur;           // Defined: wraps mod 2^32.
-    unsigned   sign_mask = left_shift(1, 31);
-    unsigned   not_equal = ul ^ ur;
-    unsigned   sign_diff = ul ^ res;
-
-    return !!((not_equal & sign_diff) & sign_mask);
-
-}
-
-
-static void
-synthesize_flags_int32(md::uint32 l, md::uint32 r, flags_t *flags)
-{
-    md::int32  ll = static_cast<md::int32>(l);
-    md::int32  lr = static_cast<md::int32>(r);
-    md::uint32 ZF = (ll - lr) == 0;                    // Zero flag.
-    md::uint32 SF = (ll - lr) < 0;                     // Sign flag.
-    md::uint32 CF = l < r;                             // Carry flag.
-    md::uint32 OF = synthesize_overflow_int32(ll, lr); // Overflow flag.
-
-    flags->Z = ZF;
-    flags->S = SF;
-    flags->C = CF;
-    flags->O = OF;
-}
-
-
-static void
-display(const value_t *v,
-        const flags_t *s,
-        const flags_t *h)
-{
-    printf("\n");
-    printf("%8.8xH  %8.8xH  "
-           "E : { Z:%u  S:%u  C:%u  O:%u }\n"
-           "%9.9s  %9.9s  "
-           "SW: { Z:%u  S:%u  C:%u  O:%u }  "
-           "HW: { Z:%u  S:%u  C:%u  O:%u }\n",
-           v->l, v->r,
-           v->expected.Z, v->expected.S, v->expected.C, v->expected.O,
-           " ", " ",
-           s->Z, s->S, s->C, s->O,
-           h->Z, h->S, h->C, h->O);
-    printf("\n");
-}
-
-
-static void
-test(const value_t *v)
-{
-   flags_t sflags;
-   flags_t hflags;
-
-   assert(sizeof(md::int32) == 4);
-   assert(sizeof(int) == 4);
-
-   synthesize_flags_int32(v->l, v->r, &sflags);
-   hardware_flags(v->l, v->r, &hflags);
-
-   display(v, &sflags, &hflags);
-
-   if (v->expected.Z != sflags.Z || sflags.Z != hflags.Z) {
-       printf("%9s  %9s  fail[ZF]:  { exp: %u  synth: %u  hwd: %u }\n",
-              "", "", v->expected.Z, sflags.Z, hflags.Z);
-   }
-
-   if (v->expected.S != sflags.S || sflags.S != hflags.S) {
-       printf("%9s  %9s  fail[SF]:  { exp: %u  synth: %u  hwd: %u }\n",
-              "", "", v->expected.S, sflags.S, hflags.S);
-   }
-
-   if (v->expected.O != sflags.O || sflags.O != hflags.O) {
-       printf("%9s  %9s  fail[OF]:  { exp: %u  synth: %u  hwd: %u }\n",
-              "", "", v->expected.O, sflags.O, hflags.O);
-   }
-
-   if (v->expected.C != sflags.C || sflags.C != hflags.C) {
-       printf("%9s  %9s  fail[CF]:  { exp: %u  synth: %u  hwd: %u }\n",
-              "", "", v->expected.C, sflags.C, hflags.C);
-   }
-}
-
 
 int main(void)
 {
@@ -238,8 +184,8 @@ int main(void)
     assert(skl_alpha);
 
     i = 0;
-    while (i < sizeof(values) / sizeof(values[0])) {
-        test(&values[i]);
+    while (i < sizeof(test_flags::values) / sizeof(test_flags::values[0])) {
+        test_flags::test(&test_flags::values[i]);
         ++i;
     }
     return 0;

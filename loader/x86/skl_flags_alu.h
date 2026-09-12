@@ -63,10 +63,10 @@ namespace skl {
     synthesize_flags_double(double l, double r)
     {
         double     delta = (l - r);
-        md::uint32 ZF    = delta == 0;                    // Zero flag.
-        md::uint32 SF    = delta < 0;                     // Sign flag.
-        md::uint32 CF    = l < r;                         // Carry flag.
-        md::uint32 OF = synthesize_overflow_double(l, r); // Overflow flag.
+        md::uint32 ZF    = delta == 0;                       // Zero flag.
+        md::uint32 SF    = delta < 0;                        // Sign flag.
+        md::uint32 CF    = l < r;                            // Carry flag.
+        md::uint32 OF    = synthesize_overflow_double(l, r); // Overflow flag.
 
         return ((ZF << 0) |
                 (SF << 1) |

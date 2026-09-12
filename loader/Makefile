@@ -4,17 +4,13 @@ SRC_DIR		:= $(dir $(MAKEFILE))
 include $(SKL_DIR)/make/config.mk
 
 ARCHITECTURE_DIR	:=					\
-	$(if $(filter $(SKL_ARCHITECTURE),Intel-x86-64),x86)	\
-	$(if $(filter $(SKL_ARCHITECTURE),Arm64),arm64)
-
-
-TEST-FLAGS	:= test-flags-$(SKL_ARCHITECTURE)
+	$(strip $(if $(filter $(SKL_ARCHITECTURE),Intel-x86-64),x86)	\
+	$(if $(filter $(SKL_ARCHITECTURE),Arm64),arm64))
 
 INCLUDE	:=					\
 	$(SKL_DIR)/include			\
 	$(SRC_DIR)				\
-	$(SRC_DIR)$(ARCHITECTURE_DIR)		\
-	$(SRC_DIR)generic
+	$(SRC_DIR)$(ARCHITECTURE_DIR)
 
 
 SOURCE :=					\
@@ -66,7 +62,7 @@ fail:
 	echo "This Makefile must be used via $(SKL_DIR)/Makefile";	\
 	false;
 
-oberon:	$(OBJ) $(TEST-FLAGS)
+oberon:	$(OBJ) test_flags
 	$(PROLOG);				\
 	$(CC)					\
 	    $(addprefix -Xlinker,$(CC_LD_$(SKL_HOST_OS)_OPTS))		\
@@ -79,7 +75,6 @@ oberon:	$(OBJ) $(TEST-FLAGS)
 loader__:	oberon
 	$(PROLOG);
 
-$(TEST-FLAGS):
 test_flags:	CXXFLAGS +=			\
 	-Wno-narrowing				\
 	-Wno-sign-conversion			\
@@ -88,13 +83,5 @@ test_flags:	CXXFLAGS +=			\
 test_flags:	test_flags.cpp
 	$(PROLOG);				\
 	$(CC) $(CXXFLAGS) -o $@ $^;
-
-
-test-flags-Intel-x86-64:	test_flags
-test-flags-Arm64:
-	$(PROLOG);							\
-	echo "test_flags uses x86 inline assembly." ;			\
-	echo "It is a test program and does not compile on Arm64.";
-
 
 -include $(SOURCE:.cpp=.d)
