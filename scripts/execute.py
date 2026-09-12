@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Logic Magicians Software
+# Copyright (c) 2022-2026 Logic Magicians Software
 #
 import os
 import subprocess
@@ -19,12 +19,12 @@ def process(cmd):
     if stdout is None:
         stdout = ''
     else:
-        stdout = stdout.decode("UTF-8")
+        stdout = stdout.decode("UTF-8", errors="backslashreplace")
 
     if stderr is None:
         stderr = ''
     else:
-        stderr = stderr.decode("UTF-8")
+        stderr = stderr.decode("UTF-8", errors="backslashreplace")
 
     rc = p.returncode
 

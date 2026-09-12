@@ -555,7 +555,6 @@ def dump(stdout, stderr, rc):
     print("  rc    : ", rc)
 
 
-
 def compile_module(options, module):
     return execute_oberon(options, None, [ "SKL.Compile", module ])
 
