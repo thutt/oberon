@@ -13,4 +13,4 @@ function main ()
     cscope $cscope_options;
 }
 
-main "${@}";
+main "${@:-}";

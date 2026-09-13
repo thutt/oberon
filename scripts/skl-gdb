@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2023 Logic Magicians Software
+# Copyright (c) 2023-2026 Logic Magicians Software
 #
 #  This script run GDB on the Oberon interpreter inside emacs.
 # 
@@ -43,4 +43,4 @@ EOF
      ${emacs} ${geometry} --eval "${command}") &
 }
 
-main "${@}";
+main "${@:-}";

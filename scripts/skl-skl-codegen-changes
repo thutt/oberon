@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2023 Logic Magicians Software
+# Copyright (c) 2023-2026 Logic Magicians Software
 #
 # This script is used to examine code generation differences in the
 # SKL compiler by facilitating comparison of the 'before' and 'after'
@@ -87,4 +87,4 @@ function main ()
     compare "before" "after"|tee "/tmp/codegen/skl-diffs.2nd";
 }
 
-main "${@}";
+main "${@:-}";
