@@ -1,0 +1,52 @@
+Final GSA
+
+0.0 (0)  greg: Three range=[-32768, -32721)
+  0.1 (42)  [1:[location=cc], 2:[location=y], 3:[location=y/adr], 4:[location=x], 5:[location=x/adr], 6:[location=z], 7:[location=.%0], 8:[location=LX], 9:[location=LX/adr], 10:[location=X], 11:[location=X/adr]] enter flags{} %nlm  range=[-32768, -32722) uses={}
+   0.2 (43)  %nlm := nlmctor flags{}  range=[-32723, -32723) uses={(4) (3)}
+  0.5 (2)  adr flags{} y  range=[-32768, -32724) uses={(37) (38) (39) (37)}
+  0.4 (3)  %nlm := update-varparm flags{} y , result[(37)] , result[(43)] , result[(5)]  range=[-32768, -32725) uses={(9) (7)}
+  0.3 (4)  access-varparm flags{} y , result[(37)] , result[(43)]  range=[-32768, -32726) uses={(5)}
+  0.9 (5)  add.s2 flags{} result[(4)] , const{1}  range=[-32768, -32727) uses={(3)}
+  0.12 (6)  adr flags{} LX  range=[-32768, -32728) uses={(7)}
+  0.11 (7)  %nlm := update-nonlocal flags{} LX , result[(6)] , result[(3)] , result[(10)]  range=[-32768, -32729) uses={(14) (13) (12)}
+  0.17 (8)  adr flags{} x  range=[-32768, -32730) uses={(38)}
+  0.10 (9)  access-varparm flags{} x , result[(38)] , result[(3)]  range=[-32768, -32731) uses={(10)}
+  0.13 (10)  convert.s4 flags{} result[(9)]  range=[-32768, -32732) uses={(7)}
+  0.18 (11)  adr flags{} X  range=[-32768, -32733) uses={(39)}
+  0.16 (12)  z := access-nonlocal flags{} X , result[(39)] , result[(7)]  range=[-32768, -32734) uses={(50)}
+  0.15 (13)  %nlm := update-varparm flags{} x , result[(38)] , result[(7)] , result[(15)]  range=[-32768, -32735) uses={(27) (22) (17) (16)}
+  0.14 (14)  access-varparm flags{} x , result[(38)] , result[(7)]  range=[-32768, -32736) uses={(15)}
+  0.20 (15)  add.s2 flags{} result[(14)] , const{1}  range=[-32768, -32737) uses={(13)}
+  0.24 (16)  access-varparm flags{} x , result[(38)] , result[(13)]  range=[-32768, -32738) uses={(18)}
+  0.23 (17)  access-nonlocal flags{} X , result[(39)] , result[(13)]  range=[-32768, -32739) uses={(28) (23) (18)}
+  0.25 (18)  eql.s2 flags{} result[(16)] , result[(17)]  range=[-32768, -32740) uses={(56) (58)}
+  0.29 (58)  guard-true flags{live} result[(18)]  range=[-32768, -32741) uses={(55)}
+  0.28 (56)  guard-false flags{live} result[(18)]  range=[-32768, -32742) uses={(55)}
+   0.31 (57)  trap-assert flags{live}  range=[-32743, -32743) uses={}
+  0.30 (55)  merge-if flags{live} result[(58)] , result[(56)]  range=[-32768, -32744) uses={}
+  0.22 (22)  access-varparm flags{} y , result[(37)] , result[(13)]  range=[-32768, -32745) uses={(23)}
+  0.27 (23)  eql.s2 flags{} result[(22)] , result[(17)]  range=[-32768, -32746) uses={(52) (54)}
+  0.33 (54)  guard-true flags{live} result[(23)]  range=[-32768, -32747) uses={(51)}
+  0.32 (52)  guard-false flags{live} result[(23)]  range=[-32768, -32748) uses={(51)}
+   0.35 (53)  trap-assert flags{live}  range=[-32749, -32749) uses={}
+  0.34 (51)  merge-if flags{live} result[(54)] , result[(52)]  range=[-32768, -32750) uses={}
+  0.21 (27)  %nlm := update-nonlocal flags{} X , result[(39)] , result[(13)] , result[(28)]  range=[-32768, -32751) uses={(48) (47) (50)}
+  0.26 (28)  sub.s2 flags{} result[(17)] , const{1}  range=[-32768, -32752) uses={(27)}
+  0.38 (49)  guard-true flags{} result{1 of (42)}  range=[-32768, -32753) uses={(44)}
+   0.19 (50)  %nlm := update-nonlocal flags{} X , result[(39)] , result[(27)] , result[(12)]  range=[-32754, -32754) uses={(45)}
+  0.41 (46)  guard-false flags{} result{1 of (42)}  range=[-32768, -32755) uses={(44)}
+   0.37 (47)  %nlm := update-varparm flags{} x , result[(38)] , result[(27)] , result[(48)]  range=[-32757, -32756) uses={(45)}
+   0.36 (48)  access-varparm flags{} y , result[(37)] , result[(27)]  range=[-32757, -32757) uses={(47)}
+  0.39 (44)  merge-if flags{} result[(49)] , result[(46)]  range=[-32768, -32758) uses={(45)}
+   0.40 (45)  %nlm := gate flags{} result[(44)] , result[(50)] , result[(47)]  range=[-32759, -32759) uses={(33) (32)}
+  0.43 (32)  %nlm := update-varparm flags{} x , result[(38)] , result[(45)] , result[(33)]  range=[-32768, -32760) uses={(35) (34)}
+  0.42 (33)  access-nonlocal flags{} X , result[(39)] , result[(45)]  range=[-32768, -32761) uses={(32)}
+  0.45 (34)  %nlm := update-varparm flags{} y , result[(37)] , result[(32)] , result[(35)]  range=[-32768, -32762) uses={(41)}
+  0.44 (35)  access-varparm flags{} x , result[(38)] , result[(32)]  range=[-32768, -32763) uses={(34)}
+  0.47 (40)  exit flags{} result[(41)]  range=[-32768, -32764) uses={}
+   0.46 (41)  nlmdtor flags{live} result[(34)]  range=[-32765, -32765) uses={(40)}
+  0.6 (37)  mayalias flags{} result[(2)] , result[(2)]  range=[-32768, -32766) uses={(48) (34) (22) (3) (4)}
+  0.7 (38)  mayalias flags{} result[(8)] , result[(2)]  range=[-32768, -32767) uses={(47) (35) (32) (16) (13) (14) (9)}
+  0.8 (39)  mayalias flags{} result[(11)] , result[(2)]  range=[-32768, -32768) uses={(12) (27) (50) (33) (17)}
+
+

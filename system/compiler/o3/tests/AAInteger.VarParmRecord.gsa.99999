@@ -1,0 +1,34 @@
+Final GSA
+
+0.0 (0)  greg: VarParmRecord range=[-32768, -32739)
+  0.1 (21)  [1:[location=r], 2:[location=r/adr], 3:[location=r-tag], 4:[location=r-tag/adr], 5:[location=i], 6:[location=i/adr], 7:[location=.%0], 8:[location=.%1], 9:[location=X], 10:[location=X/adr]] enter flags{} %nlm  range=[-32768, -32740) uses={}
+   0.2 (22)  %nlm := nlmctor flags{}  range=[-32741, -32741) uses={(3)}
+  0.4 (2)  adr flags{} r  range=[-32768, -32742) uses={(27) (3)}
+  0.3 (3)  access-varparm flags{} r , result[(2)] , result[(22)]  range=[-32768, -32743) uses={(6) (4)}
+  0.7 (4)  adr flags{} result[(3)]  range=[-32768, -32744) uses={(5)}
+  0.8 (5)  add.u4 flags{} result[(4)] , const{0}  range=[-32768, -32745) uses={(18) (17) (16) (15)}
+  0.6 (6)  %nlm := update-field flags{} result[(3)] , result[(15)] , const{0} , result[(7)]  range=[-32768, -32746) uses={(24) (32) (27) (9)}
+  0.13 (7)  convert.s2 flags{} const{10}  range=[-32768, -32747) uses={(10) (6)}
+  0.18 (8)  adr flags{} i  range=[-32768, -32748) uses={(16) (15)}
+  0.16 (9)  access-varparm flags{} i , result[(16)] , result[(6)]  range=[-32768, -32749) uses={(10)}
+  0.17 (10)  eql.s2 flags{} result[(9)] , result[(7)]  range=[-32768, -32750) uses={(25) (26)}
+  0.20 (26)  guard-true flags{} result[(10)]  range=[-32768, -32751) uses={(23)}
+   0.5 (27)  access-varparm flags{} r , result[(2)] , result[(6)]  range=[-32759, -32752) uses={(30) (28)}
+   0.23 (28)  adr flags{} result[(27)]  range=[-32759, -32753) uses={(29)}
+   0.24 (29)  add.u4 flags{} result[(28)] , const{0}  range=[-32759, -32754) uses={(18)}
+   0.22 (30)  %nlm := update-field flags{} result[(27)] , result[(18)] , const{0} , result[(32)]  range=[-32759, -32755) uses={(33)}
+   0.26 (31)  adr flags{} X  range=[-32759, -32756) uses={(17)}
+   0.15 (32)  access-nonlocal flags{} X , result[(17)] , result[(6)]  range=[-32759, -32757) uses={(30)}
+   0.25 (33)  %nlm := update-varparm flags{} i , result[(16)] , result[(30)] , result[(34)]  range=[-32759, -32758) uses={(24)}
+   0.27 (34)  convert.s2 flags{} const{12}  range=[-32759, -32759) uses={(33)}
+  0.19 (25)  guard-false flags{} result[(10)]  range=[-32768, -32760) uses={(23)}
+  0.21 (23)  merge-if flags{} result[(26)] , result[(25)]  range=[-32768, -32761) uses={(24)}
+   0.14 (24)  %nlm := gate flags{} result[(23)] , result[(33)] , result[(6)]  range=[-32762, -32762) uses={(20)}
+  0.29 (19)  exit flags{} result[(20)]  range=[-32768, -32763) uses={}
+   0.28 (20)  nlmdtor flags{live} result[(24)]  range=[-32764, -32764) uses={(19)}
+  0.12 (15)  mayalias flags{} result[(5)] , result[(8)]  range=[-32768, -32765) uses={(6)}
+  0.11 (16)  mayalias flags{} result[(8)] , result[(5)]  range=[-32768, -32766) uses={(33) (9)}
+  0.10 (17)  mayalias flags{} result[(31)] , result[(5)]  range=[-32768, -32767) uses={(32)}
+  0.9 (18)  mayalias flags{} result[(29)] , result[(5)]  range=[-32768, -32768) uses={(30)}
+
+

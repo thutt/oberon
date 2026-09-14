@@ -1,0 +1,85 @@
+digraph "GSA" { 
+
+"greg" [
+  label="<f0>region"
+  shape="record"
+]
+
+"enter" [
+  label="<f0> enter| <f1>%nlm"
+  shape="record"
+]
+
+"greg":f0 -> "enter":f1
+"greg":f0 -> "kind":f1
+"greg":f0 -> "kind'":f1
+
+"nlmctor" [
+  label="<f0>%nlm|<f1>nlmctor|<f2>opr0",
+  shape="record"
+]
+
+"result" [
+  label="<f0>%return-2|<f1>copy|<f2>opr0",
+  shape="record"
+]
+
+"false" [ label="FALSE", shape="ellipse" ]
+"const-0" [ label="0", shape="ellipse" ]
+"const-10" [ label="10", shape="ellipse" ]
+
+"false" -> "result":f2
+
+
+"kind" [
+  label="<f0>kind|<f1>copy|<f2>opr0",
+  shape="record"
+]
+"kind'" [
+  label="<f0>r0'|<f1>copy|<f2>opr0",
+  shape="record"
+]
+
+
+"const-0" -> "kind":f2
+"const-10" -> "kind'":f2
+
+"adr-0" [
+  label="<f0>adr|<f1>opr0",
+  shape="record"
+]
+
+"Read" [label="Read", shape="ellipse"]
+
+"Read" -> "call-0":f2
+
+"call-0" [
+  label="<f0>r0|<f1>call|<f2>fn|<f3>arg0|<f4>arg1",
+  shape="record"
+]
+
+"exit-0" [
+  label="<f0>exit|<f1>opr0|<f2>opr1",
+  shape="record"
+ ]
+
+"nlmdtor" [
+  label="<f0>r0|<f1>nlmdtor|<f2>%nlm",
+  shape="record"
+]
+
+"enter" -> "nlmctor"
+"create_nlm" -> "result"
+"kind'":f0 -> "adr-0":f1
+
+
+"adr-0":f0 -> "call-0":f3
+"kind'" -> "call-0":f4
+
+"call-0":f0 -> "exit-0":f1
+"nlmdtor":f0 -> "exit-0":f2
+
+
+"nlmctor":f0 -> "nlmdtor":f2
+
+}

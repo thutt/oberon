@@ -1,0 +1,7 @@
+POINTER TO ARRAY OF ARRAY OF SET:
+  LEN(vector^)  : ok
+    LEN(vector[inst]) : bad code
+
+Compiler generated Assignments to initialize global variables in
+module initialization code are not working as non-local memory.  And
+they have no uses, so they will be deleted.
