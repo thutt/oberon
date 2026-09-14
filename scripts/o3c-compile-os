@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Copyright (c) 2021-2026 Logic Magicians Software
+#
+# This produces the basic Oberon OS and compiler for SKL.
+#
+set -o errexit;
+set -o pipefail;
+set -o nounset;
+source ${SKL_DIR}/scripts/files.def
+source ${SKL_DIR}/scripts/functions
+
+function main ()
+{
+    echo -e "\n\n*** Building Oberon OS using GSA compiler.";
+    skl-oberon -- "O3.Compile -c GSA ${OS[*]}";
+
+    return 0;
+
+    for module in ${OS[*]}; do
+        # o3c only compiles one file on command line.
+        o3c -n ${module};
+    done;
+}
+
+main "${@:-}";
