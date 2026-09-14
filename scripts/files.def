@@ -103,5 +103,4 @@ O3=(${SKL_DIR}/system/compiler/o3/O3Errors.Mod                  \
     ${SKL_DIR}/system/compiler/o3/O3GSASimpleSchedule.Mod       \
     ${SKL_DIR}/system/compiler/o3/O3GSAImprove.Mod              \
     ${SKL_DIR}/system/compiler/o3/O3MGSA.Mod                    \
-    ${SKL_DIR}/system/compiler/o3/O3Mi386.Mod                   \
     ${SKL_DIR}/system/compiler/o3/O3MTreeDumper.Mod);
