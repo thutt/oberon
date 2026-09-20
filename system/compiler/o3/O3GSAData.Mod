@@ -147,6 +147,9 @@ TYPE
                       * also has the effect of having the possiblity of having
                       * only a single node on the list - and that single node
                       * is not meant to be processed in the looping constructs.
+                      *
+                      * A 'uses' refers to an Instruction; it indicates the
+                      * instruction is used.
                       *)
     vreg- : VirtualReg;
   END;
@@ -386,12 +389,10 @@ TYPE
     lhs- : Addressable; (* left-hand-side of assignment
                          * inv: (lhs = NIL) OR defined(lhs^)
                          *
-                         * only meant to be used by GSA dumping routines.
-                         * DO NOT ASSUME THIS FIELD IS AVAILABLE
-                         * FOR IMPROVEMENT ALGORITHM USE
+                         * Only to be used by GSA dumping routines.
                          *)
 
-    resnum- : INTEGER; (* Ordinal number of result in instruction results. *)
+    resnum  : INTEGER; (* Ordinal number of this in the list of Results. *)
     attrib* : SET; (* general purpose attributes
                     * elements 00..(MAX(SET) + 1) DIV 2
                     *          are reserved for global use
@@ -831,7 +832,7 @@ BEGIN
   x.location := NIL;
   x.lhs := NIL;
   x.attrib := {};
-  x.resnum := 0;
+  x.resnum := MIN(INTEGER);     (* Uninitialized. *)
 END InitResult;
 
 PROCEDURE InitInstruction(x : Instruction; type: Symtab.Type; pos: LONGINT);
@@ -1184,9 +1185,9 @@ PROCEDURE RegionNumber*(region : Region);
         res := inst.results.fres;
         k   := 0;
         WHILE res # inst.results DO
-          INC(k);
           res.resnum := k;
           res := res.fres;
+          INC(k);               (* Post increment; results 0-based. *)
         END;
 
         inst := inst.finst;
@@ -2223,14 +2224,8 @@ PROCEDURE ResultIndex*(res : Result) : INTEGER;
     i : INTEGER;
     x : Result;
 BEGIN
-  i := 0;
-  x := res.owner.results.fres;
-  WHILE (x # res.owner.results) & (x # res) DO
-    INC(i);
-    x := x.fres;
-  END;
-  ASSERT(x # res.owner.results);
-  RETURN i;
+  ASSERT(res.resnum # MIN(INTEGER)); (* RegionNumber() must be called. *)
+  RETURN res.resnum;
 END ResultIndex;
 
 (* Returns the number of operands of 'instr'.*)

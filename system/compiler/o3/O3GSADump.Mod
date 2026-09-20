@@ -391,45 +391,61 @@ MODULE O3GSADump;
     END;
   END WAddressable;
 
+  (* WResults:
+   *
+   * Write results from highest orginal number the first result.
+   * The 0th result, the instruction itself, is not written.
+   *)
 
   PROCEDURE WResults(x : GSAData.Instruction);
     VAR
-      r : GSAData.Result;
-      nofRes : INTEGER;
+      r     : GSAData.Result;
+      first : BOOLEAN;
+      ri    : INTEGER;          (* Result Index. *)
+      nr    : INTEGER;
   BEGIN
     IF x.lhs # NIL THEN
       (*
-       * This instruction is the RHS of an assignment.  This special field
-       * (x.lhs) is only meant to be used by the visual dumping mechanism
-       * and should not be used by the optimizers.
+       * This instruction can be considered like the  RHS of an assignment.
+       * The 'lhs' field is special.  It  is only to be used by the visual
+       * dumping mechanism should not be used by the optimizers.
        *)
       WAddressable(x.lhs);
       WS(" := ");
     END;
 
-    (* First element on the list is the instruction itself. *)
-    nofRes := 0;
-    IF x.results.fres # x.results THEN
-      r := x.results.fres;
-      IF r # x.results THEN
-        WS("[");
-        WHILE r # x.results DO
-          IF nofRes > 1 THEN
-            WS(", ");
-          END;
-          IF r.location = NIL THEN
-            WS("res{");
-            WN(nofRes);
-            WS("}");
-            WVReg(r);
-          ELSE
-            WLocation(r.location);
-          END;
-          INC(nofRes);
-          r := r.fres;
+    (* First element on the list, the instruction itself, is result #0.
+     * Print the results in reverse order so the numbers match with the
+     * canonical position in the results list.
+     *)
+    nr := GSAData.ResultsNumberOf(x);
+    first := TRUE;
+    r := x.results.bres;
+    IF nr > 1 THEN              (* Only bracket results that are displayed. *)
+      WS("[");
+    END;
+    WHILE r # x.results DO
+      ri := GSAData.ResultIndex(r);
+      IF ri # 0 THEN
+        IF ~first THEN
+          WS(", ");
         END;
-        WS("] ");
+        WN(ri);
+        WS(":");
+        IF r.location = NIL THEN
+          WS("inst{");
+          WNodeRef(x);            (* Write ref to current instruction. *)
+          WS("}");
+          WVReg(r);
+        ELSE
+          WLocation(r.location);
+        END;
+        first := FALSE;
       END;
+      r := r.bres;
+    END;
+    IF nr > 1 THEN
+      WS("] ");
     END;
   END WResults;
 

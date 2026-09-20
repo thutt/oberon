@@ -346,7 +346,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
     GSAData.InstructionAppend(r, inst);
     GSAData.OperandAppend(inst, store);
     INCL(inst.attrib, GSAData.raLive);
-    ExitOperandAppend(inst);
+    ExitOperandAppend(inst); (* Link %nlm dtor to $exit. *)
   END StoreDelete;
 
   (* AddressOf: takes the address of 'x'
