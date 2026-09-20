@@ -22,6 +22,11 @@ OPTIONS=(                                       \
 );
 
 declare -a FILES;
+
+# 2026.09.20(thutt): Gimport.Mod requires that the Oberon system
+# already be compiled with o3c.  If that has not been done, 'Files'
+# module will not be found.
+#
 FILES=(                                                         \
     "${O3_DIR}/gsa-examples/arithmetic/Aabs.Mod"                \
     "${O3_DIR}/gsa-examples/arithmetic/Aadd.Mod"                \
