@@ -1,17 +1,17 @@
 Initial GSA
 
 0.0 (0)  greg: UpdArray range=[-32768, -32756)
-  0.1 (12)  [1:[location=v], 2:[location=v/adr], 3:[location=array], 4:[location=.%0]] enter flags{} %nlm  range=[-32768, -32757) uses={}
-   0.2 (13)  %nlm := nlmctor flags{}  range=[-32759, -32758) uses={(5)}
-   0.4 (14)  %return-2 := copy flags{} const{FALSE}  range=[-32759, -32759) uses={}
-  0.5 (2)  adr flags{} array  range=[-32768, -32760) uses={(3)}
-  0.6 (3)  array := initialize flags{} array , result[(2)] , const{20}  range=[-32768, -32761) uses={(8) (6)}
-  0.9 (4)  adr flags{} v  range=[-32768, -32762) uses={(5)}
-  0.3 (5)  %nlm := update-varparm flags{} v , result[(4)] , result[(13)] , result[(6)]  range=[-32768, -32763) uses={(11) (7) (6)}
-  0.8 (6)  arraycopy flags{} result[(5)] , result[(7)] , result{3 of (12)} , result[(3)] , result[(8)]  range=[-32768, -32764) uses={(5)}
-  0.11 (7)  adr flags{} result[(5)]  range=[-32768, -32765) uses={(6)}
-  0.7 (8)  adr flags{} result[(3)]  range=[-32768, -32766) uses={(6)}
-  0.12 (10)  exit flags{} result[(11)]  range=[-32768, -32767) uses={}
-   0.10 (11)  nlmdtor flags{live} result[(5)]  range=[-32768, -32768) uses={(10)}
+  0.1 (1)  [4:[location=.%0], 3:[location=array], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32757) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32759, -32758) uses={(7)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32759, -32759) uses={}
+  0.5 (4)  adr flags{} array  range=[-32768, -32760) uses={(5)}
+  0.6 (5)  array := initialize flags{} array , result[(4)] , const{20}  range=[-32768, -32761) uses={(10) (8)}
+  0.9 (6)  adr flags{} v  range=[-32768, -32762) uses={(7)}
+  0.3 (7)  %nlm := update-varparm flags{} v , result[(6)] , result[(2)] , result[(8)]  range=[-32768, -32763) uses={(12) (9) (8)}
+  0.8 (8)  arraycopy flags{} result[(7)] , result[(9)] , result{3 of (1)} , result[(5)] , result[(10)]  range=[-32768, -32764) uses={(7)}
+  0.11 (9)  adr flags{} result[(7)]  range=[-32768, -32765) uses={(8)}
+  0.7 (10)  adr flags{} result[(5)]  range=[-32768, -32766) uses={(8)}
+  0.12 (11)  exit flags{} result[(12)]  range=[-32768, -32767) uses={}
+   0.10 (12)  dtor flags{live} result[(7)]  range=[-32768, -32768) uses={(11)}
 
 
