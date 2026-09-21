@@ -2253,7 +2253,7 @@ PROCEDURE ResultsNumberOf*(inst : Instruction) : INTEGER;
   VAR
     num : INTEGER;
     res : Result;
-BEGIN
+BEGIN (* XXX Can this just use the ordinal number of the last result + 1 *)
   num := 0;
   res := inst.results.fres;
   WHILE (res # inst.results) DO
