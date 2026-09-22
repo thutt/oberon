@@ -1,4 +1,4 @@
-(* Copyright (c) 2023 Logic Magicians Software *)
+(* Copyright (c) 2023-2026 Logic Magicians Software *)
 MODULE O3GSALiveRange;
 IMPORT
   Config   := O3Config,
@@ -238,10 +238,19 @@ BEGIN
     i := 0;
     oper := inst.operands.fop;
     WHILE oper # inst.operands DO
-      ASSERT((oper.def.dfo >= 0) OR (oper.def IS GSAData.Addressable), 1024);
+      (* The operand is:
+       *     An Instruction with a dfo,
+       * OR  a Result,
+       * OR  an Addressable
+       *)
+      ASSERT(((oper.def IS GSAData.Instruction) &
+              (oper.def.dfo >= 0))                 OR
+             (oper.def IS GSAData.Result)          OR
+             (oper.def IS GSAData.Addressable),
+             1024);
 
-      (* If the dfo of the operand's definition is negative, it's an
-         Addressable; it does not have an instruction.  Since the live
+      (* If the dfo of the operand's definition is negative, it is either an
+         Addressable; it does not have an instruction that defined it.  Since the live
          range cannot be computed based on where the operand was
          defined, the live range will be marked as just this
          instruction. *)
