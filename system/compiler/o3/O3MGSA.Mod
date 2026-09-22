@@ -1,4 +1,4 @@
-(* Copyright (c) 1999-2023 Logic Magicians Software *)
+(* Copyright (c) 1999-2026 Logic Magicians Software *)
 MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
   IMPORT
     Types,
@@ -240,11 +240,11 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
     x := GSAData.ResultAppend(e, loc, op.type);
   END EnterResultAppendAddr;
 
-  (* EnterResultAdd: add a new item to the end of the $enter operand list *)
+  (* EnterResultAdd: add a new item to the end of the $enter Result list *)
   PROCEDURE EnterResultAdd(r : GSAData.Region; a : GSAData.Symbol);
     VAR
       level : SHORTINT;
-      greg : GSAData.GlobalRegion;
+      greg  : GSAData.GlobalRegion;
       enter : GSAData.Instruction;
   BEGIN
     IF a.currvalue = NIL THEN

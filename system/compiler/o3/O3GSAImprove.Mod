@@ -1,3 +1,4 @@
+(* Copyright (c) 1999-2026 Logic Magicians Software *)
 MODULE O3GSAImprove; (* Code Improvement *)
   IMPORT
     Config       := O3Config,
@@ -43,41 +44,55 @@ MODULE O3GSAImprove; (* Code Improvement *)
         END;
         dump(module^, rgn, ".gsa.00000", "Initial GSA");
 
-        GSAData.RegionNumber(rgn);
-        GSAAA.Perform(rgn);
-        dump(module^, rgn, ".gsa.00100", "Alias Analysis");
+        IF Config.OptAliasAnalysis IN Config.options THEN
+          GSAData.RegionNumber(rgn);
+          dump(module^, rgn, ".gsa.00100", "Alias Analysis");
+          GSAAA.Perform(rgn);
+          dump(module^, rgn, ".gsa.00199", "Alias Analysis");
+        END;
 
         IF Config.OptCopyProp IN Config.options THEN
-          GSACP.Perform(rgn);
           dump(module^, rgn, ".gsa.00200", "Copy Propagation");
+          GSACP.Perform(rgn);
+          dump(module^, rgn, ".gsa.00299", "Copy Propagation");
         END;
 
         IF Config.OptValueNumber IN Config.options THEN
-          GSAVN.Perform(rgn);
           dump(module^, rgn, ".gsa.00300", "Value Numbering");
+          GSAVN.Perform(rgn);
+          dump(module^, rgn, ".gsa.00399", "Value Numbering");
         END;
 
         IF Config.OptDCE IN Config.options THEN
-          GSADCE.Perform(rgn);
           dump(module^, rgn, ".gsa.00400", "Dead Code Elimination");
+          GSADCE.Perform(rgn);
+          dump(module^, rgn, ".gsa.00499", "Dead Code Elimination");
         END;
 
         IF Config.OptConstProp IN Config.options THEN
-          GSACPUC.Perform(rgn);
           dump(module^, rgn, ".gsa.00500", "Const Prop & Unreachable Code");
+          GSACPUC.Perform(rgn);
+          dump(module^, rgn, ".gsa.00599", "Const Prop & Unreachable Code");
         END;
 
         IF Config.OptDCE IN Config.options THEN
-          GSADCE.Perform(rgn);
           dump(module^, rgn, ".gsa.00600", "Dead Code Elimination");
+          GSADCE.Perform(rgn);
+          dump(module^, rgn, ".gsa.00699", "Dead Code Elimination");
         END;
 
         IF Config.OptSimpleSched IN Config.options THEN
-          GSASS.Perform(rgn);
           dump(module^, rgn, ".gsa.00700", "Simple Scheduler");
+          GSASS.Perform(rgn);
+          dump(module^, rgn, ".gsa.00799", "Simple Scheduler");
         END;
 
-        GSALiveRange.Perform(rgn);
+        IF Config.OptLiveRange IN Config.options THEN
+          dump(module^, rgn, ".gsa.00800", "Live Range Analysis");
+          GSALiveRange.Perform(rgn);
+          dump(module^, rgn, ".gsa.00899", "Live Range Analysis");
+        END;
+
         dump(module^, rgn, ".gsa.99999", "Final GSA");
       END;
       rgn := rgn.freg;

@@ -1,3 +1,4 @@
+(* Copyright (c) 1999-2026 Logic Magicians Software *)
 MODULE O3Config;
   IMPORT
     SYSTEM,
@@ -84,33 +85,44 @@ MODULE O3Config;
                 * end-of-text is found (Files.Read returns this) *)
 
   CONST (*- compiler options: *)
-    OptChkIndex*    = 0;  (* index check on *)
-    OptChkOverflow* = 1;  (* overflow check on *)
-    OptChkRange*    = 2;  (* range check on *)
-    OptChkType*     = 3;  (* type check on *)
-    OptNilChk*  = 4;  (* NIL pointer deref check (explicit & type guard) *)
-    OptNewSF*       = 5;  (* generation of new symbol file allowed *)
-    OptExtSF*       = 6;  (* extension of old symbol file allowed *)
-    OptPointerInit* = 7;  (* pointer initialization *)
-    OptAssert*      = 8;  (* assert evaluation *)
-    OptTarget*      = 9;  (* target machine given *)
-    OptDCE*         = 10; (* dead code elimination *)
-    OptCopyProp*    = 11; (* copy propagation *)
-    OptValueNumber* = 12; (* value numbering *)
-    OptConstProp*   = 13; (* constant propagation *)
-    OptSimpleSched* = 14; (* simple instruction scheduler *)
+    OptChkIndex*      = 0;  (* index check on *)
+    OptChkOverflow*   = 1;  (* overflow check on *)
+    OptChkRange*      = 2;  (* range check on *)
+    OptChkType*       = 3;  (* type check on *)
+    OptNilChk*        = 4;  (* NIL pointer deref check (explicit & type guard) *)
+    OptNewSF*         = 5;  (* generation of new symbol file allowed *)
+    OptExtSF*         = 6;  (* extension of old symbol file allowed *)
+    OptPointerInit*   = 7;  (* pointer initialization *)
+    OptAssert*        = 8;  (* assert evaluation *)
+    OptTarget*        = 9;  (* target machine given *)
+    OptDCE*           = 10; (* dead code elimination *)
+    OptCopyProp*      = 11; (* copy propagation *)
+    OptValueNumber*   = 12; (* value numbering *)
+    OptConstProp*     = 13; (* constant propagation *)
+    OptSimpleSched*   = 14; (* simple instruction scheduler *)
+    OptLiveRange*     = 15; (* Live Range Analysis *)
+    OptAliasAnalysis* = 16; (* Alias Analysis *)
+    (* Current implementation: Opt<xyz> <= MAX(SET). *)
 
-    (* default options *)
-    DefaultOptions* = { OptChkIndex,
-                        OptChkRange,
-                        OptChkType,
-                        OptNilChk,
-                        OptPointerInit,
-                        OptAssert,
-                        OptDCE,
-                        OptCopyProp,
-                        OptConstProp,
-                        OptValueNumber };
+    (* Default options. *)
+    DefaultOptions* = {
+      OptChkIndex,
+      (* OptChkOverflow, *)
+      OptChkRange,
+      OptChkType,
+      OptNilChk,
+      (* OptNewSF, *)
+      (* OptExtSF, *)
+      OptPointerInit,
+      OptAssert,
+      OptDCE,
+      OptCopyProp,
+      OptValueNumber,
+      OptConstProp,
+      (* OptSimpleSched, *)
+      OptLiveRange,
+      OptAliasAnalysis
+    };
 
   TYPE (*- compilation source information *)
     SourceInfo* = RECORD
