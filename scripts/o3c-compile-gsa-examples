@@ -120,33 +120,10 @@ FILES=(                                                         \
     "${O3_DIR}/gsa-examples/code/looping.Mod"                   \
 );
 
-function get_gsa_files ()
-{
-    cd ${dir};
-    ls -1 *.gsa*;
-}
-
 function main ()
 {
     for p in ${FILES[@]}; do
-        local base=$(basename ${p} .Mod);
-        local dir=$(dirname ${p});
-        local existing_gsa_files=$(get_gsa_files ${dir});
-        local gsa_files;
-        local symbol="${base}.Symbol";
-
         o3c ${OPTIONS[@]} ${p};
-
-        gsa_files=$(get_gsa_files ${dir});
-        for f in ${gsa_files} ${symbol}; do
-            if [[ ${existing_gsa_files} != *${f}* ]] ; then
-                # If the GSA file was not present before the test,
-                # remove it; it's not tracked or delivered.
-                local fname="${dir}/${f}";
-                echo "Removing undelivered file: ${fname}";
-                rm "${fname}";
-            fi;
-        done;
     done;
 }
 
