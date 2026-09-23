@@ -1,0 +1,13 @@
+Live Range Analysis
+
+0.0 (0)  greg: P3b range=[-32768, -32760)
+  0.1 (1)  [9:[location=len/adr], 8:[location=len], 7:[location=.%2], 6:[location=.%1], 5:[location=.%0], 4:[location=l], 3:[location=a-len-1], 2:[location=a-len-0], 1:[location=a]] enter flags{} %nlm  range=[-32768, -32761) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32763, -32762) uses={(6)}
+   0.4 (3)  %return-4 := copy flags{} const{FALSE}  range=[-32763, -32763) uses={}
+  0.5 (4)  l := copy flags{} const{0}  range=[-32768, -32764) uses={}
+  0.6 (5)  adr flags{} len  range=[-32768, -32765) uses={(6)}
+  0.3 (6)  %nlm := update-nonlocal flags{} len , result[(5)] , result[(2)] , result{2 of (1)}  range=[-32768, -32766) uses={(8)}
+  0.8 (7)  exit flags{} result[(8)]  range=[-32768, -32767) uses={}
+   0.7 (8)  dtor flags{live} result[(6)]  range=[-32768, -32768) uses={(7)}
+
+

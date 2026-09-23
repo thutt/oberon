@@ -1,0 +1,12 @@
+Alias Analysis
+
+0.0 (0)  greg: P1c range=[-32768, -32761)
+  0.1 (1)  [6:[location=.%1], 5:[location=.%0], 4:[location=.str_2], 3:[location=d-len-0], 2:[location=d/adr], 1:[location=d]] enter flags{} %nlm  range=[-32768, -32762) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32764, -32763) uses={(5)}
+   0.4 (3)  %return-3 := copy flags{} const{FALSE}  range=[-32764, -32764) uses={}
+  0.5 (4)  adr flags{} d  range=[-32768, -32765) uses={(5)}
+  0.3 (5)  %nlm := update-varparm flags{} d , result[(4)] , result[(2)] , const{"hello"}  range=[-32768, -32766) uses={(7)}
+  0.7 (6)  exit flags{} result[(7)]  range=[-32768, -32767) uses={}
+   0.6 (7)  dtor flags{live} result[(5)]  range=[-32768, -32768) uses={(6)}
+
+

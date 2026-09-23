@@ -1,0 +1,12 @@
+Live Range Analysis
+
+0.0 (0)  greg: Mexit range=[-32768, -32761)
+  0.1 (1)  enter flags{live} %nlm  range=[-32768, -32762) uses={}
+   0.2 (2)  %nlm := ctor flags{live}  range=[-32764, -32763) uses={(7) (6)}
+   0.5 (3)  %return-2 := copy flags{live} const{FALSE}  range=[-32764, -32764) uses={(6)}
+  0.6 (4)  x := copy flags{live} const{0}  range=[-32768, -32765) uses={(6)}
+  0.7 (5)  y := copy flags{live} const{0}  range=[-32768, -32766) uses={(6)}
+  0.4 (6)  exit flags{live} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=x], result[(5)] [location=y], result[(7)]  range=[-32768, -32767) uses={}
+   0.3 (7)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(6)}
+
+

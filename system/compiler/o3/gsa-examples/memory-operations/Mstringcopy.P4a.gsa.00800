@@ -1,0 +1,18 @@
+Live Range Analysis
+
+0.0 (0)  greg: P4a range=[-32768, -32755)
+  0.1 (1)  [4:[location=.%1], 3:[location=.%0], 2:[location=d], 1:[location=array]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32761, -32757) uses={(13)}
+   0.4 (3)  adr flags{} %t2  range=[-32761, -32758) uses={(5)}
+   0.6 (4)  adr flags{} array  range=[-32761, -32759) uses={(5)}
+   0.5 (5)  arraycopy flags{} %t2 , result[(3)] , const{31} , array , result[(4)]  range=[-32761, -32760) uses={}
+   0.7 (6)  %return-3 := copy flags{} const{FALSE}  range=[-32761, -32761) uses={}
+  0.8 (7)  adr flags{} d  range=[-32768, -32762) uses={(8)}
+  0.9 (8)  d := initialize flags{} d , result[(7)] , const{21}  range=[-32768, -32763) uses={}
+  0.10 (9)  d := stringcopy flags{} d , result[(10)] , const{21} , %t2 , result[(11)]  range=[-32768, -32764) uses={}
+  0.11 (10)  adr flags{} d  range=[-32768, -32765) uses={(9)}
+  0.12 (11)  adr flags{} %t2  range=[-32768, -32766) uses={(9)}
+  0.13 (12)  exit flags{} result[(13)]  range=[-32768, -32767) uses={}
+   0.3 (13)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(12)}
+
+

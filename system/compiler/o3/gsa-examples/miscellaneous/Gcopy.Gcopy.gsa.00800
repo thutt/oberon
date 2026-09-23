@@ -1,0 +1,10 @@
+Live Range Analysis
+
+0.0 (0)  greg: Gcopy range=[-32768, -32763)
+  0.1 (1)  enter flags{live} %nlm  range=[-32768, -32764) uses={}
+   0.2 (2)  %nlm := ctor flags{live}  range=[-32766, -32765) uses={(5) (4)}
+   0.5 (3)  %return-2 := copy flags{live} const{FALSE}  range=[-32766, -32766) uses={(4)}
+  0.4 (4)  exit flags{live} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(5)]  range=[-32768, -32767) uses={}
+   0.3 (5)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(4)}
+
+

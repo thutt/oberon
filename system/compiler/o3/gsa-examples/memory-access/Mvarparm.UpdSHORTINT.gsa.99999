@@ -1,0 +1,13 @@
+Final GSA
+
+0.0 (0)  greg: UpdSHORTINT range=[-32768, -32760)
+  0.1 (1)  [4:[location=.%0], 3:[location=si], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm:%vr33  range=[-32768, -32761) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32763, -32762) uses={(6)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32763, -32763) uses={}
+  0.5 (4)  si := copy flags{} const{0}:%vr38  range=[-32768, -32764) uses={(6)}
+  0.6 (5)  adr flags{} v  range=[-32768, -32765) uses={(6)}
+  0.3 (6)  %nlm:%vr33 := update-varparm flags{} v , result[(5)] , result[(2)] , result[(4)]  range=[-32768, -32766) uses={(8)}
+  0.8 (7)  exit flags{} result[(8)]  range=[-32768, -32767) uses={}
+   0.7 (8)  dtor flags{live} result[(6)]  range=[-32768, -32768) uses={(7)}
+
+

@@ -1,0 +1,13 @@
+Live Range Analysis
+
+0.0 (0)  greg: P4a range=[-32768, -32760)
+  0.1 (1)  [5:[location=len/adr], 4:[location=len], 3:[location=.%0], 2:[location=a/adr], 1:[location=a]] enter flags{} %nlm:%vr33  range=[-32768, -32761) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32763, -32762) uses={(5)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32763, -32763) uses={}
+  0.5 (4)  adr flags{} len  range=[-32768, -32764) uses={(5)}
+  0.3 (5)  %nlm:%vr33 := update-nonlocal flags{} len , result[(4)] , result[(2)] , result[(6)]  range=[-32768, -32765) uses={(8)}
+  0.6 (6)  convert.s4 flags{} const{151}:%vr45  range=[-32768, -32766) uses={(5)}
+  0.8 (7)  exit flags{} result[(8)]  range=[-32768, -32767) uses={}
+   0.7 (8)  dtor flags{live} result[(5)]  range=[-32768, -32768) uses={(7)}
+
+

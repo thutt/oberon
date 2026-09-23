@@ -1,0 +1,16 @@
+Live Range Analysis
+
+0.0 (0)  greg: P3a range=[-32768, -32757)
+  0.1 (1)  [5:[location=len/adr], 4:[location=len], 3:[location=.%1], 2:[location=.%0], 1:[location=a]] enter flags{} %nlm:%vr38  range=[-32768, -32758) uses={}
+   0.2 (2)  %nlm:%vr38 := ctor flags{}  range=[-32763, -32759) uses={(8)}
+   0.4 (3)  adr flags{} %t2:%vr32  range=[-32763, -32760) uses={(5)}
+   0.6 (4)  adr flags{} a  range=[-32763, -32761) uses={(5)}
+   0.5 (5)  arraycopy flags{} %t2:%vr32 , result[(3)] , const{3020}:%vr35 , a , result[(4)]  range=[-32763, -32762) uses={}
+   0.7 (6)  %return-3 := copy flags{} const{FALSE}:%vr37  range=[-32763, -32763) uses={}
+  0.8 (7)  adr flags{} len  range=[-32768, -32764) uses={(8)}
+  0.3 (8)  %nlm:%vr38 := update-nonlocal flags{} len , result[(7)] , result[(2)] , result[(9)]  range=[-32768, -32765) uses={(11)}
+  0.9 (9)  convert.s4 flags{} const{151}:%vr50  range=[-32768, -32766) uses={(8)}
+  0.11 (10)  exit flags{} result[(11)]  range=[-32768, -32767) uses={}
+   0.10 (11)  dtor flags{live} result[(8)]  range=[-32768, -32768) uses={(10)}
+
+

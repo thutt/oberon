@@ -1,0 +1,16 @@
+Live Range Analysis
+
+0.0 (0)  greg: Minitialize range=[-32768, -32757)
+  0.1 (1)  enter flags{live} %nlm  range=[-32768, -32758) uses={}
+   0.2 (2)  %nlm := ctor flags{live}  range=[-32760, -32759) uses={(11) (10)}
+   0.5 (3)  %return-2 := copy flags{live} const{FALSE}  range=[-32760, -32760) uses={(10)}
+  0.6 (4)  import flags{live} SYSTEM  range=[-32768, -32761) uses={}
+  0.7 (5)  .Minitialize-Base := init-rectd flags{live} Base  range=[-32768, -32762) uses={(10)}
+  0.8 (6)  adr flags{live} gBase  range=[-32768, -32763) uses={(7)}
+  0.9 (7)  gBase := initialize flags{live} gBase , result[(6)] , const{4}  range=[-32768, -32764) uses={(10)}
+  0.10 (8)  adr flags{live} gArr  range=[-32768, -32765) uses={(9)}
+  0.11 (9)  gArr := initialize flags{live} gArr , result[(8)] , const{40}  range=[-32768, -32766) uses={(10)}
+  0.4 (10)  exit flags{live} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(5)] [location=.Minitialize-Base], result[(7)] [location=gBase], result[(9)] [location=gArr], result[(11)]  range=[-32768, -32767) uses={}
+   0.3 (11)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(10)}
+
+

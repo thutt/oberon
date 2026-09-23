@@ -1,0 +1,51 @@
+Live Range Analysis
+
+0.0 (0)  greg: PtrFld range=[-32768, -32722)
+  0.1 (1)  [3:[location=.%0], 2:[location=b1], 1:[location=b0]] enter flags{} %nlm:%vr33  range=[-32768, -32723) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32725, -32724) uses={(10)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32725, -32725) uses={}
+  0.5 (4)  neq.u1 flags{} result{1 of (1)} , const{0}:%vr38  range=[-32768, -32726) uses={(6) (5)}
+  0.7 (5)  guard-true flags{live} result[(4)]  range=[-32768, -32727) uses={(8)}
+  0.6 (6)  guard-false flags{live} result[(4)]  range=[-32768, -32728) uses={(8)}
+   0.9 (7)  trap-nil flags{live}  range=[-32729, -32729) uses={}
+  0.8 (8)  merge-if flags{live} result[(5)] , result[(6)]  range=[-32768, -32730) uses={}
+  0.10 (9)  adr flags{} b0  range=[-32768, -32731) uses={(10)}
+  0.3 (10)  access-deref flags{} result{1 of (1)} , result[(9)] , result[(2)]  range=[-32768, -32732) uses={(13) (11)}
+  0.12 (11)  adr flags{} result[(10)]  range=[-32768, -32733) uses={(12)}
+  0.13 (12)  add.u4 flags{} result[(11)] , const{2}:%vr47  range=[-32768, -32734) uses={(14)}
+  0.11 (13)  %nlm:%vr33 := update-field flags{} result[(10)] , result[(14)] , const{2}:%vr47 , result[(15)]  range=[-32768, -32735) uses={(44) (36) (22)}
+  0.14 (14)  mayalias flags{} result[(12)] , result[(38)]  range=[-32768, -32736) uses={(13)}
+  0.15 (15)  convert.s2 flags{} const{0}:%vr53  range=[-32768, -32737) uses={(13)}
+  0.20 (16)  neq.u1 flags{} result{2 of (1)} , const{0}:%vr38  range=[-32768, -32738) uses={(18) (17)}
+  0.22 (17)  guard-true flags{live} result[(16)]  range=[-32768, -32739) uses={(20)}
+  0.21 (18)  guard-false flags{live} result[(16)]  range=[-32768, -32740) uses={(20)}
+   0.24 (19)  trap-nil flags{live}  range=[-32741, -32741) uses={}
+  0.23 (20)  merge-if flags{live} result[(17)] , result[(18)]  range=[-32768, -32742) uses={}
+  0.25 (21)  adr flags{} b1  range=[-32768, -32743) uses={(22)}
+  0.18 (22)  access-deref flags{} result{2 of (1)} , result[(21)] , result[(13)]  range=[-32768, -32744) uses={(25) (23)}
+  0.27 (23)  adr flags{} result[(22)]  range=[-32768, -32745) uses={(24)}
+  0.28 (24)  add.u4 flags{} result[(23)] , const{2}:%vr47  range=[-32768, -32746) uses={(40) (26)}
+  0.26 (25)  access-field flags{} result[(22)] , result[(26)] , const{2}:%vr47  range=[-32768, -32747) uses={(28)}
+  0.30 (26)  mayalias flags{} result[(24)] , result[(38)]  range=[-32768, -32748) uses={(25)}
+  0.32 (27)  convert.s2 flags{} const{0}:%vr53  range=[-32768, -32749) uses={(28)}
+  0.31 (28)  eql.s2 flags{} result[(25)] , result[(27)]  range=[-32768, -32750) uses={(42) (29)}
+  0.34 (29)  guard-true flags{} result[(28)]  range=[-32768, -32751) uses={(43)}
+   0.36 (30)  neq.u1 flags{} result{2 of (1)} , const{0}:%vr38  range=[-32763, -32752) uses={(32) (31)}
+   0.38 (31)  guard-true flags{live} result[(30)]  range=[-32763, -32753) uses={(34)}
+   0.37 (32)  guard-false flags{live} result[(30)]  range=[-32763, -32754) uses={(34)}
+    0.40 (33)  trap-nil flags{live}  range=[-32755, -32755) uses={}
+   0.39 (34)  merge-if flags{live} result[(31)] , result[(32)]  range=[-32763, -32756) uses={}
+   0.41 (35)  adr flags{} b1  range=[-32763, -32757) uses={(36)}
+   0.17 (36)  access-deref flags{} result{2 of (1)} , result[(35)] , result[(13)]  range=[-32763, -32758) uses={(39) (37)}
+   0.43 (37)  adr flags{} result[(36)]  range=[-32763, -32759) uses={(38)}
+   0.19 (38)  add.u4 flags{} result[(37)] , const{2}:%vr47  range=[-32763, -32760) uses={(14) (40) (26)}
+   0.42 (39)  %nlm:%vr33 := update-field flags{} result[(36)] , result[(40)] , const{2}:%vr47 , result[(41)]  range=[-32763, -32761) uses={(44)}
+   0.29 (40)  mayalias flags{} result[(38)] , result[(24)]  range=[-32763, -32762) uses={(39)}
+   0.44 (41)  convert.s2 flags{} const{2}:%vr77  range=[-32763, -32763) uses={(39)}
+  0.33 (42)  guard-false flags{} result[(28)]  range=[-32768, -32764) uses={(43)}
+  0.35 (43)  merge-if flags{} result[(29)] , result[(42)]  range=[-32768, -32765) uses={(44)}
+   0.16 (44)  %nlm:%vr33 := gate flags{} result[(43)] , result[(39)] , result[(13)]  range=[-32766, -32766) uses={(46)}
+  0.46 (45)  exit flags{} result[(46)]  range=[-32768, -32767) uses={}
+   0.45 (46)  dtor flags{live} result[(44)]  range=[-32768, -32768) uses={(45)}
+
+

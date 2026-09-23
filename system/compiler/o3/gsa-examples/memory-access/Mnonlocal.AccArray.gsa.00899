@@ -1,0 +1,18 @@
+Live Range Analysis
+
+0.0 (0)  greg: AccArray range=[-32768, -32755)
+  0.1 (1)  [5:[location=array/adr], 4:[location=array], 3:[location=.%1], 2:[location=.%0], 1:[location=v]] enter flags{} %nlm:%vr38  range=[-32768, -32756) uses={}
+   0.2 (2)  %nlm:%vr38 := ctor flags{}  range=[-32761, -32757) uses={(13) (8)}
+   0.5 (3)  adr flags{} %t2:%vr32  range=[-32761, -32758) uses={(5)}
+   0.7 (4)  adr flags{} v  range=[-32761, -32759) uses={(5)}
+   0.6 (5)  arraycopy flags{} %t2:%vr32 , result[(3)] , const{20}:%vr35 , v , result[(4)]  range=[-32761, -32760) uses={}
+   0.8 (6)  %return-3 := copy flags{} const{FALSE}:%vr37  range=[-32761, -32761) uses={}
+  0.9 (7)  adr flags{} array  range=[-32768, -32762) uses={(8)}
+  0.4 (8)  access-nonlocal flags{} array , result[(7)] , result[(2)]  range=[-32768, -32763) uses={(11) (9)}
+  0.11 (9)  %t2:%vr32 := arraycopy flags{} %t2:%vr32 , result[(10)] , const{10}:%vr49 , result[(8)] , result[(11)]  range=[-32768, -32764) uses={}
+  0.12 (10)  adr flags{} %t2:%vr32  range=[-32768, -32765) uses={(9)}
+  0.10 (11)  adr flags{} result[(8)]  range=[-32768, -32766) uses={(9)}
+  0.13 (12)  exit flags{} result[(13)]  range=[-32768, -32767) uses={}
+   0.3 (13)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(12)}
+
+

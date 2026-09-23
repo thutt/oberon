@@ -1,0 +1,26 @@
+Alias Analysis
+
+0.0 (0)  greg: P4 range=[-32768, -32747)
+  0.1 (1)  [5:[location=.BaseDesc-BaseDesc/adr], 4:[location=.BaseDesc-BaseDesc], 3:[location=.%0], 2:[location=p/adr], 1:[location=p]] enter flags{} %nlm  range=[-32768, -32748) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32750, -32749) uses={(5)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32750, -32750) uses={}
+  0.5 (4)  adr flags{} p  range=[-32768, -32751) uses={(5)}
+  0.3 (5)  %nlm := update-varparm flags{} p , result[(4)] , result[(2)] , result[(6)]  range=[-32768, -32752) uses={(15) (8)}
+  0.6 (6)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32753) uses={(5)}
+  0.9 (7)  adr flags{} p  range=[-32768, -32754) uses={(8)}
+  0.8 (8)  access-varparm flags{} p , result[(7)] , result[(5)]  range=[-32768, -32755) uses={(15) (14) (9)}
+  0.11 (9)  neq.u1 flags{} result[(8)] , const{0}  range=[-32768, -32756) uses={(11) (10)}
+  0.13 (10)  guard-true flags{live} result[(9)]  range=[-32768, -32757) uses={(13)}
+  0.12 (11)  guard-false flags{live} result[(9)]  range=[-32768, -32758) uses={(13)}
+   0.15 (12)  trap-nil flags{live}  range=[-32759, -32759) uses={}
+  0.14 (13)  merge-if flags{live} result[(10)] , result[(11)]  range=[-32768, -32760) uses={}
+  0.10 (14)  adr flags{} result[(8)]  range=[-32768, -32761) uses={(15)}
+  0.7 (15)  access-deref flags{} result[(8)] , result[(14)] , result[(5)]  range=[-32768, -32762) uses={(18) (16)}
+  0.17 (16)  adr flags{} result[(15)]  range=[-32768, -32763) uses={(17)}
+  0.18 (17)  add.u4 flags{} result[(16)] , const{4}  range=[-32768, -32764) uses={(18)}
+  0.16 (18)  %nlm := update-field flags{} result[(15)] , result[(17)] , const{4} , result[(19)]  range=[-32768, -32765) uses={(21)}
+  0.19 (19)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32766) uses={(18)}
+  0.21 (20)  exit flags{} result[(21)]  range=[-32768, -32767) uses={}
+   0.20 (21)  dtor flags{live} result[(18)]  range=[-32768, -32768) uses={(20)}
+
+

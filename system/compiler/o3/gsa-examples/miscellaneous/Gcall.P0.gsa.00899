@@ -1,0 +1,11 @@
+Live Range Analysis
+
+0.0 (0)  greg: P0 range=[-32768, -32762)
+  0.1 (1)  [4:[location=.%0], 3:[location=y/adr], 2:[location=y], 1:[location=x]] enter flags{} %nlm:%vr34  range=[-32768, -32763) uses={}
+   0.2 (2)  %nlm:%vr34 := ctor flags{}  range=[-32766, -32764) uses={(6)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32766, -32765) uses={}
+   0.5 (4)  %result-3 := copy flags{} const{0}:%vr33  range=[-32766, -32766) uses={(5)}
+  0.6 (5)  exit flags{} result[(4)] [location=%result-3], result[(6)]  range=[-32768, -32767) uses={}
+   0.3 (6)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(5)}
+
+

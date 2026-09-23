@@ -1,0 +1,72 @@
+Live Range Analysis
+
+0.0 (0)  greg: Two range=[-32768, -32701)
+  0.1 (1)  [10:[location=X/adr], 9:[location=X], 8:[location=LX/adr], 7:[location=LX], 6:[location=.%0], 5:[location=z], 4:[location=x/adr], 3:[location=x], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32702) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32704, -32703) uses={(9) (7)}
+   0.5 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32704, -32704) uses={}
+  0.6 (4)  z := copy flags{} const{0}  range=[-32768, -32705) uses={}
+  0.7 (5)  y := add.s2 flags{} result{2 of (1)} , const{1}  range=[-32768, -32706) uses={(54) (36)}
+  0.10 (6)  adr flags{} LX  range=[-32768, -32707) uses={(7)}
+  0.4 (7)  %nlm := update-nonlocal flags{} LX , result[(6)] , result[(2)] , result[(11)]  range=[-32768, -32708) uses={(19) (16) (13)}
+  0.15 (8)  adr flags{} x  range=[-32768, -32709) uses={(10)}
+  0.3 (9)  access-varparm flags{} x , result[(10)] , result[(2)]  range=[-32768, -32710) uses={(11)}
+  0.16 (10)  mayalias flags{} result[(8)] , result[(12)]  range=[-32768, -32711) uses={(9)}
+  0.11 (11)  convert.s4 flags{} result[(9)]  range=[-32768, -32712) uses={(7)}
+  0.17 (12)  adr flags{} X  range=[-32768, -32713) uses={(10) (20) (17) (24) (60) (14) (55)}
+  0.14 (13)  z := access-nonlocal flags{} X , result[(14)] , result[(7)]  range=[-32768, -32714) uses={(50)}
+  0.22 (14)  mayalias flags{} result[(12)] , result[(53)]  range=[-32768, -32715) uses={(13)}
+  0.26 (15)  adr flags{} x  range=[-32768, -32716) uses={(17)}
+  0.13 (16)  %nlm := update-varparm flags{} x , result[(17)] , result[(7)] , result[(21)]  range=[-32768, -32717) uses={(45) (42) (34) (26) (23)}
+  0.19 (17)  mayalias flags{} result[(15)] , result[(12)]  range=[-32768, -32718) uses={(16)}
+  0.33 (18)  adr flags{} x  range=[-32768, -32719) uses={(20)}
+  0.12 (19)  access-varparm flags{} x , result[(20)] , result[(7)]  range=[-32768, -32720) uses={(21)}
+  0.18 (20)  mayalias flags{} result[(18)] , result[(12)]  range=[-32768, -32721) uses={(19)}
+  0.27 (21)  add.s2 flags{} result[(19)] , const{1}  range=[-32768, -32722) uses={(16)}
+  0.34 (22)  adr flags{} x  range=[-32768, -32723) uses={(24)}
+  0.32 (23)  access-varparm flags{} x , result[(24)] , result[(16)]  range=[-32768, -32724) uses={(28)}
+  0.20 (24)  mayalias flags{} result[(22)] , result[(12)]  range=[-32768, -32725) uses={(23)}
+  0.36 (25)  adr flags{} X  range=[-32768, -32726) uses={(27)}
+  0.31 (26)  access-nonlocal flags{} X , result[(27)] , result[(16)]  range=[-32768, -32727) uses={(28)}
+  0.37 (27)  mayalias flags{} result[(25)] , result[(53)]  range=[-32768, -32728) uses={(26)}
+  0.35 (28)  eql.s2 flags{} result[(23)] , result[(26)]  range=[-32768, -32729) uses={(30) (29)}
+  0.39 (29)  guard-true flags{live} result[(28)]  range=[-32768, -32730) uses={(32)}
+  0.38 (30)  guard-false flags{live} result[(28)]  range=[-32768, -32731) uses={(32)}
+   0.41 (31)  trap-assert flags{live}  range=[-32732, -32732) uses={}
+  0.40 (32)  merge-if flags{live} result[(29)] , result[(30)]  range=[-32768, -32733) uses={}
+  0.42 (33)  adr flags{} X  range=[-32768, -32734) uses={(35)}
+  0.30 (34)  access-nonlocal flags{} X , result[(35)] , result[(16)]  range=[-32768, -32735) uses={(36)}
+  0.43 (35)  mayalias flags{} result[(33)] , result[(53)]  range=[-32768, -32736) uses={(34)}
+  0.9 (36)  eql.s2 flags{} result[(5)] , result[(34)]  range=[-32768, -32737) uses={(38) (37)}
+  0.45 (37)  guard-true flags{live} result[(36)]  range=[-32768, -32738) uses={(40)}
+  0.44 (38)  guard-false flags{live} result[(36)]  range=[-32768, -32739) uses={(40)}
+   0.47 (39)  trap-assert flags{live}  range=[-32740, -32740) uses={}
+  0.46 (40)  merge-if flags{live} result[(37)] , result[(38)]  range=[-32768, -32741) uses={}
+  0.48 (41)  adr flags{} X  range=[-32768, -32742) uses={(43)}
+  0.29 (42)  %nlm := update-nonlocal flags{} X , result[(43)] , result[(16)] , result[(47)]  range=[-32768, -32743) uses={(54) (50)}
+  0.49 (43)  mayalias flags{} result[(41)] , result[(53)]  range=[-32768, -32744) uses={(42)}
+  0.51 (44)  adr flags{} X  range=[-32768, -32745) uses={(46)}
+  0.28 (45)  access-nonlocal flags{} X , result[(46)] , result[(16)]  range=[-32768, -32746) uses={(47)}
+  0.52 (46)  mayalias flags{} result[(44)] , result[(53)]  range=[-32768, -32747) uses={(45)}
+  0.50 (47)  sub.s2 flags{} result[(45)] , const{1}  range=[-32768, -32748) uses={(42)}
+  0.53 (48)  guard-true flags{} result{1 of (1)}  range=[-32768, -32749) uses={(56)}
+   0.55 (49)  adr flags{} X  range=[-32752, -32750) uses={(51)}
+   0.24 (50)  %nlm := update-nonlocal flags{} X , result[(51)] , result[(42)] , result[(13)]  range=[-32752, -32751) uses={(57)}
+   0.56 (51)  mayalias flags{} result[(49)] , result[(53)]  range=[-32752, -32752) uses={(50)}
+  0.58 (52)  guard-false flags{} result{1 of (1)}  range=[-32768, -32753) uses={(56)}
+   0.25 (53)  adr flags{} x  range=[-32756, -32754) uses={(27) (35) (46) (63) (51) (43) (14) (55)}
+   0.8 (54)  %nlm := update-varparm flags{} x , result[(55)] , result[(42)] , result[(5)]  range=[-32756, -32755) uses={(57)}
+   0.23 (55)  mayalias flags{} result[(53)] , result[(12)]  range=[-32756, -32756) uses={(54)}
+  0.54 (56)  merge-if flags{} result[(48)] , result[(52)]  range=[-32768, -32757) uses={(57)}
+   0.57 (57)  %nlm := gate flags{} result[(56)] , result[(50)] , result[(54)]  range=[-32758, -32758) uses={(62) (59)}
+  0.62 (58)  adr flags{} x  range=[-32768, -32759) uses={(60)}
+  0.61 (59)  %nlm := update-varparm flags{} x , result[(60)] , result[(57)] , result[(62)]  range=[-32768, -32760) uses={(67) (65)}
+  0.21 (60)  mayalias flags{} result[(58)] , result[(12)]  range=[-32768, -32761) uses={(59)}
+  0.65 (61)  adr flags{} X  range=[-32768, -32762) uses={(63)}
+  0.60 (62)  access-nonlocal flags{} X , result[(63)] , result[(57)]  range=[-32768, -32763) uses={(59)}
+  0.59 (63)  mayalias flags{} result[(61)] , result[(53)]  range=[-32768, -32764) uses={(62)}
+  0.66 (64)  adr flags{} x  range=[-32768, -32765) uses={(65)}
+  0.64 (65)  y := access-varparm flags{} x , result[(64)] , result[(59)]  range=[-32768, -32766) uses={}
+  0.67 (66)  exit flags{} result[(67)]  range=[-32768, -32767) uses={}
+   0.63 (67)  dtor flags{live} result[(59)]  range=[-32768, -32768) uses={(66)}
+
+

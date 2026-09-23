@@ -1,0 +1,26 @@
+Live Range Analysis
+
+0.0 (0)  greg: P0 range=[-32768, -32747)
+  0.1 (1)  [5:[location=.Twith-ExtDesc/adr], 4:[location=.Twith-ExtDesc], 3:[location=.%0], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm:%vr33  range=[-32768, -32748) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32751, -32749) uses={(21) (13) (6)}
+   0.6 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32751, -32750) uses={}
+   0.7 (4)  %result-3 := copy flags{} const{FALSE}:%vr32  range=[-32751, -32751) uses={(20)}
+  0.9 (5)  adr flags{} b  range=[-32768, -32752) uses={(6)}
+  0.5 (6)  access-varparm flags{} b , result[(5)] , result[(2)]  range=[-32768, -32753) uses={(14) (13) (12) (7)}
+  0.12 (7)  neq.u1 flags{} result[(6)] , const{0}:%vr44  range=[-32768, -32754) uses={(9) (8)}
+  0.14 (8)  guard-true flags{live} result[(7)]  range=[-32768, -32755) uses={(11)}
+  0.13 (9)  guard-false flags{live} result[(7)]  range=[-32768, -32756) uses={(11)}
+   0.16 (10)  trap-nil flags{live}  range=[-32757, -32757) uses={}
+  0.15 (11)  merge-if flags{live} result[(8)] , result[(9)]  range=[-32768, -32758) uses={}
+  0.11 (12)  adr flags{} result[(6)]  range=[-32768, -32759) uses={(13)}
+  0.4 (13)  access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32760) uses={(14)}
+  0.10 (14)  heaptag flags{} result[(6)] , result[(13)]  range=[-32768, -32761) uses={(15)}
+  0.17 (15)  eql.u4 flags{} result[(14)] , result{4 of (1)}  range=[-32768, -32762) uses={(17) (16)}
+  0.19 (16)  guard-true flags{} result[(15)]  range=[-32768, -32763) uses={(19)}
+  0.18 (17)  guard-false flags{} result[(15)]  range=[-32768, -32764) uses={(19)}
+   0.21 (18)  trap-with flags{live}  range=[-32765, -32765) uses={}
+  0.20 (19)  merge-if flags{} result[(16)] , result[(17)]  range=[-32768, -32766) uses={}
+  0.8 (20)  exit flags{} result[(4)] [location=%result-3], result[(21)]  range=[-32768, -32767) uses={}
+   0.3 (21)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(20)}
+
+

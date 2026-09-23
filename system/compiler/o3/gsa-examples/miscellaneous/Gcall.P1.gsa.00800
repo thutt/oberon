@@ -1,0 +1,13 @@
+Live Range Analysis
+
+0.0 (0)  greg: P1 range=[-32768, -32760)
+  0.1 (1)  enter flags{} %nlm  range=[-32768, -32761) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32763, -32762) uses={(8)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32763, -32763) uses={}
+  0.5 (4)  x := copy flags{} const{0}  range=[-32768, -32764) uses={(6) (5)}
+  0.7 (5)  adr flags{} result[(4)]  range=[-32768, -32765) uses={(6)}
+  0.6 (6)  x := call flags{} P0 , const{151} , result[(5)] , result[(4)]  range=[-32768, -32766) uses={(7)}
+  0.8 (7)  exit flags{} result[(6)] , result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(7)}
+
+

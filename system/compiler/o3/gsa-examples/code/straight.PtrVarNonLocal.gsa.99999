@@ -1,0 +1,24 @@
+Final GSA
+
+0.0 (0)  greg: PtrVarNonLocal range=[-32768, -32749)
+  0.1 (1)  [5:[location=b1/adr], 4:[location=b1], 3:[location=.%0], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm:%vr33  range=[-32768, -32750) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32752, -32751) uses={(5)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32752, -32752) uses={}
+  0.5 (4)  adr flags{} b0  range=[-32768, -32753) uses={(9) (14) (6)}
+  0.3 (5)  %nlm:%vr33 := update-varparm flags{} b0 , result[(6)] , result[(2)] , const{0}:%vr43  range=[-32768, -32754) uses={(17) (13) (8)}
+  0.8 (6)  mayalias flags{} result[(4)] , result[(12)]  range=[-32768, -32755) uses={(5)}
+  0.13 (7)  adr flags{} b1  range=[-32768, -32756) uses={(9)}
+  0.11 (8)  access-nonlocal flags{} b1 , result[(9)] , result[(5)]  range=[-32768, -32757) uses={(10)}
+  0.6 (9)  mayalias flags{} result[(7)] , result[(4)]  range=[-32768, -32758) uses={(8)}
+  0.14 (10)  neq.u4 flags{} result[(8)] , const{0}:%vr43  range=[-32768, -32759) uses={(15) (11)}
+  0.16 (11)  guard-true flags{} result[(10)]  range=[-32768, -32760) uses={(16)}
+   0.12 (12)  adr flags{} b1  range=[-32763, -32761) uses={(14) (6)}
+   0.10 (13)  %nlm:%vr33 := update-nonlocal flags{} b1 , result[(14)] , result[(5)] , const{0}:%vr43  range=[-32763, -32762) uses={(17)}
+   0.7 (14)  mayalias flags{} result[(12)] , result[(4)]  range=[-32763, -32763) uses={(13)}
+  0.15 (15)  guard-false flags{} result[(10)]  range=[-32768, -32764) uses={(16)}
+  0.17 (16)  merge-if flags{} result[(11)] , result[(15)]  range=[-32768, -32765) uses={(17)}
+   0.9 (17)  %nlm:%vr33 := gate flags{} result[(16)] , result[(13)] , result[(5)]  range=[-32766, -32766) uses={(19)}
+  0.19 (18)  exit flags{} result[(19)]  range=[-32768, -32767) uses={}
+   0.18 (19)  dtor flags{live} result[(17)]  range=[-32768, -32768) uses={(18)}
+
+

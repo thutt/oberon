@@ -1,0 +1,18 @@
+Live Range Analysis
+
+0.0 (0)  greg: P0 range=[-32768, -32755)
+  0.1 (1)  [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32758, -32757) uses={(13)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32758, -32758) uses={}
+  0.5 (4)  convert.s2 flags{} const{10}  range=[-32768, -32759) uses={(5)}
+  0.6 (5)  eql.s2 flags{} result{1 of (1)} , result[(4)]  range=[-32768, -32760) uses={(8) (6)}
+  0.8 (6)  guard-true flags{} result[(5)]  range=[-32768, -32761) uses={(10)}
+   0.10 (7)  y := convert.s2 flags{} const{10}  range=[-32762, -32762) uses={(11)}
+  0.7 (8)  guard-false flags{} result[(5)]  range=[-32768, -32763) uses={(10)}
+   0.12 (9)  y := convert.s2 flags{} const{12}  range=[-32764, -32764) uses={(11)}
+  0.9 (10)  merge-if flags{} result[(6)] , result[(8)]  range=[-32768, -32765) uses={(11)}
+   0.11 (11)  y := gate flags{} result[(10)] , result[(7)] , result[(9)]  range=[-32766, -32766) uses={}
+  0.13 (12)  exit flags{} result[(13)]  range=[-32768, -32767) uses={}
+   0.3 (13)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(12)}
+
+

@@ -1,0 +1,21 @@
+Live Range Analysis
+
+0.0 (0)  greg: ParmCaller range=[-32768, -32752)
+  0.1 (1)  [2:[location=.%0], 1:[location=b]] enter flags{} %nlm:%vr33  range=[-32768, -32753) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32755, -32754) uses={(16) (10)}
+   0.5 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32755, -32755) uses={}
+  0.6 (4)  neq.u1 flags{} result{1 of (1)} , const{0}:%vr37  range=[-32768, -32756) uses={(6) (5)}
+  0.8 (5)  guard-true flags{live} result[(4)]  range=[-32768, -32757) uses={(8)}
+  0.7 (6)  guard-false flags{live} result[(4)]  range=[-32768, -32758) uses={(8)}
+   0.10 (7)  trap-nil flags{live}  range=[-32759, -32759) uses={}
+  0.9 (8)  merge-if flags{live} result[(5)] , result[(6)]  range=[-32768, -32760) uses={}
+  0.11 (9)  adr flags{} b  range=[-32768, -32761) uses={(10)}
+  0.4 (10)  access-deref flags{} result{1 of (1)} , result[(9)] , result[(2)]  range=[-32768, -32762) uses={(11)}
+  0.12 (11)  heaptag flags{} b , result[(10)]  range=[-32768, -32763) uses={(12)}
+  0.13 (12)  tbpadr flags{} result[(11)] , Base , PtrMethod , const{1}:%vr48 , const{-8}:%vr49  range=[-32768, -32764) uses={(14)}
+  0.15 (13)  convert.s2 flags{} const{20}:%vr51  range=[-32768, -32765) uses={(14)}
+  0.14 (14)  call flags{} result[(12)] , result{1 of (1)} , result[(13)]  range=[-32768, -32766) uses={(15)}
+  0.16 (15)  exit flags{} result[(14)] , result[(16)]  range=[-32768, -32767) uses={}
+   0.3 (16)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(15)}
+
+

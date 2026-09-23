@@ -1,0 +1,22 @@
+Live Range Analysis
+
+0.0 (0)  greg: PointerCaller range=[-32768, -32751)
+  0.1 (1)  enter flags{} %nlm:%vr33  range=[-32768, -32752) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32754, -32753) uses={(17) (11)}
+   0.5 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32754, -32754) uses={}
+  0.6 (4)  b := copy flags{} const{0}:%vr34  range=[-32768, -32755) uses={(15) (11) (5)}
+  0.8 (5)  neq.u1 flags{} result[(4)] , const{0}:%vr34  range=[-32768, -32756) uses={(7) (6)}
+  0.10 (6)  guard-true flags{live} result[(5)]  range=[-32768, -32757) uses={(9)}
+  0.9 (7)  guard-false flags{live} result[(5)]  range=[-32768, -32758) uses={(9)}
+   0.12 (8)  trap-nil flags{live}  range=[-32759, -32759) uses={}
+  0.11 (9)  merge-if flags{live} result[(6)] , result[(7)]  range=[-32768, -32760) uses={}
+  0.13 (10)  adr flags{} b  range=[-32768, -32761) uses={(11)}
+  0.4 (11)  access-deref flags{} result[(4)] , result[(10)] , result[(2)]  range=[-32768, -32762) uses={(12)}
+  0.14 (12)  heaptag flags{} b , result[(11)]  range=[-32768, -32763) uses={(13)}
+  0.15 (13)  tbpadr flags{} result[(12)] , Base , PtrMethod , const{1}:%vr47 , const{-8}:%vr48  range=[-32768, -32764) uses={(15)}
+  0.16 (14)  convert.s2 flags{} const{10}:%vr50  range=[-32768, -32765) uses={(15)}
+  0.7 (15)  call flags{} result[(13)] , result[(4)] , result[(14)]  range=[-32768, -32766) uses={(16)}
+  0.17 (16)  exit flags{} result[(15)] , result[(17)]  range=[-32768, -32767) uses={}
+   0.3 (17)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(16)}
+
+

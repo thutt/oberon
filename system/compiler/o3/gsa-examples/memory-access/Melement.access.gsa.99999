@@ -1,0 +1,28 @@
+Final GSA
+
+0.0 (0)  greg: access range=[-32768, -32745)
+  0.1 (1)  enter flags{} %nlm:%vr33  range=[-32768, -32746) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32748, -32747) uses={(23)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32748, -32748) uses={}
+  0.5 (4)  adr flags{} a  range=[-32768, -32749) uses={(5)}
+  0.6 (5)  a := initialize flags{} a , result[(4)] , const{120}:%vr36  range=[-32768, -32750) uses={}
+  0.7 (6)  ch := copy flags{} const{  0.000000D+000}:%vf32  range=[-32768, -32751) uses={}
+  0.8 (7)  convert.s4 flags{} const{5}:%vr38  range=[-32768, -32752) uses={(21) (18) (10) (8)}
+  0.12 (8)  geq.s4 flags{} result[(7)] , const{0}:%vr40  range=[-32768, -32753) uses={(13) (9)}
+  0.14 (9)  guard-true flags{live} result[(8)]  range=[-32768, -32754) uses={(16)}
+   0.11 (10)  lss.s4 flags{} result[(7)] , const{15}:%vr42  range=[-32757, -32755) uses={(12) (11)}
+   0.17 (11)  guard-true flags{} result[(10)]  range=[-32757, -32756) uses={}
+   0.16 (12)  guard-false flags{} result[(10)]  range=[-32757, -32757) uses={(14)}
+  0.13 (13)  guard-false flags{} result[(8)]  range=[-32768, -32758) uses={(14)}
+  0.18 (14)  merge-cond flags{live} result[(13)] , result[(12)]  range=[-32768, -32759) uses={(16)}
+   0.19 (15)  trap-index flags{live}  range=[-32760, -32760) uses={}
+  0.15 (16)  merge-if flags{live} result[(9)] , result[(14)]  range=[-32768, -32761) uses={}
+  0.20 (17)  adr flags{} a  range=[-32768, -32762) uses={(20)}
+  0.10 (18)  mul.s4 flags{} result[(7)] , const{8}:%vr48  range=[-32768, -32763) uses={(19)}
+  0.22 (19)  convert.u4 flags{} result[(18)]  range=[-32768, -32764) uses={(20)}
+  0.21 (20)  add.u4 flags{} result[(17)] , result[(19)]  range=[-32768, -32765) uses={(21)}
+  0.9 (21)  ch := access-element flags{} a , result[(20)] , result[(7)]  range=[-32768, -32766) uses={}
+  0.23 (22)  exit flags{} result[(23)]  range=[-32768, -32767) uses={}
+   0.3 (23)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(22)}
+
+

@@ -1,0 +1,11 @@
+Live Range Analysis
+
+0.0 (0)  greg: Mnewrecord range=[-32768, -32762)
+  0.1 (1)  enter flags{live} %nlm:%vr33  range=[-32768, -32763) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{live}  range=[-32765, -32764) uses={(6) (5)}
+   0.5 (3)  %return-2 := copy flags{live} const{FALSE}:%vr32  range=[-32765, -32765) uses={(5)}
+  0.6 (4)  .BaseDesc-BaseDesc := init-rectd flags{live} BaseDesc  range=[-32768, -32766) uses={(5)}
+  0.4 (5)  exit flags{live} result[(2)] [location=%nlm:%vr33], result[(3)] [location=%return-2], result[(4)] [location=.BaseDesc-BaseDesc], result[(6)]  range=[-32768, -32767) uses={}
+   0.3 (6)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(5)}
+
+

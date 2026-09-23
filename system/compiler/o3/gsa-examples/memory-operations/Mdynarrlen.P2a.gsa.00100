@@ -1,0 +1,14 @@
+Alias Analysis
+
+0.0 (0)  greg: P2a range=[-32768, -32759)
+  0.1 (1)  [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32760) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32762, -32761) uses={(6)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
+  0.5 (4)  a1 := copy flags{} const{0}  range=[-32768, -32763) uses={}
+  0.6 (5)  adr flags{} len  range=[-32768, -32764) uses={(6)}
+  0.3 (6)  %nlm := update-nonlocal flags{} len , result[(5)] , result[(2)] , result[(7)]  range=[-32768, -32765) uses={(9)}
+  0.7 (7)  convert.s4 flags{} const{251}  range=[-32768, -32766) uses={(6)}
+  0.9 (8)  exit flags{} result[(9)]  range=[-32768, -32767) uses={}
+   0.8 (9)  dtor flags{live} result[(6)]  range=[-32768, -32768) uses={(8)}
+
+

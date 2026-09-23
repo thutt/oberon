@@ -1,0 +1,23 @@
+Final GSA
+
+0.0 (0)  greg: AccessHeap range=[-32768, -32750)
+  0.1 (1)  enter flags{} %nlm:%vr33  range=[-32768, -32751) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32753, -32752) uses={(18) (13)}
+   0.5 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32753, -32753) uses={}
+  0.6 (4)  adr flags{} y  range=[-32768, -32754) uses={(5)}
+  0.7 (5)  y := initialize flags{} y , result[(4)] , const{2}:%vr36  range=[-32768, -32755) uses={}
+  0.8 (6)  py := copy flags{} const{0}:%vr37  range=[-32768, -32756) uses={(13) (7)}
+  0.9 (7)  neq.u1 flags{} result[(6)] , const{0}:%vr37  range=[-32768, -32757) uses={(9) (8)}
+  0.11 (8)  guard-true flags{live} result[(7)]  range=[-32768, -32758) uses={(11)}
+  0.10 (9)  guard-false flags{live} result[(7)]  range=[-32768, -32759) uses={(11)}
+   0.13 (10)  trap-nil flags{live}  range=[-32760, -32760) uses={}
+  0.12 (11)  merge-if flags{live} result[(8)] , result[(9)]  range=[-32768, -32761) uses={}
+  0.14 (12)  adr flags{} py  range=[-32768, -32762) uses={(13)}
+  0.4 (13)  access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32763) uses={(16) (14)}
+  0.16 (14)  y := recordcopy flags{} y , result[(15)] , const{2}:%vr36 , result[(13)] , result[(16)]  range=[-32768, -32764) uses={}
+  0.17 (15)  adr flags{} y  range=[-32768, -32765) uses={(14)}
+  0.15 (16)  adr flags{} result[(13)]  range=[-32768, -32766) uses={(14)}
+  0.18 (17)  exit flags{} result[(18)]  range=[-32768, -32767) uses={}
+   0.3 (18)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(17)}
+
+

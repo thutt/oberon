@@ -1,0 +1,13 @@
+Live Range Analysis
+
+0.0 (0)  greg: Mtbpadr range=[-32768, -32760)
+  0.1 (1)  enter flags{live} %nlm:%vr33  range=[-32768, -32761) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{live}  range=[-32763, -32762) uses={(8) (7)}
+   0.5 (3)  %return-2 := copy flags{live} const{FALSE}:%vr32  range=[-32763, -32763) uses={(7)}
+  0.6 (4)  .BaseDesc-BaseDesc := init-rectd flags{live} BaseDesc  range=[-32768, -32764) uses={(7)}
+  0.7 (5)  .Ext1Desc-Ext1Desc := init-rectd flags{live} Ext1Desc  range=[-32768, -32765) uses={(7)}
+  0.8 (6)  .Ext0Desc-Ext0Desc := init-rectd flags{live} Ext0Desc  range=[-32768, -32766) uses={(7)}
+  0.4 (7)  exit flags{live} result[(2)] [location=%nlm:%vr33], result[(3)] [location=%return-2], result[(4)] [location=.BaseDesc-BaseDesc], result[(5)] [location=.Ext1Desc-Ext1Desc], result[(6)] [location=.Ext0Desc-Ext0Desc], result[(8)]  range=[-32768, -32767) uses={}
+   0.3 (8)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(7)}
+
+

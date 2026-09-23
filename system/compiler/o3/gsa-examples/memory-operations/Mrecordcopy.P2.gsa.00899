@@ -1,0 +1,24 @@
+Live Range Analysis
+
+0.0 (0)  greg: P2 range=[-32768, -32749)
+  0.1 (1)  [9:[location=.Mrecordcopy-BaseDesc/adr], 8:[location=.Mrecordcopy-BaseDesc], 7:[location=.%1], 6:[location=.%0], 5:[location=b1], 4:[location=b0-tag/adr], 3:[location=b0-tag], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm:%vr33  range=[-32768, -32750) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32752, -32751) uses={(11) (7)}
+   0.5 (3)  %return-3 := copy flags{} const{FALSE}:%vr32  range=[-32752, -32752) uses={}
+  0.6 (4)  adr flags{} b1  range=[-32768, -32753) uses={(5)}
+  0.7 (5)  b1 := initialize flags{} b1 , result[(4)] , const{12}:%vr45  range=[-32768, -32754) uses={(17) (15)}
+  0.10 (6)  adr flags{} b0  range=[-32768, -32755) uses={(7)}
+  0.4 (7)  access-varparm flags{} b0 , result[(6)] , result[(2)]  range=[-32768, -32756) uses={}
+  0.11 (8)  eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32757) uses={(12) (9)}
+  0.13 (9)  guard-true flags{live} result[(8)]  range=[-32768, -32758) uses={(14)}
+   0.15 (10)  adr flags{} b0  range=[-32760, -32759) uses={(11)}
+   0.3 (11)  %nlm:%vr33 := update-varparm flags{} b0 , result[(10)] , result[(2)] , result[(15)]  range=[-32760, -32760) uses={(19) (16) (15)}
+  0.12 (12)  guard-false flags{live} result[(8)]  range=[-32768, -32761) uses={(14)}
+   0.18 (13)  trap-iguard flags{live}  range=[-32762, -32762) uses={}
+  0.14 (14)  merge-if flags{live} result[(9)] , result[(12)]  range=[-32768, -32763) uses={}
+  0.9 (15)  recordcopy flags{} result[(11)] , result[(16)] , const{8}:%vr57 , result[(5)] , result[(17)]  range=[-32768, -32764) uses={(11)}
+  0.17 (16)  adr flags{} result[(11)]  range=[-32768, -32765) uses={(15)}
+  0.8 (17)  adr flags{} result[(5)]  range=[-32768, -32766) uses={(15)}
+  0.19 (18)  exit flags{} result[(19)]  range=[-32768, -32767) uses={}
+   0.16 (19)  dtor flags{live} result[(11)]  range=[-32768, -32768) uses={(18)}
+
+

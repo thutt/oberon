@@ -1,0 +1,24 @@
+Alias Analysis
+
+0.0 (0)  greg: IntegralVarVar range=[-32768, -32749)
+  0.1 (1)  [5:[location=.%0], 4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+   0.2 (2)  %nlm := ctor flags{}  range=[-32752, -32751) uses={(5)}
+   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
+  0.5 (4)  adr flags{} x  range=[-32768, -32753) uses={(5)}
+  0.3 (5)  %nlm := update-varparm flags{} x , result[(4)] , result[(2)] , result[(6)]  range=[-32768, -32754) uses={(17) (13) (8)}
+  0.6 (6)  convert.s2 flags{} const{10}  range=[-32768, -32755) uses={(5)}
+  0.10 (7)  adr flags{} y  range=[-32768, -32756) uses={(8)}
+  0.9 (8)  access-varparm flags{} y , result[(7)] , result[(5)]  range=[-32768, -32757) uses={(10)}
+  0.12 (9)  convert.s2 flags{} const{10}  range=[-32768, -32758) uses={(10)}
+  0.11 (10)  eql.s2 flags{} result[(8)] , result[(9)]  range=[-32768, -32759) uses={(15) (11)}
+  0.14 (11)  guard-true flags{} result[(10)]  range=[-32768, -32760) uses={(16)}
+   0.16 (12)  adr flags{} y  range=[-32763, -32761) uses={(13)}
+   0.8 (13)  %nlm := update-varparm flags{} y , result[(12)] , result[(5)] , result[(14)]  range=[-32763, -32762) uses={(17)}
+   0.17 (14)  convert.s2 flags{} const{0}  range=[-32763, -32763) uses={(13)}
+  0.13 (15)  guard-false flags{} result[(10)]  range=[-32768, -32764) uses={(16)}
+  0.15 (16)  merge-if flags{} result[(11)] , result[(15)]  range=[-32768, -32765) uses={(17)}
+   0.7 (17)  %nlm := gate flags{} result[(16)] , result[(13)] , result[(5)]  range=[-32766, -32766) uses={(19)}
+  0.19 (18)  exit flags{} result[(19)]  range=[-32768, -32767) uses={}
+   0.18 (19)  dtor flags{live} result[(17)]  range=[-32768, -32768) uses={(18)}
+
+

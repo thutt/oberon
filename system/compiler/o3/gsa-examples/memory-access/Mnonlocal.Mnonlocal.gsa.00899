@@ -1,0 +1,26 @@
+Live Range Analysis
+
+0.0 (0)  greg: Mnonlocal range=[-32768, -32747)
+  0.1 (1)  enter flags{live} %nlm:%vr33  range=[-32768, -32748) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{live}  range=[-32750, -32749) uses={(21) (20)}
+   0.5 (3)  %return-2 := copy flags{live} const{FALSE}:%vr32  range=[-32750, -32750) uses={(20)}
+  0.6 (4)  import flags{live} SYSTEM  range=[-32768, -32751) uses={}
+  0.7 (5)  .Mnonlocal-Record := init-rectd flags{live} Record  range=[-32768, -32752) uses={(20)}
+  0.8 (6)  .td_0 := init-darrtd flags{live} anonymous type  range=[-32768, -32753) uses={(20)}
+  0.9 (7)  b := copy flags{live} const{0}:%vr39  range=[-32768, -32754) uses={(20)}
+  0.10 (8)  c := copy flags{live} const{0}:%vr40  range=[-32768, -32755) uses={(20)}
+  0.11 (9)  si := copy flags{live} const{0}:%vr41  range=[-32768, -32756) uses={(20)}
+  0.12 (10)  i := copy flags{live} const{0}:%vr42  range=[-32768, -32757) uses={(20)}
+  0.13 (11)  li := copy flags{live} const{0}:%vr43  range=[-32768, -32758) uses={(20)}
+  0.14 (12)  r := copy flags{live} const{  0.0E+00}:%vf32  range=[-32768, -32759) uses={(20)}
+  0.15 (13)  lr := copy flags{live} const{  0.000000D+000}:%vf33  range=[-32768, -32760) uses={(20)}
+  0.16 (14)  adr flags{live} record  range=[-32768, -32761) uses={(15)}
+  0.17 (15)  record := initialize flags{live} record , result[(14)] , const{2}:%vr46  range=[-32768, -32762) uses={(20)}
+  0.18 (16)  pointer := copy flags{live} const{0}:%vr47  range=[-32768, -32763) uses={(20)}
+  0.19 (17)  adr flags{live} array  range=[-32768, -32764) uses={(18)}
+  0.20 (18)  array := initialize flags{live} array , result[(17)] , const{20}:%vr50  range=[-32768, -32765) uses={(20)}
+  0.21 (19)  pointerarray := copy flags{live} const{0}:%vr47  range=[-32768, -32766) uses={(20)}
+  0.4 (20)  exit flags{live} result[(2)] [location=%nlm:%vr33], result[(3)] [location=%return-2], result[(5)] [location=.Mnonlocal-Record], result[(6)] [location=.td_0], result[(7)] [location=b], result[(8)] [location=c], result[(9)] [location=si], result[(10)] [location=i], result[(11)] [location=li], result[(12)] [location=r], result[(13)] [location=lr], result[(15)] [location=record], result[(16)] [location=pointer], result[(18)] [location=array], result[(19)] [location=pointerarray], result[(21)]  range=[-32768, -32767) uses={}
+   0.3 (21)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(20)}
+
+

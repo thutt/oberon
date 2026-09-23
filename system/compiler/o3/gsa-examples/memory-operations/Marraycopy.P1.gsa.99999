@@ -1,0 +1,17 @@
+Final GSA
+
+0.0 (0)  greg: P1 range=[-32768, -32756)
+  0.1 (1)  [5:[location=.%0], 4:[location=b/adr], 3:[location=b], 2:[location=a/adr], 1:[location=a]] enter flags{} %nlm:%vr33  range=[-32768, -32757) uses={}
+   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32759, -32758) uses={(7) (5)}
+   0.5 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32759, -32759) uses={}
+  0.6 (4)  adr flags{} b  range=[-32768, -32760) uses={(5)}
+  0.4 (5)  %nlm:%vr33 := update-varparm flags{} b , result[(4)] , result[(2)] , result[(8)]  range=[-32768, -32761) uses={(12) (9) (8)}
+  0.10 (6)  adr flags{} a  range=[-32768, -32762) uses={(7)}
+  0.3 (7)  access-varparm flags{} a , result[(6)] , result[(2)]  range=[-32768, -32763) uses={(10) (8)}
+  0.7 (8)  stringcopy flags{} result[(5)] , result[(9)] , result{5 of (1)} , result[(7)] , result[(10)]  range=[-32768, -32764) uses={(5)}
+  0.9 (9)  adr flags{} result[(5)]  range=[-32768, -32765) uses={(8)}
+  0.11 (10)  adr flags{} result[(7)]  range=[-32768, -32766) uses={(8)}
+  0.12 (11)  exit flags{} result[(12)]  range=[-32768, -32767) uses={}
+   0.8 (12)  dtor flags{live} result[(5)]  range=[-32768, -32768) uses={(11)}
+
+
