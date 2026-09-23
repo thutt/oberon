@@ -1345,7 +1345,8 @@ XXX or, make sure it has a proper type!
       GSAOpcode.Hputreg:    (* Write to register. *)
       (* These instructions are assigned a register when
        * the GSA is created. *)
-      ASSERT(inst.vreg.rkind = VRegInteger);
+      ASSERT((inst.vreg.rkind = VRegUndef) OR  (* Not assigned. *)
+             (inst.vreg.rkind = VRegInteger)); (* No FP support, yet. *)
 
     | GSAOpcode.Tbegin..GSAOpcode.Tend - 1: (* Traps *)
       (* Traps produce no output; use no registers. *)
@@ -1366,7 +1367,9 @@ XXX or, make sure it has a proper type!
   BEGIN
     inst := r.instructions.finst;
     WHILE inst # r.instructions DO
-      ASSERT(inst.vreg.rkind = VRegUndef, 1024);
+      ASSERT((inst.vreg.rkind = VRegUndef) OR (* Not assigned. *)
+             (inst.vreg.rkind = VRegInteger), (* FP not implemented yet. *)
+             1024);
       ComputeRegUsage(inst, vreg);
 
       IF inst IS Region THEN
