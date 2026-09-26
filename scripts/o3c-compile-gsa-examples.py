@@ -353,26 +353,6 @@ def test_module(options, test):
     else:
         pass
 
-    # Run module.
-    if 0:
-        print("*** Executing: '%s'" % (test._module_name))
-        (stdout, stderr, rc) = execute_oberon(options,
-                                              os.path.join(options.skl_dir,
-                                                           test._directory),
-                                              [ "%s.Test" %
-                                                (test._module_name) ])
-        if test._zero_rc_is_pass:
-            # To pass, the RC must be 0.
-            if rc != 0:
-                dump(stdout, stderr, rc)
-                fatal("Test failed at runtime: '%s'" % (test._pathname))
-        else:
-            # To pass, the RC must be non-zero.
-            if rc == 0:
-                dump(stdout, stderr, rc)
-                fatal("Test did not fail as expected: '%s'" % (test._pathname))
-        print("*** Test passed: '%s'" % (test._module_name))
-
 
 def perform_test(options, test_definitions, group):
     for test in test_definitions:
