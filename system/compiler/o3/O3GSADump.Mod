@@ -26,11 +26,11 @@ MODULE O3GSADump;
     nofNodes : LONGINT; (* node reference counter *)
 
   VAR
-    stdout : Config.File;
-    dotout : Config.File;
-    indent : INTEGER;
+    stdout         : Config.File;
+    dotout         : Config.File;
+    indent         : INTEGER;
+    headerNumChars : INTEGER;
 
-  PROCEDURE ^ Region*(r : GSAData.GlobalRegion);
   PROCEDURE ^ WInstructionList(x : GSAData.Instruction);
 
   PROCEDURE DotGraphNodeNumber(n : GSAData.Node);
@@ -99,8 +99,12 @@ MODULE O3GSADump;
   BEGIN Config.WriteString(stdout, n);
   END WS;
 
+  PROCEDURE WNW(n : LONGINT; width : INTEGER);
+  BEGIN Config.WriteStringNum(stdout, n, width);
+  END WNW;
+
   PROCEDURE WN(n : LONGINT);
-  BEGIN Config.WriteStringNum(stdout, n, 1);
+  BEGIN WNW(n, 1);
   END WN;
 
   PROCEDURE WH(n : LONGINT);
@@ -185,13 +189,23 @@ MODULE O3GSADump;
   END ForwardNode;
 
   PROCEDURE NodeNumber(x : GSAData.Info);
-  BEGIN WN(x.reg); W('.'); WN(ABS(x.ref)); WS(' ('); WN(x.dfo); W(')');
+  BEGIN
+    (* The global region number is expected to be zero, so
+     * there is no need to print if.  If that changes,
+     * it can still be printed. *)
+    ASSERT(x.reg = 0);
+    IF FALSE THEN
+      WNW(x.reg, headerNumChars); (* Global region number *)
+      W('.');
+    END;
+    WNW(ABS(x.ref), headerNumChars); (* Node number *)
+    WS(' ('); WNW(x.dfo, headerNumChars); (* Depth first order *) W(')');
   END NodeNumber;
 
   PROCEDURE NodeHeader(x : GSAData.Info);
-  BEGIN Indent;
+  BEGIN
     IF x.ref = GSAData.UndefInfoData THEN NumberNode(x); END;
-    NodeNumber(x); WPos(x.pos);
+    NodeNumber(x); Indent; WPos(x.pos);
   END NodeHeader;
 
   PROCEDURE WNodeRef(x : GSAData.Info);
@@ -543,11 +557,30 @@ MODULE O3GSADump;
     END;
   END MarkNotOutput;
 
+  PROCEDURE ComputeHeaderNumChars(r: GSAData.GlobalRegion);
+    VAR
+      n : INTEGER;
+      v : INTEGER;
+  BEGIN
+    n := r.nElements;
+    IF n < 10 THEN       v := 1;
+    ELSIF n < 100 THEN   v := 2;
+    ELSIF n < 1000 THEN  v := 3;
+    ELSIF n < 10000 THEN v := 4;
+    ELSE                 v := 5; (* INTEGER is signed 16 bits *)
+    END;
+    headerNumChars := v;
+  END ComputeHeaderNumChars;
+
   (* dump `r' to a previously opened file *)
   PROCEDURE Region*(r : GSAData.GlobalRegion);
     VAR y : GSAData.Region;
 
-  BEGIN MarkNotOutput(r); y := r;
+  BEGIN
+    ComputeHeaderNumChars(r);
+    MarkNotOutput(r);
+    y := r;
+
     IF NotOutput(y) THEN
       IF y IS GSAData.GlobalRegion THEN
         nofNodes := 0;

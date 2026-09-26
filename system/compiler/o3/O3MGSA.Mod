@@ -1198,6 +1198,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
           GSAData.InstructionAppend(r, inst);
 
           IF Symtab.modinit IN r(GSAData.GlobalRegion).proc.flags THEN
+            (* Module initialization cannot be dead code eliminated. *)
             INCL(inst.attrib, GSAData.raLive);
           END;
           CompleteItem(inst, rhs);

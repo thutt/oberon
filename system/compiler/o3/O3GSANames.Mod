@@ -270,8 +270,13 @@ BEGIN
   trap[GSAOpcode.Tnil] := 'nil';
 
   NEW(attributes, 2);
-  attributes[GSAData.raLive] := "live";
-  attributes[GSAData.raUniqueResult] := "unique result";
+  attributes[GSAData.raLive] := "raLive";                (* Forced always-live.
+                                                          * A live instruction's operands
+                                                          * must also always be marked live.
+                                                          *)
+  attributes[GSAData.raUniqueResult] := "unique result"; (* Every return value is unique
+                                                          * Example: NEW.
+                                                          *)
 END Initialize;
 
 BEGIN Initialize;

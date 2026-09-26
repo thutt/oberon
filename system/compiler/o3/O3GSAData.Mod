@@ -24,12 +24,17 @@ CONST  (* see `SymLocation.kind' *)
 *)
 
 CONST (* Result.attrib: used to mark specific features of instructions *)
-  raLive* = 0;                (* instruction is always live and cannot
+  raLive* = 0;                (* Instruction is always live and cannot
                                * be removed as dead code.
                                * (for example, code in module initialization)
                                *)
   raUniqueResult* = 1;         (* Instruction always produces
                                 * unique result. *)
+
+ (* Half of the flags are reserved for use by code improvement
+  * algorithms.  These flags are considered valid only during an
+  * improvement phase.
+  *)
   raMaxGlobalAttribute* = (MAX(SET) + 1) DIV 2;
 
 CONST (* temporary variable kind *)
@@ -581,6 +586,8 @@ TYPE
                      * conversion process, it holds the merge region
                      * associated with a guard.
                      *)
+
+    nElements- : INTEGER; (* Count of Info items in Region for IR dumper. *)
   END;
 
   (* Case: Special region for CASE statements *)
@@ -1141,8 +1148,6 @@ PROCEDURE RegionNumber*(region : Region);
   END dominance;
 
   PROCEDURE dfo(r : Region);
-    VAR
-      dfoRoot  : INTEGER;
 
     PROCEDURE traverse(r : Region; VAR dfo : INTEGER);
       VAR
@@ -1195,8 +1200,8 @@ PROCEDURE RegionNumber*(region : Region);
     END traverse;
 
   BEGIN
-    dfoRoot := 0;
-    traverse(r, dfoRoot);
+    r.nElements := 0;
+    traverse(r, r.nElements);
   END dfo;
 
 BEGIN
