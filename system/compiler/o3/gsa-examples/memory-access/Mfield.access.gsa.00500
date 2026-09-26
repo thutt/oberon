@@ -1,0 +1,9 @@
+Const Prop & Unreachable Code
+
+0 (0)  greg: access range=[-32768, -32764)
+1 (1)    enter flags{} %nlm  range=[-32768, -32765) uses={}
+2 (2)     %nlm := ctor flags{}  range=[-32766, -32766) uses={(4)}
+4 (3)    exit flags{} result[(4)]  range=[-32768, -32767) uses={}
+3 (4)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(3)}
+
+

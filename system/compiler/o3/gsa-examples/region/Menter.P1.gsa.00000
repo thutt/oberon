@@ -1,14 +1,14 @@
 Initial GSA
 
-0.0 (0)  greg: P1 range=[-32768, -32759)
-  0.1 (1)  [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32760) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32762, -32761) uses={(7) (5)}
-   0.5 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
-  0.6 (4)  adr flags{} x  range=[-32768, -32763) uses={(5)}
-  0.4 (5)  %nlm := update-nonlocal flags{} x , result[(4)] , result[(2)] , result[(7)]  range=[-32768, -32764) uses={(9)}
-  0.8 (6)  adr flags{} y  range=[-32768, -32765) uses={(7)}
-  0.3 (7)  access-nonlocal flags{} y , result[(6)] , result[(2)]  range=[-32768, -32766) uses={(5)}
-  0.9 (8)  exit flags{} result[(9)]  range=[-32768, -32767) uses={}
-   0.7 (9)  dtor flags{live} result[(5)]  range=[-32768, -32768) uses={(8)}
+ 0 ( 0)  greg: P1 range=[-32768, -32759)
+ 1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32760) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32762, -32761) uses={(7) (5)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
+ 6 ( 4)    adr flags{} x  range=[-32768, -32763) uses={(5)}
+ 4 ( 5)    %nlm := update-nonlocal flags{} x , result[(4)] , result[(2)] , result[(7)]  range=[-32768, -32764) uses={(9)}
+ 8 ( 6)    adr flags{} y  range=[-32768, -32765) uses={(7)}
+ 3 ( 7)    access-nonlocal flags{} y , result[(6)] , result[(2)]  range=[-32768, -32766) uses={(5)}
+ 9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
+ 7 ( 9)     dtor flags{raLive} result[(5)]  range=[-32768, -32768) uses={(8)}
 
 

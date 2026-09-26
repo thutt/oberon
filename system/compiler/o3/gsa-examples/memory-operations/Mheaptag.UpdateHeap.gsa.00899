@@ -1,36 +1,36 @@
 Live Range Analysis
 
-0.0 (0)  greg: UpdateHeap range=[-32768, -32737)
-  0.1 (1)  [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} %nlm:%vr33  range=[-32768, -32738) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32740, -32739) uses={(26) (13)}
-   0.5 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32740, -32740) uses={}
-  0.6 (4)  adr flags{} y  range=[-32768, -32741) uses={(5)}
-  0.7 (5)  y := initialize flags{} y , result[(4)] , const{0}:%vr38  range=[-32768, -32742) uses={(29) (27)}
-  0.10 (6)  py := copy flags{} const{0}:%vr39  range=[-32768, -32743) uses={(26) (20) (13) (7)}
-  0.12 (7)  neq.u1 flags{} result[(6)] , const{0}:%vr39  range=[-32768, -32744) uses={(9) (8)}
-  0.14 (8)  guard-true flags{live} result[(7)]  range=[-32768, -32745) uses={(11)}
-  0.13 (9)  guard-false flags{live} result[(7)]  range=[-32768, -32746) uses={(11)}
-   0.16 (10)  trap-nil flags{live}  range=[-32747, -32747) uses={}
-  0.15 (11)  merge-if flags{live} result[(8)] , result[(9)]  range=[-32768, -32748) uses={}
-  0.17 (12)  adr flags{} py  range=[-32768, -32749) uses={(13)}
-  0.4 (13)  access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32750) uses={(14)}
-  0.18 (14)  heaptag flags{} py , result[(13)]  range=[-32768, -32751) uses={(15)}
-  0.19 (15)  eql.u4 flags{} result[(14)] , result{1 of (1)}  range=[-32768, -32752) uses={(17) (16)}
-  0.21 (16)  guard-true flags{live} result[(15)]  range=[-32768, -32753) uses={(19)}
-  0.20 (17)  guard-false flags{live} result[(15)]  range=[-32768, -32754) uses={(19)}
-   0.23 (18)  trap-iguard flags{live}  range=[-32755, -32755) uses={}
-  0.22 (19)  merge-if flags{live} result[(16)] , result[(17)]  range=[-32768, -32756) uses={}
-  0.11 (20)  neq.u1 flags{} result[(6)] , const{0}:%vr39  range=[-32768, -32757) uses={(22) (21)}
-  0.25 (21)  guard-true flags{live} result[(20)]  range=[-32768, -32758) uses={(24)}
-  0.24 (22)  guard-false flags{live} result[(20)]  range=[-32768, -32759) uses={(24)}
-   0.27 (23)  trap-nil flags{live}  range=[-32760, -32760) uses={}
-  0.26 (24)  merge-if flags{live} result[(21)] , result[(22)]  range=[-32768, -32761) uses={}
-  0.28 (25)  adr flags{} py  range=[-32768, -32762) uses={(26)}
-  0.3 (26)  %nlm:%vr33 := update-deref flags{} result[(6)] , result[(25)] , result[(2)] , result[(27)]  range=[-32768, -32763) uses={(31) (28) (27)}
-  0.9 (27)  recordcopy flags{} result[(26)] , result[(28)] , const{0}:%vr38 , result[(5)] , result[(29)]  range=[-32768, -32764) uses={(26)}
-  0.30 (28)  adr flags{} result[(26)]  range=[-32768, -32765) uses={(27)}
-  0.8 (29)  adr flags{} result[(5)]  range=[-32768, -32766) uses={(27)}
-  0.31 (30)  exit flags{} result[(31)]  range=[-32768, -32767) uses={}
-   0.29 (31)  dtor flags{live} result[(26)]  range=[-32768, -32768) uses={(30)}
+ 0 ( 0)  greg: UpdateHeap range=[-32768, -32737)
+ 1 ( 1)    [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} %nlm:%vr33  range=[-32768, -32738) uses={}
+ 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32740, -32739) uses={(26) (13)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32740, -32740) uses={}
+ 6 ( 4)    adr flags{} y  range=[-32768, -32741) uses={(5)}
+ 7 ( 5)    y := initialize flags{} y , result[(4)] , const{0}:%vr38  range=[-32768, -32742) uses={(29) (27)}
+10 ( 6)    py := copy flags{} const{0}:%vr39  range=[-32768, -32743) uses={(26) (20) (13) (7)}
+12 ( 7)    neq.u1 flags{} result[(6)] , const{0}:%vr39  range=[-32768, -32744) uses={(9) (8)}
+14 ( 8)    guard-true flags{raLive} result[(7)]  range=[-32768, -32745) uses={(11)}
+13 ( 9)    guard-false flags{raLive} result[(7)]  range=[-32768, -32746) uses={(11)}
+16 (10)     trap-nil flags{raLive}  range=[-32747, -32747) uses={}
+15 (11)    merge-if flags{raLive} result[(8)] , result[(9)]  range=[-32768, -32748) uses={}
+17 (12)    adr flags{} py  range=[-32768, -32749) uses={(13)}
+ 4 (13)    access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32750) uses={(14)}
+18 (14)    heaptag flags{} py , result[(13)]  range=[-32768, -32751) uses={(15)}
+19 (15)    eql.u4 flags{} result[(14)] , result{1 of (1)}  range=[-32768, -32752) uses={(17) (16)}
+21 (16)    guard-true flags{raLive} result[(15)]  range=[-32768, -32753) uses={(19)}
+20 (17)    guard-false flags{raLive} result[(15)]  range=[-32768, -32754) uses={(19)}
+23 (18)     trap-iguard flags{raLive}  range=[-32755, -32755) uses={}
+22 (19)    merge-if flags{raLive} result[(16)] , result[(17)]  range=[-32768, -32756) uses={}
+11 (20)    neq.u1 flags{} result[(6)] , const{0}:%vr39  range=[-32768, -32757) uses={(22) (21)}
+25 (21)    guard-true flags{raLive} result[(20)]  range=[-32768, -32758) uses={(24)}
+24 (22)    guard-false flags{raLive} result[(20)]  range=[-32768, -32759) uses={(24)}
+27 (23)     trap-nil flags{raLive}  range=[-32760, -32760) uses={}
+26 (24)    merge-if flags{raLive} result[(21)] , result[(22)]  range=[-32768, -32761) uses={}
+28 (25)    adr flags{} py  range=[-32768, -32762) uses={(26)}
+ 3 (26)    %nlm:%vr33 := update-deref flags{} result[(6)] , result[(25)] , result[(2)] , result[(27)]  range=[-32768, -32763) uses={(31) (28) (27)}
+ 9 (27)    recordcopy flags{} result[(26)] , result[(28)] , const{0}:%vr38 , result[(5)] , result[(29)]  range=[-32768, -32764) uses={(26)}
+30 (28)    adr flags{} result[(26)]  range=[-32768, -32765) uses={(27)}
+ 8 (29)    adr flags{} result[(5)]  range=[-32768, -32766) uses={(27)}
+31 (30)    exit flags{} result[(31)]  range=[-32768, -32767) uses={}
+29 (31)     dtor flags{raLive} result[(26)]  range=[-32768, -32768) uses={(30)}
 
 

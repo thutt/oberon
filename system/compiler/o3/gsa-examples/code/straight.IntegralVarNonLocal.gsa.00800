@@ -1,27 +1,27 @@
 Live Range Analysis
 
-0.0 (0)  greg: IntegralVarNonLocal range=[-32768, -32746)
-  0.1 (1)  [5:[location=y/adr], 4:[location=y], 3:[location=.%0], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32747) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32749, -32748) uses={(5)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32749, -32749) uses={}
-  0.5 (4)  adr flags{} x  range=[-32768, -32750) uses={(10) (16) (6)}
-  0.3 (5)  %nlm := update-varparm flags{} x , result[(6)] , result[(2)] , result[(7)]  range=[-32768, -32751) uses={(20) (15) (9)}
-  0.8 (6)  mayalias flags{} result[(4)] , result[(14)]  range=[-32768, -32752) uses={(5)}
-  0.9 (7)  convert.s2 flags{} const{10}  range=[-32768, -32753) uses={(5)}
-  0.14 (8)  adr flags{} y  range=[-32768, -32754) uses={(10)}
-  0.12 (9)  access-nonlocal flags{} y , result[(10)] , result[(5)]  range=[-32768, -32755) uses={(12)}
-  0.6 (10)  mayalias flags{} result[(8)] , result[(4)]  range=[-32768, -32756) uses={(9)}
-  0.16 (11)  convert.s2 flags{} const{10}  range=[-32768, -32757) uses={(12)}
-  0.15 (12)  eql.s2 flags{} result[(9)] , result[(11)]  range=[-32768, -32758) uses={(18) (13)}
-  0.18 (13)  guard-true flags{} result[(12)]  range=[-32768, -32759) uses={(19)}
-   0.13 (14)  adr flags{} y  range=[-32763, -32760) uses={(16) (6)}
-   0.11 (15)  %nlm := update-nonlocal flags{} y , result[(16)] , result[(5)] , result[(17)]  range=[-32763, -32761) uses={(20)}
-   0.7 (16)  mayalias flags{} result[(14)] , result[(4)]  range=[-32763, -32762) uses={(15)}
-   0.20 (17)  convert.s2 flags{} const{0}  range=[-32763, -32763) uses={(15)}
-  0.17 (18)  guard-false flags{} result[(12)]  range=[-32768, -32764) uses={(19)}
-  0.19 (19)  merge-if flags{} result[(13)] , result[(18)]  range=[-32768, -32765) uses={(20)}
-   0.10 (20)  %nlm := gate flags{} result[(19)] , result[(15)] , result[(5)]  range=[-32766, -32766) uses={(22)}
-  0.22 (21)  exit flags{} result[(22)]  range=[-32768, -32767) uses={}
-   0.21 (22)  dtor flags{live} result[(20)]  range=[-32768, -32768) uses={(21)}
+ 0 ( 0)  greg: IntegralVarNonLocal range=[-32768, -32746)
+ 1 ( 1)    [5:[location=y/adr], 4:[location=y], 3:[location=.%0], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32747) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32749, -32748) uses={(5)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32749, -32749) uses={}
+ 5 ( 4)    adr flags{} x  range=[-32768, -32750) uses={(10) (16) (6)}
+ 3 ( 5)    %nlm := update-varparm flags{} x , result[(6)] , result[(2)] , result[(7)]  range=[-32768, -32751) uses={(20) (15) (9)}
+ 8 ( 6)    mayalias flags{} result[(4)] , result[(14)]  range=[-32768, -32752) uses={(5)}
+ 9 ( 7)    convert.s2 flags{} const{10}  range=[-32768, -32753) uses={(5)}
+14 ( 8)    adr flags{} y  range=[-32768, -32754) uses={(10)}
+12 ( 9)    access-nonlocal flags{} y , result[(10)] , result[(5)]  range=[-32768, -32755) uses={(12)}
+ 6 (10)    mayalias flags{} result[(8)] , result[(4)]  range=[-32768, -32756) uses={(9)}
+16 (11)    convert.s2 flags{} const{10}  range=[-32768, -32757) uses={(12)}
+15 (12)    eql.s2 flags{} result[(9)] , result[(11)]  range=[-32768, -32758) uses={(18) (13)}
+18 (13)    guard-true flags{} result[(12)]  range=[-32768, -32759) uses={(19)}
+13 (14)     adr flags{} y  range=[-32763, -32760) uses={(16) (6)}
+11 (15)     %nlm := update-nonlocal flags{} y , result[(16)] , result[(5)] , result[(17)]  range=[-32763, -32761) uses={(20)}
+ 7 (16)     mayalias flags{} result[(14)] , result[(4)]  range=[-32763, -32762) uses={(15)}
+20 (17)     convert.s2 flags{} const{0}  range=[-32763, -32763) uses={(15)}
+17 (18)    guard-false flags{} result[(12)]  range=[-32768, -32764) uses={(19)}
+19 (19)    merge-if flags{} result[(13)] , result[(18)]  range=[-32768, -32765) uses={(20)}
+10 (20)     %nlm := gate flags{} result[(19)] , result[(15)] , result[(5)]  range=[-32766, -32766) uses={(22)}
+22 (21)    exit flags{} result[(22)]  range=[-32768, -32767) uses={}
+21 (22)     dtor flags{raLive} result[(20)]  range=[-32768, -32768) uses={(21)}
 
 

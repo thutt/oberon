@@ -1,18 +1,18 @@
 Live Range Analysis
 
-0.0 (0)  greg: IntegralNone range=[-32768, -32755)
-  0.1 (1)  [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32756) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32758, -32757) uses={(5)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32758, -32758) uses={}
-  0.5 (4)  adr flags{} x  range=[-32768, -32759) uses={(10) (6)}
-  0.3 (5)  %nlm := update-nonlocal flags{} x , result[(6)] , result[(2)] , result[(7)]  range=[-32768, -32760) uses={(9)}
-  0.7 (6)  mayalias flags{} result[(4)] , result[(8)]  range=[-32768, -32761) uses={(5)}
-  0.8 (7)  convert.s2 flags{} const{10}  range=[-32768, -32762) uses={(5)}
-  0.10 (8)  adr flags{} y  range=[-32768, -32763) uses={(10) (6)}
-  0.9 (9)  %nlm := update-nonlocal flags{} y , result[(10)] , result[(5)] , result[(11)]  range=[-32768, -32764) uses={(13)}
-  0.6 (10)  mayalias flags{} result[(8)] , result[(4)]  range=[-32768, -32765) uses={(9)}
-  0.11 (11)  convert.s2 flags{} const{10}  range=[-32768, -32766) uses={(9)}
-  0.13 (12)  exit flags{} result[(13)]  range=[-32768, -32767) uses={}
-   0.12 (13)  dtor flags{live} result[(9)]  range=[-32768, -32768) uses={(12)}
+ 0 ( 0)  greg: IntegralNone range=[-32768, -32755)
+ 1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32758, -32757) uses={(5)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32758, -32758) uses={}
+ 5 ( 4)    adr flags{} x  range=[-32768, -32759) uses={(10) (6)}
+ 3 ( 5)    %nlm := update-nonlocal flags{} x , result[(6)] , result[(2)] , result[(7)]  range=[-32768, -32760) uses={(9)}
+ 7 ( 6)    mayalias flags{} result[(4)] , result[(8)]  range=[-32768, -32761) uses={(5)}
+ 8 ( 7)    convert.s2 flags{} const{10}  range=[-32768, -32762) uses={(5)}
+10 ( 8)    adr flags{} y  range=[-32768, -32763) uses={(10) (6)}
+ 9 ( 9)    %nlm := update-nonlocal flags{} y , result[(10)] , result[(5)] , result[(11)]  range=[-32768, -32764) uses={(13)}
+ 6 (10)    mayalias flags{} result[(8)] , result[(4)]  range=[-32768, -32765) uses={(9)}
+11 (11)    convert.s2 flags{} const{10}  range=[-32768, -32766) uses={(9)}
+13 (12)    exit flags{} result[(13)]  range=[-32768, -32767) uses={}
+12 (13)     dtor flags{raLive} result[(9)]  range=[-32768, -32768) uses={(12)}
 
 

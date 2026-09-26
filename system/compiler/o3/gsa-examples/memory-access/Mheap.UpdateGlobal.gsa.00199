@@ -1,23 +1,23 @@
 Alias Analysis
 
-0.0 (0)  greg: UpdateGlobal range=[-32768, -32750)
-  0.1 (1)  [2:[location=Gv/adr], 1:[location=Gv]] enter flags{} %nlm  range=[-32768, -32751) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32753, -32752) uses={(13) (6)}
-   0.5 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32753, -32753) uses={}
-  0.6 (4)  y := copy flags{} const{0}  range=[-32768, -32754) uses={(16)}
-  0.8 (5)  adr flags{} Gv  range=[-32768, -32755) uses={(6)}
-  0.4 (6)  access-nonlocal flags{} Gv , result[(5)] , result[(2)]  range=[-32768, -32756) uses={(13) (12) (7)}
-  0.10 (7)  neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32757) uses={(9) (8)}
-  0.12 (8)  guard-true flags{live} result[(7)]  range=[-32768, -32758) uses={(11)}
-  0.11 (9)  guard-false flags{live} result[(7)]  range=[-32768, -32759) uses={(11)}
-   0.14 (10)  trap-nil flags{live}  range=[-32760, -32760) uses={}
-  0.13 (11)  merge-if flags{live} result[(8)] , result[(9)]  range=[-32768, -32761) uses={}
-  0.9 (12)  adr flags{} result[(6)]  range=[-32768, -32762) uses={(13)}
-  0.3 (13)  access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32763) uses={(16) (14)}
-  0.15 (14)  adr flags{} result[(13)]  range=[-32768, -32764) uses={(15)}
-  0.16 (15)  add.u4 flags{} result[(14)] , const{0}  range=[-32768, -32765) uses={(16)}
-  0.7 (16)  %nlm := update-field flags{} result[(13)] , result[(15)] , const{0} , result[(4)]  range=[-32768, -32766) uses={(18)}
-  0.18 (17)  exit flags{} result[(18)]  range=[-32768, -32767) uses={}
-   0.17 (18)  dtor flags{live} result[(16)]  range=[-32768, -32768) uses={(17)}
+ 0 ( 0)  greg: UpdateGlobal range=[-32768, -32750)
+ 1 ( 1)    [2:[location=Gv/adr], 1:[location=Gv]] enter flags{} %nlm  range=[-32768, -32751) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32753, -32752) uses={(13) (6)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32753, -32753) uses={}
+ 6 ( 4)    y := copy flags{} const{0}  range=[-32768, -32754) uses={(16)}
+ 8 ( 5)    adr flags{} Gv  range=[-32768, -32755) uses={(6)}
+ 4 ( 6)    access-nonlocal flags{} Gv , result[(5)] , result[(2)]  range=[-32768, -32756) uses={(13) (12) (7)}
+10 ( 7)    neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32757) uses={(9) (8)}
+12 ( 8)    guard-true flags{raLive} result[(7)]  range=[-32768, -32758) uses={(11)}
+11 ( 9)    guard-false flags{raLive} result[(7)]  range=[-32768, -32759) uses={(11)}
+14 (10)     trap-nil flags{raLive}  range=[-32760, -32760) uses={}
+13 (11)    merge-if flags{raLive} result[(8)] , result[(9)]  range=[-32768, -32761) uses={}
+ 9 (12)    adr flags{} result[(6)]  range=[-32768, -32762) uses={(13)}
+ 3 (13)    access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32763) uses={(16) (14)}
+15 (14)    adr flags{} result[(13)]  range=[-32768, -32764) uses={(15)}
+16 (15)    add.u4 flags{} result[(14)] , const{0}  range=[-32768, -32765) uses={(16)}
+ 7 (16)    %nlm := update-field flags{} result[(13)] , result[(15)] , const{0} , result[(4)]  range=[-32768, -32766) uses={(18)}
+18 (17)    exit flags{} result[(18)]  range=[-32768, -32767) uses={}
+17 (18)     dtor flags{raLive} result[(16)]  range=[-32768, -32768) uses={(17)}
 
 

@@ -1,16 +1,16 @@
 Live Range Analysis
 
-0.0 (0)  greg: P0 range=[-32768, -32757)
-  0.1 (1)  [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm:%vr33  range=[-32768, -32758) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32760, -32759) uses={(11)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32760, -32760) uses={}
-  0.5 (4)  guard-true flags{} result{1 of (1)}  range=[-32768, -32761) uses={}
-   0.6 (5)  guard-true flags{} result{2 of (1)}  range=[-32763, -32762) uses={}
-   0.7 (6)  guard-false flags{} result{2 of (1)}  range=[-32763, -32763) uses={(8)}
-  0.9 (7)  guard-false flags{} result{1 of (1)}  range=[-32768, -32764) uses={(8)}
-  0.8 (8)  merge-cond flags{} result[(7)] , result[(6)]  range=[-32768, -32765) uses={}
-  0.10 (9)  trap-halt flags{live} const{1024}:%vr39  range=[-32768, -32766) uses={}
-  0.11 (10)  exit flags{} result[(11)]  range=[-32768, -32767) uses={}
-   0.3 (11)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(10)}
+ 0 ( 0)  greg: P0 range=[-32768, -32757)
+ 1 ( 1)    [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm:%vr33  range=[-32768, -32758) uses={}
+ 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32760, -32759) uses={(11)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32760, -32760) uses={}
+ 5 ( 4)    guard-true flags{} result{1 of (1)}  range=[-32768, -32761) uses={}
+ 6 ( 5)     guard-true flags{} result{2 of (1)}  range=[-32763, -32762) uses={}
+ 7 ( 6)     guard-false flags{} result{2 of (1)}  range=[-32763, -32763) uses={(8)}
+ 9 ( 7)    guard-false flags{} result{1 of (1)}  range=[-32768, -32764) uses={(8)}
+ 8 ( 8)    merge-cond flags{} result[(7)] , result[(6)]  range=[-32768, -32765) uses={}
+10 ( 9)    trap-halt flags{raLive} const{1024}:%vr39  range=[-32768, -32766) uses={}
+11 (10)    exit flags{} result[(11)]  range=[-32768, -32767) uses={}
+ 3 (11)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(10)}
 
 

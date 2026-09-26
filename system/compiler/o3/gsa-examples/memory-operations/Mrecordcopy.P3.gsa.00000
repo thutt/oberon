@@ -1,24 +1,24 @@
 Initial GSA
 
-0.0 (0)  greg: P3 range=[-32768, -32749)
-  0.1 (1)  [9:[location=.Mrecordcopy-ExtDesc/adr], 8:[location=.Mrecordcopy-ExtDesc], 7:[location=.%1], 6:[location=.%0], 5:[location=b1], 4:[location=b0-tag/adr], 3:[location=b0-tag], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32750) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32752, -32751) uses={(19) (11) (7)}
-   0.6 (3)  %return-3 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
-  0.7 (4)  adr flags{} b1  range=[-32768, -32753) uses={(5)}
-  0.8 (5)  b1 := initialize flags{} b1 , result[(4)] , const{12}  range=[-32768, -32754) uses={}
-  0.9 (6)  adr flags{} b0  range=[-32768, -32755) uses={(7)}
-  0.5 (7)  access-varparm flags{} b0 , result[(6)] , result[(2)]  range=[-32768, -32756) uses={}
-  0.10 (8)  eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32757) uses={(12) (9)}
-  0.12 (9)  guard-true flags{live} result[(8)]  range=[-32768, -32758) uses={(14)}
-   0.14 (10)  adr flags{} b0  range=[-32760, -32759) uses={(11)}
-   0.4 (11)  access-varparm flags{} b0 , result[(10)] , result[(2)]  range=[-32760, -32760) uses={(17) (15)}
-  0.11 (12)  guard-false flags{live} result[(8)]  range=[-32768, -32761) uses={(14)}
-   0.17 (13)  trap-eguard flags{live}  range=[-32762, -32762) uses={}
-  0.13 (14)  merge-if flags{live} result[(9)] , result[(12)]  range=[-32768, -32763) uses={}
-  0.16 (15)  b1 := recordcopy flags{} b1 , result[(16)] , const{12} , result[(11)] , result[(17)]  range=[-32768, -32764) uses={}
-  0.18 (16)  adr flags{} b1  range=[-32768, -32765) uses={(15)}
-  0.15 (17)  adr flags{} result[(11)]  range=[-32768, -32766) uses={(15)}
-  0.19 (18)  exit flags{} result[(19)]  range=[-32768, -32767) uses={}
-   0.3 (19)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(18)}
+ 0 ( 0)  greg: P3 range=[-32768, -32749)
+ 1 ( 1)    [9:[location=.Mrecordcopy-ExtDesc/adr], 8:[location=.Mrecordcopy-ExtDesc], 7:[location=.%1], 6:[location=.%0], 5:[location=b1], 4:[location=b0-tag/adr], 3:[location=b0-tag], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32752, -32751) uses={(19) (11) (7)}
+ 6 ( 3)     %return-3 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
+ 7 ( 4)    adr flags{} b1  range=[-32768, -32753) uses={(5)}
+ 8 ( 5)    b1 := initialize flags{} b1 , result[(4)] , const{12}  range=[-32768, -32754) uses={}
+ 9 ( 6)    adr flags{} b0  range=[-32768, -32755) uses={(7)}
+ 5 ( 7)    access-varparm flags{} b0 , result[(6)] , result[(2)]  range=[-32768, -32756) uses={}
+10 ( 8)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32757) uses={(12) (9)}
+12 ( 9)    guard-true flags{raLive} result[(8)]  range=[-32768, -32758) uses={(14)}
+14 (10)     adr flags{} b0  range=[-32760, -32759) uses={(11)}
+ 4 (11)     access-varparm flags{} b0 , result[(10)] , result[(2)]  range=[-32760, -32760) uses={(17) (15)}
+11 (12)    guard-false flags{raLive} result[(8)]  range=[-32768, -32761) uses={(14)}
+17 (13)     trap-eguard flags{raLive}  range=[-32762, -32762) uses={}
+13 (14)    merge-if flags{raLive} result[(9)] , result[(12)]  range=[-32768, -32763) uses={}
+16 (15)    b1 := recordcopy flags{} b1 , result[(16)] , const{12} , result[(11)] , result[(17)]  range=[-32768, -32764) uses={}
+18 (16)    adr flags{} b1  range=[-32768, -32765) uses={(15)}
+15 (17)    adr flags{} result[(11)]  range=[-32768, -32766) uses={(15)}
+19 (18)    exit flags{} result[(19)]  range=[-32768, -32767) uses={}
+ 3 (19)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(18)}
 
 

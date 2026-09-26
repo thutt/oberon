@@ -1,44 +1,44 @@
 Initial GSA
 
-0.0 (0)  greg: P1 range=[-32768, -32729)
-  0.1 (1)  [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32730) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32732, -32731) uses={(24) (14)}
-   0.5 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32732, -32732) uses={}
-  0.6 (4)  p := copy flags{} const{0}  range=[-32768, -32733) uses={}
-  0.7 (5)  q := copy flags{} const{0}  range=[-32768, -32734) uses={}
-  0.8 (6)  p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32735) uses={(14) (8)}
-  0.10 (7)  q := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32736) uses={(34) (28)}
-  0.9 (8)  neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32737) uses={(10) (9)}
-  0.14 (9)  guard-true flags{live} result[(8)]  range=[-32768, -32738) uses={(12)}
-  0.13 (10)  guard-false flags{live} result[(8)]  range=[-32768, -32739) uses={(12)}
-   0.16 (11)  trap-nil flags{live}  range=[-32740, -32740) uses={}
-  0.15 (12)  merge-if flags{live} result[(9)] , result[(10)]  range=[-32768, -32741) uses={}
-  0.17 (13)  adr flags{} p  range=[-32768, -32742) uses={(14)}
-  0.4 (14)  access-deref flags{} result[(6)] , result[(13)] , result[(2)]  range=[-32768, -32743) uses={(17) (15)}
-  0.19 (15)  adr flags{} result[(14)]  range=[-32768, -32744) uses={(16)}
-  0.20 (16)  add.u4 flags{} result[(15)] , const{4}  range=[-32768, -32745) uses={(17)}
-  0.18 (17)  access-field flags{} result[(14)] , result[(16)] , const{4}  range=[-32768, -32746) uses={(24) (23) (18)}
-  0.22 (18)  neq.u1 flags{} result[(17)] , const{0}  range=[-32768, -32747) uses={(20) (19)}
-  0.24 (19)  guard-true flags{live} result[(18)]  range=[-32768, -32748) uses={(22)}
-  0.23 (20)  guard-false flags{live} result[(18)]  range=[-32768, -32749) uses={(22)}
-   0.26 (21)  trap-nil flags{live}  range=[-32750, -32750) uses={}
-  0.25 (22)  merge-if flags{live} result[(19)] , result[(20)]  range=[-32768, -32751) uses={}
-  0.21 (23)  adr flags{} result[(17)]  range=[-32768, -32752) uses={(24)}
-  0.3 (24)  access-deref flags{} result[(17)] , result[(23)] , result[(2)]  range=[-32768, -32753) uses={(27) (25)}
-  0.28 (25)  adr flags{} result[(24)]  range=[-32768, -32754) uses={(26)}
-  0.29 (26)  add.u4 flags{} result[(25)] , const{0}  range=[-32768, -32755) uses={(27)}
-  0.27 (27)  %nlm := update-field flags{} result[(24)] , result[(26)] , const{0} , const{151}  range=[-32768, -32756) uses={(34)}
-  0.12 (28)  neq.u1 flags{} result[(7)] , const{0}  range=[-32768, -32757) uses={(30) (29)}
-  0.31 (29)  guard-true flags{live} result[(28)]  range=[-32768, -32758) uses={(32)}
-  0.30 (30)  guard-false flags{live} result[(28)]  range=[-32768, -32759) uses={(32)}
-   0.33 (31)  trap-nil flags{live}  range=[-32760, -32760) uses={}
-  0.32 (32)  merge-if flags{live} result[(29)] , result[(30)]  range=[-32768, -32761) uses={}
-  0.34 (33)  adr flags{} q  range=[-32768, -32762) uses={(34)}
-  0.11 (34)  access-deref flags{} result[(7)] , result[(33)] , result[(27)]  range=[-32768, -32763) uses={(37) (35)}
-  0.36 (35)  adr flags{} result[(34)]  range=[-32768, -32764) uses={(36)}
-  0.37 (36)  add.u4 flags{} result[(35)] , const{4}  range=[-32768, -32765) uses={(37)}
-  0.35 (37)  %nlm := update-field flags{} result[(34)] , result[(36)] , const{4} , const{0}  range=[-32768, -32766) uses={(39)}
-  0.39 (38)  exit flags{} result[(39)]  range=[-32768, -32767) uses={}
-   0.38 (39)  dtor flags{live} result[(37)]  range=[-32768, -32768) uses={(38)}
+ 0 ( 0)  greg: P1 range=[-32768, -32729)
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32730) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32732, -32731) uses={(24) (14)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32732, -32732) uses={}
+ 6 ( 4)    p := copy flags{} const{0}  range=[-32768, -32733) uses={}
+ 7 ( 5)    q := copy flags{} const{0}  range=[-32768, -32734) uses={}
+ 8 ( 6)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32735) uses={(14) (8)}
+10 ( 7)    q := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32736) uses={(34) (28)}
+ 9 ( 8)    neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32737) uses={(10) (9)}
+14 ( 9)    guard-true flags{raLive} result[(8)]  range=[-32768, -32738) uses={(12)}
+13 (10)    guard-false flags{raLive} result[(8)]  range=[-32768, -32739) uses={(12)}
+16 (11)     trap-nil flags{raLive}  range=[-32740, -32740) uses={}
+15 (12)    merge-if flags{raLive} result[(9)] , result[(10)]  range=[-32768, -32741) uses={}
+17 (13)    adr flags{} p  range=[-32768, -32742) uses={(14)}
+ 4 (14)    access-deref flags{} result[(6)] , result[(13)] , result[(2)]  range=[-32768, -32743) uses={(17) (15)}
+19 (15)    adr flags{} result[(14)]  range=[-32768, -32744) uses={(16)}
+20 (16)    add.u4 flags{} result[(15)] , const{4}  range=[-32768, -32745) uses={(17)}
+18 (17)    access-field flags{} result[(14)] , result[(16)] , const{4}  range=[-32768, -32746) uses={(24) (23) (18)}
+22 (18)    neq.u1 flags{} result[(17)] , const{0}  range=[-32768, -32747) uses={(20) (19)}
+24 (19)    guard-true flags{raLive} result[(18)]  range=[-32768, -32748) uses={(22)}
+23 (20)    guard-false flags{raLive} result[(18)]  range=[-32768, -32749) uses={(22)}
+26 (21)     trap-nil flags{raLive}  range=[-32750, -32750) uses={}
+25 (22)    merge-if flags{raLive} result[(19)] , result[(20)]  range=[-32768, -32751) uses={}
+21 (23)    adr flags{} result[(17)]  range=[-32768, -32752) uses={(24)}
+ 3 (24)    access-deref flags{} result[(17)] , result[(23)] , result[(2)]  range=[-32768, -32753) uses={(27) (25)}
+28 (25)    adr flags{} result[(24)]  range=[-32768, -32754) uses={(26)}
+29 (26)    add.u4 flags{} result[(25)] , const{0}  range=[-32768, -32755) uses={(27)}
+27 (27)    %nlm := update-field flags{} result[(24)] , result[(26)] , const{0} , const{151}  range=[-32768, -32756) uses={(34)}
+12 (28)    neq.u1 flags{} result[(7)] , const{0}  range=[-32768, -32757) uses={(30) (29)}
+31 (29)    guard-true flags{raLive} result[(28)]  range=[-32768, -32758) uses={(32)}
+30 (30)    guard-false flags{raLive} result[(28)]  range=[-32768, -32759) uses={(32)}
+33 (31)     trap-nil flags{raLive}  range=[-32760, -32760) uses={}
+32 (32)    merge-if flags{raLive} result[(29)] , result[(30)]  range=[-32768, -32761) uses={}
+34 (33)    adr flags{} q  range=[-32768, -32762) uses={(34)}
+11 (34)    access-deref flags{} result[(7)] , result[(33)] , result[(27)]  range=[-32768, -32763) uses={(37) (35)}
+36 (35)    adr flags{} result[(34)]  range=[-32768, -32764) uses={(36)}
+37 (36)    add.u4 flags{} result[(35)] , const{4}  range=[-32768, -32765) uses={(37)}
+35 (37)    %nlm := update-field flags{} result[(34)] , result[(36)] , const{4} , const{0}  range=[-32768, -32766) uses={(39)}
+39 (38)    exit flags{} result[(39)]  range=[-32768, -32767) uses={}
+38 (39)     dtor flags{raLive} result[(37)]  range=[-32768, -32768) uses={(38)}
 
 

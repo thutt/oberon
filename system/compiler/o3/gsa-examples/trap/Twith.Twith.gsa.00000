@@ -1,12 +1,12 @@
 Initial GSA
 
-0.0 (0)  greg: Twith range=[-32768, -32761)
-  0.1 (1)  enter flags{live} %nlm  range=[-32768, -32762) uses={}
-   0.2 (2)  %nlm := ctor flags{live}  range=[-32764, -32763) uses={(7) (6)}
-   0.5 (3)  %return-2 := copy flags{live} const{FALSE}  range=[-32764, -32764) uses={(6)}
-  0.6 (4)  .Twith-BaseDesc := init-rectd flags{live} BaseDesc  range=[-32768, -32765) uses={(6)}
-  0.7 (5)  .Twith-ExtDesc := init-rectd flags{live} ExtDesc  range=[-32768, -32766) uses={(6)}
-  0.4 (6)  exit flags{live} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=.Twith-BaseDesc], result[(5)] [location=.Twith-ExtDesc], result[(7)]  range=[-32768, -32767) uses={}
-   0.3 (7)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(6)}
+0 (0)  greg: Twith range=[-32768, -32761)
+1 (1)    enter flags{raLive} %nlm  range=[-32768, -32762) uses={}
+2 (2)     %nlm := ctor flags{raLive}  range=[-32764, -32763) uses={(7) (6)}
+5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32764, -32764) uses={(6)}
+6 (4)    .Twith-BaseDesc := init-rectd flags{raLive} BaseDesc  range=[-32768, -32765) uses={(6)}
+7 (5)    .Twith-ExtDesc := init-rectd flags{raLive} ExtDesc  range=[-32768, -32766) uses={(6)}
+4 (6)    exit flags{raLive} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=.Twith-BaseDesc], result[(5)] [location=.Twith-ExtDesc], result[(7)]  range=[-32768, -32767) uses={}
+3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
 
 

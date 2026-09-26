@@ -1,17 +1,17 @@
 Live Range Analysis
 
-0.0 (0)  greg: ParmRefCaller range=[-32768, -32756)
-  0.1 (1)  [5:[location=.BaseDesc-BaseDesc/adr], 4:[location=.BaseDesc-BaseDesc], 3:[location=.%1], 2:[location=.%0], 1:[location=b]] enter flags{} %nlm:%vr38  range=[-32768, -32757) uses={}
-   0.2 (2)  %nlm:%vr38 := ctor flags{}  range=[-32762, -32758) uses={(12)}
-   0.4 (3)  adr flags{} %t2:%vr32  range=[-32762, -32759) uses={(5)}
-   0.6 (4)  adr flags{} b  range=[-32762, -32760) uses={(5)}
-   0.5 (5)  recordcopy flags{} %t2:%vr32 , result[(3)] , const{2}:%vr35 , b , result[(4)]  range=[-32762, -32761) uses={}
-   0.7 (6)  %return-3 := copy flags{} const{FALSE}:%vr37  range=[-32762, -32762) uses={}
-  0.8 (7)  tbpadr flags{} result{4 of (1)} , BaseDesc , RefMethod , const{0}:%vr47 , const{-4}:%vr48  range=[-32768, -32763) uses={(10)}
-  0.10 (8)  adr flags{} %t2:%vr32  range=[-32768, -32764) uses={(10)}
-  0.11 (9)  convert.s2 flags{} const{21}:%vr50  range=[-32768, -32765) uses={(10)}
-  0.9 (10)  call flags{} result[(7)] , result[(8)] , %t2:%vr32 , result[(9)]  range=[-32768, -32766) uses={(11)}
-  0.12 (11)  exit flags{} result[(10)] , result[(12)]  range=[-32768, -32767) uses={}
-   0.3 (12)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(11)}
+ 0 ( 0)  greg: ParmRefCaller range=[-32768, -32756)
+ 1 ( 1)    [5:[location=.BaseDesc-BaseDesc/adr], 4:[location=.BaseDesc-BaseDesc], 3:[location=.%1], 2:[location=.%0], 1:[location=b]] enter flags{} %nlm:%vr38  range=[-32768, -32757) uses={}
+ 2 ( 2)     %nlm:%vr38 := ctor flags{}  range=[-32762, -32758) uses={(12)}
+ 4 ( 3)     adr flags{} %t2:%vr32  range=[-32762, -32759) uses={(5)}
+ 6 ( 4)     adr flags{} b  range=[-32762, -32760) uses={(5)}
+ 5 ( 5)     recordcopy flags{} %t2:%vr32 , result[(3)] , const{2}:%vr35 , b , result[(4)]  range=[-32762, -32761) uses={}
+ 7 ( 6)     %return-3 := copy flags{} const{FALSE}:%vr37  range=[-32762, -32762) uses={}
+ 8 ( 7)    tbpadr flags{} result{4 of (1)} , BaseDesc , RefMethod , const{0}:%vr47 , const{-4}:%vr48  range=[-32768, -32763) uses={(10)}
+10 ( 8)    adr flags{} %t2:%vr32  range=[-32768, -32764) uses={(10)}
+11 ( 9)    convert.s2 flags{} const{21}:%vr50  range=[-32768, -32765) uses={(10)}
+ 9 (10)    call flags{} result[(7)] , result[(8)] , %t2:%vr32 , result[(9)]  range=[-32768, -32766) uses={(11)}
+12 (11)    exit flags{} result[(10)] , result[(12)]  range=[-32768, -32767) uses={}
+ 3 (12)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(11)}
 
 

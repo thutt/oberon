@@ -1,0 +1,10 @@
+Copy Propagation
+
+0 (0)  greg: Aasl range=[-32768, -32763)
+1 (1)    enter flags{raLive} %nlm  range=[-32768, -32764) uses={}
+2 (2)     %nlm := ctor flags{raLive}  range=[-32766, -32765) uses={(5) (4)}
+5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32766, -32766) uses={}
+4 (4)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(5)]  range=[-32768, -32767) uses={}
+3 (5)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(4)}
+
+

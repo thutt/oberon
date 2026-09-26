@@ -1,15 +1,15 @@
 Final GSA
 
-0.0 (0)  greg: P6a range=[-32768, -32758)
-  0.1 (1)  [5:[location=.%1], 4:[location=.%0], 3:[location=d], 2:[location=array-len-0], 1:[location=array]] enter flags{} %nlm:%vr33  range=[-32768, -32759) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32761, -32760) uses={(10)}
-   0.4 (3)  %return-3 := copy flags{} const{FALSE}:%vr32  range=[-32761, -32761) uses={}
-  0.5 (4)  adr flags{} d  range=[-32768, -32762) uses={(5)}
-  0.6 (5)  d := initialize flags{} d , result[(4)] , const{21}:%vr41  range=[-32768, -32763) uses={}
-  0.7 (6)  d := stringcopy flags{} d , result[(7)] , const{21}:%vr41 , result{1 of (1)} , result[(8)]  range=[-32768, -32764) uses={}
-  0.8 (7)  adr flags{} d  range=[-32768, -32765) uses={(6)}
-  0.9 (8)  adr flags{} result{1 of (1)}  range=[-32768, -32766) uses={(6)}
-  0.10 (9)  exit flags{} result[(10)]  range=[-32768, -32767) uses={}
-   0.3 (10)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(9)}
+ 0 ( 0)  greg: P6a range=[-32768, -32758)
+ 1 ( 1)    [5:[location=.%1], 4:[location=.%0], 3:[location=d], 2:[location=array-len-0], 1:[location=array]] enter flags{} %nlm:%vr33  range=[-32768, -32759) uses={}
+ 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32761, -32760) uses={(10)}
+ 4 ( 3)     %return-3 := copy flags{} const{FALSE}:%vr32  range=[-32761, -32761) uses={}
+ 5 ( 4)    adr flags{} d  range=[-32768, -32762) uses={(5)}
+ 6 ( 5)    d := initialize flags{} d , result[(4)] , const{21}:%vr41  range=[-32768, -32763) uses={}
+ 7 ( 6)    d := stringcopy flags{} d , result[(7)] , const{21}:%vr41 , result{1 of (1)} , result[(8)]  range=[-32768, -32764) uses={}
+ 8 ( 7)    adr flags{} d  range=[-32768, -32765) uses={(6)}
+ 9 ( 8)    adr flags{} result{1 of (1)}  range=[-32768, -32766) uses={(6)}
+10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
+ 3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
 
 

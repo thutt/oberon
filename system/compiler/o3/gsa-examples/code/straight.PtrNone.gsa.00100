@@ -1,14 +1,14 @@
 Alias Analysis
 
-0.0 (0)  greg: PtrNone range=[-32768, -32759)
-  0.1 (1)  [4:[location=b1/adr], 3:[location=b1], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32760) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32762, -32761) uses={(5)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
-  0.5 (4)  adr flags{} b0  range=[-32768, -32763) uses={(5)}
-  0.3 (5)  %nlm := update-nonlocal flags{} b0 , result[(4)] , result[(2)] , const{0}  range=[-32768, -32764) uses={(7)}
-  0.7 (6)  adr flags{} b1  range=[-32768, -32765) uses={(7)}
-  0.6 (7)  %nlm := update-nonlocal flags{} b1 , result[(6)] , result[(5)] , const{0}  range=[-32768, -32766) uses={(9)}
-  0.9 (8)  exit flags{} result[(9)]  range=[-32768, -32767) uses={}
-   0.8 (9)  dtor flags{live} result[(7)]  range=[-32768, -32768) uses={(8)}
+ 0 ( 0)  greg: PtrNone range=[-32768, -32759)
+ 1 ( 1)    [4:[location=b1/adr], 3:[location=b1], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32760) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32762, -32761) uses={(5)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
+ 5 ( 4)    adr flags{} b0  range=[-32768, -32763) uses={(5)}
+ 3 ( 5)    %nlm := update-nonlocal flags{} b0 , result[(4)] , result[(2)] , const{0}  range=[-32768, -32764) uses={(7)}
+ 7 ( 6)    adr flags{} b1  range=[-32768, -32765) uses={(7)}
+ 6 ( 7)    %nlm := update-nonlocal flags{} b1 , result[(6)] , result[(5)] , const{0}  range=[-32768, -32766) uses={(9)}
+ 9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
+ 8 ( 9)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(8)}
 
 

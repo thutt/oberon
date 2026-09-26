@@ -1,0 +1,20 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: P0 range=[-32768, -32753)
+ 1 ( 1)    [2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32754) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32757, -32755) uses={(15)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32757, -32756) uses={}
+ 5 ( 4)     %result-3 := copy flags{} const{0}  range=[-32757, -32757) uses={}
+ 6 ( 5)    %return-2 := copy flags{} const{TRUE}  range=[-32768, -32758) uses={}
+ 7 ( 6)    lss.s1 flags{} const{3} , const{0}  range=[-32768, -32759) uses={(10) (7)}
+ 9 ( 7)    guard-true flags{} result[(6)]  range=[-32768, -32760) uses={(12)}
+11 ( 8)     neg.s1 flags{} const{3}  range=[-32762, -32761) uses={(9)}
+12 ( 9)     %t4 := lsr.s4 flags{} result{1 of (1)} , result[(8)]  range=[-32762, -32762) uses={(13)}
+ 8 (10)    guard-false flags{} result[(6)]  range=[-32768, -32763) uses={(12)}
+14 (11)     %t4 := lsl.s4 flags{} result{1 of (1)} , const{3}  range=[-32764, -32764) uses={(13)}
+10 (12)    merge-if flags{} result[(7)] , result[(10)]  range=[-32768, -32765) uses={(13)}
+13 (13)     %result-3 := gate flags{} result[(12)] , result[(9)] , result[(11)]  range=[-32766, -32766) uses={(14)}
+15 (14)    exit flags{} result[(13)] [location=%result-3], result[(15)]  range=[-32768, -32767) uses={}
+ 3 (15)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(14)}
+
+

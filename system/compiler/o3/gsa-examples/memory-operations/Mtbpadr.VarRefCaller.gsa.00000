@@ -1,16 +1,16 @@
 Initial GSA
 
-0.0 (0)  greg: VarRefCaller range=[-32768, -32757)
-  0.1 (1)  [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32758) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32760, -32759) uses={(11)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32760, -32760) uses={}
-  0.5 (4)  adr flags{} b  range=[-32768, -32761) uses={(5)}
-  0.6 (5)  b := initialize flags{} b , result[(4)] , const{2}  range=[-32768, -32762) uses={(9) (7)}
-  0.9 (6)  tbpadr flags{} result{1 of (1)} , BaseDesc , RefMethod , const{0} , const{-4}  range=[-32768, -32763) uses={(9)}
-  0.8 (7)  adr flags{} result[(5)]  range=[-32768, -32764) uses={(9)}
-  0.10 (8)  convert.s2 flags{} const{21}  range=[-32768, -32765) uses={(9)}
-  0.7 (9)  call flags{} result[(6)] , result[(7)] , result[(5)] , result[(8)]  range=[-32768, -32766) uses={(10)}
-  0.11 (10)  exit flags{} result[(9)] , result[(11)]  range=[-32768, -32767) uses={}
-   0.3 (11)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(10)}
+ 0 ( 0)  greg: VarRefCaller range=[-32768, -32757)
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32758) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32760, -32759) uses={(11)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32760, -32760) uses={}
+ 5 ( 4)    adr flags{} b  range=[-32768, -32761) uses={(5)}
+ 6 ( 5)    b := initialize flags{} b , result[(4)] , const{2}  range=[-32768, -32762) uses={(9) (7)}
+ 9 ( 6)    tbpadr flags{} result{1 of (1)} , BaseDesc , RefMethod , const{0} , const{-4}  range=[-32768, -32763) uses={(9)}
+ 8 ( 7)    adr flags{} result[(5)]  range=[-32768, -32764) uses={(9)}
+10 ( 8)    convert.s2 flags{} const{21}  range=[-32768, -32765) uses={(9)}
+ 7 ( 9)    call flags{} result[(6)] , result[(7)] , result[(5)] , result[(8)]  range=[-32768, -32766) uses={(10)}
+11 (10)    exit flags{} result[(9)] , result[(11)]  range=[-32768, -32767) uses={}
+ 3 (11)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(10)}
 
 

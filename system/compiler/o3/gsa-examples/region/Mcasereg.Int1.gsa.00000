@@ -1,48 +1,48 @@
 Initial GSA
 
-0.0 (0)  greg: Int1 range=[-32768, -32725)
-  0.1 (1)  [2:[location=.%0], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32726) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32729, -32727) uses={(43)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32729, -32728) uses={(34) (28) (28) (28) (28) (28) (28)}
-   0.7 (4)  %result-3 := copy flags{} const{0}  range=[-32729, -32729) uses={(33) (29) (29) (29) (29) (29) (29)}
-  0.10 (5)  x := convert.s2 flags{} const{10}  range=[-32768, -32730) uses={(27) (24) (22) (20) (16) (14) (12) (10) (9) (7)}
-  0.21 (6)  convert.s2 flags{} const{10}  range=[-32768, -32731) uses={(7)}
-  0.20 (7)  eql.s2 flags{} result[(5)] , result[(6)]  range=[-32768, -32732) uses={(30) (8)}
-  0.23 (8)  guard-true flags{} result[(7)]  range=[-32768, -32733) uses={(32)}
-   0.19 (9)  case flags{} result[(5)]  range=[-32754, -32734) uses={}
-    0.18 (10)  guard-case flags{} result[(5)] , const{-4}  range=[-32754, -32735) uses={(26)}
-     0.26 (11)  x := copy flags{} const{302}  range=[-32736, -32736) uses={(27)}
-    0.17 (12)  guard-case flags{} result[(5)] , const{[-3..3]}  range=[-32754, -32737) uses={(26)}
-     0.27 (13)  x := copy flags{} const{301}  range=[-32738, -32738) uses={(27)}
-    0.16 (14)  guard-case flags{} result[(5)] , const{5}  range=[-32754, -32739) uses={(26)}
-     0.28 (15)  x := convert.s2 flags{} const{0}  range=[-32740, -32740) uses={(27)}
-    0.15 (16)  guard-case flags{} result[(5)] , const{[6..10]}  range=[-32754, -32741) uses={(26)}
-     0.29 (17)  x := convert.s2 flags{} const{1}  range=[-32744, -32742) uses={(27)}
-     0.30 (18)  %return-2 := copy flags{} const{TRUE}  range=[-32744, -32743) uses={(28)}
-     0.31 (19)  %result-3 := convert.s2 flags{} const{91}  range=[-32744, -32744) uses={(29)}
-    0.14 (20)  guard-case flags{} result[(5)] , const{11} , const{[13..15]}  range=[-32754, -32745) uses={(26)}
-     0.32 (21)  x := convert.s2 flags{} const{2}  range=[-32746, -32746) uses={(27)}
-    0.13 (22)  guard-case flags{} result[(5)] , const{[31..33]} , const{50} , const{99}  range=[-32754, -32747) uses={(26)}
-     0.33 (23)  x := convert.s2 flags{} const{3}  range=[-32748, -32748) uses={(27)}
-    0.12 (24)  guard-celse flags{} result[(5)]  range=[-32754, -32749) uses={(26)}
-     0.34 (25)  trap-case flags{live}  range=[-32750, -32750) uses={}
-    0.25 (26)  merge-case flags{} result[(10)] , result[(12)] , result[(14)] , result[(16)] , result[(20)] , result[(22)] , result[(24)]  range=[-32754, -32751) uses={(29) (28) (27)}
-     0.11 (27)  x := gate flags{} result[(26)] , result[(11)] , result[(13)] , result[(15)] , result[(17)] , result[(21)] , result[(23)] , result[(5)]  range=[-32754, -32752) uses={(35)}
-     0.6 (28)  %return-2 := gate flags{} result[(26)] , result[(3)] , result[(3)] , result[(3)] , result[(18)] , result[(3)] , result[(3)] , result[(3)]  range=[-32754, -32753) uses={(34)}
-     0.9 (29)  %result-3 := gate flags{} result[(26)] , result[(4)] , result[(4)] , result[(4)] , result[(19)] , result[(4)] , result[(4)] , result[(4)]  range=[-32754, -32754) uses={(33)}
-  0.22 (30)  guard-false flags{} result[(7)]  range=[-32768, -32755) uses={(32)}
-   0.36 (31)  x := copy flags{} const{151}  range=[-32756, -32756) uses={(35)}
-  0.24 (32)  merge-if flags{} result[(8)] , result[(30)]  range=[-32768, -32757) uses={(35) (34) (33)}
-   0.8 (33)  %result-3 := gate flags{} result[(32)] , result[(29)] , result[(4)]  range=[-32760, -32758) uses={(41)}
-   0.5 (34)  %return-2 := gate flags{} result[(32)] , result[(28)] , result[(3)]  range=[-32760, -32759) uses={(40) (37) (36)}
-   0.35 (35)  %result-3 := gate flags{} result[(32)] , result[(27)] , result[(31)]  range=[-32760, -32760) uses={(41)}
-  0.40 (36)  guard-true flags{} result[(34)]  range=[-32768, -32761) uses={(39)}
-  0.39 (37)  guard-false flags{} result[(34)]  range=[-32768, -32762) uses={(39)}
-   0.42 (38)  %return-2 := copy flags{} const{TRUE}  range=[-32763, -32763) uses={(40)}
-  0.41 (39)  merge-if flags{} result[(36)] , result[(37)]  range=[-32768, -32764) uses={(41) (40)}
-   0.38 (40)  %return-2 := gate flags{} result[(39)] , result[(34)] , result[(38)]  range=[-32766, -32765) uses={}
-   0.37 (41)  %result-3 := gate flags{} result[(39)] , result[(33)] , result[(35)]  range=[-32766, -32766) uses={(42)}
-  0.43 (42)  exit flags{} result[(41)] [location=%result-3], result[(43)]  range=[-32768, -32767) uses={}
-   0.3 (43)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(42)}
+ 0 ( 0)  greg: Int1 range=[-32768, -32725)
+ 1 ( 1)    [2:[location=.%0], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32726) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32729, -32727) uses={(43)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32729, -32728) uses={(34) (28) (28) (28) (28) (28) (28)}
+ 7 ( 4)     %result-3 := copy flags{} const{0}  range=[-32729, -32729) uses={(33) (29) (29) (29) (29) (29) (29)}
+10 ( 5)    x := convert.s2 flags{} const{10}  range=[-32768, -32730) uses={(27) (24) (22) (20) (16) (14) (12) (10) (9) (7)}
+21 ( 6)    convert.s2 flags{} const{10}  range=[-32768, -32731) uses={(7)}
+20 ( 7)    eql.s2 flags{} result[(5)] , result[(6)]  range=[-32768, -32732) uses={(30) (8)}
+23 ( 8)    guard-true flags{} result[(7)]  range=[-32768, -32733) uses={(32)}
+19 ( 9)     case flags{} result[(5)]  range=[-32754, -32734) uses={}
+18 (10)      guard-case flags{} result[(5)] , const{-4}  range=[-32754, -32735) uses={(26)}
+26 (11)       x := copy flags{} const{302}  range=[-32736, -32736) uses={(27)}
+17 (12)      guard-case flags{} result[(5)] , const{[-3..3]}  range=[-32754, -32737) uses={(26)}
+27 (13)       x := copy flags{} const{301}  range=[-32738, -32738) uses={(27)}
+16 (14)      guard-case flags{} result[(5)] , const{5}  range=[-32754, -32739) uses={(26)}
+28 (15)       x := convert.s2 flags{} const{0}  range=[-32740, -32740) uses={(27)}
+15 (16)      guard-case flags{} result[(5)] , const{[6..10]}  range=[-32754, -32741) uses={(26)}
+29 (17)       x := convert.s2 flags{} const{1}  range=[-32744, -32742) uses={(27)}
+30 (18)       %return-2 := copy flags{} const{TRUE}  range=[-32744, -32743) uses={(28)}
+31 (19)       %result-3 := convert.s2 flags{} const{91}  range=[-32744, -32744) uses={(29)}
+14 (20)      guard-case flags{} result[(5)] , const{11} , const{[13..15]}  range=[-32754, -32745) uses={(26)}
+32 (21)       x := convert.s2 flags{} const{2}  range=[-32746, -32746) uses={(27)}
+13 (22)      guard-case flags{} result[(5)] , const{[31..33]} , const{50} , const{99}  range=[-32754, -32747) uses={(26)}
+33 (23)       x := convert.s2 flags{} const{3}  range=[-32748, -32748) uses={(27)}
+12 (24)      guard-celse flags{} result[(5)]  range=[-32754, -32749) uses={(26)}
+34 (25)       trap-case flags{raLive}  range=[-32750, -32750) uses={}
+25 (26)      merge-case flags{} result[(10)] , result[(12)] , result[(14)] , result[(16)] , result[(20)] , result[(22)] , result[(24)]  range=[-32754, -32751) uses={(29) (28) (27)}
+11 (27)       x := gate flags{} result[(26)] , result[(11)] , result[(13)] , result[(15)] , result[(17)] , result[(21)] , result[(23)] , result[(5)]  range=[-32754, -32752) uses={(35)}
+ 6 (28)       %return-2 := gate flags{} result[(26)] , result[(3)] , result[(3)] , result[(3)] , result[(18)] , result[(3)] , result[(3)] , result[(3)]  range=[-32754, -32753) uses={(34)}
+ 9 (29)       %result-3 := gate flags{} result[(26)] , result[(4)] , result[(4)] , result[(4)] , result[(19)] , result[(4)] , result[(4)] , result[(4)]  range=[-32754, -32754) uses={(33)}
+22 (30)    guard-false flags{} result[(7)]  range=[-32768, -32755) uses={(32)}
+36 (31)     x := copy flags{} const{151}  range=[-32756, -32756) uses={(35)}
+24 (32)    merge-if flags{} result[(8)] , result[(30)]  range=[-32768, -32757) uses={(35) (34) (33)}
+ 8 (33)     %result-3 := gate flags{} result[(32)] , result[(29)] , result[(4)]  range=[-32760, -32758) uses={(41)}
+ 5 (34)     %return-2 := gate flags{} result[(32)] , result[(28)] , result[(3)]  range=[-32760, -32759) uses={(40) (37) (36)}
+35 (35)     %result-3 := gate flags{} result[(32)] , result[(27)] , result[(31)]  range=[-32760, -32760) uses={(41)}
+40 (36)    guard-true flags{} result[(34)]  range=[-32768, -32761) uses={(39)}
+39 (37)    guard-false flags{} result[(34)]  range=[-32768, -32762) uses={(39)}
+42 (38)     %return-2 := copy flags{} const{TRUE}  range=[-32763, -32763) uses={(40)}
+41 (39)    merge-if flags{} result[(36)] , result[(37)]  range=[-32768, -32764) uses={(41) (40)}
+38 (40)     %return-2 := gate flags{} result[(39)] , result[(34)] , result[(38)]  range=[-32766, -32765) uses={}
+37 (41)     %result-3 := gate flags{} result[(39)] , result[(33)] , result[(35)]  range=[-32766, -32766) uses={(42)}
+43 (42)    exit flags{} result[(41)] [location=%result-3], result[(43)]  range=[-32768, -32767) uses={}
+ 3 (43)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(42)}
 
 

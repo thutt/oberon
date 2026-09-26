@@ -1,14 +1,14 @@
 Live Range Analysis
 
-0.0 (0)  greg: P4b range=[-32768, -32759)
-  0.1 (1)  [9:[location=len/adr], 8:[location=len], 7:[location=.%2], 6:[location=.%1], 5:[location=.%0], 4:[location=a-len-1], 3:[location=a-len-0], 2:[location=a/adr], 1:[location=a]] enter flags{} %nlm:%vr33  range=[-32768, -32760) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32762, -32761) uses={(7) (5)}
-   0.5 (3)  %return-4 := copy flags{} const{FALSE}:%vr32  range=[-32762, -32762) uses={}
-  0.6 (4)  adr flags{} len  range=[-32768, -32763) uses={(5)}
-  0.4 (5)  %nlm:%vr33 := update-nonlocal flags{} len , result[(4)] , result[(2)] , result{4 of (1)}  range=[-32768, -32764) uses={(9)}
-  0.8 (6)  adr flags{} a  range=[-32768, -32765) uses={(7)}
-  0.3 (7)  access-varparm flags{} a , result[(6)] , result[(2)]  range=[-32768, -32766) uses={}
-  0.9 (8)  exit flags{} result[(9)]  range=[-32768, -32767) uses={}
-   0.7 (9)  dtor flags{live} result[(5)]  range=[-32768, -32768) uses={(8)}
+ 0 ( 0)  greg: P4b range=[-32768, -32759)
+ 1 ( 1)    [9:[location=len/adr], 8:[location=len], 7:[location=.%2], 6:[location=.%1], 5:[location=.%0], 4:[location=a-len-1], 3:[location=a-len-0], 2:[location=a/adr], 1:[location=a]] enter flags{} %nlm:%vr33  range=[-32768, -32760) uses={}
+ 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32762, -32761) uses={(7) (5)}
+ 5 ( 3)     %return-4 := copy flags{} const{FALSE}:%vr32  range=[-32762, -32762) uses={}
+ 6 ( 4)    adr flags{} len  range=[-32768, -32763) uses={(5)}
+ 4 ( 5)    %nlm:%vr33 := update-nonlocal flags{} len , result[(4)] , result[(2)] , result{4 of (1)}  range=[-32768, -32764) uses={(9)}
+ 8 ( 6)    adr flags{} a  range=[-32768, -32765) uses={(7)}
+ 3 ( 7)    access-varparm flags{} a , result[(6)] , result[(2)]  range=[-32768, -32766) uses={}
+ 9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
+ 7 ( 9)     dtor flags{raLive} result[(5)]  range=[-32768, -32768) uses={(8)}
 
 

@@ -1,19 +1,19 @@
 Alias Analysis
 
-0.0 (0)  greg: repeat range=[-32768, -32754)
-  0.1 (1)  [3:[location=.%0], 2:[location=i], 1:[location=j]] enter flags{} %nlm  range=[-32768, -32755) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32758, -32756) uses={(14)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32758, -32757) uses={}
-   0.5 (4)  %result-3 := copy flags{} const{0}  range=[-32758, -32758) uses={}
-  0.6 (5)  i := copy flags{} const{0}  range=[-32768, -32759) uses={}
-  0.7 (6)  i := convert.s2 flags{} const{100}  range=[-32768, -32760) uses={(9)}
-  0.9 (7)  merge-loop flags{} const{TRUE} , result[(11)]  range=[-32768, -32761) uses={(9)}
-   0.11 (8)  i := add.s2 flags{} result[(9)] , const{1}  range=[-32765, -32762) uses={(9)}
-   0.8 (9)  %result-3 := gate flags{} result[(7)] , result[(6)] , result[(8)]  range=[-32765, -32763) uses={(13) (10) (8)}
-   0.13 (10)  gtr.s2 flags{} result[(9)] , result{1 of (1)}  range=[-32765, -32764) uses={(11)}
-   0.10 (11)  not.u1 flags{} result[(10)]  range=[-32765, -32765) uses={(7)}
-  0.14 (12)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
-  0.12 (13)  exit flags{} result[(9)] [location=%result-3], result[(14)]  range=[-32768, -32767) uses={}
-   0.3 (14)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(13)}
+ 0 ( 0)  greg: repeat range=[-32768, -32754)
+ 1 ( 1)    [3:[location=.%0], 2:[location=i], 1:[location=j]] enter flags{} %nlm  range=[-32768, -32755) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32758, -32756) uses={(14)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32758, -32757) uses={}
+ 5 ( 4)     %result-3 := copy flags{} const{0}  range=[-32758, -32758) uses={}
+ 6 ( 5)    i := copy flags{} const{0}  range=[-32768, -32759) uses={}
+ 7 ( 6)    i := convert.s2 flags{} const{100}  range=[-32768, -32760) uses={(9)}
+ 9 ( 7)    merge-loop flags{} const{TRUE} , result[(11)]  range=[-32768, -32761) uses={(9)}
+11 ( 8)     i := add.s2 flags{} result[(9)] , const{1}  range=[-32765, -32762) uses={(9)}
+ 8 ( 9)     %result-3 := gate flags{} result[(7)] , result[(6)] , result[(8)]  range=[-32765, -32763) uses={(13) (10) (8)}
+13 (10)     gtr.s2 flags{} result[(9)] , result{1 of (1)}  range=[-32765, -32764) uses={(11)}
+10 (11)     not.u1 flags{} result[(10)]  range=[-32765, -32765) uses={(7)}
+14 (12)    %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
+12 (13)    exit flags{} result[(9)] [location=%result-3], result[(14)]  range=[-32768, -32767) uses={}
+ 3 (14)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(13)}
 
 

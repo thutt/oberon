@@ -1,17 +1,17 @@
 Alias Analysis
 
-0.0 (0)  greg: P0 range=[-32768, -32756)
-  0.1 (1)  enter flags{} %nlm  range=[-32768, -32757) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32759, -32758) uses={(12)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32759, -32759) uses={}
-  0.5 (4)  adr flags{} a  range=[-32768, -32760) uses={(5)}
-  0.6 (5)  a := initialize flags{} a , result[(4)] , const{60}  range=[-32768, -32761) uses={}
-  0.7 (6)  adr flags{} b  range=[-32768, -32762) uses={(7)}
-  0.8 (7)  b := initialize flags{} b , result[(6)] , const{60}  range=[-32768, -32763) uses={(10) (8)}
-  0.10 (8)  a := arraycopy flags{} a , result[(9)] , const{30} , result[(7)] , result[(10)]  range=[-32768, -32764) uses={}
-  0.11 (9)  adr flags{} a  range=[-32768, -32765) uses={(8)}
-  0.9 (10)  adr flags{} result[(7)]  range=[-32768, -32766) uses={(8)}
-  0.12 (11)  exit flags{} result[(12)]  range=[-32768, -32767) uses={}
-   0.3 (12)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(11)}
+ 0 ( 0)  greg: P0 range=[-32768, -32756)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32757) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32759, -32758) uses={(12)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32759, -32759) uses={}
+ 5 ( 4)    adr flags{} a  range=[-32768, -32760) uses={(5)}
+ 6 ( 5)    a := initialize flags{} a , result[(4)] , const{60}  range=[-32768, -32761) uses={}
+ 7 ( 6)    adr flags{} b  range=[-32768, -32762) uses={(7)}
+ 8 ( 7)    b := initialize flags{} b , result[(6)] , const{60}  range=[-32768, -32763) uses={(10) (8)}
+10 ( 8)    a := arraycopy flags{} a , result[(9)] , const{30} , result[(7)] , result[(10)]  range=[-32768, -32764) uses={}
+11 ( 9)    adr flags{} a  range=[-32768, -32765) uses={(8)}
+ 9 (10)    adr flags{} result[(7)]  range=[-32768, -32766) uses={(8)}
+12 (11)    exit flags{} result[(12)]  range=[-32768, -32767) uses={}
+ 3 (12)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(11)}
 
 

@@ -1,0 +1,8 @@
+Dead Code Elimination
+
+0 (0)  greg: AccessLocal range=[-32768, -32765)
+1 (1)    enter flags{} %nlm  range=[-32768, -32766) uses={}
+2 (2)    trap-nil flags{raLive}  range=[-32768, -32767) uses={}
+3 (3)    exit flags{} result[(5)]  range=[-32768, -32768) uses={}
+
+

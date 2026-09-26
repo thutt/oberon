@@ -1,10 +1,10 @@
 Final GSA
 
-0.0 (0)  greg: P0 range=[-32768, -32763)
-  0.1 (1)  enter flags{} %nlm:%vr33  range=[-32768, -32764) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32766, -32765) uses={(5)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32766, -32766) uses={}
-  0.5 (4)  exit flags{} result[(5)]  range=[-32768, -32767) uses={}
-   0.3 (5)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(4)}
+0 (0)  greg: P0 range=[-32768, -32763)
+1 (1)    enter flags{} %nlm:%vr33  range=[-32768, -32764) uses={}
+2 (2)     %nlm:%vr33 := ctor flags{}  range=[-32766, -32765) uses={(5)}
+4 (3)     %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32766, -32766) uses={}
+5 (4)    exit flags{} result[(5)]  range=[-32768, -32767) uses={}
+3 (5)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(4)}
 
 

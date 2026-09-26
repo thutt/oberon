@@ -1,0 +1,15 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: Int range=[-32768, -32758)
+ 1 ( 1)    [2:[location=.%0], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32759) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32760, -32760) uses={(10)}
+ 4 ( 3)    convert.s2 flags{} const{10}  range=[-32768, -32761) uses={(4)}
+ 5 ( 4)    eql.s2 flags{} result{1 of (1)} , result[(3)]  range=[-32768, -32762) uses={(5)}
+ 6 ( 5)    guard-true flags{} result[(4)]  range=[-32768, -32763) uses={}
+ 7 ( 6)     case flags{} result{1 of (1)}  range=[-32766, -32764) uses={}
+ 8 ( 7)      guard-celse flags{} result{1 of (1)}  range=[-32766, -32765) uses={}
+ 9 ( 8)       trap-case flags{raLive}  range=[-32766, -32766) uses={}
+10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
+ 3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
+
+

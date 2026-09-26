@@ -1,11 +1,11 @@
 Live Range Analysis
 
-0.0 (0)  greg: Ginitdarr range=[-32768, -32762)
-  0.1 (1)  enter flags{live} %nlm  range=[-32768, -32763) uses={}
-   0.2 (2)  %nlm := ctor flags{live}  range=[-32765, -32764) uses={(6) (5)}
-   0.5 (3)  %return-2 := copy flags{live} const{FALSE}  range=[-32765, -32765) uses={(5)}
-  0.6 (4)  .td_0 := init-darrtd flags{live} anonymous type  range=[-32768, -32766) uses={(5)}
-  0.4 (5)  exit flags{live} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=.td_0], result[(6)]  range=[-32768, -32767) uses={}
-   0.3 (6)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(5)}
+0 (0)  greg: Ginitdarr range=[-32768, -32762)
+1 (1)    enter flags{raLive} %nlm  range=[-32768, -32763) uses={}
+2 (2)     %nlm := ctor flags{raLive}  range=[-32765, -32764) uses={(6) (5)}
+5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32765, -32765) uses={(5)}
+6 (4)    .td_0 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32766) uses={(5)}
+4 (5)    exit flags{raLive} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=.td_0], result[(6)]  range=[-32768, -32767) uses={}
+3 (6)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(5)}
 
 

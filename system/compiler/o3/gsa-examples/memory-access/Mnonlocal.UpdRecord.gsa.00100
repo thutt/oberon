@@ -1,18 +1,18 @@
 Alias Analysis
 
-0.0 (0)  greg: UpdRecord range=[-32768, -32755)
-  0.1 (1)  [5:[location=record/adr], 4:[location=record], 3:[location=.%1], 2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32756) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32761, -32757) uses={(8)}
-   0.4 (3)  adr flags{} %t2  range=[-32761, -32758) uses={(5)}
-   0.6 (4)  adr flags{} v  range=[-32761, -32759) uses={(5)}
-   0.5 (5)  recordcopy flags{} %t2 , result[(3)] , const{2} , v , result[(4)]  range=[-32761, -32760) uses={}
-   0.7 (6)  %return-3 := copy flags{} const{FALSE}  range=[-32761, -32761) uses={}
-  0.8 (7)  adr flags{} record  range=[-32768, -32762) uses={(8)}
-  0.3 (8)  %nlm := update-nonlocal flags{} record , result[(7)] , result[(2)] , result[(9)]  range=[-32768, -32763) uses={(13) (10) (9)}
-  0.9 (9)  recordcopy flags{} result[(8)] , result[(10)] , const{2} , %t2 , result[(11)]  range=[-32768, -32764) uses={(8)}
-  0.11 (10)  adr flags{} result[(8)]  range=[-32768, -32765) uses={(9)}
-  0.12 (11)  adr flags{} %t2  range=[-32768, -32766) uses={(9)}
-  0.13 (12)  exit flags{} result[(13)]  range=[-32768, -32767) uses={}
-   0.10 (13)  dtor flags{live} result[(8)]  range=[-32768, -32768) uses={(12)}
+ 0 ( 0)  greg: UpdRecord range=[-32768, -32755)
+ 1 ( 1)    [5:[location=record/adr], 4:[location=record], 3:[location=.%1], 2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32761, -32757) uses={(8)}
+ 4 ( 3)     adr flags{} %t2  range=[-32761, -32758) uses={(5)}
+ 6 ( 4)     adr flags{} v  range=[-32761, -32759) uses={(5)}
+ 5 ( 5)     recordcopy flags{} %t2 , result[(3)] , const{2} , v , result[(4)]  range=[-32761, -32760) uses={}
+ 7 ( 6)     %return-3 := copy flags{} const{FALSE}  range=[-32761, -32761) uses={}
+ 8 ( 7)    adr flags{} record  range=[-32768, -32762) uses={(8)}
+ 3 ( 8)    %nlm := update-nonlocal flags{} record , result[(7)] , result[(2)] , result[(9)]  range=[-32768, -32763) uses={(13) (10) (9)}
+ 9 ( 9)    recordcopy flags{} result[(8)] , result[(10)] , const{2} , %t2 , result[(11)]  range=[-32768, -32764) uses={(8)}
+11 (10)    adr flags{} result[(8)]  range=[-32768, -32765) uses={(9)}
+12 (11)    adr flags{} %t2  range=[-32768, -32766) uses={(9)}
+13 (12)    exit flags{} result[(13)]  range=[-32768, -32767) uses={}
+10 (13)     dtor flags{raLive} result[(8)]  range=[-32768, -32768) uses={(12)}
 
 

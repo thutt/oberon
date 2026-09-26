@@ -1,85 +1,85 @@
 Live Range Analysis
 
-0.0 (0)  greg: NotCongruent range=[-32768, -32688)
-  0.1 (1)  [4:[location=.Ext1Desc-Ext1Desc/adr], 3:[location=.Ext1Desc-Ext1Desc], 2:[location=.Ext0Desc-Ext0Desc/adr], 1:[location=.Ext0Desc-Ext0Desc]] enter flags{} %nlm  range=[-32768, -32689) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32691, -32690) uses={(80) (70) (61) (48) (33) (24) (11)}
-   0.10 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32691, -32691) uses={}
-  0.11 (4)  b := copy flags{} const{0}  range=[-32768, -32692) uses={(78) (70) (64) (61) (55) (48) (42) (41) (33) (27) (24) (18) (11) (5)}
-  0.19 (5)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32693) uses={(7) (6)}
-  0.21 (6)  guard-true flags{live} result[(5)]  range=[-32768, -32694) uses={(9)}
-  0.20 (7)  guard-false flags{live} result[(5)]  range=[-32768, -32695) uses={(9)}
-   0.23 (8)  trap-nil flags{live}  range=[-32696, -32696) uses={}
-  0.22 (9)  merge-if flags{live} result[(6)] , result[(7)]  range=[-32768, -32697) uses={}
-  0.24 (10)  adr flags{} b  range=[-32768, -32698) uses={(11)}
-  0.9 (11)  access-deref flags{} result[(4)] , result[(10)] , result[(2)]  range=[-32768, -32699) uses={(12)}
-  0.25 (12)  heaptag flags{} b , result[(11)]  range=[-32768, -32700) uses={(13)}
-  0.26 (13)  eql.u4 flags{} result[(12)] , result{1 of (1)}  range=[-32768, -32701) uses={(15) (14)}
-  0.28 (14)  guard-true flags{live} result[(13)]  range=[-32768, -32702) uses={(17)}
-  0.27 (15)  guard-false flags{live} result[(13)]  range=[-32768, -32703) uses={(17)}
-   0.30 (16)  trap-eguard flags{live}  range=[-32704, -32704) uses={}
-  0.29 (17)  merge-if flags{live} result[(14)] , result[(15)]  range=[-32768, -32705) uses={}
-  0.18 (18)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32706) uses={(20) (19)}
-  0.32 (19)  guard-true flags{live} result[(18)]  range=[-32768, -32707) uses={(22)}
-  0.31 (20)  guard-false flags{live} result[(18)]  range=[-32768, -32708) uses={(22)}
-   0.34 (21)  trap-nil flags{live}  range=[-32709, -32709) uses={}
-  0.33 (22)  merge-if flags{live} result[(19)] , result[(20)]  range=[-32768, -32710) uses={}
-  0.35 (23)  adr flags{} b  range=[-32768, -32711) uses={(24)}
-  0.8 (24)  access-deref flags{} result[(4)] , result[(23)] , result[(2)]  range=[-32768, -32712) uses={(25)}
-  0.36 (25)  heaptag flags{} b , result[(24)]  range=[-32768, -32713) uses={(26)}
-  0.37 (26)  tbpadr flags{} result[(25)] , Ext0 , Method , const{2} , const{-12}  range=[-32768, -32714) uses={(41)}
-  0.17 (27)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32715) uses={(29) (28)}
-  0.39 (28)  guard-true flags{live} result[(27)]  range=[-32768, -32716) uses={(31)}
-  0.38 (29)  guard-false flags{live} result[(27)]  range=[-32768, -32717) uses={(31)}
-   0.41 (30)  trap-nil flags{live}  range=[-32718, -32718) uses={}
-  0.40 (31)  merge-if flags{live} result[(28)] , result[(29)]  range=[-32768, -32719) uses={}
-  0.42 (32)  adr flags{} b  range=[-32768, -32720) uses={(33)}
-  0.7 (33)  access-deref flags{} result[(4)] , result[(32)] , result[(2)]  range=[-32768, -32721) uses={(34)}
-  0.43 (34)  heaptag flags{} b , result[(33)]  range=[-32768, -32722) uses={(35)}
-  0.44 (35)  eql.u4 flags{} result[(34)] , result{1 of (1)}  range=[-32768, -32723) uses={(37) (36)}
-  0.46 (36)  guard-true flags{live} result[(35)]  range=[-32768, -32724) uses={(39)}
-  0.45 (37)  guard-false flags{live} result[(35)]  range=[-32768, -32725) uses={(39)}
-   0.48 (38)  trap-eguard flags{live}  range=[-32726, -32726) uses={}
-  0.47 (39)  merge-if flags{live} result[(36)] , result[(37)]  range=[-32768, -32727) uses={}
-  0.49 (40)  convert.s2 flags{} const{0}  range=[-32768, -32728) uses={(41)}
-  0.16 (41)  call flags{} result[(26)] , result[(4)] , result[(40)]  range=[-32768, -32729) uses={(79)}
-  0.15 (42)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32730) uses={(44) (43)}
-  0.52 (43)  guard-true flags{live} result[(42)]  range=[-32768, -32731) uses={(46)}
-  0.51 (44)  guard-false flags{live} result[(42)]  range=[-32768, -32732) uses={(46)}
-   0.54 (45)  trap-nil flags{live}  range=[-32733, -32733) uses={}
-  0.53 (46)  merge-if flags{live} result[(43)] , result[(44)]  range=[-32768, -32734) uses={}
-  0.55 (47)  adr flags{} b  range=[-32768, -32735) uses={(48)}
-  0.6 (48)  access-deref flags{} result[(4)] , result[(47)] , result[(2)]  range=[-32768, -32736) uses={(49)}
-  0.56 (49)  heaptag flags{} b , result[(48)]  range=[-32768, -32737) uses={(50)}
-  0.57 (50)  eql.u4 flags{} result[(49)] , result{3 of (1)}  range=[-32768, -32738) uses={(52) (51)}
-  0.59 (51)  guard-true flags{live} result[(50)]  range=[-32768, -32739) uses={(54)}
-  0.58 (52)  guard-false flags{live} result[(50)]  range=[-32768, -32740) uses={(54)}
-   0.61 (53)  trap-eguard flags{live}  range=[-32741, -32741) uses={}
-  0.60 (54)  merge-if flags{live} result[(51)] , result[(52)]  range=[-32768, -32742) uses={}
-  0.14 (55)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32743) uses={(57) (56)}
-  0.63 (56)  guard-true flags{live} result[(55)]  range=[-32768, -32744) uses={(59)}
-  0.62 (57)  guard-false flags{live} result[(55)]  range=[-32768, -32745) uses={(59)}
-   0.65 (58)  trap-nil flags{live}  range=[-32746, -32746) uses={}
-  0.64 (59)  merge-if flags{live} result[(56)] , result[(57)]  range=[-32768, -32747) uses={}
-  0.66 (60)  adr flags{} b  range=[-32768, -32748) uses={(61)}
-  0.5 (61)  access-deref flags{} result[(4)] , result[(60)] , result[(2)]  range=[-32768, -32749) uses={(62)}
-  0.67 (62)  heaptag flags{} b , result[(61)]  range=[-32768, -32750) uses={(63)}
-  0.68 (63)  tbpadr flags{} result[(62)] , Ext1 , Method , const{2} , const{-12}  range=[-32768, -32751) uses={(78)}
-  0.13 (64)  neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32752) uses={(66) (65)}
-  0.70 (65)  guard-true flags{live} result[(64)]  range=[-32768, -32753) uses={(68)}
-  0.69 (66)  guard-false flags{live} result[(64)]  range=[-32768, -32754) uses={(68)}
-   0.72 (67)  trap-nil flags{live}  range=[-32755, -32755) uses={}
-  0.71 (68)  merge-if flags{live} result[(65)] , result[(66)]  range=[-32768, -32756) uses={}
-  0.73 (69)  adr flags{} b  range=[-32768, -32757) uses={(70)}
-  0.4 (70)  access-deref flags{} result[(4)] , result[(69)] , result[(2)]  range=[-32768, -32758) uses={(71)}
-  0.74 (71)  heaptag flags{} b , result[(70)]  range=[-32768, -32759) uses={(72)}
-  0.75 (72)  eql.u4 flags{} result[(71)] , result{3 of (1)}  range=[-32768, -32760) uses={(74) (73)}
-  0.77 (73)  guard-true flags{live} result[(72)]  range=[-32768, -32761) uses={(76)}
-  0.76 (74)  guard-false flags{live} result[(72)]  range=[-32768, -32762) uses={(76)}
-   0.79 (75)  trap-eguard flags{live}  range=[-32763, -32763) uses={}
-  0.78 (76)  merge-if flags{live} result[(73)] , result[(74)]  range=[-32768, -32764) uses={}
-  0.80 (77)  convert.s2 flags{} const{0}  range=[-32768, -32765) uses={(78)}
-  0.12 (78)  call flags{} result[(63)] , result[(4)] , result[(77)]  range=[-32768, -32766) uses={(79)}
-  0.50 (79)  exit flags{} result[(41)] , result[(78)] , result[(80)]  range=[-32768, -32767) uses={}
-   0.3 (80)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(79)}
+ 0 ( 0)  greg: NotCongruent range=[-32768, -32688)
+ 1 ( 1)    [4:[location=.Ext1Desc-Ext1Desc/adr], 3:[location=.Ext1Desc-Ext1Desc], 2:[location=.Ext0Desc-Ext0Desc/adr], 1:[location=.Ext0Desc-Ext0Desc]] enter flags{} %nlm  range=[-32768, -32689) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32691, -32690) uses={(80) (70) (61) (48) (33) (24) (11)}
+10 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32691, -32691) uses={}
+11 ( 4)    b := copy flags{} const{0}  range=[-32768, -32692) uses={(78) (70) (64) (61) (55) (48) (42) (41) (33) (27) (24) (18) (11) (5)}
+19 ( 5)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32693) uses={(7) (6)}
+21 ( 6)    guard-true flags{raLive} result[(5)]  range=[-32768, -32694) uses={(9)}
+20 ( 7)    guard-false flags{raLive} result[(5)]  range=[-32768, -32695) uses={(9)}
+23 ( 8)     trap-nil flags{raLive}  range=[-32696, -32696) uses={}
+22 ( 9)    merge-if flags{raLive} result[(6)] , result[(7)]  range=[-32768, -32697) uses={}
+24 (10)    adr flags{} b  range=[-32768, -32698) uses={(11)}
+ 9 (11)    access-deref flags{} result[(4)] , result[(10)] , result[(2)]  range=[-32768, -32699) uses={(12)}
+25 (12)    heaptag flags{} b , result[(11)]  range=[-32768, -32700) uses={(13)}
+26 (13)    eql.u4 flags{} result[(12)] , result{1 of (1)}  range=[-32768, -32701) uses={(15) (14)}
+28 (14)    guard-true flags{raLive} result[(13)]  range=[-32768, -32702) uses={(17)}
+27 (15)    guard-false flags{raLive} result[(13)]  range=[-32768, -32703) uses={(17)}
+30 (16)     trap-eguard flags{raLive}  range=[-32704, -32704) uses={}
+29 (17)    merge-if flags{raLive} result[(14)] , result[(15)]  range=[-32768, -32705) uses={}
+18 (18)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32706) uses={(20) (19)}
+32 (19)    guard-true flags{raLive} result[(18)]  range=[-32768, -32707) uses={(22)}
+31 (20)    guard-false flags{raLive} result[(18)]  range=[-32768, -32708) uses={(22)}
+34 (21)     trap-nil flags{raLive}  range=[-32709, -32709) uses={}
+33 (22)    merge-if flags{raLive} result[(19)] , result[(20)]  range=[-32768, -32710) uses={}
+35 (23)    adr flags{} b  range=[-32768, -32711) uses={(24)}
+ 8 (24)    access-deref flags{} result[(4)] , result[(23)] , result[(2)]  range=[-32768, -32712) uses={(25)}
+36 (25)    heaptag flags{} b , result[(24)]  range=[-32768, -32713) uses={(26)}
+37 (26)    tbpadr flags{} result[(25)] , Ext0 , Method , const{2} , const{-12}  range=[-32768, -32714) uses={(41)}
+17 (27)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32715) uses={(29) (28)}
+39 (28)    guard-true flags{raLive} result[(27)]  range=[-32768, -32716) uses={(31)}
+38 (29)    guard-false flags{raLive} result[(27)]  range=[-32768, -32717) uses={(31)}
+41 (30)     trap-nil flags{raLive}  range=[-32718, -32718) uses={}
+40 (31)    merge-if flags{raLive} result[(28)] , result[(29)]  range=[-32768, -32719) uses={}
+42 (32)    adr flags{} b  range=[-32768, -32720) uses={(33)}
+ 7 (33)    access-deref flags{} result[(4)] , result[(32)] , result[(2)]  range=[-32768, -32721) uses={(34)}
+43 (34)    heaptag flags{} b , result[(33)]  range=[-32768, -32722) uses={(35)}
+44 (35)    eql.u4 flags{} result[(34)] , result{1 of (1)}  range=[-32768, -32723) uses={(37) (36)}
+46 (36)    guard-true flags{raLive} result[(35)]  range=[-32768, -32724) uses={(39)}
+45 (37)    guard-false flags{raLive} result[(35)]  range=[-32768, -32725) uses={(39)}
+48 (38)     trap-eguard flags{raLive}  range=[-32726, -32726) uses={}
+47 (39)    merge-if flags{raLive} result[(36)] , result[(37)]  range=[-32768, -32727) uses={}
+49 (40)    convert.s2 flags{} const{0}  range=[-32768, -32728) uses={(41)}
+16 (41)    call flags{} result[(26)] , result[(4)] , result[(40)]  range=[-32768, -32729) uses={(79)}
+15 (42)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32730) uses={(44) (43)}
+52 (43)    guard-true flags{raLive} result[(42)]  range=[-32768, -32731) uses={(46)}
+51 (44)    guard-false flags{raLive} result[(42)]  range=[-32768, -32732) uses={(46)}
+54 (45)     trap-nil flags{raLive}  range=[-32733, -32733) uses={}
+53 (46)    merge-if flags{raLive} result[(43)] , result[(44)]  range=[-32768, -32734) uses={}
+55 (47)    adr flags{} b  range=[-32768, -32735) uses={(48)}
+ 6 (48)    access-deref flags{} result[(4)] , result[(47)] , result[(2)]  range=[-32768, -32736) uses={(49)}
+56 (49)    heaptag flags{} b , result[(48)]  range=[-32768, -32737) uses={(50)}
+57 (50)    eql.u4 flags{} result[(49)] , result{3 of (1)}  range=[-32768, -32738) uses={(52) (51)}
+59 (51)    guard-true flags{raLive} result[(50)]  range=[-32768, -32739) uses={(54)}
+58 (52)    guard-false flags{raLive} result[(50)]  range=[-32768, -32740) uses={(54)}
+61 (53)     trap-eguard flags{raLive}  range=[-32741, -32741) uses={}
+60 (54)    merge-if flags{raLive} result[(51)] , result[(52)]  range=[-32768, -32742) uses={}
+14 (55)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32743) uses={(57) (56)}
+63 (56)    guard-true flags{raLive} result[(55)]  range=[-32768, -32744) uses={(59)}
+62 (57)    guard-false flags{raLive} result[(55)]  range=[-32768, -32745) uses={(59)}
+65 (58)     trap-nil flags{raLive}  range=[-32746, -32746) uses={}
+64 (59)    merge-if flags{raLive} result[(56)] , result[(57)]  range=[-32768, -32747) uses={}
+66 (60)    adr flags{} b  range=[-32768, -32748) uses={(61)}
+ 5 (61)    access-deref flags{} result[(4)] , result[(60)] , result[(2)]  range=[-32768, -32749) uses={(62)}
+67 (62)    heaptag flags{} b , result[(61)]  range=[-32768, -32750) uses={(63)}
+68 (63)    tbpadr flags{} result[(62)] , Ext1 , Method , const{2} , const{-12}  range=[-32768, -32751) uses={(78)}
+13 (64)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32752) uses={(66) (65)}
+70 (65)    guard-true flags{raLive} result[(64)]  range=[-32768, -32753) uses={(68)}
+69 (66)    guard-false flags{raLive} result[(64)]  range=[-32768, -32754) uses={(68)}
+72 (67)     trap-nil flags{raLive}  range=[-32755, -32755) uses={}
+71 (68)    merge-if flags{raLive} result[(65)] , result[(66)]  range=[-32768, -32756) uses={}
+73 (69)    adr flags{} b  range=[-32768, -32757) uses={(70)}
+ 4 (70)    access-deref flags{} result[(4)] , result[(69)] , result[(2)]  range=[-32768, -32758) uses={(71)}
+74 (71)    heaptag flags{} b , result[(70)]  range=[-32768, -32759) uses={(72)}
+75 (72)    eql.u4 flags{} result[(71)] , result{3 of (1)}  range=[-32768, -32760) uses={(74) (73)}
+77 (73)    guard-true flags{raLive} result[(72)]  range=[-32768, -32761) uses={(76)}
+76 (74)    guard-false flags{raLive} result[(72)]  range=[-32768, -32762) uses={(76)}
+79 (75)     trap-eguard flags{raLive}  range=[-32763, -32763) uses={}
+78 (76)    merge-if flags{raLive} result[(73)] , result[(74)]  range=[-32768, -32764) uses={}
+80 (77)    convert.s2 flags{} const{0}  range=[-32768, -32765) uses={(78)}
+12 (78)    call flags{} result[(63)] , result[(4)] , result[(77)]  range=[-32768, -32766) uses={(79)}
+50 (79)    exit flags{} result[(41)] , result[(78)] , result[(80)]  range=[-32768, -32767) uses={}
+ 3 (80)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(79)}
 
 

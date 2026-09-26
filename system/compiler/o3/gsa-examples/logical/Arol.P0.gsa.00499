@@ -1,0 +1,17 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: P0 range=[-32768, -32756)
+ 1 ( 1)    [2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32757) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32758, -32758) uses={(12)}
+ 4 ( 3)    lss.s1 flags{} const{3} , const{0}  range=[-32768, -32759) uses={(7) (4)}
+ 6 ( 4)    guard-true flags{} result[(3)]  range=[-32768, -32760) uses={(9)}
+ 8 ( 5)     neg.s1 flags{} const{3}  range=[-32762, -32761) uses={(6)}
+ 9 ( 6)     %t4 := ror.s4 flags{} result{1 of (1)} , result[(5)]  range=[-32762, -32762) uses={(10)}
+ 5 ( 7)    guard-false flags{} result[(3)]  range=[-32768, -32763) uses={(9)}
+11 ( 8)     %t4 := rol.s4 flags{} result{1 of (1)} , const{3}  range=[-32764, -32764) uses={(10)}
+ 7 ( 9)    merge-if flags{} result[(4)] , result[(7)]  range=[-32768, -32765) uses={(10)}
+10 (10)     %result-3 := gate flags{} result[(9)] , result[(6)] , result[(8)]  range=[-32766, -32766) uses={(11)}
+12 (11)    exit flags{} result[(10)] [location=%result-3], result[(12)]  range=[-32768, -32767) uses={}
+ 3 (12)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(11)}
+
+

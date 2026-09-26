@@ -1,27 +1,27 @@
 Live Range Analysis
 
-0.0 (0)  greg: while range=[-32768, -32746)
-  0.1 (1)  [3:[location=.%0], 2:[location=i], 1:[location=j]] enter flags{} %nlm  range=[-32768, -32747) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32750, -32748) uses={(22)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32750, -32749) uses={}
-   0.5 (4)  %result-3 := copy flags{} const{0}  range=[-32750, -32750) uses={}
-  0.6 (5)  i := copy flags{} const{0}  range=[-32768, -32751) uses={}
-  0.7 (6)  i := convert.s2 flags{} const{100}  range=[-32768, -32752) uses={(19) (13) (9)}
-  0.11 (7)  j := convert.s2 flags{} const{99}  range=[-32768, -32753) uses={}
-  0.12 (8)  convert.s2 flags{} const{100}  range=[-32768, -32754) uses={(9)}
-  0.10 (9)  leq.s2 flags{} result[(6)] , result[(8)]  range=[-32768, -32755) uses={(17) (10)}
-  0.14 (10)  guard-true flags{} result[(9)]  range=[-32768, -32756) uses={(18)}
-   0.16 (11)  merge-loop flags{} const{TRUE} , result[(16)]  range=[-32762, -32757) uses={(13)}
-    0.18 (12)  i := add.s2 flags{} result[(13)] , const{1}  range=[-32762, -32758) uses={(15) (13)}
-    0.9 (13)  i := gate flags{} result[(11)] , result[(6)] , result[(12)]  range=[-32762, -32759) uses={(19) (12)}
-    0.20 (14)  convert.s2 flags{} const{100}  range=[-32762, -32760) uses={(15)}
-    0.19 (15)  leq.s2 flags{} result[(12)] , result[(14)]  range=[-32762, -32761) uses={(16)}
-    0.17 (16)  not.u1 flags{} result[(15)]  range=[-32762, -32762) uses={(11)}
-  0.13 (17)  guard-false flags{} result[(9)]  range=[-32768, -32763) uses={(18)}
-  0.15 (18)  merge-if flags{} result[(10)] , result[(17)]  range=[-32768, -32764) uses={(19)}
-   0.8 (19)  %result-3 := gate flags{} result[(18)] , result[(13)] , result[(6)]  range=[-32765, -32765) uses={(21)}
-  0.22 (20)  %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
-  0.21 (21)  exit flags{} result[(19)] [location=%result-3], result[(22)]  range=[-32768, -32767) uses={}
-   0.3 (22)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(21)}
+ 0 ( 0)  greg: while range=[-32768, -32746)
+ 1 ( 1)    [3:[location=.%0], 2:[location=i], 1:[location=j]] enter flags{} %nlm  range=[-32768, -32747) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32750, -32748) uses={(22)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32750, -32749) uses={}
+ 5 ( 4)     %result-3 := copy flags{} const{0}  range=[-32750, -32750) uses={}
+ 6 ( 5)    i := copy flags{} const{0}  range=[-32768, -32751) uses={}
+ 7 ( 6)    i := convert.s2 flags{} const{100}  range=[-32768, -32752) uses={(19) (13) (9)}
+11 ( 7)    j := convert.s2 flags{} const{99}  range=[-32768, -32753) uses={}
+12 ( 8)    convert.s2 flags{} const{100}  range=[-32768, -32754) uses={(9)}
+10 ( 9)    leq.s2 flags{} result[(6)] , result[(8)]  range=[-32768, -32755) uses={(17) (10)}
+14 (10)    guard-true flags{} result[(9)]  range=[-32768, -32756) uses={(18)}
+16 (11)     merge-loop flags{} const{TRUE} , result[(16)]  range=[-32762, -32757) uses={(13)}
+18 (12)      i := add.s2 flags{} result[(13)] , const{1}  range=[-32762, -32758) uses={(15) (13)}
+ 9 (13)      i := gate flags{} result[(11)] , result[(6)] , result[(12)]  range=[-32762, -32759) uses={(19) (12)}
+20 (14)      convert.s2 flags{} const{100}  range=[-32762, -32760) uses={(15)}
+19 (15)      leq.s2 flags{} result[(12)] , result[(14)]  range=[-32762, -32761) uses={(16)}
+17 (16)      not.u1 flags{} result[(15)]  range=[-32762, -32762) uses={(11)}
+13 (17)    guard-false flags{} result[(9)]  range=[-32768, -32763) uses={(18)}
+15 (18)    merge-if flags{} result[(10)] , result[(17)]  range=[-32768, -32764) uses={(19)}
+ 8 (19)     %result-3 := gate flags{} result[(18)] , result[(13)] , result[(6)]  range=[-32765, -32765) uses={(21)}
+22 (20)    %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
+21 (21)    exit flags{} result[(19)] [location=%result-3], result[(22)]  range=[-32768, -32767) uses={}
+ 3 (22)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(21)}
 
 

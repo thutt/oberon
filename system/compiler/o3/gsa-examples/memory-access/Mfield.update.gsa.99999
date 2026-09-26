@@ -1,16 +1,9 @@
 Final GSA
 
-0.0 (0)  greg: update range=[-32768, -32757)
-  0.1 (1)  enter flags{} %nlm:%vr33  range=[-32768, -32758) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32760, -32759) uses={(11)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32760, -32760) uses={}
-  0.5 (4)  adr flags{} v  range=[-32768, -32761) uses={(5)}
-  0.6 (5)  v := initialize flags{} v , result[(4)] , const{6}:%vr36  range=[-32768, -32762) uses={}
-  0.7 (6)  x := copy flags{} const{0}:%vr37  range=[-32768, -32763) uses={(9)}
-  0.9 (7)  adr flags{} v  range=[-32768, -32764) uses={(8)}
-  0.10 (8)  add.u4 flags{} result[(7)] , const{2}:%vr40  range=[-32768, -32765) uses={(9)}
-  0.8 (9)  update-field flags{} v , result[(8)] , const{2}:%vr40 , result[(6)]  range=[-32768, -32766) uses={}
-  0.11 (10)  exit flags{} result[(11)]  range=[-32768, -32767) uses={}
-   0.3 (11)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(10)}
+0 (0)  greg: update range=[-32768, -32764)
+1 (1)    enter flags{} %nlm:%vr32  range=[-32768, -32765) uses={}
+2 (2)     %nlm:%vr32 := ctor flags{}  range=[-32766, -32766) uses={(4)}
+4 (3)    exit flags{} result[(4)]  range=[-32768, -32767) uses={}
+3 (4)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(3)}
 
 

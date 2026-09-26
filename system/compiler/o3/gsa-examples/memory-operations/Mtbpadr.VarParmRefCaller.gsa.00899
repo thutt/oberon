@@ -1,18 +1,18 @@
 Live Range Analysis
 
-0.0 (0)  greg: VarParmRefCaller range=[-32768, -32755)
-  0.1 (1)  [6:[location=.%1], 5:[location=.%0], 4:[location=b-tag/adr], 3:[location=b-tag], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm:%vr33  range=[-32768, -32756) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32758, -32757) uses={(13) (8) (5)}
-   0.6 (3)  %return-3 := copy flags{} const{FALSE}:%vr32  range=[-32758, -32758) uses={}
-  0.7 (4)  adr flags{} b  range=[-32768, -32759) uses={(5)}
-  0.5 (5)  access-varparm flags{} b , result[(4)] , result[(2)]  range=[-32768, -32760) uses={}
-  0.8 (6)  tbpadr flags{} result{4 of (1)} , BaseDesc , RefMethod , const{0}:%vr47 , const{-4}:%vr48  range=[-32768, -32761) uses={(11)}
-  0.10 (7)  adr flags{} b  range=[-32768, -32762) uses={(8)}
-  0.4 (8)  access-varparm flags{} b , result[(7)] , result[(2)]  range=[-32768, -32763) uses={(11) (9)}
-  0.11 (9)  adr flags{} result[(8)]  range=[-32768, -32764) uses={(11)}
-  0.12 (10)  convert.s2 flags{} const{21}:%vr52  range=[-32768, -32765) uses={(11)}
-  0.9 (11)  call flags{} result[(6)] , result[(9)] , result[(8)] , result[(10)]  range=[-32768, -32766) uses={(12)}
-  0.13 (12)  exit flags{} result[(11)] , result[(13)]  range=[-32768, -32767) uses={}
-   0.3 (13)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(12)}
+ 0 ( 0)  greg: VarParmRefCaller range=[-32768, -32755)
+ 1 ( 1)    [6:[location=.%1], 5:[location=.%0], 4:[location=b-tag/adr], 3:[location=b-tag], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm:%vr33  range=[-32768, -32756) uses={}
+ 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32758, -32757) uses={(13) (8) (5)}
+ 6 ( 3)     %return-3 := copy flags{} const{FALSE}:%vr32  range=[-32758, -32758) uses={}
+ 7 ( 4)    adr flags{} b  range=[-32768, -32759) uses={(5)}
+ 5 ( 5)    access-varparm flags{} b , result[(4)] , result[(2)]  range=[-32768, -32760) uses={}
+ 8 ( 6)    tbpadr flags{} result{4 of (1)} , BaseDesc , RefMethod , const{0}:%vr47 , const{-4}:%vr48  range=[-32768, -32761) uses={(11)}
+10 ( 7)    adr flags{} b  range=[-32768, -32762) uses={(8)}
+ 4 ( 8)    access-varparm flags{} b , result[(7)] , result[(2)]  range=[-32768, -32763) uses={(11) (9)}
+11 ( 9)    adr flags{} result[(8)]  range=[-32768, -32764) uses={(11)}
+12 (10)    convert.s2 flags{} const{21}:%vr52  range=[-32768, -32765) uses={(11)}
+ 9 (11)    call flags{} result[(6)] , result[(9)] , result[(8)] , result[(10)]  range=[-32768, -32766) uses={(12)}
+13 (12)    exit flags{} result[(11)] , result[(13)]  range=[-32768, -32767) uses={}
+ 3 (13)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(12)}
 
 

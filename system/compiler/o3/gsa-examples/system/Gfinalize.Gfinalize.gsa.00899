@@ -1,12 +1,12 @@
 Live Range Analysis
 
-0.0 (0)  greg: Gfinalize range=[-32768, -32761)
-  0.1 (1)  enter flags{live} %nlm:%vr33  range=[-32768, -32762) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{live}  range=[-32764, -32763) uses={(7) (6)}
-   0.5 (3)  %return-2 := copy flags{live} const{FALSE}:%vr32  range=[-32764, -32764) uses={(6)}
-  0.6 (4)  import flags{live} SYSTEM  range=[-32768, -32765) uses={}
-  0.7 (5)  .Gfinalize-BaseDesc := init-rectd flags{live} BaseDesc  range=[-32768, -32766) uses={(6)}
-  0.4 (6)  exit flags{live} result[(2)] [location=%nlm:%vr33], result[(3)] [location=%return-2], result[(5)] [location=.Gfinalize-BaseDesc], result[(7)]  range=[-32768, -32767) uses={}
-   0.3 (7)  dtor flags{live} result[(2)]  range=[-32768, -32768) uses={(6)}
+0 (0)  greg: Gfinalize range=[-32768, -32761)
+1 (1)    enter flags{raLive} %nlm:%vr33  range=[-32768, -32762) uses={}
+2 (2)     %nlm:%vr33 := ctor flags{raLive}  range=[-32764, -32763) uses={(7) (6)}
+5 (3)     %return-2 := copy flags{raLive} const{FALSE}:%vr32  range=[-32764, -32764) uses={(6)}
+6 (4)    import flags{raLive} SYSTEM  range=[-32768, -32765) uses={}
+7 (5)    .Gfinalize-BaseDesc := init-rectd flags{raLive} BaseDesc  range=[-32768, -32766) uses={(6)}
+4 (6)    exit flags{raLive} result[(2)] [location=%nlm:%vr33], result[(3)] [location=%return-2], result[(5)] [location=.Gfinalize-BaseDesc], result[(7)]  range=[-32768, -32767) uses={}
+3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
 
 

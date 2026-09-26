@@ -1,29 +1,29 @@
 Live Range Analysis
 
-0.0 (0)  greg: P4 range=[-32768, -32744)
-  0.1 (1)  [5:[location=.BaseDesc-BaseDesc/adr], 4:[location=.BaseDesc-BaseDesc], 3:[location=.%0], 2:[location=p/adr], 1:[location=p]] enter flags{} %nlm  range=[-32768, -32745) uses={}
-   0.2 (2)  %nlm := ctor flags{}  range=[-32747, -32746) uses={(5)}
-   0.4 (3)  %return-2 := copy flags{} const{FALSE}  range=[-32747, -32747) uses={}
-  0.5 (4)  adr flags{} p  range=[-32768, -32748) uses={(6)}
-  0.3 (5)  %nlm := update-varparm flags{} p , result[(6)] , result[(2)] , result[(7)]  range=[-32768, -32749) uses={(17) (9)}
-  0.6 (6)  mayalias flags{} result[(4)] , result[(19)]  range=[-32768, -32750) uses={(5)}
-  0.7 (7)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32751) uses={(5)}
-  0.11 (8)  adr flags{} p  range=[-32768, -32752) uses={(21) (10)}
-  0.9 (9)  access-varparm flags{} p , result[(10)] , result[(5)]  range=[-32768, -32753) uses={(17) (16) (11)}
-  0.13 (10)  mayalias flags{} result[(8)] , result[(19)]  range=[-32768, -32754) uses={(9)}
-  0.15 (11)  neq.u1 flags{} result[(9)] , const{0}  range=[-32768, -32755) uses={(13) (12)}
-  0.17 (12)  guard-true flags{live} result[(11)]  range=[-32768, -32756) uses={(15)}
-  0.16 (13)  guard-false flags{live} result[(11)]  range=[-32768, -32757) uses={(15)}
-   0.19 (14)  trap-nil flags{live}  range=[-32758, -32758) uses={}
-  0.18 (15)  merge-if flags{live} result[(12)] , result[(13)]  range=[-32768, -32759) uses={}
-  0.14 (16)  adr flags{} result[(9)]  range=[-32768, -32760) uses={(17)}
-  0.8 (17)  access-deref flags{} result[(9)] , result[(16)] , result[(5)]  range=[-32768, -32761) uses={(20) (18)}
-  0.21 (18)  adr flags{} result[(17)]  range=[-32768, -32762) uses={(19)}
-  0.10 (19)  add.u4 flags{} result[(18)] , const{4}  range=[-32768, -32763) uses={(6) (21) (10)}
-  0.20 (20)  %nlm := update-field flags{} result[(17)] , result[(21)] , const{4} , result[(22)]  range=[-32768, -32764) uses={(24)}
-  0.12 (21)  mayalias flags{} result[(19)] , result[(8)]  range=[-32768, -32765) uses={(20)}
-  0.22 (22)  newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32766) uses={(20)}
-  0.24 (23)  exit flags{} result[(24)]  range=[-32768, -32767) uses={}
-   0.23 (24)  dtor flags{live} result[(20)]  range=[-32768, -32768) uses={(23)}
+ 0 ( 0)  greg: P4 range=[-32768, -32744)
+ 1 ( 1)    [5:[location=.BaseDesc-BaseDesc/adr], 4:[location=.BaseDesc-BaseDesc], 3:[location=.%0], 2:[location=p/adr], 1:[location=p]] enter flags{} %nlm  range=[-32768, -32745) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32747, -32746) uses={(5)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32747, -32747) uses={}
+ 5 ( 4)    adr flags{} p  range=[-32768, -32748) uses={(6)}
+ 3 ( 5)    %nlm := update-varparm flags{} p , result[(6)] , result[(2)] , result[(7)]  range=[-32768, -32749) uses={(17) (9)}
+ 6 ( 6)    mayalias flags{} result[(4)] , result[(19)]  range=[-32768, -32750) uses={(5)}
+ 7 ( 7)    newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32751) uses={(5)}
+11 ( 8)    adr flags{} p  range=[-32768, -32752) uses={(21) (10)}
+ 9 ( 9)    access-varparm flags{} p , result[(10)] , result[(5)]  range=[-32768, -32753) uses={(17) (16) (11)}
+13 (10)    mayalias flags{} result[(8)] , result[(19)]  range=[-32768, -32754) uses={(9)}
+15 (11)    neq.u1 flags{} result[(9)] , const{0}  range=[-32768, -32755) uses={(13) (12)}
+17 (12)    guard-true flags{raLive} result[(11)]  range=[-32768, -32756) uses={(15)}
+16 (13)    guard-false flags{raLive} result[(11)]  range=[-32768, -32757) uses={(15)}
+19 (14)     trap-nil flags{raLive}  range=[-32758, -32758) uses={}
+18 (15)    merge-if flags{raLive} result[(12)] , result[(13)]  range=[-32768, -32759) uses={}
+14 (16)    adr flags{} result[(9)]  range=[-32768, -32760) uses={(17)}
+ 8 (17)    access-deref flags{} result[(9)] , result[(16)] , result[(5)]  range=[-32768, -32761) uses={(20) (18)}
+21 (18)    adr flags{} result[(17)]  range=[-32768, -32762) uses={(19)}
+10 (19)    add.u4 flags{} result[(18)] , const{4}  range=[-32768, -32763) uses={(6) (21) (10)}
+20 (20)    %nlm := update-field flags{} result[(17)] , result[(21)] , const{4} , result[(22)]  range=[-32768, -32764) uses={(24)}
+12 (21)    mayalias flags{} result[(19)] , result[(8)]  range=[-32768, -32765) uses={(20)}
+22 (22)    newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32766) uses={(20)}
+24 (23)    exit flags{} result[(24)]  range=[-32768, -32767) uses={}
+23 (24)     dtor flags{raLive} result[(20)]  range=[-32768, -32768) uses={(23)}
 
 

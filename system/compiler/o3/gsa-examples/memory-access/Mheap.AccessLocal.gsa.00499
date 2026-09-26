@@ -1,0 +1,14 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: AccessLocal range=[-32768, -32759)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32760) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32761, -32761) uses={(9)}
+ 4 ( 3)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32762) uses={(5) (4)}
+ 6 ( 4)    guard-true flags{raLive} result[(3)]  range=[-32768, -32763) uses={(7)}
+ 5 ( 5)    guard-false flags{raLive} result[(3)]  range=[-32768, -32764) uses={(7)}
+ 8 ( 6)     trap-nil flags{raLive}  range=[-32765, -32765) uses={}
+ 7 ( 7)    merge-if flags{raLive} result[(4)] , result[(5)]  range=[-32768, -32766) uses={}
+ 9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
+ 3 ( 9)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(8)}
+
+

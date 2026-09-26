@@ -1,0 +1,11 @@
+Value Numbering
+
+0 (0)  greg: Aror range=[-32768, -32762)
+1 (1)    enter flags{raLive} %nlm  range=[-32768, -32763) uses={}
+2 (2)     %nlm := ctor flags{raLive}  range=[-32765, -32764) uses={(6) (5)}
+5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32765, -32765) uses={}
+6 (4)    import flags{raLive} SYSTEM  range=[-32768, -32766) uses={}
+4 (5)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(6)]  range=[-32768, -32767) uses={}
+3 (6)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(5)}
+
+

@@ -1,43 +1,43 @@
 Live Range Analysis
 
-0.0 (0)  greg: P6b range=[-32768, -32730)
-  0.1 (1)  [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm:%vr33  range=[-32768, -32731) uses={}
-   0.2 (2)  %nlm:%vr33 := ctor flags{}  range=[-32733, -32732) uses={(35) (7)}
-   0.5 (3)  %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32733, -32733) uses={}
-  0.6 (4)  adr flags{} base  range=[-32768, -32734) uses={(5)}
-  0.7 (5)  base := initialize flags{} base , result[(4)] , const{105380}:%vr38  range=[-32768, -32735) uses={}
-  0.8 (6)  adr flags{} len  range=[-32768, -32736) uses={(7)}
-  0.4 (7)  %nlm:%vr33 := update-nonlocal flags{} len , result[(6)] , result[(2)] , result[(36)]  range=[-32768, -32737) uses={(38)}
-  0.11 (8)  adr flags{} base  range=[-32768, -32738) uses={(9)}
-  0.12 (9)  add.u4 flags{} result[(8)] , const{96}:%vr46  range=[-32768, -32739) uses={(10)}
-  0.13 (10)  access-field flags{} base , result[(9)] , const{96}:%vr46  range=[-32768, -32740) uses={(28) (24)}
-  0.16 (11)  adr flags{} base  range=[-32768, -32741) uses={(12)}
-  0.17 (12)  add.u4 flags{} result[(11)] , const{96}:%vr46  range=[-32768, -32742) uses={(13)}
-  0.18 (13)  access-field flags{} base , result[(12)] , const{96}:%vr46  range=[-32768, -32743) uses={}
-  0.19 (14)  convert.s4 flags{} const{27}:%vr52  range=[-32768, -32744) uses={(28) (25) (17) (15)}
-  0.22 (15)  geq.s4 flags{} result[(14)] , const{0}:%vr54  range=[-32768, -32745) uses={(20) (16)}
-  0.24 (16)  guard-true flags{live} result[(15)]  range=[-32768, -32746) uses={(23)}
-   0.21 (17)  lss.s4 flags{} result[(14)] , const{121}:%vr56  range=[-32749, -32747) uses={(19) (18)}
-   0.27 (18)  guard-true flags{} result[(17)]  range=[-32749, -32748) uses={}
-   0.26 (19)  guard-false flags{} result[(17)]  range=[-32749, -32749) uses={(21)}
-  0.23 (20)  guard-false flags{} result[(15)]  range=[-32768, -32750) uses={(21)}
-  0.28 (21)  merge-cond flags{live} result[(20)] , result[(19)]  range=[-32768, -32751) uses={(23)}
-   0.29 (22)  trap-index flags{live}  range=[-32752, -32752) uses={}
-  0.25 (23)  merge-if flags{live} result[(16)] , result[(21)]  range=[-32768, -32753) uses={}
-  0.15 (24)  adr flags{} result[(10)]  range=[-32768, -32754) uses={(27)}
-  0.20 (25)  mul.s4 flags{} result[(14)] , const{4}:%vr62  range=[-32768, -32755) uses={(26)}
-  0.31 (26)  convert.u4 flags{} result[(25)]  range=[-32768, -32756) uses={(27)}
-  0.30 (27)  add.u4 flags{} result[(24)] , result[(26)]  range=[-32768, -32757) uses={(28)}
-  0.14 (28)  access-element flags{} result[(10)] , result[(27)] , result[(14)]  range=[-32768, -32758) uses={(35) (34) (29)}
-  0.33 (29)  neq.u1 flags{} result[(28)] , const{0}:%vr68  range=[-32768, -32759) uses={(31) (30)}
-  0.35 (30)  guard-true flags{live} result[(29)]  range=[-32768, -32760) uses={(33)}
-  0.34 (31)  guard-false flags{live} result[(29)]  range=[-32768, -32761) uses={(33)}
-   0.37 (32)  trap-nil flags{live}  range=[-32762, -32762) uses={}
-  0.36 (33)  merge-if flags{live} result[(30)] , result[(31)]  range=[-32768, -32763) uses={}
-  0.32 (34)  adr flags{} result[(28)]  range=[-32768, -32764) uses={(35)}
-  0.3 (35)  access-deref flags{} result[(28)] , result[(34)] , result[(2)]  range=[-32768, -32765) uses={(36)}
-  0.9 (36)  dynarrlen flags{} result[(35)] , const{1}:%vr73 , const{12}:%vr74  range=[-32768, -32766) uses={(7)}
-  0.38 (37)  exit flags{} result[(38)]  range=[-32768, -32767) uses={}
-   0.10 (38)  dtor flags{live} result[(7)]  range=[-32768, -32768) uses={(37)}
+ 0 ( 0)  greg: P6b range=[-32768, -32730)
+ 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm:%vr33  range=[-32768, -32731) uses={}
+ 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32733, -32732) uses={(35) (7)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32733, -32733) uses={}
+ 6 ( 4)    adr flags{} base  range=[-32768, -32734) uses={(5)}
+ 7 ( 5)    base := initialize flags{} base , result[(4)] , const{105380}:%vr38  range=[-32768, -32735) uses={}
+ 8 ( 6)    adr flags{} len  range=[-32768, -32736) uses={(7)}
+ 4 ( 7)    %nlm:%vr33 := update-nonlocal flags{} len , result[(6)] , result[(2)] , result[(36)]  range=[-32768, -32737) uses={(38)}
+11 ( 8)    adr flags{} base  range=[-32768, -32738) uses={(9)}
+12 ( 9)    add.u4 flags{} result[(8)] , const{96}:%vr46  range=[-32768, -32739) uses={(10)}
+13 (10)    access-field flags{} base , result[(9)] , const{96}:%vr46  range=[-32768, -32740) uses={(28) (24)}
+16 (11)    adr flags{} base  range=[-32768, -32741) uses={(12)}
+17 (12)    add.u4 flags{} result[(11)] , const{96}:%vr46  range=[-32768, -32742) uses={(13)}
+18 (13)    access-field flags{} base , result[(12)] , const{96}:%vr46  range=[-32768, -32743) uses={}
+19 (14)    convert.s4 flags{} const{27}:%vr52  range=[-32768, -32744) uses={(28) (25) (17) (15)}
+22 (15)    geq.s4 flags{} result[(14)] , const{0}:%vr54  range=[-32768, -32745) uses={(20) (16)}
+24 (16)    guard-true flags{raLive} result[(15)]  range=[-32768, -32746) uses={(23)}
+21 (17)     lss.s4 flags{} result[(14)] , const{121}:%vr56  range=[-32749, -32747) uses={(19) (18)}
+27 (18)     guard-true flags{} result[(17)]  range=[-32749, -32748) uses={}
+26 (19)     guard-false flags{} result[(17)]  range=[-32749, -32749) uses={(21)}
+23 (20)    guard-false flags{} result[(15)]  range=[-32768, -32750) uses={(21)}
+28 (21)    merge-cond flags{raLive} result[(20)] , result[(19)]  range=[-32768, -32751) uses={(23)}
+29 (22)     trap-index flags{raLive}  range=[-32752, -32752) uses={}
+25 (23)    merge-if flags{raLive} result[(16)] , result[(21)]  range=[-32768, -32753) uses={}
+15 (24)    adr flags{} result[(10)]  range=[-32768, -32754) uses={(27)}
+20 (25)    mul.s4 flags{} result[(14)] , const{4}:%vr62  range=[-32768, -32755) uses={(26)}
+31 (26)    convert.u4 flags{} result[(25)]  range=[-32768, -32756) uses={(27)}
+30 (27)    add.u4 flags{} result[(24)] , result[(26)]  range=[-32768, -32757) uses={(28)}
+14 (28)    access-element flags{} result[(10)] , result[(27)] , result[(14)]  range=[-32768, -32758) uses={(35) (34) (29)}
+33 (29)    neq.u1 flags{} result[(28)] , const{0}:%vr68  range=[-32768, -32759) uses={(31) (30)}
+35 (30)    guard-true flags{raLive} result[(29)]  range=[-32768, -32760) uses={(33)}
+34 (31)    guard-false flags{raLive} result[(29)]  range=[-32768, -32761) uses={(33)}
+37 (32)     trap-nil flags{raLive}  range=[-32762, -32762) uses={}
+36 (33)    merge-if flags{raLive} result[(30)] , result[(31)]  range=[-32768, -32763) uses={}
+32 (34)    adr flags{} result[(28)]  range=[-32768, -32764) uses={(35)}
+ 3 (35)    access-deref flags{} result[(28)] , result[(34)] , result[(2)]  range=[-32768, -32765) uses={(36)}
+ 9 (36)    dynarrlen flags{} result[(35)] , const{1}:%vr73 , const{12}:%vr74  range=[-32768, -32766) uses={(7)}
+38 (37)    exit flags{} result[(38)]  range=[-32768, -32767) uses={}
+10 (38)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(37)}
 
 

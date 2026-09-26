@@ -1,0 +1,12 @@
+Copy Propagation
+
+0 (0)  greg: Mheap range=[-32768, -32761)
+1 (1)    enter flags{raLive} %nlm  range=[-32768, -32762) uses={}
+2 (2)     %nlm := ctor flags{raLive}  range=[-32764, -32763) uses={(7) (6)}
+5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32764, -32764) uses={(6)}
+6 (4)    .Mheap-RecDesc := init-rectd flags{raLive} RecDesc  range=[-32768, -32765) uses={(6)}
+7 (5)    Gv := copy flags{raLive} const{0}  range=[-32768, -32766) uses={(6)}
+4 (6)    exit flags{raLive} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=.Mheap-RecDesc], result[(5)] [location=Gv], result[(7)]  range=[-32768, -32767) uses={}
+3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
+
+
