@@ -13,13 +13,7 @@ source ${SKL_DIR}/scripts/functions
 O3_DIR="${SKL_DIR}/system/compiler/o3";
 
 declare -a OPTIONS;
-OPTIONS=(                                       \
-    "--opt-no-copy-prop"                        \
-    "--opt-no-vn"                               \
-    "--opt-no-const-prop"                       \
-    "--opt-no-dce"                              \
-    "--opt-no-ss"                               \
-);
+OPTIONS=( );
 
 declare -a FILES;
 
