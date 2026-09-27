@@ -1,0 +1,15 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: P1 range=[-32768, -32758)
+ 1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32759) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32760, -32760) uses={(7) (4)}
+ 5 ( 3)    adr flags{} x  range=[-32768, -32761) uses={(5) (8)}
+ 4 ( 4)    %nlm := update-nonlocal flags{} x , result[(5)] , result[(2)] , result[(7)]  range=[-32768, -32762) uses={(10)}
+ 6 ( 5)    mayalias flags{} result[(3)] , result[(6)]  range=[-32768, -32763) uses={(4)}
+ 9 ( 6)    adr flags{} y  range=[-32768, -32764) uses={(5) (8)}
+ 3 ( 7)    access-nonlocal flags{} y , result[(8)] , result[(2)]  range=[-32768, -32765) uses={(4)}
+ 7 ( 8)    mayalias flags{} result[(6)] , result[(3)]  range=[-32768, -32766) uses={(7)}
+10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
+ 8 (10)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(9)}
+
+

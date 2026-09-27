@@ -1,0 +1,21 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: PtrNonLocalVar range=[-32768, -32752)
+ 1 ( 1)    [5:[location=b0/adr], 4:[location=b0], 3:[location=.%0], 2:[location=b1/adr], 1:[location=b1]] enter flags{} %nlm  range=[-32768, -32753) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32754, -32754) uses={(4)}
+ 4 ( 3)    adr flags{} b0  range=[-32768, -32755) uses={(8) (5)}
+ 3 ( 4)    %nlm := update-nonlocal flags{} b0 , result[(5)] , result[(2)] , const{0}  range=[-32768, -32756) uses={(14) (11) (7)}
+ 6 ( 5)    mayalias flags{} result[(3)] , result[(6)]  range=[-32768, -32757) uses={(4)}
+10 ( 6)    adr flags{} b1  range=[-32768, -32758) uses={(5) (8)}
+ 9 ( 7)    access-varparm flags{} b1 , result[(8)] , result[(4)]  range=[-32768, -32759) uses={(9)}
+ 5 ( 8)    mayalias flags{} result[(6)] , result[(3)]  range=[-32768, -32760) uses={(11) (7)}
+11 ( 9)    neq.u4 flags{} result[(7)] , const{0}  range=[-32768, -32761) uses={(12) (10)}
+13 (10)    guard-true flags{} result[(9)]  range=[-32768, -32762) uses={(13)}
+ 8 (11)     %nlm := update-varparm flags{} b1 , result[(8)] , result[(4)] , const{0}  range=[-32763, -32763) uses={(14)}
+12 (12)    guard-false flags{} result[(9)]  range=[-32768, -32764) uses={(13)}
+14 (13)    merge-if flags{} result[(10)] , result[(12)]  range=[-32768, -32765) uses={(14)}
+ 7 (14)     %nlm := gate flags{} result[(13)] , result[(11)] , result[(4)]  range=[-32766, -32766) uses={(16)}
+16 (15)    exit flags{} result[(16)]  range=[-32768, -32767) uses={}
+15 (16)     dtor flags{raLive} result[(14)]  range=[-32768, -32768) uses={(15)}
+
+

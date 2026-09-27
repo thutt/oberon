@@ -3,14 +3,14 @@ Live Range Analysis
  0 ( 0)  greg: Minitialize range=[-32768, -32757)
  1 ( 1)    enter flags{raLive} %nlm  range=[-32768, -32758) uses={}
  2 ( 2)     %nlm := ctor flags{raLive}  range=[-32760, -32759) uses={(11) (10)}
- 5 ( 3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32760, -32760) uses={(10)}
+ 5 ( 3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32760, -32760) uses={}
  6 ( 4)    import flags{raLive} SYSTEM  range=[-32768, -32761) uses={}
  7 ( 5)    .Minitialize-Base := init-rectd flags{raLive} Base  range=[-32768, -32762) uses={(10)}
  8 ( 6)    adr flags{raLive} gBase  range=[-32768, -32763) uses={(7)}
  9 ( 7)    gBase := initialize flags{raLive} gBase , result[(6)] , const{4}  range=[-32768, -32764) uses={(10)}
 10 ( 8)    adr flags{raLive} gArr  range=[-32768, -32765) uses={(9)}
 11 ( 9)    gArr := initialize flags{raLive} gArr , result[(8)] , const{40}  range=[-32768, -32766) uses={(10)}
- 4 (10)    exit flags{raLive} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(5)] [location=.Minitialize-Base], result[(7)] [location=gBase], result[(9)] [location=gArr], result[(11)]  range=[-32768, -32767) uses={}
+ 4 (10)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(5)] [location=.Minitialize-Base], result[(7)] [location=gBase], result[(9)] [location=gArr], result[(11)]  range=[-32768, -32767) uses={}
  3 (11)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(10)}
 
 

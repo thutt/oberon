@@ -1,0 +1,19 @@
+Const Prop & Unreachable Code
+
+ 0 ( 0)  greg: P2b range=[-32768, -32754)
+ 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32755) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32756, -32756) uses={(11) (4)}
+ 5 ( 3)    adr flags{} len  range=[-32768, -32757) uses={(4)}
+ 4 ( 4)    %nlm := update-nonlocal flags{} len , result[(3)] , result[(2)] , result[(12)]  range=[-32768, -32758) uses={(14)}
+ 8 ( 5)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32759) uses={(7) (6)}
+10 ( 6)    guard-true flags{raLive} result[(5)]  range=[-32768, -32760) uses={(9)}
+ 9 ( 7)    guard-false flags{raLive} result[(5)]  range=[-32768, -32761) uses={(9)}
+12 ( 8)     trap-nil flags{raLive}  range=[-32762, -32762) uses={}
+11 ( 9)    merge-if flags{raLive} result[(6)] , result[(7)]  range=[-32768, -32763) uses={}
+13 (10)    adr flags{} a0  range=[-32768, -32764) uses={(11)}
+ 3 (11)    access-deref flags{} const{0} , result[(10)] , result[(2)]  range=[-32768, -32765) uses={(12)}
+ 6 (12)    dynarrlen flags{} result[(11)] , const{1} , const{12}  range=[-32768, -32766) uses={(4)}
+14 (13)    exit flags{} result[(14)]  range=[-32768, -32767) uses={}
+ 7 (14)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(13)}
+
+

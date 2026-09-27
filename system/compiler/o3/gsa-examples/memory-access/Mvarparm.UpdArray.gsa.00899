@@ -1,17 +1,16 @@
 Live Range Analysis
 
- 0 ( 0)  greg: UpdArray range=[-32768, -32756)
- 1 ( 1)    [4:[location=.%0], 3:[location=array], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm:%vr33  range=[-32768, -32757) uses={}
- 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32759, -32758) uses={(7)}
- 4 ( 3)     %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32759, -32759) uses={}
- 5 ( 4)    adr flags{} array  range=[-32768, -32760) uses={(5)}
- 6 ( 5)    array := initialize flags{} array , result[(4)] , const{20}:%vr40  range=[-32768, -32761) uses={(10) (8)}
- 9 ( 6)    adr flags{} v  range=[-32768, -32762) uses={(7)}
- 3 ( 7)    %nlm:%vr33 := update-varparm flags{} v , result[(6)] , result[(2)] , result[(8)]  range=[-32768, -32763) uses={(12) (9) (8)}
- 8 ( 8)    arraycopy flags{} result[(7)] , result[(9)] , result{3 of (1)} , result[(5)] , result[(10)]  range=[-32768, -32764) uses={(7)}
-11 ( 9)    adr flags{} result[(7)]  range=[-32768, -32765) uses={(8)}
- 7 (10)    adr flags{} result[(5)]  range=[-32768, -32766) uses={(8)}
-12 (11)    exit flags{} result[(12)]  range=[-32768, -32767) uses={}
-10 (12)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(11)}
+ 0 ( 0)  greg: UpdArray range=[-32768, -32757)
+ 1 ( 1)    [4:[location=.%0], 3:[location=array], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm:%vr32  range=[-32768, -32758) uses={}
+ 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32759, -32759) uses={(6)}
+ 4 ( 3)    adr flags{} array  range=[-32768, -32760) uses={(4)}
+ 5 ( 4)    array := initialize flags{} array , result[(3)] , const{20}:%vr39  range=[-32768, -32761) uses={(9) (7)}
+ 8 ( 5)    adr flags{} v  range=[-32768, -32762) uses={(6)}
+ 3 ( 6)    %nlm:%vr32 := update-varparm flags{} v , result[(5)] , result[(2)] , result[(7)]  range=[-32768, -32763) uses={(11) (8) (7)}
+ 7 ( 7)    arraycopy flags{} result[(6)] , result[(8)] , result{3 of (1)} , result[(4)] , result[(9)]  range=[-32768, -32764) uses={(6)}
+10 ( 8)    adr flags{} result[(6)]  range=[-32768, -32765) uses={(7)}
+ 6 ( 9)    adr flags{} result[(4)]  range=[-32768, -32766) uses={(7)}
+11 (10)    exit flags{} result[(11)]  range=[-32768, -32767) uses={}
+ 9 (11)     dtor flags{raLive} result[(6)]  range=[-32768, -32768) uses={(10)}
 
 

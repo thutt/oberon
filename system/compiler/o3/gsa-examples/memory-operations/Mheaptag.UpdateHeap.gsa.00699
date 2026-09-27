@@ -1,0 +1,9 @@
+Dead Code Elimination
+
+0 (0)  greg: UpdateHeap range=[-32768, -32764)
+1 (1)    [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} %nlm  range=[-32768, -32765) uses={}
+2 (2)    trap-nil flags{raLive}  range=[-32768, -32766) uses={}
+3 (3)    merge-if flags{raLive} result[(10)] , result[(11)]  range=[-32768, -32767) uses={}
+4 (4)    exit flags{} result[(20)]  range=[-32768, -32768) uses={}
+
+

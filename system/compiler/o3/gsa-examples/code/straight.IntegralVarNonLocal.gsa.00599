@@ -1,0 +1,23 @@
+Const Prop & Unreachable Code
+
+ 0 ( 0)  greg: IntegralVarNonLocal range=[-32768, -32750)
+ 1 ( 1)    [5:[location=y/adr], 4:[location=y], 3:[location=.%0], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32751) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32752, -32752) uses={(4)}
+ 4 ( 3)    adr flags{} x  range=[-32768, -32753) uses={(9) (5)}
+ 3 ( 4)    %nlm := update-varparm flags{} x , result[(5)] , result[(2)] , result[(6)]  range=[-32768, -32754) uses={(16) (12) (8)}
+ 6 ( 5)    mayalias flags{} result[(3)] , result[(7)]  range=[-32768, -32755) uses={(4)}
+ 7 ( 6)    convert.s2 flags{} const{10}  range=[-32768, -32756) uses={(10) (4)}
+11 ( 7)    adr flags{} y  range=[-32768, -32757) uses={(5) (9)}
+10 ( 8)    access-nonlocal flags{} y , result[(9)] , result[(4)]  range=[-32768, -32758) uses={(10)}
+ 5 ( 9)    mayalias flags{} result[(7)] , result[(3)]  range=[-32768, -32759) uses={(12) (8)}
+12 (10)    eql.s2 flags{} result[(8)] , result[(6)]  range=[-32768, -32760) uses={(14) (11)}
+14 (11)    guard-true flags{} result[(10)]  range=[-32768, -32761) uses={(15)}
+ 9 (12)     %nlm := update-nonlocal flags{} y , result[(9)] , result[(4)] , result[(13)]  range=[-32763, -32762) uses={(16)}
+16 (13)     convert.s2 flags{} const{0}  range=[-32763, -32763) uses={(12)}
+13 (14)    guard-false flags{} result[(10)]  range=[-32768, -32764) uses={(15)}
+15 (15)    merge-if flags{} result[(11)] , result[(14)]  range=[-32768, -32765) uses={(16)}
+ 8 (16)     %nlm := gate flags{} result[(15)] , result[(12)] , result[(4)]  range=[-32766, -32766) uses={(18)}
+18 (17)    exit flags{} result[(18)]  range=[-32768, -32767) uses={}
+17 (18)     dtor flags{raLive} result[(16)]  range=[-32768, -32768) uses={(17)}
+
+

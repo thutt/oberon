@@ -1,0 +1,8 @@
+Const Prop & Unreachable Code
+
+0 (0)  greg: P0 range=[-32768, -32765)
+1 (1)    enter flags{} %nlm  range=[-32768, -32766) uses={}
+2 (2)    trap-halt flags{raLive} const{1024}  range=[-32768, -32767) uses={}
+3 (3)    exit flags{} result[(6)]  range=[-32768, -32768) uses={}
+
+

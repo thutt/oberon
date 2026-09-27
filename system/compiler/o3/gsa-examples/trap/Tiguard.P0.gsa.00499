@@ -1,0 +1,37 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: P0 range=[-32768, -32736)
+ 1 ( 1)    [5:[location=.Tiguard-BaseDesc/adr], 4:[location=.Tiguard-BaseDesc], 3:[location=.%0], 2:[location=e], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32737) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32738, -32738) uses={(27) (20) (9)}
+ 6 ( 3)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32739) uses={(16) (17) (5) (4)}
+10 ( 4)    guard-true flags{raLive} result[(3)]  range=[-32768, -32740) uses={(7)}
+ 9 ( 5)    guard-false flags{raLive} result[(3)]  range=[-32768, -32741) uses={(7)}
+12 ( 6)     trap-nil flags{raLive}  range=[-32742, -32742) uses={}
+11 ( 7)    merge-if flags{raLive} result[(4)] , result[(5)]  range=[-32768, -32743) uses={}
+13 ( 8)    adr flags{} b  range=[-32768, -32744) uses={(20) (9)}
+ 5 ( 9)    access-deref flags{} result{1 of (1)} , result[(8)] , result[(2)]  range=[-32768, -32745) uses={(10)}
+14 (10)    heaptag flags{} b , result[(9)]  range=[-32768, -32746) uses={(11)}
+15 (11)    eql.u4 flags{} result[(10)] , result{4 of (1)}  range=[-32768, -32747) uses={(13) (12)}
+17 (12)    guard-true flags{raLive} result[(11)]  range=[-32768, -32748) uses={(15)}
+16 (13)    guard-false flags{raLive} result[(11)]  range=[-32768, -32749) uses={(15)}
+19 (14)     trap-iguard flags{raLive}  range=[-32750, -32750) uses={}
+18 (15)    merge-if flags{raLive} result[(12)] , result[(13)]  range=[-32768, -32751) uses={}
+ 7 (16)    guard-true flags{raLive} result[(3)]  range=[-32768, -32752) uses={(19)}
+ 8 (17)    guard-false flags{raLive} result[(3)]  range=[-32768, -32753) uses={(19)}
+21 (18)     trap-nil flags{raLive}  range=[-32754, -32754) uses={}
+20 (19)    merge-if flags{raLive} result[(16)] , result[(17)]  range=[-32768, -32755) uses={}
+ 4 (20)    %nlm := update-deref flags{} result{1 of (1)} , result[(8)] , result[(2)] , result[(28)]  range=[-32768, -32756) uses={(32) (29) (28)}
+25 (21)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32757) uses={(23) (22)}
+27 (22)    guard-true flags{raLive} result[(21)]  range=[-32768, -32758) uses={(25)}
+26 (23)    guard-false flags{raLive} result[(21)]  range=[-32768, -32759) uses={(25)}
+29 (24)     trap-nil flags{raLive}  range=[-32760, -32760) uses={}
+28 (25)    merge-if flags{raLive} result[(22)] , result[(23)]  range=[-32768, -32761) uses={}
+30 (26)    adr flags{} e  range=[-32768, -32762) uses={(27)}
+ 3 (27)    access-deref flags{} const{0} , result[(26)] , result[(2)]  range=[-32768, -32763) uses={(30) (28)}
+22 (28)    recordcopy flags{} result[(20)] , result[(29)] , const{2} , result[(27)] , result[(30)]  range=[-32768, -32764) uses={(20)}
+24 (29)    adr flags{} result[(20)]  range=[-32768, -32765) uses={(28)}
+31 (30)    adr flags{} result[(27)]  range=[-32768, -32766) uses={(28)}
+32 (31)    exit flags{} result[(32)]  range=[-32768, -32767) uses={}
+23 (32)     dtor flags{raLive} result[(20)]  range=[-32768, -32768) uses={(31)}
+
+

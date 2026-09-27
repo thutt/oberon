@@ -1,18 +1,17 @@
 Live Range Analysis
 
- 0 ( 0)  greg: P1b range=[-32768, -32755)
- 1 ( 1)    [2:[location=gd/adr], 1:[location=gd]] enter flags{} %nlm:%vr33  range=[-32768, -32756) uses={}
- 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32758, -32757) uses={(5)}
- 4 ( 3)     %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32758, -32758) uses={}
- 5 ( 4)    adr flags{} gd  range=[-32768, -32759) uses={(5)}
- 3 ( 5)    access-nonlocal flags{} gd , result[(4)] , result[(2)]  range=[-32768, -32760) uses={(8) (6)}
- 7 ( 6)    adr flags{} result[(5)]  range=[-32768, -32761) uses={(7)}
- 8 ( 7)    add.u4 flags{} result[(6)] , const{0}:%vr42  range=[-32768, -32762) uses={(8)}
- 6 ( 8)    %nlm:%vr33 := update-field flags{} result[(5)] , result[(7)] , const{0}:%vr42 , result[(9)]  range=[-32768, -32763) uses={(13) (10) (9)}
- 9 ( 9)    stringcopy flags{} result[(8)] , result[(10)] , const{151}:%vr46 , const{"hello"}:%vr47 , result[(11)]  range=[-32768, -32764) uses={(8)}
-11 (10)    adr flags{} result[(8)]  range=[-32768, -32765) uses={(9)}
-12 (11)    adr flags{} const{"hello"}:%vr47  range=[-32768, -32766) uses={(9)}
-13 (12)    exit flags{} result[(13)]  range=[-32768, -32767) uses={}
-10 (13)     dtor flags{raLive} result[(8)]  range=[-32768, -32768) uses={(12)}
+ 0 ( 0)  greg: P1b range=[-32768, -32756)
+ 1 ( 1)    [2:[location=gd/adr], 1:[location=gd]] enter flags{} %nlm:%vr32  range=[-32768, -32757) uses={}
+ 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32758, -32758) uses={(4)}
+ 4 ( 3)    adr flags{} gd  range=[-32768, -32759) uses={(4)}
+ 3 ( 4)    access-nonlocal flags{} gd , result[(3)] , result[(2)]  range=[-32768, -32760) uses={(7) (5)}
+ 6 ( 5)    adr flags{} result[(4)]  range=[-32768, -32761) uses={(6)}
+ 7 ( 6)    add.u4 flags{} result[(5)] , const{0}:%vr41  range=[-32768, -32762) uses={(7)}
+ 5 ( 7)    %nlm:%vr32 := update-field flags{} result[(4)] , result[(6)] , const{0}:%vr41 , result[(8)]  range=[-32768, -32763) uses={(12) (9) (8)}
+ 8 ( 8)    stringcopy flags{} result[(7)] , result[(9)] , const{151}:%vr45 , const{"hello"}:%vr46 , result[(10)]  range=[-32768, -32764) uses={(7)}
+10 ( 9)    adr flags{} result[(7)]  range=[-32768, -32765) uses={(8)}
+11 (10)    adr flags{} const{"hello"}:%vr46  range=[-32768, -32766) uses={(8)}
+12 (11)    exit flags{} result[(12)]  range=[-32768, -32767) uses={}
+ 9 (12)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(11)}
 
 

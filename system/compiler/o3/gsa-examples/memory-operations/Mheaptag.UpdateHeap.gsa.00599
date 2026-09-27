@@ -1,0 +1,25 @@
+Const Prop & Unreachable Code
+
+ 0 ( 0)  greg: UpdateHeap range=[-32768, -32748)
+ 1 ( 1)    [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} %nlm  range=[-32768, -32749) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32750, -32750) uses={(15) (7)}
+ 5 ( 3)    adr flags{} y  range=[-32768, -32751) uses={(4)}
+ 6 ( 4)    y := initialize flags{} y , result[(3)] , const{0}  range=[-32768, -32752) uses={(18) (16)}
+ 9 ( 5)    trap-nil flags{raLive}  range=[-32768, -32753) uses={}
+10 ( 6)    adr flags{} py  range=[-32768, -32754) uses={(15) (7)}
+ 4 ( 7)    access-deref flags{} const{0} , result[(6)] , result[(2)]  range=[-32768, -32755) uses={(8)}
+11 ( 8)    heaptag flags{} py , result[(7)]  range=[-32768, -32756) uses={(9)}
+12 ( 9)    eql.u4 flags{} result[(8)] , result{1 of (1)}  range=[-32768, -32757) uses={(11) (10)}
+14 (10)    guard-true flags{raLive} result[(9)]  range=[-32768, -32758) uses={(13)}
+13 (11)    guard-false flags{raLive} result[(9)]  range=[-32768, -32759) uses={(13)}
+16 (12)     trap-iguard flags{raLive}  range=[-32760, -32760) uses={}
+15 (13)    merge-if flags{raLive} result[(10)] , result[(11)]  range=[-32768, -32761) uses={}
+17 (14)    trap-nil flags{raLive}  range=[-32768, -32762) uses={}
+ 3 (15)    %nlm := update-deref flags{} const{0} , result[(6)] , result[(2)] , result[(16)]  range=[-32768, -32763) uses={(20) (17) (16)}
+ 8 (16)    recordcopy flags{} result[(15)] , result[(17)] , const{0} , result[(4)] , result[(18)]  range=[-32768, -32764) uses={(15)}
+19 (17)    adr flags{} result[(15)]  range=[-32768, -32765) uses={(16)}
+ 7 (18)    adr flags{} result[(4)]  range=[-32768, -32766) uses={(16)}
+20 (19)    exit flags{} result[(20)]  range=[-32768, -32767) uses={}
+18 (20)     dtor flags{raLive} result[(15)]  range=[-32768, -32768) uses={(19)}
+
+

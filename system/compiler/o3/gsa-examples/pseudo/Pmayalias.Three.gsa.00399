@@ -1,0 +1,88 @@
+Value Numbering
+
+ 0 ( 0)  greg: Three range=[-32768, -32685)
+ 1 ( 1)    [11:[location=X/adr], 10:[location=X], 9:[location=LX/adr], 8:[location=LX], 7:[location=.%0], 6:[location=z], 5:[location=x/adr], 4:[location=x], 3:[location=y/adr], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32686) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32688, -32687) uses={(9) (6)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32688, -32688) uses={}
+ 6 ( 4)    z := copy flags{} const{0}  range=[-32768, -32689) uses={}
+ 7 ( 5)    adr flags{} y  range=[-32768, -32690) uses={(67) (20) (52) (60) (75) (55) (44) (33) (78) (41) (10) (7)}
+ 4 ( 6)    %nlm := update-varparm flags{} y , result[(7)] , result[(2)] , result[(11)]  range=[-32768, -32691) uses={(15) (13)}
+19 ( 7)    mayalias flags{} result[(5)] , result[(18)]  range=[-32768, -32692) uses={(66) (77) (40) (9) (6)}
+27 ( 8)    adr flags{} y  range=[-32768, -32693) uses={}
+ 3 ( 9)    access-varparm flags{} y , result[(7)] , result[(2)]  range=[-32768, -32694) uses={(11)}
+18 (10)    mayalias flags{} result[(5)] , result[(18)]  range=[-32768, -32695) uses={}
+20 (11)    add.s2 flags{} result[(9)] , const{1}  range=[-32768, -32696) uses={(6)}
+28 (12)    adr flags{} LX  range=[-32768, -32697) uses={(13)}
+22 (13)    %nlm := update-nonlocal flags{} LX , result[(12)] , result[(6)] , result[(17)]  range=[-32768, -32698) uses={(25) (22) (19)}
+33 (14)    adr flags{} x  range=[-32768, -32699) uses={(64) (81) (72) (30) (26) (23) (16)}
+21 (15)    access-varparm flags{} x , result[(16)] , result[(6)]  range=[-32768, -32700) uses={(17)}
+40 (16)    mayalias flags{} result[(14)] , result[(18)]  range=[-32768, -32701) uses={(63) (80) (71) (29) (25) (22) (15)}
+29 (17)    convert.s4 flags{} result[(15)]  range=[-32768, -32702) uses={(13)}
+23 (18)    adr flags{} X  range=[-32768, -32703) uses={(60) (75) (55) (52) (44) (33) (10) (7) (16) (26) (23) (30) (41) (72) (81) (78) (64) (20) (67)}
+32 (19)    z := access-nonlocal flags{} X , result[(20)] , result[(13)]  range=[-32768, -32704) uses={(59)}
+ 9 (20)    mayalias flags{} result[(18)] , result[(5)]  range=[-32768, -32705) uses={(59) (74) (54) (51) (43) (32) (19)}
+51 (21)    adr flags{} x  range=[-32768, -32706) uses={}
+31 (22)    %nlm := update-varparm flags{} x , result[(16)] , result[(13)] , result[(27)]  range=[-32768, -32707) uses={(54) (51) (43) (40) (32) (29)}
+39 (23)    mayalias flags{} result[(14)] , result[(18)]  range=[-32768, -32708) uses={}
+53 (24)    adr flags{} x  range=[-32768, -32709) uses={}
+30 (25)    access-varparm flags{} x , result[(16)] , result[(13)]  range=[-32768, -32710) uses={(27)}
+38 (26)    mayalias flags{} result[(14)] , result[(18)]  range=[-32768, -32711) uses={}
+52 (27)    add.s2 flags{} result[(25)] , const{1}  range=[-32768, -32712) uses={(22)}
+54 (28)    adr flags{} x  range=[-32768, -32713) uses={}
+44 (29)    access-varparm flags{} x , result[(16)] , result[(22)]  range=[-32768, -32714) uses={(34)}
+37 (30)    mayalias flags{} result[(14)] , result[(18)]  range=[-32768, -32715) uses={}
+56 (31)    adr flags{} X  range=[-32768, -32716) uses={}
+50 (32)    access-nonlocal flags{} X , result[(20)] , result[(22)]  range=[-32768, -32717) uses={(56) (45) (34)}
+15 (33)    mayalias flags{} result[(18)] , result[(5)]  range=[-32768, -32718) uses={}
+55 (34)    eql.s2 flags{} result[(29)] , result[(32)]  range=[-32768, -32719) uses={(36) (35)}
+60 (35)    guard-true flags{raLive} result[(34)]  range=[-32768, -32720) uses={(38)}
+59 (36)    guard-false flags{raLive} result[(34)]  range=[-32768, -32721) uses={(38)}
+62 (37)     trap-assert flags{raLive}  range=[-32722, -32722) uses={}
+61 (38)    merge-if flags{raLive} result[(35)] , result[(36)]  range=[-32768, -32723) uses={}
+63 (39)    adr flags{} y  range=[-32768, -32724) uses={}
+26 (40)    access-varparm flags{} y , result[(7)] , result[(22)]  range=[-32768, -32725) uses={(45)}
+17 (41)    mayalias flags{} result[(5)] , result[(18)]  range=[-32768, -32726) uses={}
+64 (42)    adr flags{} X  range=[-32768, -32727) uses={}
+49 (43)    access-nonlocal flags{} X , result[(20)] , result[(22)]  range=[-32768, -32728) uses={}
+14 (44)    mayalias flags{} result[(18)] , result[(5)]  range=[-32768, -32729) uses={}
+58 (45)    eql.s2 flags{} result[(40)] , result[(32)]  range=[-32768, -32730) uses={(47) (46)}
+66 (46)    guard-true flags{raLive} result[(45)]  range=[-32768, -32731) uses={(49)}
+65 (47)    guard-false flags{raLive} result[(45)]  range=[-32768, -32732) uses={(49)}
+68 (48)     trap-assert flags{raLive}  range=[-32733, -32733) uses={}
+67 (49)    merge-if flags{raLive} result[(46)] , result[(47)]  range=[-32768, -32734) uses={}
+69 (50)    adr flags{} X  range=[-32768, -32735) uses={}
+48 (51)    %nlm := update-nonlocal flags{} X , result[(20)] , result[(22)] , result[(56)]  range=[-32768, -32736) uses={(66) (63) (59)}
+10 (52)    mayalias flags{} result[(18)] , result[(5)]  range=[-32768, -32737) uses={}
+70 (53)    adr flags{} X  range=[-32768, -32738) uses={}
+47 (54)    access-nonlocal flags{} X , result[(20)] , result[(22)]  range=[-32768, -32739) uses={}
+13 (55)    mayalias flags{} result[(18)] , result[(5)]  range=[-32768, -32740) uses={}
+57 (56)    sub.s2 flags{} result[(32)] , const{1}  range=[-32768, -32741) uses={(51)}
+71 (57)    guard-true flags{} result{1 of (1)}  range=[-32768, -32742) uses={(68)}
+73 (58)     adr flags{} X  range=[-32745, -32743) uses={}
+45 (59)     %nlm := update-nonlocal flags{} X , result[(20)] , result[(51)] , result[(19)]  range=[-32745, -32744) uses={(69)}
+11 (60)     mayalias flags{} result[(18)] , result[(5)]  range=[-32745, -32745) uses={}
+75 (61)    guard-false flags{} result{1 of (1)}  range=[-32768, -32746) uses={(68)}
+76 (62)     adr flags{} x  range=[-32752, -32747) uses={}
+41 (63)     %nlm := update-varparm flags{} x , result[(16)] , result[(51)] , result[(66)]  range=[-32752, -32748) uses={(69)}
+34 (64)     mayalias flags{} result[(14)] , result[(18)]  range=[-32752, -32749) uses={}
+77 (65)     adr flags{} y  range=[-32752, -32750) uses={}
+24 (66)     access-varparm flags{} y , result[(7)] , result[(51)]  range=[-32752, -32751) uses={(63)}
+ 8 (67)     mayalias flags{} result[(5)] , result[(18)]  range=[-32752, -32752) uses={}
+72 (68)    merge-if flags{} result[(57)] , result[(61)]  range=[-32768, -32753) uses={(69)}
+74 (69)     %nlm := gate flags{} result[(68)] , result[(59)] , result[(63)]  range=[-32754, -32754) uses={(74) (71)}
+78 (70)    adr flags{} x  range=[-32768, -32755) uses={}
+43 (71)    %nlm := update-varparm flags{} x , result[(16)] , result[(69)] , result[(74)]  range=[-32768, -32756) uses={(80) (77)}
+36 (72)    mayalias flags{} result[(14)] , result[(18)]  range=[-32768, -32757) uses={}
+79 (73)    adr flags{} X  range=[-32768, -32758) uses={}
+46 (74)    access-nonlocal flags{} X , result[(20)] , result[(69)]  range=[-32768, -32759) uses={(71)}
+12 (75)    mayalias flags{} result[(18)] , result[(5)]  range=[-32768, -32760) uses={}
+80 (76)    adr flags{} y  range=[-32768, -32761) uses={}
+25 (77)    %nlm := update-varparm flags{} y , result[(7)] , result[(71)] , result[(80)]  range=[-32768, -32762) uses={(83)}
+16 (78)    mayalias flags{} result[(5)] , result[(18)]  range=[-32768, -32763) uses={}
+82 (79)    adr flags{} x  range=[-32768, -32764) uses={}
+42 (80)    access-varparm flags{} x , result[(16)] , result[(71)]  range=[-32768, -32765) uses={(77)}
+35 (81)    mayalias flags{} result[(14)] , result[(18)]  range=[-32768, -32766) uses={}
+83 (82)    exit flags{} result[(83)]  range=[-32768, -32767) uses={}
+81 (83)     dtor flags{raLive} result[(77)]  range=[-32768, -32768) uses={(82)}
+
+

@@ -1,0 +1,43 @@
+Dead Code Elimination
+
+ 0 ( 0)  greg: P1 range=[-32768, -32730)
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32731) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32732, -32732) uses={(22) (11)}
+ 5 ( 3)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32733) uses={(11) (5)}
+ 7 ( 4)    q := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32734) uses={(32) (26)}
+ 6 ( 5)    neq.u1 flags{} result[(3)] , const{0}  range=[-32768, -32735) uses={(7) (6)}
+11 ( 6)    guard-true flags{raLive} result[(5)]  range=[-32768, -32736) uses={(9)}
+10 ( 7)    guard-false flags{raLive} result[(5)]  range=[-32768, -32737) uses={(9)}
+13 ( 8)     trap-nil flags{raLive}  range=[-32738, -32738) uses={}
+12 ( 9)    merge-if flags{raLive} result[(6)] , result[(7)]  range=[-32768, -32739) uses={}
+14 (10)    adr flags{} p  range=[-32768, -32740) uses={(11)}
+ 4 (11)    access-deref flags{} result[(3)] , result[(10)] , result[(2)]  range=[-32768, -32741) uses={(14) (12)}
+16 (12)    adr flags{} result[(11)]  range=[-32768, -32742) uses={(13)}
+17 (13)    add.u4 flags{} result[(12)] , const{4}  range=[-32768, -32743) uses={(36) (15)}
+15 (14)    access-field flags{} result[(11)] , result[(15)] , const{4}  range=[-32768, -32744) uses={(22) (21) (16)}
+19 (15)    mayalias flags{} result[(13)] , result[(34)]  range=[-32768, -32745) uses={(14)}
+21 (16)    neq.u1 flags{} result[(14)] , const{0}  range=[-32768, -32746) uses={(18) (17)}
+24 (17)    guard-true flags{raLive} result[(16)]  range=[-32768, -32747) uses={(20)}
+23 (18)    guard-false flags{raLive} result[(16)]  range=[-32768, -32748) uses={(20)}
+26 (19)     trap-nil flags{raLive}  range=[-32749, -32749) uses={}
+25 (20)    merge-if flags{raLive} result[(17)] , result[(18)]  range=[-32768, -32750) uses={}
+20 (21)    adr flags{} result[(14)]  range=[-32768, -32751) uses={(22)}
+ 3 (22)    access-deref flags{} result[(14)] , result[(21)] , result[(2)]  range=[-32768, -32752) uses={(25) (23)}
+28 (23)    adr flags{} result[(22)]  range=[-32768, -32753) uses={(24)}
+29 (24)    add.u4 flags{} result[(23)] , const{0}  range=[-32768, -32754) uses={(25)}
+27 (25)    %nlm := update-field flags{} result[(22)] , result[(24)] , const{0} , const{151}  range=[-32768, -32755) uses={(32)}
+ 9 (26)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32756) uses={(28) (27)}
+31 (27)    guard-true flags{raLive} result[(26)]  range=[-32768, -32757) uses={(30)}
+30 (28)    guard-false flags{raLive} result[(26)]  range=[-32768, -32758) uses={(30)}
+33 (29)     trap-nil flags{raLive}  range=[-32759, -32759) uses={}
+32 (30)    merge-if flags{raLive} result[(27)] , result[(28)]  range=[-32768, -32760) uses={}
+34 (31)    adr flags{} q  range=[-32768, -32761) uses={(32)}
+ 8 (32)    access-deref flags{} result[(4)] , result[(31)] , result[(25)]  range=[-32768, -32762) uses={(35) (33)}
+36 (33)    adr flags{} result[(32)]  range=[-32768, -32763) uses={(34)}
+22 (34)    add.u4 flags{} result[(33)] , const{4}  range=[-32768, -32764) uses={(36) (15)}
+35 (35)    %nlm := update-field flags{} result[(32)] , result[(36)] , const{4} , const{0}  range=[-32768, -32765) uses={(38)}
+18 (36)    mayalias flags{} result[(34)] , result[(13)]  range=[-32768, -32766) uses={(35)}
+38 (37)    exit flags{} result[(38)]  range=[-32768, -32767) uses={}
+37 (38)     dtor flags{raLive} result[(35)]  range=[-32768, -32768) uses={(37)}
+
+

@@ -1,0 +1,15 @@
+Const Prop & Unreachable Code
+
+ 0 ( 0)  greg: PtrNone range=[-32768, -32758)
+ 1 ( 1)    [4:[location=b1/adr], 3:[location=b1], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32759) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32760, -32760) uses={(4)}
+ 4 ( 3)    adr flags{} b0  range=[-32768, -32761) uses={(8) (5)}
+ 3 ( 4)    %nlm := update-nonlocal flags{} b0 , result[(5)] , result[(2)] , const{0}  range=[-32768, -32762) uses={(7)}
+ 6 ( 5)    mayalias flags{} result[(3)] , result[(6)]  range=[-32768, -32763) uses={(4)}
+ 8 ( 6)    adr flags{} b1  range=[-32768, -32764) uses={(8) (5)}
+ 7 ( 7)    %nlm := update-nonlocal flags{} b1 , result[(8)] , result[(4)] , const{0}  range=[-32768, -32765) uses={(10)}
+ 5 ( 8)    mayalias flags{} result[(6)] , result[(3)]  range=[-32768, -32766) uses={(7)}
+10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
+ 9 (10)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(9)}
+
+
