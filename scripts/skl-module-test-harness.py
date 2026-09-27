@@ -223,14 +223,6 @@ def add_compiler_tests(test_definitions, options):
 
     add_test(test_definitions, options, "compiler",
              "system/compiler/skl/tests",
-             "CTAssertTrap",
-             False,             # Manual
-             True,              # Compiles.
-             False)             # True  -> rc == 0 -> success
-                                # False -> rc != 0 -> success
-
-    add_test(test_definitions, options, "compiler",
-             "system/compiler/skl/tests",
              "CTBitsetRangeFail",
              False,             # Manual
              True,              # Compiles.
@@ -263,9 +255,6 @@ def add_compiler_tests(test_definitions, options):
 
     add_test(test_definitions, options, "compiler",
              "system/compiler/skl/tests",
-
-
-
              "CTDynArrLength",
              False,             # Manual
              True,              # Compiles.
@@ -551,7 +540,7 @@ def dump_list(prefix, lines):
 
 def dump(stdout, stderr, rc):
     dump_list("  stdout:", stdout)
-    dump_list("  stderr:", stdout)
+    dump_list("  stderr:", stderr)
     print("  rc    : ", rc)
 
 

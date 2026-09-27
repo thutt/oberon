@@ -83,6 +83,27 @@ non-zero: failure
                    default  = 2,
                    dest     = "arg_stack_size")
 
+    o = parser.add_argument_group("Test Specification")
+    o.add_argument("--group",
+                   help     = ("Supplies stack size, in megabytes. "
+                               "Must be in the range [2, 16]."),
+                   choices  = ("code",
+                               "conditional",
+                               "guard",
+                               "hardware",
+                               "logical",
+                               "memory-access",
+                               "memory-operations",
+                               "miscellaneous",
+                               "pseudo",
+                               "region",
+                               "set-arithmetic",
+                               "system",
+                               "trap",
+                               "type-descriptor"),
+                   action   = "append",
+                   default  = [],
+                   dest     = "arg_groups")
 
     # o = parser.add_argument_group("Oberon Test Specification")
     # # Add a group name so a directory can be run individually.
@@ -168,7 +189,6 @@ def add_hardware_tests(test_definitions, options):
                "Hmemw",
                "Hput",
                "Hputreg")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -181,7 +201,6 @@ def add_logical_tests(test_definitions, options):
                "Alsr",
                "Arol",
                "Aror")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -193,7 +212,6 @@ def add_memory_access_tests(test_definitions, options):
                "Mheap",
                "Mnonlocal",
                "Mvarparm")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -213,7 +231,6 @@ def add_memory_operations_tests(test_definitions, options):
                "Mstringcopy",
                "Mtbpadr",
                "Minitialize")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -225,7 +242,6 @@ def add_miscellaneous_tests(test_definitions, options):
                "Gcopy",
                "Ggate",
                "Gimport")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -233,7 +249,6 @@ def add_pseudo_tests(test_definitions, options):
     group   = "pseudo"
     reldir  = "system/compiler/o3/gsa-examples/pseudo"
     modules = ("Pmayalias", )
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -244,7 +259,6 @@ def add_region_tests(test_definitions, options):
                "Menter",
                "Mexit",
                "Mgreg")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -261,7 +275,6 @@ def add_set_arithmetic_tests(test_definitions, options):
                "Srange",
                "Ssub",
                "Sunion")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -275,7 +288,6 @@ def add_system_tests(test_definitions, options):
                "Gnewblock",
                "Gresetbit",
                "Gsetbit")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -290,7 +302,6 @@ def add_trap_tests(test_definitions, options):
                "Tindex",
                "Treturn",
                "Twith")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -300,7 +311,6 @@ def add_type_descriptor_tests(test_definitions, options):
     modules = ("Ginitarr",
                "Ginitdarr",
                "Ginitrec")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -310,7 +320,6 @@ def add_code_tests(test_definitions, options):
     modules = ("straight",
                "if",
                "looping")
-
     add_examples(test_definitions, options, group, reldir, modules)
 
 
@@ -335,7 +344,7 @@ def dump_list(prefix, lines):
 
 def dump(stdout, stderr, rc):
     dump_list("  stdout:", stdout)
-    dump_list("  stderr:", stdout)
+    dump_list("  stderr:", stderr)
     print("  rc    : ", rc)
 
 
@@ -354,11 +363,11 @@ def test_module(options, test):
         pass
 
 
-def perform_test(options, test_definitions, group):
+def perform_test(options, test_definitions, groups):
+    assert(len(groups) == 0 or isinstance(groups, list))
     for test in test_definitions:
-        if group is None or test._group == group:
+        if len(groups) == 0 or test._group in groups:
             test_module(options, test)
-
 
 
 def main():
@@ -381,18 +390,8 @@ def main():
     add_trap_tests(test_definitions, options)
     add_type_descriptor_tests(test_definitions, options)
     add_code_tests(test_definitions, options)
-    add_system_tests(test_definitions, options)
 
-    perform_test(options, test_definitions, None)
-
-    # if options.arg_system_test:
-    #     perform_test(options, test_definitions, "system")
-
-    # if options.arg_module_test:
-    #     perform_test(options, test_definitions, "module")
-
-    # if options.arg_compiler_test:
-    #     perform_test(options, test_definitions, "compiler")
+    perform_test(options, test_definitions, options.arg_groups)
 
 
 if __name__ == "__main__":
