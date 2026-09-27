@@ -50,7 +50,7 @@ class Artifact(object):
                 "--section-headers", self._pathname ]
 
         if self._valid:
-            (stdout, stderr, rc) = execute.process(cmd)
+            (stdout, stderr, rc) = execute.process(cmd, env=os.environ)
             assert(rc == 0)
             # The lines output by 'objdump', and matched by the loop
             # below will look like this:

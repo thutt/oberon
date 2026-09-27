@@ -9,8 +9,10 @@
 import argparse
 import os
 import sys
+import threading
 
 import execute
+import execute_pool
 
 
 def fatal(msg):
@@ -127,6 +129,15 @@ non-zero: failure
                    default  = False,
                    dest     = "arg_compiler_test")
 
+
+    o = parser.add_argument_group("Concurrency")
+    o.add_argument("--jobs", "-j",
+                   help     = ("Maximum number of concurrent tests. "
+                               "Defaults to the number of CPUs."),
+                   type     = int,
+                   action   = "store",
+                   default  = os.cpu_count() or 1,
+                   dest     = "arg_jobs")
 
     parser.add_argument("tail",
                         help  = "Command line tail",
@@ -522,26 +533,40 @@ def add_o3_tests(test_definitions, options):
 
 
 def execute_oberon(options, additional_search_path, arguments):
-    search_path                         = options.skl_search_path
-    os.environ["LMS_OBERON_HEAP_SIZE"]  = str(options.arg_heap_size)
-    os.environ["LMS_OBERON_STACK_SIZE"] = str(options.arg_stack_size)
-    os.environ["SKL_SEARCH_PATH"]       = "%s:%s" % (search_path,
-                                                     additional_search_path)
+    # Build a private copy of the environment for this call, rather
+    # than mutating os.environ in place: this function runs
+    # concurrently (see perform_test()), and os.environ is shared by
+    # every thread in the process.  Two concurrent calls mutating it
+    # in place could race, so that one thread's subprocess forks
+    # with the *other* thread's search path or heap size.
+    search_path        = options.skl_search_path
+    env                = dict(os.environ)
+    env["LMS_OBERON_HEAP_SIZE"]  = str(options.arg_heap_size)
+    env["LMS_OBERON_STACK_SIZE"] = str(options.arg_stack_size)
+    env["SKL_SEARCH_PATH"]       = "%s:%s" % (search_path,
+                                              additional_search_path)
 
     cmd = [options.skl_oberon_path, "--" ] + arguments
-    (stdout, stderr, rc) = execute.process(cmd)
+    (stdout, stderr, rc) = execute.process(cmd, env=env)
     return (stdout, stderr, rc)
 
 
 def dump_list(prefix, lines):
+    result = []
     for l in lines:
-        print("%s%s" % (prefix, l))
+        result.append("%s%s" % (prefix, l))
+    return result
 
 
 def dump(stdout, stderr, rc):
-    dump_list("  stdout:", stdout)
-    dump_list("  stderr:", stderr)
-    print("  rc    : ", rc)
+    # Returns lines rather than printing them: test_module() runs on
+    # a worker thread (see perform_test()), and printing directly
+    # from there would interleave with other tests running at the
+    # same time.
+    lines = dump_list("  stdout:", stdout)
+    lines.extend(dump_list("  stderr:", stderr))
+    lines.append("  rc    :  %s" % (rc))
+    return lines
 
 
 def compile_module(options, module):
@@ -549,29 +574,42 @@ def compile_module(options, module):
 
 
 def test_module(options, test):
+    # Runs on a worker thread (see perform_test()).  Output is
+    # returned rather than printed directly, so the caller can print
+    # each test's lines as one uninterrupted block instead of
+    # interleaving them with other tests running at the same time.
+    # For the same reason, failure is returned rather than reported
+    # via fatal(): sys.exit() from a worker thread only terminates
+    # that thread, not the process, so aggregation and the final
+    # exit have to happen back on the main thread.
+    lines = []
     if test._manual_test:
-        print("Manual mode: '%s'" % (test._module_name))
-        return
+        lines.append("Manual mode: '%s'" % (test._module_name))
+        return (test, True, lines)
 
-    print("*** Building: '%s'" % (test._module_name))
+    lines.append("*** Building: '%s'" % (test._module_name))
     (stdout, stderr, rc) = compile_module(options, test._pathname)
     if rc != 0:
         if test._module_compiles:
-            dump(stdout, stderr, rc)
-            fatal("Module was expected to compile, but did not '%s'" % (test._pathname))
+            lines.append("**** Module was expected to compile, "
+                         "but did not '%s'" % (test._pathname))
+            lines.extend(dump(stdout, stderr, rc))
+            return (test, False, lines)
         else:
             # The module was not expected to compile, and it did not.
             pass
     else:
         if not test._module_compiles:
-            dump(stdout, stderr, rc)
-            fatal("Module was not expected to compile, but it did '%s'" % (test._pathname))
+            lines.append("**** Module was not expected to compile, "
+                         "but it did '%s'" % (test._pathname))
+            lines.extend(dump(stdout, stderr, rc))
+            return (test, False, lines)
         else:
             # The module was not expected to compile, and it did.
             pass
 
     # Run module.
-    print("*** Executing: '%s'" % (test._module_name))
+    lines.append("*** Executing: '%s'" % (test._module_name))
     (stdout, stderr, rc) = execute_oberon(options,
                                           os.path.join(options.skl_dir,
                                                        test._directory),
@@ -580,20 +618,54 @@ def test_module(options, test):
     if test._zero_rc_is_pass:
         # To pass, the RC must be 0.
         if rc != 0:
-            dump(stdout, stderr, rc)
-            fatal("Test failed at runtime: '%s'" % (test._pathname))
+            lines.append("**** Test failed at runtime: '%s'" % (test._pathname))
+            lines.extend(dump(stdout, stderr, rc))
+            return (test, False, lines)
     else:
         # To pass, the RC must be non-zero.
         if rc == 0:
-            dump(stdout, stderr, rc)
-            fatal("Test did not fail as expected: '%s'" % (test._pathname))
-    print("*** Test passed: '%s'" % (test._module_name))
+            lines.append("**** Test did not fail as expected: '%s'" %
+                         (test._pathname))
+            lines.extend(dump(stdout, stderr, rc))
+            return (test, False, lines)
+    lines.append("*** Test passed: '%s'" % (test._module_name))
+    return (test, True, lines)
 
 
 def perform_test(options, test_definitions, group):
-    for test in test_definitions:
-        if test._group == group:
-            test_module(options, test)
+    selected = [test for test in test_definitions if test._group == group]
+
+    print_lock = threading.Lock()
+    failures   = []
+
+    def handle_outcome(outcome):
+        if not outcome.ok:
+            # A bug in test_module() itself (not an ordinary test
+            # failure, which comes back as 'success == False' above)
+            # -- still must not be lost silently.
+            test = outcome.args[1]
+            with print_lock:
+                print("*** Building: '%s'" % (test._module_name))
+                print("**** Exception: %s" % (outcome.exception))
+            failures.append(test)
+            return
+
+        (test, success, lines) = outcome.result
+        with print_lock:
+            for line in lines:
+                print(line)
+        if not success:
+            failures.append(test)
+
+    pool = execute_pool.ExecutePool(max_workers=options.arg_jobs)
+    for test in selected:
+        pool.submit(test_module, options, test, callback=handle_outcome)
+    pool.join()
+    pool.shutdown()
+
+    if failures:
+        paths = ", ".join(test._pathname for test in failures)
+        fatal("%d test(s) failed: %s" % (len(failures), paths))
 
 
 
