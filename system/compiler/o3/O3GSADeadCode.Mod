@@ -67,6 +67,19 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
         ASSERT(instr.region # NIL, 1025);
         output(instr, prefix);
         IF instr IS GSAData.Region THEN
+          (* It is more efficient to process the instructions,
+           * each of which can be a Region, in two phases than
+           * recursively, like here.   The recursive solution
+           * requires another function call.
+           *
+           * To process the regions in a parent Region, after
+           * the instructions are processed:
+           *
+           *    rgn := r.regions.freg;
+           *    WHILE rgn # r.regions DO
+           *       ...
+           *    END;
+           *)
           rgn := instr(GSAData.Region);
           dumphelper(rgn, "", " ");
         END;
