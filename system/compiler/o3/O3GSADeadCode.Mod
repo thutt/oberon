@@ -28,37 +28,56 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   END progress;
 
 
-  PROCEDURE output(instr : GSAData.Instruction);
+  PROCEDURE output(instr  : GSAData.Instruction;
+                   prefix : ARRAY OF CHAR);
+    VAR
+      alive : BOOLEAN;
   BEGIN
+    alive := {live, GSAData.raLive} * instr.attrib # { };
     Config.LogWNum(instr.dfo, 3);
     Config.LogW(' ');
+    IF alive THEN
+      Config.LogWStr(' live: T ');
+    ELSE
+      Config.LogWStr(' live: F ');
+    END;
+    Config.LogWStr(prefix);
     GSAName.WDecode(instr);
-    Config.LogWStr(' live: ');
-    Config.LogWBool({live, GSAData.raLive} * instr.attrib # { });
+    Config.LogWStr("  attrib: ");
+    Config.LogWSet(instr.attrib);
     Config.LogWLn;
   END output;
 
 
-  PROCEDURE dumpregion(r : GSAData.Region);
+  PROCEDURE dumphelper(r      : GSAData.Region;
+                        label  : ARRAY OF CHAR;
+                        prefix : ARRAY OF CHAR);
     VAR
       instr : GSAData.Instruction;
-      op : GSAData.Operand;
-      rgn : GSAData.Region;
+      op    : GSAData.Operand;
+      rgn   : GSAData.Region;
+      irgn  : GSAData.Region; (* Instruction's region. *)
   BEGIN
     IF dfDumpRegion IN diagnostics THEN
+      IF label[0] # 0X THEN
+        Config.LogWStr(label); Config.LogWLn;
+      END;
       instr := r.instructions.finst;
       WHILE instr # r.instructions DO
         ASSERT(instr.region # NIL, 1025);
-        output(instr);
+        output(instr, prefix);
+        IF instr IS GSAData.Region THEN
+          rgn := instr(GSAData.Region);
+          dumphelper(rgn, "", " ");
+        END;
         instr := instr.finst;
       END;
-
-      rgn := r.regions.freg;
-      WHILE rgn # r.regions DO
-        dumpregion(rgn);
-        rgn := rgn.freg;
-      END;
     END;
+  END dumphelper;
+
+  PROCEDURE dumpregion(r : GSAData.Region;
+                       label : ARRAY OF CHAR);
+  BEGIN dumphelper(r, label, "");
   END dumpregion;
 
 
@@ -114,7 +133,7 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   END MarkLive;
 
 
-  (* Set all 'raLive' instructions as live *)
+  (* Set all 'raLive' instructions as live. *)
   PROCEDURE MarkForceAlive(r : GSAData.Region);
   VAR
     instr, enter : GSAData.Instruction;
@@ -183,7 +202,9 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   END MarkOperandsDead;
 
 
-  (* Mark all instructions after a trap as unreachable.
+  (* MarkDeadAfterTrap
+   *
+   *  Mark all instructions after a trap in a Region as unreachable.
    *
    *  Because a trap, when executed, will terminate the program,
    *  all instructions following a trap in a region will be unreachable
@@ -202,6 +223,9 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
     IF instr # region.instructions THEN
       instr := instr.finst; (* Instruction after Ttrap. *)
       WHILE instr # region.instructions DO
+        (* GSAData.raLive doesn't apply to this Region;
+         * it's after a trap and cannot execute.
+         *)
         IF ~(instr IS GSAData.Region) THEN
           EXCL(instr.attrib, live);
         END;
@@ -250,29 +274,40 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   PROCEDURE Perform*(r : GSAData.GlobalRegion);
     VAR
       enter : GSAData.Instruction;
+      iter  : INTEGER;
   BEGIN
+    iter := 0;
     progress("Dead Code Elimination");
     enter := GSAData.InstructionEnter(r);
     REPEAT
+      IF dfProgress IN diagnostics THEN
+        Config.LogWStr("***** Iteration "); Config.LogWNum(iter, 3); Config.LogWLn;
+        INC(iter);
+      END;
       deleted := 0;
-      progress("mark-dead");
+      progress("MarkDead");
       MarkDead(r);
+      dumpregion(r, "MarkDead");
 
-      progress("mark-force");
+      progress("ForceAlive");
       MarkForceAlive(r);
+      dumpregion(r, "ForceAlive");
 
-      progress("mark $enter");
+      progress("MarkLive $enter");
       MarkLive(enter, enter);
+      dumpregion(r, "MarkLive $enter");
 
-      progress("mark $exit");
+      progress("MarkLive $exit");
       MarkLive(enter, GSAData.InstructionExit(r));
+      dumpregion(r, "MarkLive $exit");
 
-      progress("mark dead after Trap");
+      progress("MarkDead After Trap");
       MarkDeadAfterTrap(r);
+      dumpregion(r, "MarkDeadAfterTrap");
 
-      progress("delete dead");
+      progress("Delete Dead Code");
       DeleteDeadCode(r);
-      dumpregion(r);
+      dumpregion(r, "DeleteDeadCode");
    UNTIL deleted = 0;
   END Perform;
 
