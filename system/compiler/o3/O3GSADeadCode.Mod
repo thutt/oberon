@@ -13,7 +13,7 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   CONST
     dfProgress = 0;
     dfDumpRegion = 1;
-    diagnostics = { };
+    diagnostics = { dfProgress, dfDumpRegion };
     live = MAX(SET); (* instruction is live and cannot be removed *)
 
   VAR
@@ -91,16 +91,11 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
    * would force another instruction to be live?
    *)
   PROCEDURE MarkLive(enter, i : GSAData.Instruction);
-    VAR
-      o : GSAData.Operand;
-      res : GSAData.Result;
-   BEGIN
-     IF ~(live IN i.attrib) THEN
-       INCL(i.attrib, live);
-       IF i.region # NIL THEN
-         MarkLive(enter, i.region);
-       END;
 
+    PROCEDURE MarkOperandsLive(i : GSAData.Instruction);
+      VAR
+        o : GSAData.Operand;
+    BEGIN
       o := i.operands.fop;
       WHILE o # i.operands DO
         IF o.def IS GSAData.Result THEN
@@ -109,27 +104,50 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
         ELSIF (o.def IS GSAData.Addressable) THEN
           IF (o.def(GSAData.Addressable).currvalue # NIL)
              & (o.def(GSAData.Addressable).currvalue IS GSAData.Result) THEN
-            (* NOP: The operand is an addressable whose value was
-             * produced by an instruction; no need to mark an addressable
-             * as live. *)
+          (* NOP: The operand is an addressable whose value was
+           * produced by an instruction; no need to mark an addressable
+           * as live. *)
           END;
         END;
         o := o.fop;
       END;
+    END MarkOperandsLive;
 
-      IF i # enter THEN
-        res := i.results.bres;
-        ASSERT(i # GSAData.InstructionEnter(i.region), 1024);
-        WHILE res # i.results.fres DO
-          o := res.uses.fuses;
-          WHILE o # res.uses DO
-            MarkLive(enter, o.owner);
-            o := o.fuses;
-          END;
-          res := res.bres;
+    PROCEDURE MarkResultsLive(i : GSAData.Instruction);
+      VAR
+        res : GSAData.Result;
+        o   : GSAData.Operand;
+    BEGIN
+      res := i.results.bres;
+      ASSERT(i # GSAData.InstructionEnter(i.region), 1024);
+
+      (* No need to process i.result.fres, because it's 'i'. *)
+      ASSERT(i = i.results.fres, 1025);
+      WHILE res # i.results.fres DO
+        o := res.uses.fuses;
+        WHILE o # res.uses DO
+          MarkLive(enter, o.owner);
+          o := o.fuses;
         END;
+        res := res.bres;
       END;
-    END;
+    END MarkResultsLive;
+
+   BEGIN
+     IF ~(live IN i.attrib) THEN
+       INCL(i.attrib, live);
+       IF i.region # NIL THEN
+         (* Region owner is live => everything in the Region is live. *)
+         MarkLive(enter, i.region);
+       END;
+
+       MarkOperandsLive(i);
+
+       IF i # enter THEN
+         (* The Result values of $enter are not live automatically. *)
+         MarkResultsLive(i);
+       END;
+     END;
   END MarkLive;
 
 
@@ -285,6 +303,13 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
         INC(iter);
       END;
       deleted := 0;
+
+      (* 1.  Mark everything not 'live' (aka 'dead').
+       * 2.  Mark all things marked with 'raLive' as 'live'.
+       * 3.  Using the 'live' instructions, mark others that must be live.
+       * 4.  Mark everything 'dead' after traps.
+       * 5.  Remove code that is not marked 'live' (aka: 'dead') code.
+       *)
       progress("MarkDead");
       MarkDead(r);
       dumpregion(r, "MarkDead");
