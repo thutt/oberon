@@ -9,7 +9,7 @@ MODULE O3GSADump;
     GSANames := O3GSANames,
     GSAOpcode := O3GSAOpcode;
 
-  CONST
+  CONST (* Enable to make GraphViz output files (unfinished). *)
     GraphViz = FALSE;
 
   TYPE
@@ -36,7 +36,7 @@ MODULE O3GSADump;
   PROCEDURE DotGraphNodeNumber(n : GSAData.Node);
   BEGIN
     Config.WriteCh(dotout, '"');
-    Config.WriteStringNum(dotout, n.reg * 1000 + n.ref, 1);
+    Config.WriteStringNum(dotout, n.dfo, 1);
     Config.WriteCh(dotout, '"');
   END DotGraphNodeNumber;
 
@@ -77,7 +77,7 @@ MODULE O3GSADump;
     (* Write out the edges to the operands *)
     op := inst.operands.fop;
     WHILE op # inst.operands DO
-      DotGraphNodeNumber(op);
+      DotGraphNodeNumber(op.def);
       Config.WriteString(dotout, " -> ");
       DotGraphNodeNumber(inst);
       Config.WriteCh(dotout, 0AX);
