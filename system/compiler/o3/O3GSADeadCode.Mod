@@ -13,7 +13,7 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   CONST
     dfProgress = 0;
     dfDumpRegion = 1;
-    diagnostics = { dfProgress, dfDumpRegion };
+    diagnostics = { };
     live = MAX(SET); (* instruction is live and cannot be removed *)
 
   VAR
@@ -31,17 +31,26 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   PROCEDURE output(instr  : GSAData.Instruction;
                    prefix : ARRAY OF CHAR);
     VAR
+      raLive : BOOLEAN;
       alive : BOOLEAN;
   BEGIN
+    raLive := GSAData.raLive IN instr.attrib;
     alive := {live, GSAData.raLive} * instr.attrib # { };
+    alive := live IN instr.attrib;
     Config.LogWNum(instr.dfo, 3);
     Config.LogW(' ');
+    IF raLive THEN
+      Config.LogWStr(' raLive: T ');
+    ELSE
+      Config.LogWStr(' raLive: F ');
+    END;
     IF alive THEN
       Config.LogWStr(' live: T ');
     ELSE
       Config.LogWStr(' live: F ');
     END;
     Config.LogWStr(prefix);
+    Config.LogW(' ');
     GSAName.WDecode(instr);
     Config.LogWStr("  attrib: ");
     Config.LogWSet(instr.attrib);
@@ -225,7 +234,9 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
      *)
     op := instr.operands.fop;
     WHILE (op # instr.operands) DO
-      IF (op.def IS GSAData.Result) THEN
+      (* Mark all GSAData.Result operands that are not required as dead. *)
+      IF (op.def IS GSAData.Result) &
+         ~(GSAData.raLive IN op.def(GSAData.Result).attrib) THEN
         EXCL(op.def(GSAData.Result).attrib, live);
       END;
       op := op.fop;
@@ -251,6 +262,7 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
       instr := instr.finst;
     END;
 
+    (* instr is a Trap, or the dummy head. *)
     IF instr # region.instructions THEN
       instr := instr.finst; (* Instruction after Ttrap. *)
       WHILE instr # region.instructions DO
@@ -267,7 +279,9 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
 
     rgn := region.regions.freg;
     WHILE rgn # region.regions DO
-      MarkDeadAfterTrap(rgn);
+      MarkDeadAfterTrap(rgn);   (* XXX This is wrong.  It will look for another $trap!
+                                 * Need to delete the Region rgn.
+                                 *)
       rgn := rgn.freg;
     END;
   END MarkDeadAfterTrap;
@@ -339,7 +353,7 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
       MarkLive(enter, GSAData.InstructionExit(r));
       dumpregion(r, "MarkLive $exit");
 
-      progress("MarkDead After Trap");
+      progress("MarkDeadAfterTrap");
       MarkDeadAfterTrap(r);
       dumpregion(r, "MarkDeadAfterTrap");
 
