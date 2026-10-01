@@ -1141,7 +1141,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       | Symtab.darrdesc:  subcl := GSAOpcode.Ginitdarr;
       END;
       inst := GSAData.NewInstruction(GSAOpcode.Gtypedesc, subcl, n.type, n.pos);
-      INCL(inst.attrib, GSAData.raLive); (* TD initializers cannot be removed *)
+      INCL(inst.attrib, GSAData.raLive); (* TD inits must not be removed. *)
       GSAData.OperandAppend(inst, tdtype);
       GSAData.InstructionAppend(r, inst);
       CompleteItem(inst, x);
@@ -1198,7 +1198,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
           GSAData.InstructionAppend(r, inst);
 
           IF Symtab.modinit IN r(GSAData.GlobalRegion).proc.flags THEN
-            (* Module initialization cannot be dead code eliminated. *)
+            (* Module initialization must not be dead code eliminated. *)
             INCL(inst.attrib, GSAData.raLive);
           END;
           CompleteItem(inst, rhs);
@@ -1218,7 +1218,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       mod := GSAData.NewSymbol(r, n.module, n.module, n.pos);
       inst := GSAData.NewInstruction(GSAOpcode.Pmisc, GSAOpcode.Pimport, n.type,
                                      n.pos);
-      INCL(inst.attrib, GSAData.raLive); (* imports cannot be removed *)
+      INCL(inst.attrib, GSAData.raLive); (* IMPORTs cannot be removed. *)
       GSAData.OperandAppend(inst, mod);
       GSAData.InstructionAppend(r, inst);
     END Import;
@@ -3065,13 +3065,13 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       | Config.HaltWith:
         halt := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Twith,
                                       Symtab.notyp, n.pos);
-        INCL(halt.attrib, GSAData.raLive);
+        INCL(halt.attrib, GSAData.raLive); (* No uses; becomes dead code. *)
         GSAData.InstructionAppend(r, halt);
 
       | Config.HaltCase:
         halt := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Tcase,
                                       Symtab.notyp, n.pos);
-        INCL(halt.attrib, GSAData.raLive);
+        INCL(halt.attrib, GSAData.raLive); (* No uses; becomes dead code. *)
         GSAData.InstructionAppend(r, halt);
 
       | Config.HaltAssert: Trap(r, GSAOpcode.Tassert, n.pos, cond);
@@ -3080,7 +3080,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
         halt := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Thalt,
                                       Symtab.notyp, n.pos);
         GSAData.OperandAppend(halt, value.node);
-        INCL(halt.attrib, GSAData.raLive);
+        INCL(halt.attrib, GSAData.raLive); (* No uses; becomes dead code. *)
         GSAData.InstructionAppend(r, halt);
       END;
     END Halt;
