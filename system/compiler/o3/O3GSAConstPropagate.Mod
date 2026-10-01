@@ -1004,7 +1004,7 @@ VAR
         END;
       ELSIF lattice.state = csOperand THEN
         (* The conditional used for the guard is a gate and
-         * is has evaluated to a constant operand.  The value of
+         * has evaluated to a constant operand.  The value of
          * this guard is based on the value of the operand selected.
          *)
         gate := op.def(GSAData.Instruction);
