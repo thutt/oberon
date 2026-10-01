@@ -190,9 +190,12 @@ BEGIN
   misc[GSAOpcode.Gcopy] := 'copy';
   misc[GSAOpcode.Gcap] := 'cap';
 
-  NEW(pseudomisc, 2);
+  NEW(pseudomisc, 5);
   pseudomisc[GSAOpcode.Pgate] := 'gate';
   pseudomisc[GSAOpcode.Pimport] := 'import';
+  pseudomisc[GSAOpcode.Ptrapsink] := 'trapsink';
+  pseudomisc[GSAOpcode.Pimportsink] := 'importsink';
+  pseudomisc[GSAOpcode.Pinitsink] := 'modinitsink';
 
   NEW(alias, 4);
   alias[GSAOpcode.Pnoalias] := 'noalias';

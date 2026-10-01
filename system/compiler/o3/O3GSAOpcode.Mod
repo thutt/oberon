@@ -47,7 +47,7 @@ MODULE O3GSAOpcode;
     Hmemw*    = Hbegin + 5; (* SYSTEM.MEMW *)
     Hend*     = Hbegin + 5 + 1;
 
-  CONST (* OPCODE CLASS: comparison *)
+  CONST (* OPCODE CLASS: conditional / comparison *)
     Cbegin* = Hend;
     Ceql*   = Cbegin + 0; (* equal test *)
     Cneq*   = Cbegin + 1; (* not equal test *)
@@ -145,7 +145,7 @@ MODULE O3GSAOpcode;
     Twith* = 8;
     Tnil* = 9;
 
-  CONST (* Gmisc *)
+  CONST (* Gmisc *) (* XXX Why is there Pmisc and Gmisc? *)
     Gcall* = 0;
     Gcopy* = 1;
     Gcap* = 2;
@@ -189,8 +189,11 @@ MODULE O3GSAOpcode;
     Pmovefromreg*  = 1;           (* Move from hardware register. *)
 
   CONST (* Pmisc *)
-    Pgate*   = 0;
-    Pimport* = 1;
+    Pgate*       = 0;
+    Pimport*     = 1;
+    Pimportsink* = 2;  (* $import instruction sink. *)
+    Pinitsink*   = 3;  (* Module initialization instruction sink. *)
+    Ptrapsink*   = 4;  (* $trap instruction sink. *)
 
 
   CONST (* Pnlm *)
