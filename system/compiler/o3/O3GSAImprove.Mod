@@ -64,9 +64,9 @@ MODULE O3GSAImprove; (* Code Improvement *)
         END;
 
         IF Config.OptDCE IN Config.options THEN
-          dump(module^, rgn, ".gsa.00400", "Dead Code Elimination");
+          dump(module^, rgn, ".gsa.00400", "Dead Code Elimination 0");
           GSADCE.Perform(rgn);
-          dump(module^, rgn, ".gsa.00499", "Dead Code Elimination");
+          dump(module^, rgn, ".gsa.00499", "Dead Code Elimination 0");
         END;
 
         IF Config.OptConstProp IN Config.options THEN
@@ -76,9 +76,9 @@ MODULE O3GSAImprove; (* Code Improvement *)
         END;
 
         IF Config.OptDCE IN Config.options THEN
-          dump(module^, rgn, ".gsa.00600", "Dead Code Elimination");
+          dump(module^, rgn, ".gsa.00600", "Dead Code Elimination 1");
           GSADCE.Perform(rgn);
-          dump(module^, rgn, ".gsa.00699", "Dead Code Elimination");
+          dump(module^, rgn, ".gsa.00699", "Dead Code Elimination 1");
         END;
 
         IF Config.OptSimpleSched IN Config.options THEN
