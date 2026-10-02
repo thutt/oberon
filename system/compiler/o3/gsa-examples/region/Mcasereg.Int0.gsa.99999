@@ -1,20 +1,20 @@
 Final GSA
 
  0 ( 0)  greg: Int0 range=[-32768, -32747)
- 1 ( 1)    [1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32748) uses={}
+ 1 ( 1)    [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32748) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32749, -32749) uses={(21)}
- 4 ( 3)    y := convert.s2 flags{} const{11}:%vr35  range=[-32768, -32750) uses={(15) (10) (15) (9) (7) (5) (4)}
+ 4 ( 3)    y := convert.s2 flags{} const{11}:%vr37  range=[-32768, -32750) uses={(15) (10) (15) (9) (7) (5) (4)}
 10 ( 4)    case flags{} result[(3)]  range=[-32768, -32751) uses={}
- 9 ( 5)     guard-case flags{} result[(3)] , const{6}:%vr38  range=[-32762, -32752) uses={(12)}
-12 ( 6)      %result-3 := convert.s2 flags{} const{10}:%vr37  range=[-32753, -32753) uses={(14)}
- 8 ( 7)     guard-case flags{} result[(3)] , const{11}:%vr42  range=[-32762, -32754) uses={(12)}
-14 ( 8)      convert.s2 flags{} const{15}:%vr40  range=[-32756, -32755) uses={(9)}
+ 9 ( 5)     guard-case flags{} result[(3)] , const{6}:%vr40  range=[-32762, -32752) uses={(12)}
+12 ( 6)      %result-3 := convert.s2 flags{} const{10}:%vr39  range=[-32753, -32753) uses={(14)}
+ 8 ( 7)     guard-case flags{} result[(3)] , const{11}:%vr44  range=[-32762, -32754) uses={(12)}
+14 ( 8)      convert.s2 flags{} const{15}:%vr42  range=[-32756, -32755) uses={(9)}
  7 ( 9)      y := add.s2 flags{} result[(3)] , result[(8)]  range=[-32756, -32756) uses={(15)}
  6 (10)     guard-celse flags{} result[(3)]  range=[-32762, -32757) uses={(12)}
 15 (11)      trap-case flags{raLive}  range=[-32758, -32758) uses={}
 11 (12)     merge-case flags{} result[(5)] , result[(7)] , result[(10)]  range=[-32762, -32759) uses={(15) (14) (13)}
-16 (13)      %return-2 := gate flags{} result[(12)] , const{TRUE}:%vr44 , const{FALSE}:%vr45 , const{FALSE}:%vr45  range=[-32762, -32760) uses={(17) (16)}
-13 (14)      %result-3 := gate flags{} result[(12)] , result[(6)] , const{0}:%vr46 , const{0}:%vr46  range=[-32762, -32761) uses={(19)}
+16 (13)      %return-2 := gate flags{} result[(12)] , const{TRUE}:%vr46 , const{FALSE}:%vr47 , const{FALSE}:%vr47  range=[-32762, -32760) uses={(17) (16)}
+13 (14)      %result-3 := gate flags{} result[(12)] , result[(6)] , const{0}:%vr48 , const{0}:%vr48  range=[-32762, -32761) uses={(19)}
  5 (15)      %result-3 := gate flags{} result[(12)] , result[(3)] , result[(9)] , result[(3)]  range=[-32762, -32762) uses={(19)}
 18 (16)    guard-true flags{} result[(13)]  range=[-32768, -32763) uses={(18)}
 17 (17)    guard-false flags{} result[(13)]  range=[-32768, -32764) uses={(18)}

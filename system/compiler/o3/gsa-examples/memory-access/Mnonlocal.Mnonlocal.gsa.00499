@@ -1,4 +1,4 @@
-Dead Code Elimination 0
+Dead Code Elimination
 
  0 ( 0)  greg: Mnonlocal range=[-32768, -32747)
  1 ( 1)    enter flags{raLive} %nlm  range=[-32768, -32748) uses={}

@@ -1,14 +1,14 @@
 Live Range Analysis
 
  0 ( 0)  greg: Char range=[-32768, -32758)
- 1 ( 1)    [1:[location=ch]] enter flags{} %nlm:%vr32  range=[-32768, -32759) uses={}
+ 1 ( 1)    [2:[location=.%0], 1:[location=ch]] enter flags{} %nlm:%vr32  range=[-32768, -32759) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32760, -32760) uses={(10)}
  4 ( 3)    case flags{} result{1 of (1)}  range=[-32768, -32761) uses={}
- 5 ( 4)     guard-case flags{} result{1 of (1)} , const{0}:%vr34 , const{255}:%vr35  range=[-32766, -32762) uses={(7)}
- 7 ( 5)     guard-case flags{} result{1 of (1)} , const{[65..90]}:%vr36 , const{97}:%vr37 , const{122}:%vr38  range=[-32766, -32763) uses={(7)}
+ 5 ( 4)     guard-case flags{} result{1 of (1)} , const{0}:%vr35 , const{255}:%vr36  range=[-32766, -32762) uses={(7)}
+ 7 ( 5)     guard-case flags{} result{1 of (1)} , const{[65..90]}:%vr37 , const{97}:%vr38 , const{122}:%vr39  range=[-32766, -32763) uses={(7)}
  8 ( 6)     guard-celse flags{} result{1 of (1)}  range=[-32766, -32764) uses={(7)}
  6 ( 7)     merge-case flags{} result[(4)] , result[(5)] , result[(6)]  range=[-32766, -32765) uses={(8)}
- 9 ( 8)      %result-3 := gate flags{} result[(7)] , const{65}:%vr40 , const{95}:%vr41 , const{0}:%vr42  range=[-32766, -32766) uses={(9)}
+ 9 ( 8)      %result-3 := gate flags{} result[(7)] , const{65}:%vr41 , const{95}:%vr42 , const{0}:%vr43  range=[-32766, -32766) uses={(9)}
 10 ( 9)    exit flags{} result[(8)] [location=%result-3], result[(10)]  range=[-32768, -32767) uses={}
  3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
 

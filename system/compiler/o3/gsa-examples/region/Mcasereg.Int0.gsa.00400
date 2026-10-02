@@ -1,7 +1,7 @@
-Dead Code Elimination 0
+Dead Code Elimination
 
  0 ( 0)  greg: Int0 range=[-32768, -32741)
- 1 ( 1)    [1:[location=x]] enter flags{} %nlm  range=[-32768, -32742) uses={}
+ 1 ( 1)    [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32742) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32745, -32743) uses={(27)}
  4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32745, -32744) uses={}
  5 ( 4)     %result-3 := copy flags{} const{0}  range=[-32745, -32745) uses={}

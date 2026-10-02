@@ -1,7 +1,7 @@
 Live Range Analysis
 
  0 ( 0)  greg: P1 range=[-32768, -32755)
- 1 ( 1)    [1:[location=v]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+ 1 ( 1)    [2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32756) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32757, -32757) uses={(13)}
  4 ( 3)    neg.s1 flags{} const{3}  range=[-32768, -32758) uses={(9) (6) (4)}
  7 ( 4)    lss.s1 flags{} result[(3)] , const{0}  range=[-32768, -32759) uses={(8) (5)}

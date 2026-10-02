@@ -1,12 +1,12 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: UpdRecord range=[-32768, -32747)
- 1 ( 1)    [6:[location=.Mvarparm-Record/adr], 5:[location=.Mvarparm-Record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32748) uses={}
+ 1 ( 1)    [9:[location=.Mvarparm-Record/adr], 8:[location=.Mvarparm-Record], 7:[location=.%1], 6:[location=.%0], 5:[location=record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32748) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32749, -32749) uses={(8)}
  4 ( 3)    adr flags{} record  range=[-32768, -32750) uses={(4)}
  5 ( 4)    record := initialize flags{} record , result[(3)] , const{2}  range=[-32768, -32751) uses={(14) (12)}
  8 ( 5)    adr flags{} v  range=[-32768, -32752) uses={(8) (15)}
-10 ( 6)    eql.u4 flags{} result{4 of (1)} , result{5 of (1)}  range=[-32768, -32753) uses={(9) (7)}
+10 ( 6)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32753) uses={(9) (7)}
 12 ( 7)    guard-true flags{raLive} result[(6)]  range=[-32768, -32754) uses={(11)}
  3 ( 8)     %nlm := update-varparm flags{} v , result[(5)] , result[(2)] , result[(12)]  range=[-32755, -32755) uses={(15) (13) (12)}
 11 ( 9)    guard-false flags{raLive} result[(6)]  range=[-32768, -32756) uses={(11)}

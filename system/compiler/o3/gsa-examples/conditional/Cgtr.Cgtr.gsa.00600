@@ -1,4 +1,4 @@
-Dead Code Elimination 1
+Dead Code Elimination
 
 0 (0)  greg: Cgtr range=[-32768, -32763)
 1 (1)    enter flags{raLive} %nlm  range=[-32768, -32764) uses={}

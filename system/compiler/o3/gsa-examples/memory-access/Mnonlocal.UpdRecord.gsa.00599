@@ -1,7 +1,7 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: UpdRecord range=[-32768, -32759)
- 1 ( 1)    [3:[location=record/adr], 2:[location=record], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32760) uses={}
+ 1 ( 1)    [5:[location=record/adr], 4:[location=record], 3:[location=.%1], 2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32760) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32761, -32761) uses={(4)}
  4 ( 3)    adr flags{} record  range=[-32768, -32762) uses={(4)}
  3 ( 4)    %nlm := update-nonlocal flags{} record , result[(3)] , result[(2)] , result[(5)]  range=[-32768, -32763) uses={(9) (6) (5)}

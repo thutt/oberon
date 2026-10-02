@@ -1,7 +1,7 @@
 Copy Propagation
 
  0 ( 0)  greg: Two range=[-32768, -32701)
- 1 ( 1)    [8:[location=X/adr], 7:[location=X], 6:[location=LX/adr], 5:[location=LX], 4:[location=x/adr], 3:[location=x], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32702) uses={}
+ 1 ( 1)    [10:[location=X/adr], 9:[location=X], 8:[location=LX/adr], 7:[location=LX], 6:[location=.%0], 5:[location=z], 4:[location=x/adr], 3:[location=x], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32702) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32704, -32703) uses={(9) (7)}
  5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32704, -32704) uses={}
  6 ( 4)    z := copy flags{} const{0}  range=[-32768, -32705) uses={}

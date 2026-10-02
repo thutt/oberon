@@ -1,19 +1,19 @@
 Live Range Analysis
 
  0 ( 0)  greg: P0 range=[-32768, -32749)
- 1 ( 1)    [1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32750) uses={}
+ 1 ( 1)    [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32750) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32751, -32751) uses={(19)}
- 4 ( 3)    convert.s2 flags{} const{10}:%vr35  range=[-32768, -32752) uses={(4)}
+ 4 ( 3)    convert.s2 flags{} const{10}:%vr37  range=[-32768, -32752) uses={(4)}
  5 ( 4)    eql.s2 flags{} result{1 of (1)} , result[(3)]  range=[-32768, -32753) uses={(7) (5)}
  7 ( 5)    guard-true flags{} result[(4)]  range=[-32768, -32754) uses={(16)}
- 9 ( 6)     y := convert.s2 flags{} const{1}:%vr38  range=[-32755, -32755) uses={(17)}
+ 9 ( 6)     y := convert.s2 flags{} const{1}:%vr40  range=[-32755, -32755) uses={(17)}
  6 ( 7)    guard-false flags{} result[(4)]  range=[-32768, -32756) uses={(16)}
-11 ( 8)     convert.s2 flags{} const{20}:%vr40  range=[-32764, -32757) uses={(9)}
+11 ( 8)     convert.s2 flags{} const{20}:%vr42  range=[-32764, -32757) uses={(9)}
 12 ( 9)     eql.s2 flags{} result{1 of (1)} , result[(8)]  range=[-32764, -32758) uses={(12) (10)}
 14 (10)     guard-true flags{} result[(9)]  range=[-32764, -32759) uses={(14)}
-16 (11)      y := convert.s2 flags{} const{2}:%vr43  range=[-32760, -32760) uses={(15)}
+16 (11)      y := convert.s2 flags{} const{2}:%vr45  range=[-32760, -32760) uses={(15)}
 13 (12)     guard-false flags{} result[(9)]  range=[-32764, -32761) uses={(14)}
-18 (13)      y := convert.s2 flags{} const{3}:%vr45  range=[-32762, -32762) uses={(15)}
+18 (13)      y := convert.s2 flags{} const{3}:%vr47  range=[-32762, -32762) uses={(15)}
 15 (14)     merge-if flags{} result[(10)] , result[(12)]  range=[-32764, -32763) uses={(15)}
 17 (15)      y := gate flags{} result[(14)] , result[(11)] , result[(13)]  range=[-32764, -32764) uses={(17)}
  8 (16)    merge-if flags{} result[(5)] , result[(7)]  range=[-32768, -32765) uses={(17)}

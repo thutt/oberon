@@ -1,4 +1,4 @@
-Dead Code Elimination 0
+Dead Code Elimination
 
  0 ( 0)  greg: RecordFldLocal range=[-32768, -32751)
  1 ( 1)    enter flags{} %nlm  range=[-32768, -32752) uses={}

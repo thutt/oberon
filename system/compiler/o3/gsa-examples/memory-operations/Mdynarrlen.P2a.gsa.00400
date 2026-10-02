@@ -1,4 +1,4 @@
-Dead Code Elimination 0
+Dead Code Elimination
 
  0 ( 0)  greg: P2a range=[-32768, -32759)
  1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32760) uses={}

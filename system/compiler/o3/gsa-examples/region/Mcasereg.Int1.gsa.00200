@@ -1,7 +1,7 @@
 Copy Propagation
 
  0 ( 0)  greg: Int1 range=[-32768, -32725)
- 1 ( 1)    [1:[location=x]] enter flags{} %nlm  range=[-32768, -32726) uses={}
+ 1 ( 1)    [2:[location=.%0], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32726) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32729, -32727) uses={(43)}
  4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32729, -32728) uses={(34) (28) (28) (28) (28) (28) (28)}
  7 ( 4)     %result-3 := copy flags{} const{0}  range=[-32729, -32729) uses={(33) (29) (29) (29) (29) (29) (29)}

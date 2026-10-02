@@ -1,7 +1,7 @@
-Dead Code Elimination 1
+Dead Code Elimination
 
  0 ( 0)  greg: P1 range=[-32768, -32754)
- 1 ( 1)    [2:[location=y], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32755) uses={}
+ 1 ( 1)    [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32755) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32756, -32756) uses={(14)}
  4 ( 3)    x := convert.s2 flags{} const{10}  range=[-32768, -32757) uses={(4) (4)}
  5 ( 4)    eql.s2 flags{} result[(3)] , result[(3)]  range=[-32768, -32758) uses={(6) (7) (8) (5)}

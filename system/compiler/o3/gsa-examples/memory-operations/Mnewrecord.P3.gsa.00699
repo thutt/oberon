@@ -1,7 +1,7 @@
-Dead Code Elimination 1
+Dead Code Elimination
 
  0 ( 0)  greg: P3 range=[-32768, -32759)
- 1 ( 1)    [4:[location=.BaseDesc-BaseDesc/adr], 3:[location=.BaseDesc-BaseDesc], 2:[location=p/adr], 1:[location=p]] enter flags{} %nlm  range=[-32768, -32760) uses={}
+ 1 ( 1)    [5:[location=.BaseDesc-BaseDesc/adr], 4:[location=.BaseDesc-BaseDesc], 3:[location=.%0], 2:[location=p/adr], 1:[location=p]] enter flags{} %nlm  range=[-32768, -32760) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32761, -32761) uses={(4)}
  4 ( 3)    adr flags{} p  range=[-32768, -32762) uses={(6) (4)}
  3 ( 4)    %nlm := update-varparm flags{} p , result[(3)] , result[(2)] , result[(5)]  range=[-32768, -32763) uses={(6)}

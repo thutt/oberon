@@ -1,10 +1,10 @@
 Final GSA
 
  0 ( 0)  greg: P1 range=[-32768, -32755)
- 1 ( 1)    [1:[location=v]] enter flags{} %nlm:%vr32  range=[-32768, -32756) uses={}
+ 1 ( 1)    [2:[location=.%0], 1:[location=v]] enter flags{} %nlm:%vr32  range=[-32768, -32756) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32757, -32757) uses={(13)}
- 4 ( 3)    neg.s1 flags{} const{3}:%vr35  range=[-32768, -32758) uses={(9) (6) (4)}
- 7 ( 4)    lss.s1 flags{} result[(3)] , const{0}:%vr37  range=[-32768, -32759) uses={(8) (5)}
+ 4 ( 3)    neg.s1 flags{} const{3}:%vr36  range=[-32768, -32758) uses={(9) (6) (4)}
+ 7 ( 4)    lss.s1 flags{} result[(3)] , const{0}:%vr38  range=[-32768, -32759) uses={(8) (5)}
  9 ( 5)    guard-true flags{} result[(4)]  range=[-32768, -32760) uses={(10)}
  6 ( 6)     neg.s1 flags{} result[(3)]  range=[-32762, -32761) uses={(7)}
 11 ( 7)     %t4 := ror.s4 flags{} result{1 of (1)} , result[(6)]  range=[-32762, -32762) uses={(11)}

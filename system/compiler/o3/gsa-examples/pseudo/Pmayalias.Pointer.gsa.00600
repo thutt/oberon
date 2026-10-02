@@ -1,7 +1,7 @@
-Dead Code Elimination 1
+Dead Code Elimination
 
  0 ( 0)  greg: Pointer range=[-32768, -32726)
- 1 ( 1)    [4:[location=X/adr], 3:[location=X], 2:[location=b], 1:[location=a]] enter flags{} %nlm  range=[-32768, -32727) uses={}
+ 1 ( 1)    [5:[location=X/adr], 4:[location=X], 3:[location=.%0], 2:[location=b], 1:[location=a]] enter flags{} %nlm  range=[-32768, -32727) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32728, -32728) uses={(15) (9)}
  5 ( 3)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32729) uses={(5) (4)}
  7 ( 4)    guard-true flags{raLive} result[(3)]  range=[-32768, -32730) uses={(7)}

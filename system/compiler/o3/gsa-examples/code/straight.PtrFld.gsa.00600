@@ -1,7 +1,7 @@
-Dead Code Elimination 1
+Dead Code Elimination
 
  0 ( 0)  greg: PtrFld range=[-32768, -32730)
- 1 ( 1)    [2:[location=b1], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32731) uses={}
+ 1 ( 1)    [3:[location=.%0], 2:[location=b1], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32731) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32732, -32732) uses={(9)}
  4 ( 3)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32733) uses={(5) (4)}
  6 ( 4)    guard-true flags{raLive} result[(3)]  range=[-32768, -32734) uses={(7)}

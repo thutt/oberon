@@ -1,4 +1,4 @@
-Dead Code Elimination 0
+Dead Code Elimination
 
 0 (0)  greg: P1 range=[-32768, -32764)
 1 (1)    enter flags{} %nlm  range=[-32768, -32765) uses={}

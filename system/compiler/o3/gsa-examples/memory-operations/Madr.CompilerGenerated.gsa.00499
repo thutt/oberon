@@ -1,4 +1,4 @@
-Dead Code Elimination 0
+Dead Code Elimination
 
 0 (0)  greg: CompilerGenerated range=[-32768, -32761)
 1 (1)    [2:[location=global/adr], 1:[location=global]] enter flags{} %nlm  range=[-32768, -32762) uses={}

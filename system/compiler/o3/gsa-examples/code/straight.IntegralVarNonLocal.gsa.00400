@@ -1,7 +1,7 @@
-Dead Code Elimination 0
+Dead Code Elimination
 
  0 ( 0)  greg: IntegralVarNonLocal range=[-32768, -32746)
- 1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32747) uses={}
+ 1 ( 1)    [5:[location=y/adr], 4:[location=y], 3:[location=.%0], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32747) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32749, -32748) uses={(5)}
  4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32749, -32749) uses={}
  5 ( 4)    adr flags{} x  range=[-32768, -32750) uses={(10) (16) (6)}

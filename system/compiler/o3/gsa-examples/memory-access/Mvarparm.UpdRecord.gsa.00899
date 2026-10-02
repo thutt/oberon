@@ -1,25 +1,25 @@
 Live Range Analysis
 
  0 ( 0)  greg: UpdRecord range=[-32768, -32747)
- 1 ( 1)    [6:[location=.Mvarparm-Record/adr], 5:[location=.Mvarparm-Record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm:%vr32  range=[-32768, -32748) uses={}
+ 1 ( 1)    [9:[location=.Mvarparm-Record/adr], 8:[location=.Mvarparm-Record], 7:[location=.%1], 6:[location=.%0], 5:[location=record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm:%vr32  range=[-32768, -32748) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32749, -32749) uses={(8)}
  4 ( 3)    adr flags{} record  range=[-32768, -32750) uses={(4)}
- 5 ( 4)    record := initialize flags{} record , result[(3)] , const{2}:%vr41  range=[-32768, -32751) uses={(14) (12)}
+ 5 ( 4)    record := initialize flags{} record , result[(3)] , const{2}:%vr44  range=[-32768, -32751) uses={(14) (12)}
  8 ( 5)    adr flags{} v  range=[-32768, -32752) uses={(8) (15)}
-10 ( 6)    eql.u4 flags{} result{4 of (1)} , result{5 of (1)}  range=[-32768, -32753) uses={(9) (7)}
+10 ( 6)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32753) uses={(9) (7)}
 12 ( 7)    guard-true flags{raLive} result[(6)]  range=[-32768, -32754) uses={(11)}
  3 ( 8)     %nlm:%vr32 := update-varparm flags{} v , result[(5)] , result[(2)] , result[(12)]  range=[-32755, -32755) uses={(15) (13) (12)}
 11 ( 9)    guard-false flags{raLive} result[(6)]  range=[-32768, -32756) uses={(11)}
 15 (10)     trap-iguard flags{raLive}  range=[-32757, -32757) uses={}
 13 (11)    merge-if flags{raLive} result[(7)] , result[(9)]  range=[-32768, -32758) uses={}
- 7 (12)    recordcopy flags{} result[(8)] , result[(13)] , const{2}:%vr41 , result[(4)] , result[(14)]  range=[-32768, -32759) uses={(8)}
+ 7 (12)    recordcopy flags{} result[(8)] , result[(13)] , const{2}:%vr44 , result[(4)] , result[(14)]  range=[-32768, -32759) uses={(8)}
 14 (13)    adr flags{} result[(8)]  range=[-32768, -32760) uses={(12)}
  6 (14)    adr flags{} result[(4)]  range=[-32768, -32761) uses={(12)}
  9 (15)    access-varparm flags{} v , result[(5)] , result[(8)]  range=[-32768, -32762) uses={(18) (16)}
 17 (16)    adr flags{} result[(15)]  range=[-32768, -32763) uses={(17)}
-18 (17)    add.u4 flags{} result[(16)] , const{0}:%vr55  range=[-32768, -32764) uses={(18)}
-16 (18)    %nlm:%vr32 := update-field flags{} result[(15)] , result[(17)] , const{0}:%vr55 , result[(19)]  range=[-32768, -32765) uses={(21)}
-19 (19)    convert.s2 flags{} const{0}:%vr59  range=[-32768, -32766) uses={(18)}
+18 (17)    add.u4 flags{} result[(16)] , const{0}:%vr58  range=[-32768, -32764) uses={(18)}
+16 (18)    %nlm:%vr32 := update-field flags{} result[(15)] , result[(17)] , const{0}:%vr58 , result[(19)]  range=[-32768, -32765) uses={(21)}
+19 (19)    convert.s2 flags{} const{0}:%vr62  range=[-32768, -32766) uses={(18)}
 21 (20)    exit flags{} result[(21)]  range=[-32768, -32767) uses={}
 20 (21)     dtor flags{raLive} result[(18)]  range=[-32768, -32768) uses={(20)}
 
