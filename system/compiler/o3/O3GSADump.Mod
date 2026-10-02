@@ -353,7 +353,7 @@ MODULE O3GSADump;
     WS('[location=');
     WITH x:GSAData.SymLocation DO var := x.var;
       WITH var:GSAData.Temporary DO WTempVar(var);
-      | var:GSAData.Symbol DO WSymbol(var(GSAData.Symbol));
+      | var:GSAData.Symbol DO WSymbol(var);
       | var:GSAData.Type DO WType(var);
       END;
       CASE x.kind OF
