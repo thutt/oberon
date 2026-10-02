@@ -1,7 +1,7 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: P0 range=[-32768, -32736)
- 1 ( 1)    [5:[location=.Tiguard-BaseDesc/adr], 4:[location=.Tiguard-BaseDesc], 3:[location=.%0], 2:[location=e], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32737) uses={}
+ 1 ( 1)    [3:[location=.Tiguard-BaseDesc/adr], 2:[location=.Tiguard-BaseDesc], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32737) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32738, -32738) uses={(27) (20) (9)}
  6 ( 3)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32739) uses={(16) (17) (5) (4)}
 10 ( 4)    guard-true flags{raLive} result[(3)]  range=[-32768, -32740) uses={(7)}
@@ -11,7 +11,7 @@ Const Prop & Unreachable Code
 13 ( 8)    adr flags{} b  range=[-32768, -32744) uses={(20) (9)}
  5 ( 9)    access-deref flags{} result{1 of (1)} , result[(8)] , result[(2)]  range=[-32768, -32745) uses={(10)}
 14 (10)    heaptag flags{} b , result[(9)]  range=[-32768, -32746) uses={(11)}
-15 (11)    eql.u4 flags{} result[(10)] , result{4 of (1)}  range=[-32768, -32747) uses={(13) (12)}
+15 (11)    eql.u4 flags{} result[(10)] , result{2 of (1)}  range=[-32768, -32747) uses={(13) (12)}
 17 (12)    guard-true flags{raLive} result[(11)]  range=[-32768, -32748) uses={(15)}
 16 (13)    guard-false flags{raLive} result[(11)]  range=[-32768, -32749) uses={(15)}
 19 (14)     trap-iguard flags{raLive}  range=[-32750, -32750) uses={}

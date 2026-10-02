@@ -1,7 +1,7 @@
 Copy Propagation
 
  0 ( 0)  greg: Pointer range=[-32768, -32716)
- 1 ( 1)    [5:[location=X/adr], 4:[location=X], 3:[location=.%0], 2:[location=b], 1:[location=a]] enter flags{} %nlm  range=[-32768, -32717) uses={}
+ 1 ( 1)    [4:[location=X/adr], 3:[location=X], 2:[location=b], 1:[location=a]] enter flags{} %nlm  range=[-32768, -32717) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32719, -32718) uses={(16) (10)}
  5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32719, -32719) uses={}
  6 ( 4)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32720) uses={(6) (5)}

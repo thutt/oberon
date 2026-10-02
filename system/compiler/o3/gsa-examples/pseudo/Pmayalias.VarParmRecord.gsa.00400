@@ -1,7 +1,7 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: VarParmRecord range=[-32768, -32734)
- 1 ( 1)    [10:[location=X/adr], 9:[location=X], 8:[location=.%1], 7:[location=.%0], 6:[location=i/adr], 5:[location=i], 4:[location=r-tag/adr], 3:[location=r-tag], 2:[location=r/adr], 1:[location=r]] enter flags{} %nlm  range=[-32768, -32735) uses={}
+ 1 ( 1)    [8:[location=X/adr], 7:[location=X], 6:[location=i/adr], 5:[location=i], 4:[location=r-tag/adr], 3:[location=r-tag], 2:[location=r/adr], 1:[location=r]] enter flags{} %nlm  range=[-32768, -32735) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32737, -32736) uses={(5)}
  4 ( 3)     %return-3 := copy flags{} const{FALSE}  range=[-32737, -32737) uses={}
  5 ( 4)    adr flags{} r  range=[-32768, -32738) uses={(18) (5)}

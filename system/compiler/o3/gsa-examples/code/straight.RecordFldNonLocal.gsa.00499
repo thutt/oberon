@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: RecordFldNonLocal range=[-32768, -32750)
  1 ( 1)    [4:[location=bd1/adr], 3:[location=bd1], 2:[location=bd0/adr], 1:[location=bd0]] enter flags{} %nlm  range=[-32768, -32751) uses={}

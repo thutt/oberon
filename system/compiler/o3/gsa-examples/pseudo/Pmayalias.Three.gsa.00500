@@ -1,7 +1,7 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: Three range=[-32768, -32721)
- 1 ( 1)    [11:[location=X/adr], 10:[location=X], 9:[location=LX/adr], 8:[location=LX], 7:[location=.%0], 6:[location=z], 5:[location=x/adr], 4:[location=x], 3:[location=y/adr], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32722) uses={}
+ 1 ( 1)    [9:[location=X/adr], 8:[location=X], 7:[location=LX/adr], 6:[location=LX], 5:[location=x/adr], 4:[location=x], 3:[location=y/adr], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32722) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32723, -32723) uses={(6) (4)}
  5 ( 3)    adr flags{} y  range=[-32768, -32724) uses={(16) (5)}
  4 ( 4)    %nlm := update-varparm flags{} y , result[(5)] , result[(2)] , result[(7)]  range=[-32768, -32725) uses={(11) (9)}

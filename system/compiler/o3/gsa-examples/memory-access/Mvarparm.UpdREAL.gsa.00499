@@ -1,7 +1,7 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
 0 (0)  greg: UpdREAL range=[-32768, -32762)
-1 (1)    [4:[location=.%0], 3:[location=r], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32763) uses={}
+1 (1)    [2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32763) uses={}
 2 (2)     %nlm := ctor flags{}  range=[-32764, -32764) uses={(4)}
 4 (3)    adr flags{} v  range=[-32768, -32765) uses={(4)}
 3 (4)    %nlm := update-varparm flags{} v , result[(3)] , result[(2)] , const{  0.0E+00}  range=[-32768, -32766) uses={(6)}

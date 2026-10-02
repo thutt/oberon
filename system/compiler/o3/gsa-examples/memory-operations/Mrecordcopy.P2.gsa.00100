@@ -1,14 +1,14 @@
 Alias Analysis
 
  0 ( 0)  greg: P2 range=[-32768, -32749)
- 1 ( 1)    [9:[location=.Mrecordcopy-BaseDesc/adr], 8:[location=.Mrecordcopy-BaseDesc], 7:[location=.%1], 6:[location=.%0], 5:[location=b1], 4:[location=b0-tag/adr], 3:[location=b0-tag], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+ 1 ( 1)    [6:[location=.Mrecordcopy-BaseDesc/adr], 5:[location=.Mrecordcopy-BaseDesc], 4:[location=b0-tag/adr], 3:[location=b0-tag], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32750) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32752, -32751) uses={(11) (7)}
  5 ( 3)     %return-3 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
  6 ( 4)    adr flags{} b1  range=[-32768, -32753) uses={(5)}
  7 ( 5)    b1 := initialize flags{} b1 , result[(4)] , const{12}  range=[-32768, -32754) uses={(17) (15)}
 10 ( 6)    adr flags{} b0  range=[-32768, -32755) uses={(7)}
  4 ( 7)    access-varparm flags{} b0 , result[(6)] , result[(2)]  range=[-32768, -32756) uses={}
-11 ( 8)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32757) uses={(12) (9)}
+11 ( 8)    eql.u4 flags{} result{4 of (1)} , result{5 of (1)}  range=[-32768, -32757) uses={(12) (9)}
 13 ( 9)    guard-true flags{raLive} result[(8)]  range=[-32768, -32758) uses={(14)}
 15 (10)     adr flags{} b0  range=[-32760, -32759) uses={(11)}
  3 (11)     %nlm := update-varparm flags{} b0 , result[(10)] , result[(2)] , result[(15)]  range=[-32760, -32760) uses={(19) (16) (15)}

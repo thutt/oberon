@@ -1,7 +1,7 @@
 Alias Analysis
 
  0 ( 0)  greg: Three range=[-32768, -32685)
- 1 ( 1)    [11:[location=X/adr], 10:[location=X], 9:[location=LX/adr], 8:[location=LX], 7:[location=.%0], 6:[location=z], 5:[location=x/adr], 4:[location=x], 3:[location=y/adr], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32686) uses={}
+ 1 ( 1)    [9:[location=X/adr], 8:[location=X], 7:[location=LX/adr], 6:[location=LX], 5:[location=x/adr], 4:[location=x], 3:[location=y/adr], 2:[location=y], 1:[location=cc]] enter flags{} %nlm  range=[-32768, -32686) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32688, -32687) uses={(9) (6)}
  5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32688, -32688) uses={}
  6 ( 4)    z := copy flags{} const{0}  range=[-32768, -32689) uses={}

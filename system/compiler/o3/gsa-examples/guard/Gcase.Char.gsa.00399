@@ -1,7 +1,7 @@
 Value Numbering
 
  0 ( 0)  greg: Char range=[-32768, -32754)
- 1 ( 1)    [2:[location=.%0], 1:[location=ch]] enter flags{} %nlm  range=[-32768, -32755) uses={}
+ 1 ( 1)    [1:[location=ch]] enter flags{} %nlm  range=[-32768, -32755) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32757, -32756) uses={(14)}
  4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32757, -32757) uses={}
  5 ( 4)    case flags{} result{1 of (1)}  range=[-32768, -32758) uses={}

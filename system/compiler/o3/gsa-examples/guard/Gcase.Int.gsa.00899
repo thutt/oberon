@@ -1,9 +1,9 @@
 Live Range Analysis
 
  0 ( 0)  greg: Int range=[-32768, -32758)
- 1 ( 1)    [2:[location=.%0], 1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32759) uses={}
+ 1 ( 1)    [1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32759) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32760, -32760) uses={(10)}
- 4 ( 3)    convert.s2 flags{} const{10}:%vr36  range=[-32768, -32761) uses={(4)}
+ 4 ( 3)    convert.s2 flags{} const{10}:%vr35  range=[-32768, -32761) uses={(4)}
  5 ( 4)    eql.s2 flags{} result{1 of (1)} , result[(3)]  range=[-32768, -32762) uses={(5)}
  6 ( 5)    guard-true flags{} result[(4)]  range=[-32768, -32763) uses={}
  7 ( 6)     case flags{} result{1 of (1)}  range=[-32766, -32764) uses={}

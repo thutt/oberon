@@ -1,7 +1,7 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
  0 ( 0)  greg: Char range=[-32768, -32758)
- 1 ( 1)    [2:[location=.%0], 1:[location=ch]] enter flags{} %nlm  range=[-32768, -32759) uses={}
+ 1 ( 1)    [1:[location=ch]] enter flags{} %nlm  range=[-32768, -32759) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32760, -32760) uses={(10)}
  4 ( 3)    case flags{} result{1 of (1)}  range=[-32768, -32761) uses={}
  5 ( 4)     guard-case flags{} result{1 of (1)} , const{0} , const{255}  range=[-32766, -32762) uses={(7)}

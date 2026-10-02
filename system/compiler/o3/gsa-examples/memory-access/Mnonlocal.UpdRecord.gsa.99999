@@ -1,13 +1,13 @@
 Final GSA
 
  0 ( 0)  greg: UpdRecord range=[-32768, -32759)
- 1 ( 1)    [5:[location=record/adr], 4:[location=record], 3:[location=.%1], 2:[location=.%0], 1:[location=v]] enter flags{} %nlm:%vr32  range=[-32768, -32760) uses={}
+ 1 ( 1)    [3:[location=record/adr], 2:[location=record], 1:[location=v]] enter flags{} %nlm:%vr32  range=[-32768, -32760) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32761, -32761) uses={(4)}
  4 ( 3)    adr flags{} record  range=[-32768, -32762) uses={(4)}
  3 ( 4)    %nlm:%vr32 := update-nonlocal flags{} record , result[(3)] , result[(2)] , result[(5)]  range=[-32768, -32763) uses={(9) (6) (5)}
- 5 ( 5)    recordcopy flags{} result[(4)] , result[(6)] , const{2}:%vr44 , %t2:%vr45 , result[(7)]  range=[-32768, -32764) uses={(4)}
+ 5 ( 5)    recordcopy flags{} result[(4)] , result[(6)] , const{2}:%vr42 , %t2:%vr43 , result[(7)]  range=[-32768, -32764) uses={(4)}
  7 ( 6)    adr flags{} result[(4)]  range=[-32768, -32765) uses={(5)}
- 8 ( 7)    adr flags{} %t2:%vr45  range=[-32768, -32766) uses={(5)}
+ 8 ( 7)    adr flags{} %t2:%vr43  range=[-32768, -32766) uses={(5)}
  9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
  6 ( 9)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(8)}
 

@@ -1,0 +1,9 @@
+Dead Code Elimination 1
+
+0 (0)  greg: UpdateLocal range=[-32768, -32764)
+1 (1)    enter flags{} %nlm  range=[-32768, -32765) uses={}
+2 (2)    trap-nil flags{raLive}  range=[-32768, -32766) uses={}
+3 (3)    exit flags{} result[(4)]  range=[-32768, -32767) uses={}
+4 (4)     dtor flags{raLive} result[(8)]  range=[-32768, -32768) uses={(3)}
+
+

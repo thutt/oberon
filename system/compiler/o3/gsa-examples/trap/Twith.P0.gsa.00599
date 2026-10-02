@@ -1,7 +1,7 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: P0 range=[-32768, -32751)
- 1 ( 1)    [5:[location=.Twith-ExtDesc/adr], 4:[location=.Twith-ExtDesc], 3:[location=.%0], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32752) uses={}
+ 1 ( 1)    [4:[location=.Twith-ExtDesc/adr], 3:[location=.Twith-ExtDesc], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32752) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32753, -32753) uses={(17) (11) (4)}
  6 ( 3)    adr flags{} b  range=[-32768, -32754) uses={(4)}
  5 ( 4)    access-varparm flags{} b , result[(3)] , result[(2)]  range=[-32768, -32755) uses={(12) (11) (10) (5)}
@@ -13,7 +13,7 @@ Const Prop & Unreachable Code
  8 (10)    adr flags{} result[(4)]  range=[-32768, -32761) uses={(11)}
  4 (11)    access-deref flags{} result[(4)] , result[(10)] , result[(2)]  range=[-32768, -32762) uses={(12)}
  7 (12)    heaptag flags{} result[(4)] , result[(11)]  range=[-32768, -32763) uses={(13)}
-14 (13)    eql.u4 flags{} result[(12)] , result{4 of (1)}  range=[-32768, -32764) uses={(14)}
+14 (13)    eql.u4 flags{} result[(12)] , result{3 of (1)}  range=[-32768, -32764) uses={(14)}
 15 (14)    guard-false flags{} result[(13)]  range=[-32768, -32765) uses={}
 16 (15)     trap-with flags{raLive}  range=[-32766, -32766) uses={}
 17 (16)    exit flags{} const{FALSE} [location=%result-3], result[(17)]  range=[-32768, -32767) uses={}

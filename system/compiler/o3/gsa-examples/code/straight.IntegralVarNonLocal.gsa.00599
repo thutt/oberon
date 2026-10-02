@@ -1,7 +1,7 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: IntegralVarNonLocal range=[-32768, -32750)
- 1 ( 1)    [5:[location=y/adr], 4:[location=y], 3:[location=.%0], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32751) uses={}
+ 1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32751) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32752, -32752) uses={(4)}
  4 ( 3)    adr flags{} x  range=[-32768, -32753) uses={(9) (5)}
  3 ( 4)    %nlm := update-varparm flags{} x , result[(5)] , result[(2)] , result[(6)]  range=[-32768, -32754) uses={(16) (12) (8)}

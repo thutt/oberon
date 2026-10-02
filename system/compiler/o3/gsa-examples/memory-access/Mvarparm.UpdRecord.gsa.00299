@@ -1,14 +1,14 @@
 Copy Propagation
 
  0 ( 0)  greg: UpdRecord range=[-32768, -32743)
- 1 ( 1)    [9:[location=.Mvarparm-Record/adr], 8:[location=.Mvarparm-Record], 7:[location=.%1], 6:[location=.%0], 5:[location=record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32744) uses={}
+ 1 ( 1)    [6:[location=.Mvarparm-Record/adr], 5:[location=.Mvarparm-Record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32744) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32746, -32745) uses={(11) (7)}
  5 ( 3)     %return-3 := copy flags{} const{FALSE}  range=[-32746, -32746) uses={}
  6 ( 4)    adr flags{} record  range=[-32768, -32747) uses={(5)}
  7 ( 5)    record := initialize flags{} record , result[(4)] , const{2}  range=[-32768, -32748) uses={(17) (15)}
 10 ( 6)    adr flags{} v  range=[-32768, -32749) uses={(7)}
  4 ( 7)    access-varparm flags{} v , result[(6)] , result[(2)]  range=[-32768, -32750) uses={}
-11 ( 8)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32751) uses={(12) (9)}
+11 ( 8)    eql.u4 flags{} result{4 of (1)} , result{5 of (1)}  range=[-32768, -32751) uses={(12) (9)}
 13 ( 9)    guard-true flags{raLive} result[(8)]  range=[-32768, -32752) uses={(14)}
 15 (10)     adr flags{} v  range=[-32754, -32753) uses={(11)}
  3 (11)     %nlm := update-varparm flags{} v , result[(10)] , result[(2)] , result[(15)]  range=[-32754, -32754) uses={(19) (16) (15)}

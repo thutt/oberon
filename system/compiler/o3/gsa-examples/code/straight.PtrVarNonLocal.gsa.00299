@@ -1,7 +1,7 @@
 Copy Propagation
 
  0 ( 0)  greg: PtrVarNonLocal range=[-32768, -32749)
- 1 ( 1)    [5:[location=b1/adr], 4:[location=b1], 3:[location=.%0], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+ 1 ( 1)    [4:[location=b1/adr], 3:[location=b1], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32750) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32752, -32751) uses={(5)}
  4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
  5 ( 4)    adr flags{} b0  range=[-32768, -32753) uses={(9) (14) (6)}

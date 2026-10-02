@@ -1,15 +1,15 @@
 Final GSA
 
  0 ( 0)  greg: VarParmRecord range=[-32768, -32739)
- 1 ( 1)    [10:[location=X/adr], 9:[location=X], 8:[location=.%1], 7:[location=.%0], 6:[location=i/adr], 5:[location=i], 4:[location=r-tag/adr], 3:[location=r-tag], 2:[location=r/adr], 1:[location=r]] enter flags{} %nlm:%vr32  range=[-32768, -32740) uses={}
+ 1 ( 1)    [8:[location=X/adr], 7:[location=X], 6:[location=i/adr], 5:[location=i], 4:[location=r-tag/adr], 3:[location=r-tag], 2:[location=r/adr], 1:[location=r]] enter flags{} %nlm:%vr32  range=[-32768, -32740) uses={}
  2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32741, -32741) uses={(4)}
  4 ( 3)    adr flags{} r  range=[-32768, -32742) uses={(15) (4)}
  3 ( 4)    access-varparm flags{} r , result[(3)] , result[(2)]  range=[-32768, -32743) uses={(7) (5)}
  7 ( 5)    adr flags{} result[(4)]  range=[-32768, -32744) uses={(6)}
- 8 ( 6)    add.u4 flags{} result[(5)] , const{0}:%vr49  range=[-32768, -32745) uses={(8)}
- 6 ( 7)    %nlm:%vr32 := update-field flags{} result[(4)] , result[(8)] , const{0}:%vr49 , result[(9)]  range=[-32768, -32746) uses={(27) (21) (15) (11)}
+ 8 ( 6)    add.u4 flags{} result[(5)] , const{0}:%vr47  range=[-32768, -32745) uses={(8)}
+ 6 ( 7)    %nlm:%vr32 := update-field flags{} result[(4)] , result[(8)] , const{0}:%vr47 , result[(9)]  range=[-32768, -32746) uses={(27) (21) (15) (11)}
  9 ( 8)    mayalias flags{} result[(6)] , result[(17)]  range=[-32768, -32747) uses={(7)}
-10 ( 9)    convert.s2 flags{} const{10}:%vr55  range=[-32768, -32748) uses={(13) (7)}
+10 ( 9)    convert.s2 flags{} const{10}:%vr53  range=[-32768, -32748) uses={(13) (7)}
 16 (10)    adr flags{} i  range=[-32768, -32749) uses={(12)}
 13 (11)    access-varparm flags{} i , result[(12)] , result[(7)]  range=[-32768, -32750) uses={(13)}
 17 (12)    mayalias flags{} result[(10)] , result[(17)]  range=[-32768, -32751) uses={(23) (11)}
@@ -17,14 +17,14 @@ Final GSA
 20 (14)    guard-true flags{} result[(13)]  range=[-32768, -32753) uses={(26)}
  5 (15)     access-varparm flags{} r , result[(3)] , result[(7)]  range=[-32763, -32754) uses={(18) (16)}
 23 (16)     adr flags{} result[(15)]  range=[-32763, -32755) uses={(17)}
-14 (17)     add.u4 flags{} result[(16)] , const{0}:%vr49  range=[-32763, -32756) uses={(8) (12) (19) (22)}
-22 (18)     %nlm:%vr32 := update-field flags{} result[(15)] , result[(19)] , const{0}:%vr49 , result[(21)]  range=[-32763, -32757) uses={(23)}
+14 (17)     add.u4 flags{} result[(16)] , const{0}:%vr47  range=[-32763, -32756) uses={(8) (12) (19) (22)}
+22 (18)     %nlm:%vr32 := update-field flags{} result[(15)] , result[(19)] , const{0}:%vr47 , result[(21)]  range=[-32763, -32757) uses={(23)}
 24 (19)     mayalias flags{} result[(17)] , result[(20)]  range=[-32763, -32758) uses={(18)}
 26 (20)     adr flags{} X  range=[-32763, -32759) uses={(19) (22)}
 12 (21)     access-nonlocal flags{} X , result[(22)] , result[(7)]  range=[-32763, -32760) uses={(18)}
 25 (22)     mayalias flags{} result[(20)] , result[(17)]  range=[-32763, -32761) uses={(21)}
 18 (23)     %nlm:%vr32 := update-varparm flags{} i , result[(12)] , result[(18)] , result[(24)]  range=[-32763, -32762) uses={(27)}
-27 (24)     convert.s2 flags{} const{12}:%vr74  range=[-32763, -32763) uses={(23)}
+27 (24)     convert.s2 flags{} const{12}:%vr72  range=[-32763, -32763) uses={(23)}
 19 (25)    guard-false flags{} result[(13)]  range=[-32768, -32764) uses={(26)}
 21 (26)    merge-if flags{} result[(14)] , result[(25)]  range=[-32768, -32765) uses={(27)}
 11 (27)     %nlm:%vr32 := gate flags{} result[(26)] , result[(23)] , result[(7)]  range=[-32766, -32766) uses={(29)}

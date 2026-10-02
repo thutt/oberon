@@ -1,7 +1,7 @@
 Initial GSA
 
  0 ( 0)  greg: P0 range=[-32768, -32732)
- 1 ( 1)    [5:[location=.Tiguard-BaseDesc/adr], 4:[location=.Tiguard-BaseDesc], 3:[location=.%0], 2:[location=e], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32733) uses={}
+ 1 ( 1)    [3:[location=.Tiguard-BaseDesc/adr], 2:[location=.Tiguard-BaseDesc], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32733) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32735, -32734) uses={(31) (24) (11)}
  6 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32735, -32735) uses={}
  7 ( 4)    e := copy flags{} const{0}  range=[-32768, -32736) uses={(31) (25)}
@@ -13,7 +13,7 @@ Initial GSA
 14 (10)    adr flags{} b  range=[-32768, -32742) uses={(11)}
  5 (11)    access-deref flags{} result{1 of (1)} , result[(10)] , result[(2)]  range=[-32768, -32743) uses={(12)}
 15 (12)    heaptag flags{} b , result[(11)]  range=[-32768, -32744) uses={(13)}
-16 (13)    eql.u4 flags{} result[(12)] , result{4 of (1)}  range=[-32768, -32745) uses={(15) (14)}
+16 (13)    eql.u4 flags{} result[(12)] , result{2 of (1)}  range=[-32768, -32745) uses={(15) (14)}
 18 (14)    guard-true flags{raLive} result[(13)]  range=[-32768, -32746) uses={(17)}
 17 (15)    guard-false flags{raLive} result[(13)]  range=[-32768, -32747) uses={(17)}
 20 (16)     trap-iguard flags{raLive}  range=[-32748, -32748) uses={}
