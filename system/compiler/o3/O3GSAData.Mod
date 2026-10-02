@@ -125,7 +125,7 @@ CONST
   VRegNone     = VRegUndef + 1; (* No registerrs used. *)
   VRegInteger* = 0;             (* VirtualReg.ireg is valid. *)
   VRegReal*    = 1;             (* VirtualReg.rreg is valid. *)
-    
+
 TYPE
   VirtualReg* = RECORD
     rkind- : SHORTINT; (* kind IN { VRegUndef, VregNone, VRegInteger,
@@ -402,7 +402,8 @@ TYPE
                     * elements 00..(MAX(SET) + 1) DIV 2
                     *          are reserved for global use
                     * elements (MAX(SET) + 1) DIV 2 + 1..MAX(SET)
-                    *          are volatile between cia
+                    *          are volatile between
+                    *          Code Improvement Algorithms (CIA).
                     *)
   END;
 
@@ -1450,7 +1451,7 @@ END DominatesNR;
 PROCEDURE SymbolSetNode*(x : Symtab.Symbol; n : Addressable);
 BEGIN
   ASSERT((n IS Symbol) OR (n IS Temporary));
-x.bedata(BEData).node := n;
+  x.bedata(BEData).node := n;
 END SymbolSetNode;
 
 (* MergeOperandNumber: returns ordinal position of an
