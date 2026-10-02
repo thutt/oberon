@@ -182,22 +182,29 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
   PROCEDURE StoreGetVar(r : GSAData.Region) : GSAData.Temporary;
     VAR
       enter : GSAData.Instruction;
-      op    : GSAData.Operand;
-      def   : GSAData.Usable;
+      found : BOOLEAN;
+      op : GSAData.Operand;
+      def : GSAData.Usable;
   BEGIN
     enter := GSAData.InstructionEnter(r);
     op := enter.operands.fop;
-    WHILE (op # enter.operands) DO
+    found := FALSE;
+    WHILE (op # enter.operands) & ~found DO
       def := op.def;
       WITH def:GSAData.Temporary DO
-        IF def.kind = GSAData.tfNonLocalMem THEN
-          RETURN def;
-        END;
+        found := def.kind = GSAData.tfNonLocalMem;
       ELSE (* nop *)
       END;
-      op := op.fop;
+      IF ~found THEN
+        op := op.fop;
+      END;
     END;
-    RETURN NIL;
+
+    IF found THEN
+      RETURN op.def(GSAData.Temporary);
+    ELSE
+      RETURN NIL;
+    END;
   END StoreGetVar;
 
   (* EnterResultAppend: append a Result to the 'enter' instruction
@@ -956,11 +963,10 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       VAR
         c, g : GSAData.Instruction;
         tag, td, cond, var : GSAData.Item;
-        type : GSAData.Type;
-        merge : GSAData.Merge;
-        true, false : GSAData.Region;
-        attr : Attributes;
-
+      type : GSAData.Type;
+      merge : GSAData.Merge;
+      true, false : GSAData.Region;
+      attr : Attributes;
     BEGIN
       InitAttributes(attr);
       Design(r, n.design, var);
@@ -998,7 +1004,6 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
         true, false : GSAData.Region;
         attr : Attributes;
         merge : GSAData.Merge;
-
     BEGIN
       InitAttributes(attr);
       Design(r, n.design, var);
@@ -2481,15 +2486,13 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       GSAData.BindRegion(r, region);
       CurrentProcedure := n.info;
 
-      (* Add all formal parameters (and addresses, when needed) to
-       * $enter as results.  This models the creation of the input
-       * arguments into the Region.
+      (* add all formal parameters (and their additional parts) to the
+       * instruction as results
        *)
       enter := GSAData.InstructionEnter(region);
       store := StoreGet(enter);
       args := n.info.type(Symtab.Procedure).parms;
-      WHILE (args # NIL) & ((args.kind = Symtab.par) OR
-                            (args.kind = Symtab.varpar)) DO
+      WHILE args # NIL DO
         op := GetSymbol(region, args, n.pos);
         EnterResultAppend(enter, op);
         IF args.kind IN {Symtab.par, Symtab.varpar} THEN
