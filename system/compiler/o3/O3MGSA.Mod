@@ -193,46 +193,15 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       def := op.def;
       WITH def:GSAData.Temporary DO
         found := def.kind = GSAData.tfNonLocalMem;
+        IF found THEN
+          RETURN def;
+        END;
       ELSE (* nop *)
       END;
-      IF ~found THEN
-        op := op.fop;
-      END;
+      op := op.fop;
     END;
-
-    IF found THEN
-      RETURN op.def(GSAData.Temporary);
-    ELSE
-      RETURN NIL;
-    END;
+    RETURN NIL;
   END StoreGetVar;
-
-  PROCEDURE AddTrapSink(r : GSAData.Region) : GSAData.Instruction;
-    VAR
-      exit : GSAData.Region;
-      sink : GSAData.Instruction;
-      inst : GSAData.Instruction;
-  BEGIN
-    exit := GSAData.InstructionExit(r);
-    sink := NIL;
-    inst := exit.instructions.finst;
-    WHILE (sink = NIL) & (inst # exit.instructions) DO
-      IF (inst.class = GSAOpcode.Pmisc) &
-         (inst.subcl = GSAOpcode.Ptrapsink) THEN
-        sink := inst;
-      END;
-      inst := inst.finst;
-    END;
-    IF sink = NIL THEN
-      (* No sink yet, create it. *)
-      sink := GSAData.NewInstruction(GSAOpcode.Pmisc, GSAOpcode.Ptrapsink,
-                                     Symtab.notyp, r.pos);
-      GSAData.InstructionAppend(exit, sink);
-      GSAData.OperandAppend(exit, sink);
-    END;
-    RETURN sink;
-  END AddTrapSink;
-
 
   (* EnterResultAppend: append a Result to the 'enter' instruction
    *
@@ -371,7 +340,6 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
                                    Symtab.linttyp, r.pos);
     GSAData.InstructionAppend(r, inst);
     GSAData.OperandAppend(inst, store);
-    INCL(inst.attrib, GSAData.raLive); (* XXX $exit region is treated specially.  Is this needed? *)
     ExitOperandAppend(inst); (* Link %nlm dtor to $exit. *)
   END StoreDelete;
 
@@ -407,7 +375,6 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       neqFalse : GSAData.Region;
       m        : GSAData.CondMerge;
       x        : GSAData.Item;
-      sink     : GSAData.Instruction;
   BEGIN
     neq := GSAData.NewInstruction(GSAOpcode.Cneq, GSAOpcode.asU1,
                                   Symtab.booltyp, n.node.pos);
@@ -556,6 +523,51 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
   END RangeOrdinal;
 
 
+  (* ExitAddSink
+   *
+   *  Adds a 'sink' instruction so that IR that do not have
+   *  uses ($trap, for example) will have synthetic uses.
+   *  This better represents dataflow in the IR, and allows
+   *  DCE to work without special cases for these
+   *  special instructions.
+   *)
+  PROCEDURE ExitAddSink(r     : GSAData.Region;
+                        subcl : SHORTINT;
+                        instr : GSAData.Instruction);
+    VAR
+      exit : GSAData.Region;
+      sink : GSAData.Instruction;
+      inst : GSAData.Instruction;
+  BEGIN
+    (* 'instr' is added to the specified $sink *)
+    ASSERT(subcl IN { GSAOpcode.Pimportsink, GSAOpcode.Pinitsink,
+                      GSAOpcode.Ptrapsink});
+
+    sink := NIL;
+    exit := GSAData.InstructionExit(r);
+    inst := exit.instructions.finst;
+    WHILE (sink = NIL) & (inst # exit.instructions) DO
+      IF (inst.class = GSAOpcode.Pmisc) & (inst.subcl = subcl) THEN
+        sink := inst;
+      END;
+      inst := inst.finst;
+    END;
+    IF sink = NIL THEN
+      (* No sink yet, create it. *)
+      sink := GSAData.NewInstruction(GSAOpcode.Pmisc, subcl,
+                                     Symtab.notyp, r.pos);
+      GSAData.InstructionAppend(exit, sink);
+      GSAData.OperandAppend(exit, sink);
+    END;
+    GSAData.OperandAppend(sink, instr);
+  END ExitAddSink;
+
+
+  PROCEDURE AddTrapSink(r : GSAData.Region; trap : GSAData.Instruction);
+  BEGIN ExitAddSink(r, GSAOpcode.Ptrapsink, trap);
+  END AddTrapSink;
+
+
   (* Trap: insert trap `subcl' into the specificed trap into `r' based on
    *       conditional `cond'.
    *)
@@ -568,15 +580,13 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       true, false : GSAData.Region;
       trap : GSAData.Instruction;
       attr : Attributes;
-      sink : GSAData.Instruction;
   BEGIN
-    sink := AddTrapSink(r);
     InitAttributes(attr);
     GSAData.SplitControlPath(r, cond, pos, true, false, merge);
     MergeOpenControlRegion(merge, true, attr, attr);
     MergeOpenControlRegion(merge, false, attr, attr);
     trap := GSAData.NewInstruction(GSAOpcode.Ttrap, subcl, Symtab.notyp, pos);
-    GSAData.OperandAppend(sink, trap);
+    AddTrapSink(r, trap);
     GSAData.InstructionAppend(false, trap);
     GSAData.MergeCommit(merge, r);
   END Trap;
@@ -949,10 +959,11 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       VAR
         c, g : GSAData.Instruction;
         tag, td, cond, var : GSAData.Item;
-      type : GSAData.Type;
-      merge : GSAData.Merge;
-      true, false : GSAData.Region;
-      attr : Attributes;
+        type : GSAData.Type;
+        merge : GSAData.Merge;
+        true, false : GSAData.Region;
+        attr : Attributes;
+
     BEGIN
       InitAttributes(attr);
       Design(r, n.design, var);
@@ -976,10 +987,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       MergeOpenControlRegion(merge, false, attr, attr);
       g := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Tiguard,
                                   Symtab.notyp, n.pos);
-      INCL(g.attrib, GSAData.raLive);
-      INCL(true.attrib, GSAData.raLive);
-      INCL(false.attrib, GSAData.raLive);
-      INCL(merge.attrib, GSAData.raLive);
+      AddTrapSink(r, g);
       GSAData.InstructionAppend(false, g);
       GSAData.MergeCommit(merge, r);
       CompleteItem(var.node, x);
@@ -993,6 +1001,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
         true, false : GSAData.Region;
         attr : Attributes;
         merge : GSAData.Merge;
+
     BEGIN
       InitAttributes(attr);
       Design(r, n.design, var);
@@ -1018,10 +1027,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       MergeOpenControlRegion(merge, false, attr, attr);
       g := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Teguard,
                                   Symtab.notyp, n.pos);
-      INCL(g.attrib, GSAData.raLive);
-      INCL(true.attrib, GSAData.raLive);
-      INCL(false.attrib, GSAData.raLive);
-      INCL(merge.attrib, GSAData.raLive);
+      AddTrapSink(r, g);
       GSAData.InstructionAppend(false, g);
       GSAData.MergeCommit(merge, r);
       CompleteItem(var.node, x);
@@ -2478,13 +2484,15 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       GSAData.BindRegion(r, region);
       CurrentProcedure := n.info;
 
-      (* add all formal parameters (and their additional parts) to the
-       * instruction as results
+      (* Add all formal parameters (and addresses, when needed) to
+       * $enter as results.  This models the creation of the input
+       * arguments into the Region.
        *)
       enter := GSAData.InstructionEnter(region);
       store := StoreGet(enter);
       args := n.info.type(Symtab.Procedure).parms;
-      WHILE args # NIL DO
+      WHILE (args # NIL) & ((args.kind = Symtab.par) OR
+                            (args.kind = Symtab.varpar)) DO
         op := GetSymbol(region, args, n.pos);
         EnterResultAppend(enter, op);
         IF args.kind IN {Symtab.par, Symtab.varpar} THEN

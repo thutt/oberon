@@ -244,49 +244,6 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   END MarkOperandsDead;
 
 
-  (* MarkDeadAfterTrap
-   *
-   *  Mark all instructions after a trap in a Region as unreachable.
-   *
-   *  Because a trap, when executed, will terminate the program,
-   *  all instructions following a trap in a region will be unreachable
-   *  and can be removed.
-   *)
-  PROCEDURE MarkDeadAfterTrap(region : GSAData.Region);
-    VAR
-      instr : GSAData.Instruction;
-      rgn : GSAData.Region;
-  BEGIN
-    instr := region.instructions.finst;
-    WHILE (instr # region.instructions) & (instr.class # GSAOpcode.Ttrap) DO
-      instr := instr.finst;
-    END;
-
-    (* instr is a Trap, or the dummy head. *)
-    IF instr # region.instructions THEN
-      instr := instr.finst; (* Instruction after Ttrap. *)
-      WHILE instr # region.instructions DO
-        (* GSAData.raLive doesn't apply to this Region;
-         * it's after a trap and cannot execute.
-         *)
-        IF ~(instr IS GSAData.Region) THEN
-          EXCL(instr.attrib, live);
-        END;
-        MarkOperandsDead(instr);
-        instr := instr.finst;
-      END;
-    END;
-
-    rgn := region.regions.freg;
-    WHILE rgn # region.regions DO
-      MarkDeadAfterTrap(rgn);   (* XXX This is wrong.  It will look for another $trap!
-                                 * Need to delete the Region rgn.
-                                 *)
-      rgn := rgn.freg;
-    END;
-  END MarkDeadAfterTrap;
-
-
   (* Mark all intructions as dead prior to the mark phase. *)
   PROCEDURE MarkDead(region: GSAData.Region);
     VAR
@@ -331,12 +288,6 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
       END;
       deleted := 0;
 
-      (* 1.  Mark everything not 'live' (aka 'dead').
-       * 2.  Mark all things marked with 'raLive' as 'live'.
-       * 3.  Using the 'live' instructions, mark others that must be live.
-       * 4.  Mark everything 'dead' after traps.
-       * 5.  Remove code that is not marked 'live' (aka: 'dead') code.
-       *)
       progress("MarkDead");
       MarkDead(r);
       dumpregion(r, "MarkDead");
@@ -352,10 +303,6 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
       progress("MarkLive $exit");
       MarkLive(enter, GSAData.InstructionExit(r));
       dumpregion(r, "MarkLive $exit");
-
-      progress("MarkDeadAfterTrap");
-      MarkDeadAfterTrap(r);
-      dumpregion(r, "MarkDeadAfterTrap");
 
       progress("Delete Dead Code");
       DeleteDeadCode(r);
