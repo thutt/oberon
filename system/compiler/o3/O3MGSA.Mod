@@ -182,18 +182,15 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
   PROCEDURE StoreGetVar(r : GSAData.Region) : GSAData.Temporary;
     VAR
       enter : GSAData.Instruction;
-      found : BOOLEAN;
-      op : GSAData.Operand;
-      def : GSAData.Usable;
+      op    : GSAData.Operand;
+      def   : GSAData.Usable;
   BEGIN
     enter := GSAData.InstructionEnter(r);
     op := enter.operands.fop;
-    found := FALSE;
-    WHILE (op # enter.operands) & ~found DO
+    WHILE (op # enter.operands) DO
       def := op.def;
       WITH def:GSAData.Temporary DO
-        found := def.kind = GSAData.tfNonLocalMem;
-        IF found THEN
+        IF def.kind = GSAData.tfNonLocalMem THEN
           RETURN def;
         END;
       ELSE (* nop *)
