@@ -1,4 +1,4 @@
-% Copyright (c) 2001-2023 Logic Magicians Software
+% Copyright (c) 2001-2023, 2026 Logic Magicians Software
 \newcommand{\inv}[1] {invariant: #1\xspace}
 \newcommand{\bit}[1] {bit #1\xspace}
 
@@ -2822,6 +2822,16 @@ are regions.
     \item A result modeling the value of the non-local data
     \item A result modeling the address of the non-local data.
     \end{enumerate}
+
+  \item Compiler-generated local temporary
+
+    The compiler may add compiler-generated temporary variables to the
+    scope.  These will have names that are not expressable in the
+    source language (for example, beginning with a unacceptable
+    lexical character: '.', '@', or '$').  These variables will also
+    appear on the list the same as any other user-created local
+    variable.
+
   \end{results}
 
   \begin{operands}
