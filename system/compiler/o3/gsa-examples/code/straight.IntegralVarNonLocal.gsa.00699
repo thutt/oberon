@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
  0 ( 0)  greg: IntegralVarNonLocal range=[-32768, -32750)
  1 ( 1)    [5:[location=y/adr], 4:[location=y], 3:[location=.%0], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32751) uses={}
@@ -18,6 +18,6 @@ Dead Code Elimination
 15 (15)    merge-if flags{} result[(11)] , result[(14)]  range=[-32768, -32765) uses={(16)}
  8 (16)     %nlm := gate flags{} result[(15)] , result[(12)] , result[(4)]  range=[-32766, -32766) uses={(18)}
 18 (17)    exit flags{} result[(18)]  range=[-32768, -32767) uses={}
-17 (18)     dtor flags{raLive} result[(16)]  range=[-32768, -32768) uses={(17)}
+17 (18)     dtor flags{} result[(16)]  range=[-32768, -32768) uses={(17)}
 
 

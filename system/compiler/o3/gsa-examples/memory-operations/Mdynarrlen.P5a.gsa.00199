@@ -10,6 +10,6 @@ Alias Analysis
  3 ( 7)    %nlm := update-nonlocal flags{} len , result[(6)] , result[(2)] , result[(8)]  range=[-32768, -32765) uses={(10)}
  8 ( 8)    convert.s4 flags{} const{91}  range=[-32768, -32766) uses={(7)}
 10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
- 9 (10)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(9)}
+ 9 (10)     dtor flags{} result[(7)]  range=[-32768, -32768) uses={(9)}
 
 

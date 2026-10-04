@@ -16,6 +16,6 @@ Live Range Analysis
 14 (13)    adr flags{} result[(10)]  range=[-32768, -32765) uses={(12)}
 15 (14)    adr flags{} result[(11)]  range=[-32768, -32766) uses={(12)}
 16 (15)    exit flags{} result[(16)]  range=[-32768, -32767) uses={}
-13 (16)     dtor flags{raLive} result[(10)]  range=[-32768, -32768) uses={(15)}
+13 (16)     dtor flags{} result[(10)]  range=[-32768, -32768) uses={(15)}
 
 

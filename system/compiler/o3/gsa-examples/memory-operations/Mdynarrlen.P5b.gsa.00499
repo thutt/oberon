@@ -1,0 +1,21 @@
+Dead Code Elimination 0
+
+ 0 ( 0)  greg: P5b range=[-32768, -32752)
+ 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32753) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32754, -32754) uses={(12) (5)}
+ 5 ( 3)    adr flags{} base  range=[-32768, -32755) uses={(6)}
+ 7 ( 4)    adr flags{} len  range=[-32768, -32756) uses={(5)}
+ 4 ( 5)    %nlm := update-nonlocal flags{} len , result[(4)] , result[(2)] , result[(13)]  range=[-32768, -32757) uses={(16)}
+ 6 ( 6)    add.u4 flags{} result[(3)] , const{92}  range=[-32768, -32758) uses={(7)}
+10 ( 7)    access-field flags{} base , result[(6)] , const{92}  range=[-32768, -32759) uses={(12) (11) (8)}
+12 ( 8)    neq.u1 flags{} result[(7)] , const{0}  range=[-32768, -32760) uses={(9)}
+13 ( 9)    guard-false flags{} result[(8)]  range=[-32768, -32761) uses={}
+14 (10)     trap-nil flags{}  range=[-32762, -32762) uses={(15)}
+11 (11)    adr flags{} result[(7)]  range=[-32768, -32763) uses={(12)}
+ 3 (12)    access-deref flags{} result[(7)] , result[(11)] , result[(2)]  range=[-32768, -32764) uses={(13)}
+ 8 (13)    dynarrlen flags{} result[(12)] , const{0} , const{8}  range=[-32768, -32765) uses={(5)}
+16 (14)    exit flags{} result[(15)] , result[(16)]  range=[-32768, -32766) uses={}
+15 (15)     trapsink flags{} result[(10)]  range=[-32768, -32767) uses={(14)}
+ 9 (16)     dtor flags{} result[(5)]  range=[-32768, -32768) uses={(14)}
+
+

@@ -1,12 +1,11 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
-0 (0)  greg: Tiguard range=[-32768, -32761)
-1 (1)    enter flags{raLive} %nlm  range=[-32768, -32762) uses={}
-2 (2)     %nlm := ctor flags{raLive}  range=[-32764, -32763) uses={(7) (6)}
-5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32764, -32764) uses={}
-6 (4)    .Tiguard-BaseDesc := init-rectd flags{raLive} BaseDesc  range=[-32768, -32765) uses={(6) (6)}
-7 (5)    .Tiguard-ExtDesc := init-rectd flags{raLive} ExtDesc  range=[-32768, -32766) uses={}
-4 (6)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(4)] [location=.Tiguard-BaseDesc], result[(4)] [location=.Tiguard-ExtDesc], result[(7)]  range=[-32768, -32767) uses={}
-3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
+0 (0)  greg: Tiguard range=[-32768, -32762)
+1 (1)    enter flags{} %nlm  range=[-32768, -32763) uses={}
+2 (2)     %nlm := ctor flags{}  range=[-32764, -32764) uses={(6) (4)}
+5 (3)    .Tiguard-BaseDesc := init-rectd flags{} BaseDesc  range=[-32768, -32765) uses={(5) (4) (4) (5)}
+4 (4)    exit flags{} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(5)] , result[(3)] [location=.Tiguard-BaseDesc], result[(3)] [location=.Tiguard-ExtDesc], result[(6)]  range=[-32768, -32766) uses={}
+6 (5)     tdinitsink flags{} result[(3)] , result[(3)]  range=[-32768, -32767) uses={(4)}
+3 (6)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(4)}
 
 

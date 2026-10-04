@@ -192,8 +192,9 @@ MODULE O3GSAOpcode;
     Pgate*       = 0;
     Pimport*     = 1;
     Pimportsink* = 2;  (* $import instruction sink. *)
-    Pinitsink*   = 3;  (* Module initialization instruction sink. *)
-    Ptrapsink*   = 4;  (* $trap instruction sink. *)
+    Pdeclsink*   = 3;  (* Module initialization instruction sink. *)
+    Ptdinitsink* = 4;  (* Type Descriptor Initialization sink. *)
+    Ptrapsink*   = 5;  (* $trap instruction sink. *)
 
 
   CONST (* Pnlm *)

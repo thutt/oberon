@@ -9,6 +9,6 @@ Initial GSA
  7 ( 6)    adr flags{} b1  range=[-32768, -32765) uses={(7)}
  6 ( 7)    %nlm := update-nonlocal flags{} b1 , result[(6)] , result[(5)] , const{0}  range=[-32768, -32766) uses={(9)}
  9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
- 8 ( 9)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(8)}
+ 8 ( 9)     dtor flags{} result[(7)]  range=[-32768, -32768) uses={(8)}
 
 

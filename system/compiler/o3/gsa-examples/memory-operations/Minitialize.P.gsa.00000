@@ -20,6 +20,6 @@ Initial GSA
 18 (17)    adr flags{} array  range=[-32768, -32765) uses={(18)}
 19 (18)    array := initialize flags{} array , result[(17)] , const{40}  range=[-32768, -32766) uses={}
 20 (19)    exit flags{} result[(20)]  range=[-32768, -32767) uses={}
- 3 (20)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(19)}
+ 3 (20)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(19)}
 
 

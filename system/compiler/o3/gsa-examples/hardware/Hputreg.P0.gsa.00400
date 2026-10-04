@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
 0 (0)  greg: P0 range=[-32768, -32761)
 1 (1)    enter flags{} %nlm  range=[-32768, -32762) uses={}
@@ -7,6 +7,6 @@ Dead Code Elimination
 5 (4)    v := copy flags{} const{0}  range=[-32768, -32765) uses={}
 6 (5)    putreg.s4 flags{} const{3} , const{0}  range=[-32768, -32766) uses={}
 7 (6)    exit flags{} result[(7)]  range=[-32768, -32767) uses={}
-3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
+3 (7)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(6)}
 
 

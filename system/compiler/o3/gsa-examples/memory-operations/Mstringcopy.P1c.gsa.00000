@@ -7,6 +7,6 @@ Initial GSA
 5 (4)    adr flags{} d  range=[-32768, -32765) uses={(5)}
 3 (5)    %nlm := update-varparm flags{} d , result[(4)] , result[(2)] , const{"hello"}  range=[-32768, -32766) uses={(7)}
 7 (6)    exit flags{} result[(7)]  range=[-32768, -32767) uses={}
-6 (7)     dtor flags{raLive} result[(5)]  range=[-32768, -32768) uses={(6)}
+6 (7)     dtor flags{} result[(5)]  range=[-32768, -32768) uses={(6)}
 
 

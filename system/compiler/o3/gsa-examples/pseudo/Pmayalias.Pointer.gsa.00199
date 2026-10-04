@@ -1,57 +1,58 @@
 Alias Analysis
 
- 0 ( 0)  greg: Pointer range=[-32768, -32716)
- 1 ( 1)    [5:[location=X/adr], 4:[location=X], 3:[location=.%0], 2:[location=b], 1:[location=a]] enter flags{} %nlm  range=[-32768, -32717) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32719, -32718) uses={(16) (10)}
- 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32719, -32719) uses={}
- 6 ( 4)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32720) uses={(6) (5)}
- 8 ( 5)    guard-true flags{raLive} result[(4)]  range=[-32768, -32721) uses={(8)}
- 7 ( 6)    guard-false flags{raLive} result[(4)]  range=[-32768, -32722) uses={(8)}
-10 ( 7)     trap-nil flags{raLive}  range=[-32723, -32723) uses={}
- 9 ( 8)    merge-if flags{raLive} result[(5)] , result[(6)]  range=[-32768, -32724) uses={}
-11 ( 9)    adr flags{} a  range=[-32768, -32725) uses={(10)}
- 4 (10)    access-deref flags{} result{1 of (1)} , result[(9)] , result[(2)]  range=[-32768, -32726) uses={(13) (11)}
-13 (11)    adr flags{} result[(10)]  range=[-32768, -32727) uses={(12)}
-14 (12)    add.u4 flags{} result[(11)] , const{0}  range=[-32768, -32728) uses={(14)}
-12 (13)    %nlm := update-field flags{} result[(10)] , result[(14)] , const{0} , result[(16)]  range=[-32768, -32729) uses={(50) (46) (40) (30) (24)}
-15 (14)    mayalias flags{} result[(12)] , result[(45)]  range=[-32768, -32730) uses={(13)}
-22 (15)    adr flags{} X  range=[-32768, -32731) uses={(17)}
- 3 (16)    access-nonlocal flags{} X , result[(17)] , result[(2)]  range=[-32768, -32732) uses={(13)}
-23 (17)    mayalias flags{} result[(15)] , result[(42)]  range=[-32768, -32733) uses={(16)}
-25 (18)    neq.u1 flags{} result{2 of (1)} , const{0}  range=[-32768, -32734) uses={(20) (19)}
-27 (19)    guard-true flags{raLive} result[(18)]  range=[-32768, -32735) uses={(22)}
-26 (20)    guard-false flags{raLive} result[(18)]  range=[-32768, -32736) uses={(22)}
-29 (21)     trap-nil flags{raLive}  range=[-32737, -32737) uses={}
-28 (22)    merge-if flags{raLive} result[(19)] , result[(20)]  range=[-32768, -32738) uses={}
-30 (23)    adr flags{} b  range=[-32768, -32739) uses={(24)}
-20 (24)    access-deref flags{} result{2 of (1)} , result[(23)] , result[(13)]  range=[-32768, -32740) uses={(27) (25)}
-32 (25)    adr flags{} result[(24)]  range=[-32768, -32741) uses={(26)}
-33 (26)    add.u4 flags{} result[(25)] , const{2}  range=[-32768, -32742) uses={(28)}
-31 (27)    access-field flags{} result[(24)] , result[(28)] , const{2}  range=[-32768, -32743) uses={(32)}
-34 (28)    mayalias flags{} result[(26)] , result[(45)]  range=[-32768, -32744) uses={(27)}
-36 (29)    adr flags{} X  range=[-32768, -32745) uses={(31)}
-19 (30)    access-nonlocal flags{} X , result[(31)] , result[(13)]  range=[-32768, -32746) uses={(32)}
-37 (31)    mayalias flags{} result[(29)] , result[(42)]  range=[-32768, -32747) uses={(30)}
-35 (32)    eql.s2 flags{} result[(27)] , result[(30)]  range=[-32768, -32748) uses={(48) (33)}
-39 (33)    guard-true flags{} result[(32)]  range=[-32768, -32749) uses={(49)}
-41 (34)     neq.u1 flags{} result{2 of (1)} , const{0}  range=[-32763, -32750) uses={(36) (35)}
-43 (35)     guard-true flags{raLive} result[(34)]  range=[-32763, -32751) uses={(38)}
-42 (36)     guard-false flags{raLive} result[(34)]  range=[-32763, -32752) uses={(38)}
-45 (37)      trap-nil flags{raLive}  range=[-32753, -32753) uses={}
-44 (38)     merge-if flags{raLive} result[(35)] , result[(36)]  range=[-32763, -32754) uses={}
-46 (39)     adr flags{} b  range=[-32763, -32755) uses={(40)}
-18 (40)     access-deref flags{} result{2 of (1)} , result[(39)] , result[(13)]  range=[-32763, -32756) uses={(43) (41)}
-48 (41)     adr flags{} result[(40)]  range=[-32763, -32757) uses={(42)}
-24 (42)     add.u4 flags{} result[(41)] , const{0}  range=[-32763, -32758) uses={(17) (31) (47) (44)}
-47 (43)     %nlm := update-field flags{} result[(40)] , result[(44)] , const{0} , result[(46)]  range=[-32763, -32759) uses={(50)}
-50 (44)     mayalias flags{} result[(42)] , result[(45)]  range=[-32763, -32760) uses={(43)}
-21 (45)     adr flags{} X  range=[-32763, -32761) uses={(14) (28) (47) (44)}
-17 (46)     access-nonlocal flags{} X , result[(47)] , result[(13)]  range=[-32763, -32762) uses={(43)}
-49 (47)     mayalias flags{} result[(45)] , result[(42)]  range=[-32763, -32763) uses={(46)}
-38 (48)    guard-false flags{} result[(32)]  range=[-32768, -32764) uses={(49)}
-40 (49)    merge-if flags{} result[(33)] , result[(48)]  range=[-32768, -32765) uses={(50)}
-16 (50)     %nlm := gate flags{} result[(49)] , result[(43)] , result[(13)]  range=[-32766, -32766) uses={(52)}
-52 (51)    exit flags{} result[(52)]  range=[-32768, -32767) uses={}
-51 (52)     dtor flags{raLive} result[(50)]  range=[-32768, -32768) uses={(51)}
+ 0 ( 0)  greg: Pointer range=[-32768, -32715)
+ 1 ( 1)    [5:[location=X/adr], 4:[location=X], 3:[location=.%0], 2:[location=b], 1:[location=a]] enter flags{} %nlm  range=[-32768, -32716) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32718, -32717) uses={(16) (10)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32718, -32718) uses={}
+ 6 ( 4)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32719) uses={(6) (5)}
+ 8 ( 5)    guard-true flags{} result[(4)]  range=[-32768, -32720) uses={(8)}
+ 7 ( 6)    guard-false flags{} result[(4)]  range=[-32768, -32721) uses={(8)}
+10 ( 7)     trap-nil flags{}  range=[-32722, -32722) uses={(52)}
+ 9 ( 8)    merge-if flags{} result[(5)] , result[(6)]  range=[-32768, -32723) uses={}
+12 ( 9)    adr flags{} a  range=[-32768, -32724) uses={(10)}
+ 4 (10)    access-deref flags{} result{1 of (1)} , result[(9)] , result[(2)]  range=[-32768, -32725) uses={(13) (11)}
+14 (11)    adr flags{} result[(10)]  range=[-32768, -32726) uses={(12)}
+15 (12)    add.u4 flags{} result[(11)] , const{0}  range=[-32768, -32727) uses={(14)}
+13 (13)    %nlm := update-field flags{} result[(10)] , result[(14)] , const{0} , result[(16)]  range=[-32768, -32728) uses={(50) (46) (40) (30) (24)}
+16 (14)    mayalias flags{} result[(12)] , result[(45)]  range=[-32768, -32729) uses={(13)}
+23 (15)    adr flags{} X  range=[-32768, -32730) uses={(17)}
+ 3 (16)    access-nonlocal flags{} X , result[(17)] , result[(2)]  range=[-32768, -32731) uses={(13)}
+24 (17)    mayalias flags{} result[(15)] , result[(42)]  range=[-32768, -32732) uses={(16)}
+26 (18)    neq.u1 flags{} result{2 of (1)} , const{0}  range=[-32768, -32733) uses={(20) (19)}
+28 (19)    guard-true flags{} result[(18)]  range=[-32768, -32734) uses={(22)}
+27 (20)    guard-false flags{} result[(18)]  range=[-32768, -32735) uses={(22)}
+30 (21)     trap-nil flags{}  range=[-32736, -32736) uses={(52)}
+29 (22)    merge-if flags{} result[(19)] , result[(20)]  range=[-32768, -32737) uses={}
+31 (23)    adr flags{} b  range=[-32768, -32738) uses={(24)}
+21 (24)    access-deref flags{} result{2 of (1)} , result[(23)] , result[(13)]  range=[-32768, -32739) uses={(27) (25)}
+33 (25)    adr flags{} result[(24)]  range=[-32768, -32740) uses={(26)}
+34 (26)    add.u4 flags{} result[(25)] , const{2}  range=[-32768, -32741) uses={(28)}
+32 (27)    access-field flags{} result[(24)] , result[(28)] , const{2}  range=[-32768, -32742) uses={(32)}
+35 (28)    mayalias flags{} result[(26)] , result[(45)]  range=[-32768, -32743) uses={(27)}
+37 (29)    adr flags{} X  range=[-32768, -32744) uses={(31)}
+20 (30)    access-nonlocal flags{} X , result[(31)] , result[(13)]  range=[-32768, -32745) uses={(32)}
+38 (31)    mayalias flags{} result[(29)] , result[(42)]  range=[-32768, -32746) uses={(30)}
+36 (32)    eql.s2 flags{} result[(27)] , result[(30)]  range=[-32768, -32747) uses={(48) (33)}
+40 (33)    guard-true flags{} result[(32)]  range=[-32768, -32748) uses={(49)}
+42 (34)     neq.u1 flags{} result{2 of (1)} , const{0}  range=[-32762, -32749) uses={(36) (35)}
+44 (35)     guard-true flags{} result[(34)]  range=[-32762, -32750) uses={(38)}
+43 (36)     guard-false flags{} result[(34)]  range=[-32762, -32751) uses={(38)}
+46 (37)      trap-nil flags{}  range=[-32752, -32752) uses={(52)}
+45 (38)     merge-if flags{} result[(35)] , result[(36)]  range=[-32762, -32753) uses={}
+47 (39)     adr flags{} b  range=[-32762, -32754) uses={(40)}
+19 (40)     access-deref flags{} result{2 of (1)} , result[(39)] , result[(13)]  range=[-32762, -32755) uses={(43) (41)}
+49 (41)     adr flags{} result[(40)]  range=[-32762, -32756) uses={(42)}
+25 (42)     add.u4 flags{} result[(41)] , const{0}  range=[-32762, -32757) uses={(17) (31) (47) (44)}
+48 (43)     %nlm := update-field flags{} result[(40)] , result[(44)] , const{0} , result[(46)]  range=[-32762, -32758) uses={(50)}
+51 (44)     mayalias flags{} result[(42)] , result[(45)]  range=[-32762, -32759) uses={(43)}
+22 (45)     adr flags{} X  range=[-32762, -32760) uses={(14) (28) (47) (44)}
+18 (46)     access-nonlocal flags{} X , result[(47)] , result[(13)]  range=[-32762, -32761) uses={(43)}
+50 (47)     mayalias flags{} result[(45)] , result[(42)]  range=[-32762, -32762) uses={(46)}
+39 (48)    guard-false flags{} result[(32)]  range=[-32768, -32763) uses={(49)}
+41 (49)    merge-if flags{} result[(33)] , result[(48)]  range=[-32768, -32764) uses={(50)}
+17 (50)     %nlm := gate flags{} result[(49)] , result[(43)] , result[(13)]  range=[-32765, -32765) uses={(53)}
+53 (51)    exit flags{} result[(52)] , result[(53)]  range=[-32768, -32766) uses={}
+11 (52)     trapsink flags{} result[(7)] , result[(21)] , result[(37)]  range=[-32768, -32767) uses={(51)}
+52 (53)     dtor flags{} result[(50)]  range=[-32768, -32768) uses={(51)}
 
 

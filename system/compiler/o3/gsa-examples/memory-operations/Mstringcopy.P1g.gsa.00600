@@ -1,12 +1,13 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
-0 (0)  greg: P1g range=[-32768, -32761)
-1 (1)    enter flags{} %nlm  range=[-32768, -32762) uses={}
-2 (2)     %nlm := ctor flags{}  range=[-32763, -32763) uses={(5)}
-4 (3)    trap-nil flags{raLive}  range=[-32768, -32764) uses={}
-5 (4)    adr flags{} d  range=[-32768, -32765) uses={(5)}
-3 (5)    %nlm := update-deref flags{} const{0} , result[(4)] , result[(2)] , const{"hello"}  range=[-32768, -32766) uses={(7)}
-7 (6)    exit flags{} result[(7)]  range=[-32768, -32767) uses={}
-6 (7)     dtor flags{raLive} result[(5)]  range=[-32768, -32768) uses={(6)}
+0 (0)  greg: P1g range=[-32768, -32760)
+1 (1)    enter flags{} %nlm  range=[-32768, -32761) uses={}
+2 (2)     %nlm := ctor flags{}  range=[-32762, -32762) uses={(5)}
+4 (3)    trap-nil flags{}  range=[-32768, -32763) uses={(7)}
+6 (4)    adr flags{} d  range=[-32768, -32764) uses={(5)}
+3 (5)    %nlm := update-deref flags{} const{0} , result[(4)] , result[(2)] , const{"hello"}  range=[-32768, -32765) uses={(8)}
+8 (6)    exit flags{} result[(7)] , result[(8)]  range=[-32768, -32766) uses={}
+5 (7)     trapsink flags{} result[(3)]  range=[-32768, -32767) uses={(6)}
+7 (8)     dtor flags{} result[(5)]  range=[-32768, -32768) uses={(6)}
 
 

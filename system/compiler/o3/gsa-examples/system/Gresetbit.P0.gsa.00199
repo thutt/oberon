@@ -6,6 +6,6 @@ Alias Analysis
 4 (3)     %return-2 := copy flags{} const{FALSE}  range=[-32765, -32765) uses={}
 5 (4)    reset-bit flags{} const{141} , const{3}  range=[-32768, -32766) uses={}
 6 (5)    exit flags{} result[(6)]  range=[-32768, -32767) uses={}
-3 (6)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(5)}
+3 (6)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(5)}
 
 

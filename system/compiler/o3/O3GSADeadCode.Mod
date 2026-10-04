@@ -31,19 +31,11 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   PROCEDURE output(instr  : GSAData.Instruction;
                    prefix : ARRAY OF CHAR);
     VAR
-      raLive : BOOLEAN;
       alive : BOOLEAN;
   BEGIN
-    raLive := GSAData.raLive IN instr.attrib;
-    alive := {live, GSAData.raLive} * instr.attrib # { };
     alive := live IN instr.attrib;
     Config.LogWNum(instr.dfo, 3);
     Config.LogW(' ');
-    IF raLive THEN
-      Config.LogWStr(' raLive: T ');
-    ELSE
-      Config.LogWStr(' raLive: F ');
-    END;
     IF alive THEN
       Config.LogWStr(' live: T ');
     ELSE
@@ -173,31 +165,6 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   END MarkLive;
 
 
-  (* Set all 'raLive' instructions as live. *)
-  PROCEDURE MarkForceAlive(r : GSAData.Region);
-  VAR
-    instr, enter : GSAData.Instruction;
-    op : GSAData.Operand;
-    rgn : GSAData.Region;
-  BEGIN
-    instr := r.instructions.finst;
-    enter := GSAData.InstructionEnter(r);
-    WHILE instr # r.instructions DO
-      ASSERT(instr.region # NIL, 1025);
-      IF GSAData.raLive IN instr.attrib THEN
-        MarkLive(enter, instr);
-      END;
-      instr := instr.finst;
-    END;
-
-    rgn := r.regions.freg;
-    WHILE rgn # r.regions DO
-      MarkForceAlive(rgn);
-      rgn := rgn.freg;
-    END;
-  END MarkForceAlive;
-
-
   PROCEDURE DeleteDeadCode(i : GSAData.Instruction);
     VAR
       ni, j : GSAData.Instruction;
@@ -235,8 +202,7 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
     op := instr.operands.fop;
     WHILE (op # instr.operands) DO
       (* Mark all GSAData.Result operands that are not required as dead. *)
-      IF (op.def IS GSAData.Result) &
-         ~(GSAData.raLive IN op.def(GSAData.Result).attrib) THEN
+      IF (op.def IS GSAData.Result) THEN
         EXCL(op.def(GSAData.Result).attrib, live);
       END;
       op := op.fop;
@@ -291,10 +257,6 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
       progress("MarkDead");
       MarkDead(r);
       dumpregion(r, "MarkDead");
-
-      progress("ForceAlive");
-      MarkForceAlive(r);
-      dumpregion(r, "ForceAlive");
 
       progress("MarkLive $enter");
       MarkLive(enter, enter);

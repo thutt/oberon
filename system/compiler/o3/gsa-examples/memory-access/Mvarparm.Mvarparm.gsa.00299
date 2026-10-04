@@ -1,13 +1,15 @@
 Copy Propagation
 
-0 (0)  greg: Mvarparm range=[-32768, -32760)
-1 (1)    enter flags{raLive} %nlm  range=[-32768, -32761) uses={}
-2 (2)     %nlm := ctor flags{raLive}  range=[-32763, -32762) uses={(8) (7)}
-5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32763, -32763) uses={}
-6 (4)    import flags{raLive} SYSTEM  range=[-32768, -32764) uses={}
-7 (5)    .Mvarparm-Record := init-rectd flags{raLive} Record  range=[-32768, -32765) uses={(7)}
-8 (6)    .td_0 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32766) uses={(7)}
-4 (7)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(5)] [location=.Mvarparm-Record], result[(6)] [location=.td_0], result[(8)]  range=[-32768, -32767) uses={}
-3 (8)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(7)}
+ 0 ( 0)  greg: Mvarparm range=[-32768, -32758)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32759) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32761, -32760) uses={(10) (7)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32761, -32761) uses={}
+ 6 ( 4)    import flags{} SYSTEM  range=[-32768, -32762) uses={(8)}
+ 8 ( 5)    .Mvarparm-Record := init-rectd flags{} Record  range=[-32768, -32763) uses={(7) (9)}
+10 ( 6)    .td_0 := init-darrtd flags{} anonymous type  range=[-32768, -32764) uses={(7) (9)}
+ 4 ( 7)    exit flags{} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(8)] , result[(9)] , result[(5)] [location=.Mvarparm-Record], result[(6)] [location=.td_0], result[(10)]  range=[-32768, -32765) uses={}
+ 7 ( 8)     importsink flags{} result[(4)]  range=[-32768, -32766) uses={(7)}
+ 9 ( 9)     tdinitsink flags{} result[(5)] , result[(6)]  range=[-32768, -32767) uses={(7)}
+ 3 (10)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(7)}
 
 

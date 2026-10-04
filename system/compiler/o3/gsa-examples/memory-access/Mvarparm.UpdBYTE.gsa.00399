@@ -8,6 +8,6 @@ Value Numbering
 6 (5)    adr flags{} v  range=[-32768, -32765) uses={(6)}
 3 (6)    %nlm := update-varparm flags{} v , result[(5)] , result[(2)] , const{0}  range=[-32768, -32766) uses={(8)}
 8 (7)    exit flags{} result[(8)]  range=[-32768, -32767) uses={}
-7 (8)     dtor flags{raLive} result[(6)]  range=[-32768, -32768) uses={(7)}
+7 (8)     dtor flags{} result[(6)]  range=[-32768, -32768) uses={(7)}
 
 

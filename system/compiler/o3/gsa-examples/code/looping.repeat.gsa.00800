@@ -10,6 +10,6 @@ Live Range Analysis
 10 ( 7)     gtr.s2 flags{} result[(6)] , result{1 of (1)}  range=[-32766, -32765) uses={(8)}
  7 ( 8)     not.u1 flags{} result[(7)]  range=[-32766, -32766) uses={(4)}
  9 ( 9)    exit flags{} result[(6)] [location=%result-3], result[(10)]  range=[-32768, -32767) uses={}
- 3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
+ 3 (10)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(9)}
 
 

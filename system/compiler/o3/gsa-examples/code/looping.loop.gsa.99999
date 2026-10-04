@@ -19,6 +19,6 @@ Final GSA
 12 (16)     eql.u1 flags{} result[(14)] , const{FALSE}:%vr48  range=[-32765, -32765) uses={(5)}
  6 (17)    %result-3 := add.s2 flags{} result[(3)] , result[(15)]  range=[-32768, -32766) uses={(18)}
 19 (18)    exit flags{} result[(17)] [location=%result-3], result[(19)]  range=[-32768, -32767) uses={}
- 3 (19)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(18)}
+ 3 (19)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(18)}
 
 

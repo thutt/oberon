@@ -7,6 +7,6 @@ Final GSA
 3 (4)    %nlm:%vr32 := update-nonlocal flags{} len , result[(3)] , result[(2)] , result[(5)]  range=[-32768, -32765) uses={(7)}
 5 (5)    convert.s4 flags{} const{20}:%vr41  range=[-32768, -32766) uses={(4)}
 7 (6)    exit flags{} result[(7)]  range=[-32768, -32767) uses={}
-6 (7)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(6)}
+6 (7)     dtor flags{} result[(4)]  range=[-32768, -32768) uses={(6)}
 
 

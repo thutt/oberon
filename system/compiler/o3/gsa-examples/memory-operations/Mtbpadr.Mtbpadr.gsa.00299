@@ -1,13 +1,14 @@
 Copy Propagation
 
-0 (0)  greg: Mtbpadr range=[-32768, -32760)
-1 (1)    enter flags{raLive} %nlm  range=[-32768, -32761) uses={}
-2 (2)     %nlm := ctor flags{raLive}  range=[-32763, -32762) uses={(8) (7)}
-5 (3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32763, -32763) uses={}
-6 (4)    .BaseDesc-BaseDesc := init-rectd flags{raLive} BaseDesc  range=[-32768, -32764) uses={(7)}
-7 (5)    .Ext1Desc-Ext1Desc := init-rectd flags{raLive} Ext1Desc  range=[-32768, -32765) uses={(7)}
-8 (6)    .Ext0Desc-Ext0Desc := init-rectd flags{raLive} Ext0Desc  range=[-32768, -32766) uses={(7)}
-4 (7)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(4)] [location=.BaseDesc-BaseDesc], result[(5)] [location=.Ext1Desc-Ext1Desc], result[(6)] [location=.Ext0Desc-Ext0Desc], result[(8)]  range=[-32768, -32767) uses={}
-3 (8)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(7)}
+ 0 ( 0)  greg: Mtbpadr range=[-32768, -32759)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32760) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32762, -32761) uses={(9) (7)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
+ 6 ( 4)    .BaseDesc-BaseDesc := init-rectd flags{} BaseDesc  range=[-32768, -32763) uses={(7) (8)}
+ 8 ( 5)    .Ext1Desc-Ext1Desc := init-rectd flags{} Ext1Desc  range=[-32768, -32764) uses={(7) (8)}
+ 9 ( 6)    .Ext0Desc-Ext0Desc := init-rectd flags{} Ext0Desc  range=[-32768, -32765) uses={(7) (8)}
+ 4 ( 7)    exit flags{} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(8)] , result[(4)] [location=.BaseDesc-BaseDesc], result[(5)] [location=.Ext1Desc-Ext1Desc], result[(6)] [location=.Ext0Desc-Ext0Desc], result[(9)]  range=[-32768, -32766) uses={}
+ 7 ( 8)     tdinitsink flags{} result[(4)] , result[(5)] , result[(6)]  range=[-32768, -32767) uses={(7)}
+ 3 ( 9)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(7)}
 
 

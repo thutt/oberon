@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: P3 range=[-32768, -32757)
  1 ( 1)    [5:[location=.BaseDesc-BaseDesc/adr], 4:[location=.BaseDesc-BaseDesc], 3:[location=.%0], 2:[location=p/adr], 1:[location=p]] enter flags{} %nlm  range=[-32768, -32758) uses={}
@@ -11,6 +11,6 @@ Dead Code Elimination
  6 ( 8)    %nlm := update-varparm flags{} p , result[(4)] , result[(5)] , result[(9)]  range=[-32768, -32765) uses={(11)}
  9 ( 9)    newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32766) uses={(8)}
 11 (10)    exit flags{} result[(11)]  range=[-32768, -32767) uses={}
-10 (11)     dtor flags{raLive} result[(8)]  range=[-32768, -32768) uses={(10)}
+10 (11)     dtor flags{} result[(8)]  range=[-32768, -32768) uses={(10)}
 
 

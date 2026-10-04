@@ -10,6 +10,6 @@ Const Prop & Unreachable Code
  7 ( 7)    %nlm := update-nonlocal flags{} b1 , result[(8)] , result[(4)] , const{0}  range=[-32768, -32765) uses={(10)}
  5 ( 8)    mayalias flags{} result[(6)] , result[(3)]  range=[-32768, -32766) uses={(7)}
 10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
- 9 (10)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(9)}
+ 9 (10)     dtor flags{} result[(7)]  range=[-32768, -32768) uses={(9)}
 
 

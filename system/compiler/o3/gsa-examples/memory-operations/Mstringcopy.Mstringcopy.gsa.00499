@@ -1,15 +1,15 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: Mstringcopy range=[-32768, -32758)
- 1 ( 1)    enter flags{raLive} %nlm  range=[-32768, -32759) uses={}
- 2 ( 2)     %nlm := ctor flags{raLive}  range=[-32761, -32760) uses={(10) (9)}
- 5 ( 3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32761, -32761) uses={}
- 6 ( 4)    .Mstringcopy-Base := init-rectd flags{raLive} Base  range=[-32768, -32762) uses={(9)}
- 7 ( 5)    .td_0 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32763) uses={(9) (9)}
- 8 ( 6)    .td_1 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32764) uses={}
- 9 ( 7)    adr flags{raLive} gd  range=[-32768, -32765) uses={(8)}
-10 ( 8)    gd := initialize flags{raLive} gd , result[(7)] , const{151}  range=[-32768, -32766) uses={(9)}
- 4 ( 9)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(4)] [location=.Mstringcopy-Base], result[(5)] [location=.td_0], result[(5)] [location=.td_1], result[(8)] [location=gd], result[(10)]  range=[-32768, -32767) uses={}
- 3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32759) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32760, -32760) uses={(10) (7)}
+ 5 ( 3)    .Mstringcopy-Base := init-rectd flags{} Base  range=[-32768, -32761) uses={(7) (8)}
+ 7 ( 4)    .td_0 := init-darrtd flags{} anonymous type  range=[-32768, -32762) uses={(8) (7) (7) (8)}
+ 8 ( 5)    adr flags{} gd  range=[-32768, -32763) uses={(6)}
+ 9 ( 6)    gd := initialize flags{} gd , result[(5)] , const{151}  range=[-32768, -32764) uses={(7) (9)}
+ 4 ( 7)    exit flags{} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(8)] , result[(3)] [location=.Mstringcopy-Base], result[(4)] [location=.td_0], result[(4)] [location=.td_1], result[(9)] , result[(6)] [location=gd], result[(10)]  range=[-32768, -32765) uses={}
+ 6 ( 8)     tdinitsink flags{} result[(3)] , result[(4)] , result[(4)]  range=[-32768, -32766) uses={(7)}
+10 ( 9)     declsink flags{} result[(6)]  range=[-32768, -32767) uses={(7)}
+ 3 (10)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(7)}
 
 

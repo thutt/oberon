@@ -24,11 +24,7 @@ CONST  (* see `SymLocation.kind' *)
 *)
 
 CONST (* Result.attrib: used to mark specific features of instructions *)
-  raLive* = 0;                (* Instruction is always live and cannot
-                               * be removed as dead code.
-                               * (for example, code in module initialization)
-                               *)
-  raUniqueResult* = 1;         (* Instruction always produces
+  raUniqueResult* = 0;         (* Instruction always produces
                                 * unique result. *)
 
  (* Half of the flags are reserved for use by code improvement
@@ -2432,7 +2428,7 @@ END InstructionNewMoveReg;
 
 PROCEDURE InstructionAddAttribute*(inst : Instruction; attrib : SHORTINT);
 BEGIN
-  ASSERT(attrib IN {raLive, raUniqueResult});
+  ASSERT(attrib IN {raUniqueResult});
   INCL(inst.attrib, attrib);
 END InstructionAddAttribute;
 

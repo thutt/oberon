@@ -9,6 +9,6 @@ Initial GSA
  8 ( 6)    adr flags{} y  range=[-32768, -32765) uses={(7)}
  3 ( 7)    access-nonlocal flags{} y , result[(6)] , result[(2)]  range=[-32768, -32766) uses={(5)}
  9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
- 7 ( 9)     dtor flags{raLive} result[(5)]  range=[-32768, -32768) uses={(8)}
+ 7 ( 9)     dtor flags{} result[(5)]  range=[-32768, -32768) uses={(8)}
 
 

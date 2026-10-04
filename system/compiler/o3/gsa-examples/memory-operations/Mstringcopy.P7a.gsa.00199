@@ -1,23 +1,24 @@
 Alias Analysis
 
- 0 ( 0)  greg: P7a range=[-32768, -32750)
- 1 ( 1)    enter flags{} %nlm  range=[-32768, -32751) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32753, -32752) uses={(18) (13)}
- 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32753, -32753) uses={}
- 6 ( 4)    adr flags{} d  range=[-32768, -32754) uses={(5)}
- 7 ( 5)    d := initialize flags{} d , result[(4)] , const{21}  range=[-32768, -32755) uses={}
- 8 ( 6)    array := copy flags{} const{0}  range=[-32768, -32756) uses={(13) (7)}
- 9 ( 7)    neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32757) uses={(9) (8)}
-11 ( 8)    guard-true flags{raLive} result[(7)]  range=[-32768, -32758) uses={(11)}
-10 ( 9)    guard-false flags{raLive} result[(7)]  range=[-32768, -32759) uses={(11)}
-13 (10)     trap-nil flags{raLive}  range=[-32760, -32760) uses={}
-12 (11)    merge-if flags{raLive} result[(8)] , result[(9)]  range=[-32768, -32761) uses={}
-14 (12)    adr flags{} array  range=[-32768, -32762) uses={(13)}
- 4 (13)    access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32763) uses={(16) (14)}
-16 (14)    d := stringcopy flags{} d , result[(15)] , const{21} , result[(13)] , result[(16)]  range=[-32768, -32764) uses={}
-17 (15)    adr flags{} d  range=[-32768, -32765) uses={(14)}
-15 (16)    adr flags{} result[(13)]  range=[-32768, -32766) uses={(14)}
-18 (17)    exit flags{} result[(18)]  range=[-32768, -32767) uses={}
- 3 (18)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(17)}
+ 0 ( 0)  greg: P7a range=[-32768, -32749)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32750) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32752, -32751) uses={(19) (13)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
+ 6 ( 4)    adr flags{} d  range=[-32768, -32753) uses={(5)}
+ 7 ( 5)    d := initialize flags{} d , result[(4)] , const{21}  range=[-32768, -32754) uses={}
+ 8 ( 6)    array := copy flags{} const{0}  range=[-32768, -32755) uses={(13) (7)}
+ 9 ( 7)    neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32756) uses={(9) (8)}
+11 ( 8)    guard-true flags{} result[(7)]  range=[-32768, -32757) uses={(11)}
+10 ( 9)    guard-false flags{} result[(7)]  range=[-32768, -32758) uses={(11)}
+13 (10)     trap-nil flags{}  range=[-32759, -32759) uses={(18)}
+12 (11)    merge-if flags{} result[(8)] , result[(9)]  range=[-32768, -32760) uses={}
+15 (12)    adr flags{} array  range=[-32768, -32761) uses={(13)}
+ 4 (13)    access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32762) uses={(16) (14)}
+17 (14)    d := stringcopy flags{} d , result[(15)] , const{21} , result[(13)] , result[(16)]  range=[-32768, -32763) uses={}
+18 (15)    adr flags{} d  range=[-32768, -32764) uses={(14)}
+16 (16)    adr flags{} result[(13)]  range=[-32768, -32765) uses={(14)}
+19 (17)    exit flags{} result[(18)] , result[(19)]  range=[-32768, -32766) uses={}
+14 (18)     trapsink flags{} result[(10)]  range=[-32768, -32767) uses={(17)}
+ 3 (19)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(17)}
 
 

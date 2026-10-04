@@ -1,0 +1,41 @@
+Dead Code Elimination 0
+
+ 0 ( 0)  greg: NotCongruent range=[-32768, -32732)
+ 1 ( 1)    [4:[location=.Ext1Desc-Ext1Desc/adr], 3:[location=.Ext1Desc-Ext1Desc], 2:[location=.Ext0Desc-Ext0Desc/adr], 1:[location=.Ext0Desc-Ext0Desc]] enter flags{} %nlm  range=[-32768, -32733) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32734, -32734) uses={(36) (7)}
+ 5 ( 3)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32735) uses={(29) (26) (21) (15) (12) (4)}
+11 ( 4)    guard-false flags{} result[(3)]  range=[-32768, -32736) uses={}
+12 ( 5)     trap-nil flags{}  range=[-32737, -32737) uses={(35)}
+14 ( 6)    adr flags{} b  range=[-32768, -32738) uses={(7)}
+ 4 ( 7)    access-deref flags{} const{0} , result[(6)] , result[(2)]  range=[-32768, -32739) uses={(8)}
+15 ( 8)    heaptag flags{} b , result[(7)]  range=[-32768, -32740) uses={(28) (23) (14) (9)}
+19 ( 9)    eql.u4 flags{} result[(8)] , result{1 of (1)}  range=[-32768, -32741) uses={(17) (10)}
+21 (10)    guard-false flags{} result[(9)]  range=[-32768, -32742) uses={}
+22 (11)     trap-eguard flags{}  range=[-32743, -32743) uses={(35)}
+10 (12)    guard-false flags{} result[(3)]  range=[-32768, -32744) uses={}
+23 (13)     trap-nil flags{}  range=[-32745, -32745) uses={(35)}
+18 (14)    tbpadr flags{} result[(8)] , Ext0 , Method , const{2} , const{-12}  range=[-32768, -32746) uses={(20)}
+ 9 (15)    guard-false flags{} result[(3)]  range=[-32768, -32747) uses={}
+25 (16)     trap-nil flags{}  range=[-32748, -32748) uses={(35)}
+20 (17)    guard-false flags{} result[(9)]  range=[-32768, -32749) uses={}
+26 (18)     trap-eguard flags{}  range=[-32750, -32750) uses={(35)}
+27 (19)    convert.s2 flags{} const{0}  range=[-32768, -32751) uses={(33) (20)}
+24 (20)    call flags{} result[(14)] , const{0} , result[(19)]  range=[-32768, -32752) uses={(34)}
+ 8 (21)    guard-false flags{} result[(3)]  range=[-32768, -32753) uses={}
+30 (22)     trap-nil flags{}  range=[-32754, -32754) uses={(35)}
+17 (23)    eql.u4 flags{} result[(8)] , result{3 of (1)}  range=[-32768, -32755) uses={(31) (24)}
+32 (24)    guard-false flags{} result[(23)]  range=[-32768, -32756) uses={}
+33 (25)     trap-eguard flags{}  range=[-32757, -32757) uses={(35)}
+ 7 (26)    guard-false flags{} result[(3)]  range=[-32768, -32758) uses={}
+34 (27)     trap-nil flags{}  range=[-32759, -32759) uses={(35)}
+16 (28)    tbpadr flags{} result[(8)] , Ext1 , Method , const{2} , const{-12}  range=[-32768, -32760) uses={(33)}
+ 6 (29)    guard-false flags{} result[(3)]  range=[-32768, -32761) uses={}
+35 (30)     trap-nil flags{}  range=[-32762, -32762) uses={(35)}
+31 (31)    guard-false flags{} result[(23)]  range=[-32768, -32763) uses={}
+36 (32)     trap-eguard flags{}  range=[-32764, -32764) uses={(35)}
+28 (33)    call flags{} result[(28)] , const{0} , result[(19)]  range=[-32768, -32765) uses={(34)}
+29 (34)    exit flags{} result[(35)] , result[(20)] , result[(33)] , result[(36)]  range=[-32768, -32766) uses={}
+13 (35)     trapsink flags{} result[(5)] , result[(11)] , result[(13)] , result[(16)] , result[(18)] , result[(22)] , result[(25)] , result[(27)] , result[(30)] , result[(32)]  range=[-32768, -32767) uses={(34)}
+ 3 (36)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(34)}
+
+

@@ -1,11 +1,11 @@
 Final GSA
 
 0 (0)  greg: Gsetbit range=[-32768, -32762)
-1 (1)    enter flags{raLive} %nlm:%vr33  range=[-32768, -32763) uses={}
-2 (2)     %nlm:%vr33 := ctor flags{raLive}  range=[-32765, -32764) uses={(6) (5)}
-5 (3)     %return-2 := copy flags{raLive} const{FALSE}:%vr32  range=[-32765, -32765) uses={}
-6 (4)    import flags{raLive} SYSTEM  range=[-32768, -32766) uses={}
-4 (5)    exit flags{raLive} result[(2)] [location=%nlm:%vr33], const{FALSE}:%vr32 [location=%return-2], result[(6)]  range=[-32768, -32767) uses={}
-3 (6)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(5)}
+1 (1)    enter flags{} %nlm:%vr32  range=[-32768, -32763) uses={}
+2 (2)     %nlm:%vr32 := ctor flags{}  range=[-32764, -32764) uses={(6) (4)}
+5 (3)    import flags{} SYSTEM  range=[-32768, -32765) uses={(5)}
+4 (4)    exit flags{} result[(2)] [location=%nlm:%vr32], const{FALSE}:%vr36 [location=%return-2], result[(5)] , result[(6)]  range=[-32768, -32766) uses={}
+6 (5)     importsink flags{} result[(3)]  range=[-32768, -32767) uses={(4)}
+3 (6)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(4)}
 
 

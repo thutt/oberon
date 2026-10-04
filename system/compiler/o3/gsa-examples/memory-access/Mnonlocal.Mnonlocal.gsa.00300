@@ -1,26 +1,29 @@
 Value Numbering
 
- 0 ( 0)  greg: Mnonlocal range=[-32768, -32747)
- 1 ( 1)    enter flags{raLive} %nlm  range=[-32768, -32748) uses={}
- 2 ( 2)     %nlm := ctor flags{raLive}  range=[-32750, -32749) uses={(21) (20)}
- 5 ( 3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32750, -32750) uses={}
- 6 ( 4)    import flags{raLive} SYSTEM  range=[-32768, -32751) uses={}
- 7 ( 5)    .Mnonlocal-Record := init-rectd flags{raLive} Record  range=[-32768, -32752) uses={(20)}
- 8 ( 6)    .td_0 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32753) uses={(20)}
- 9 ( 7)    b := copy flags{raLive} const{0}  range=[-32768, -32754) uses={}
-10 ( 8)    c := copy flags{raLive} const{0}  range=[-32768, -32755) uses={}
-11 ( 9)    si := copy flags{raLive} const{0}  range=[-32768, -32756) uses={}
-12 (10)    i := copy flags{raLive} const{0}  range=[-32768, -32757) uses={}
-13 (11)    li := copy flags{raLive} const{0}  range=[-32768, -32758) uses={}
-14 (12)    r := copy flags{raLive} const{  0.0E+00}  range=[-32768, -32759) uses={}
-15 (13)    lr := copy flags{raLive} const{  0.000000D+000}  range=[-32768, -32760) uses={}
-16 (14)    adr flags{raLive} record  range=[-32768, -32761) uses={(15)}
-17 (15)    record := initialize flags{raLive} record , result[(14)] , const{2}  range=[-32768, -32762) uses={(20)}
-18 (16)    pointer := copy flags{raLive} const{0}  range=[-32768, -32763) uses={}
-19 (17)    adr flags{raLive} array  range=[-32768, -32764) uses={(18)}
-20 (18)    array := initialize flags{raLive} array , result[(17)] , const{20}  range=[-32768, -32765) uses={(20)}
-21 (19)    pointerarray := copy flags{raLive} const{0}  range=[-32768, -32766) uses={}
- 4 (20)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(5)] [location=.Mnonlocal-Record], result[(6)] [location=.td_0], const{0} [location=b], const{0} [location=c], const{0} [location=si], const{0} [location=i], const{0} [location=li], const{  0.0E+00} [location=r], const{  0.000000D+000} [location=lr], result[(15)] [location=record], const{0} [location=pointer], result[(18)] [location=array], const{0} [location=pointerarray], result[(21)]  range=[-32768, -32767) uses={}
- 3 (21)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(20)}
+ 0 ( 0)  greg: Mnonlocal range=[-32768, -32744)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32745) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32747, -32746) uses={(24) (20)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32747, -32747) uses={}
+ 6 ( 4)    import flags{} SYSTEM  range=[-32768, -32748) uses={(21)}
+ 8 ( 5)    .Mnonlocal-Record := init-rectd flags{} Record  range=[-32768, -32749) uses={(20) (22)}
+10 ( 6)    .td_0 := init-darrtd flags{} anonymous type  range=[-32768, -32750) uses={(20) (22)}
+11 ( 7)    b := copy flags{} const{0}  range=[-32768, -32751) uses={}
+12 ( 8)    c := copy flags{} const{0}  range=[-32768, -32752) uses={}
+13 ( 9)    si := copy flags{} const{0}  range=[-32768, -32753) uses={}
+14 (10)    i := copy flags{} const{0}  range=[-32768, -32754) uses={}
+15 (11)    li := copy flags{} const{0}  range=[-32768, -32755) uses={}
+16 (12)    r := copy flags{} const{  0.0E+00}  range=[-32768, -32756) uses={}
+17 (13)    lr := copy flags{} const{  0.000000D+000}  range=[-32768, -32757) uses={}
+18 (14)    adr flags{} record  range=[-32768, -32758) uses={(15)}
+19 (15)    record := initialize flags{} record , result[(14)] , const{2}  range=[-32768, -32759) uses={(20) (23)}
+21 (16)    pointer := copy flags{} const{0}  range=[-32768, -32760) uses={}
+22 (17)    adr flags{} array  range=[-32768, -32761) uses={(18)}
+23 (18)    array := initialize flags{} array , result[(17)] , const{20}  range=[-32768, -32762) uses={(20) (23)}
+24 (19)    pointerarray := copy flags{} const{0}  range=[-32768, -32763) uses={}
+ 4 (20)    exit flags{} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(21)] , result[(22)] , result[(5)] [location=.Mnonlocal-Record], result[(6)] [location=.td_0], const{0} [location=b], const{0} [location=c], const{0} [location=si], const{0} [location=i], const{0} [location=li], const{  0.0E+00} [location=r], const{  0.000000D+000} [location=lr], result[(23)] , result[(15)] [location=record], const{0} [location=pointer], result[(18)] [location=array], const{0} [location=pointerarray], result[(24)]  range=[-32768, -32764) uses={}
+ 7 (21)     importsink flags{} result[(4)]  range=[-32768, -32765) uses={(20)}
+ 9 (22)     tdinitsink flags{} result[(5)] , result[(6)]  range=[-32768, -32766) uses={(20)}
+20 (23)     declsink flags{} result[(15)] , result[(18)]  range=[-32768, -32767) uses={(20)}
+ 3 (24)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(20)}
 
 

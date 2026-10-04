@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: AccRecord range=[-32768, -32748)
  1 ( 1)    [7:[location=.%1], 6:[location=.%0], 5:[location=record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32749) uses={}
@@ -20,6 +20,6 @@ Dead Code Elimination
 16 (17)    add.u4 flags{} result[(10)] , const{0}  range=[-32768, -32765) uses={(18)}
 13 (18)    access-field flags{} result[(7)] , result[(17)] , const{0}  range=[-32768, -32766) uses={(13)}
 20 (19)    exit flags{} result[(20)]  range=[-32768, -32767) uses={}
- 3 (20)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(19)}
+ 3 (20)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(19)}
 
 

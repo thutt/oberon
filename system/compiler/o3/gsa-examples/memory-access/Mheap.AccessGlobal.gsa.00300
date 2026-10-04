@@ -1,0 +1,24 @@
+Value Numbering
+
+ 0 ( 0)  greg: AccessGlobal range=[-32768, -32749)
+ 1 ( 1)    [2:[location=Gv/adr], 1:[location=Gv]] enter flags{} %nlm  range=[-32768, -32750) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32752, -32751) uses={(19) (13) (6)}
+ 6 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32752, -32752) uses={}
+ 7 ( 4)    y := copy flags{} const{0}  range=[-32768, -32753) uses={}
+ 8 ( 5)    adr flags{} Gv  range=[-32768, -32754) uses={(6)}
+ 5 ( 6)    access-nonlocal flags{} Gv , result[(5)] , result[(2)]  range=[-32768, -32755) uses={(13) (12) (7)}
+10 ( 7)    neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32756) uses={(9) (8)}
+12 ( 8)    guard-true flags{} result[(7)]  range=[-32768, -32757) uses={(11)}
+11 ( 9)    guard-false flags{} result[(7)]  range=[-32768, -32758) uses={(11)}
+14 (10)     trap-nil flags{}  range=[-32759, -32759) uses={(18)}
+13 (11)    merge-if flags{} result[(8)] , result[(9)]  range=[-32768, -32760) uses={}
+ 9 (12)    adr flags{} result[(6)]  range=[-32768, -32761) uses={(13)}
+ 4 (13)    access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32762) uses={(16) (14)}
+17 (14)    adr flags{} result[(13)]  range=[-32768, -32763) uses={(15)}
+18 (15)    add.u4 flags{} result[(14)] , const{0}  range=[-32768, -32764) uses={(16)}
+16 (16)    y := access-field flags{} result[(13)] , result[(15)] , const{0}  range=[-32768, -32765) uses={}
+19 (17)    exit flags{} result[(18)] , result[(19)]  range=[-32768, -32766) uses={}
+15 (18)     trapsink flags{} result[(10)]  range=[-32768, -32767) uses={(17)}
+ 3 (19)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(17)}
+
+

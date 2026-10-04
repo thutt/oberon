@@ -544,8 +544,8 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       inst : GSAData.Instruction;
   BEGIN
     (* 'instr' is added to the specified $sink *)
-    ASSERT(subcl IN { GSAOpcode.Pimportsink, GSAOpcode.Pinitsink,
-                      GSAOpcode.Ptrapsink});
+    ASSERT(subcl IN { GSAOpcode.Pimportsink, GSAOpcode.Pdeclsink,
+                      GSAOpcode.Ptdinitsink, GSAOpcode.Ptrapsink});
 
     sink := NIL;
     exit := GSAData.InstructionExit(r);
@@ -570,6 +570,21 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
   PROCEDURE AddTrapSink(r : GSAData.Region; trap : GSAData.Instruction);
   BEGIN ExitAddSink(r, GSAOpcode.Ptrapsink, trap);
   END AddTrapSink;
+
+
+  PROCEDURE AddTDInitSink(r : GSAData.Region; tdinit : GSAData.Instruction);
+  BEGIN ExitAddSink(r, GSAOpcode.Ptdinitsink, tdinit);
+  END AddTDInitSink;
+
+
+  PROCEDURE AddDeclSink(r : GSAData.Region; decl : GSAData.Instruction);
+  BEGIN ExitAddSink(r, GSAOpcode.Pdeclsink, decl);
+  END AddDeclSink;
+
+
+  PROCEDURE AddImportSink(r : GSAData.Region; import : GSAData.Instruction);
+  BEGIN ExitAddSink(r, GSAOpcode.Pimportsink, import);
+  END AddImportSink;
 
 
   (* Trap: insert trap `subcl' into the specificed trap into `r' based on
@@ -1176,7 +1191,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       | Symtab.darrdesc:  subcl := GSAOpcode.Ginitdarr;
       END;
       inst := GSAData.NewInstruction(GSAOpcode.Gtypedesc, subcl, n.type, n.pos);
-      INCL(inst.attrib, GSAData.raLive); (* TD inits must not be removed. *)
+      AddTDInitSink(r, inst);
       GSAData.OperandAppend(inst, tdtype);
       GSAData.InstructionAppend(r, inst);
       CompleteItem(inst, x);
@@ -1234,7 +1249,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
 
           IF Symtab.modinit IN r(GSAData.GlobalRegion).proc.flags THEN
             (* Module initialization must not be dead code eliminated. *)
-            INCL(inst.attrib, GSAData.raLive);
+            AddDeclSink(r, inst);
           END;
           CompleteItem(inst, rhs);
         END;
@@ -1253,7 +1268,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       mod := GSAData.NewSymbol(r, n.module, n.module, n.pos);
       inst := GSAData.NewInstruction(GSAOpcode.Pmisc, GSAOpcode.Pimport, n.type,
                                      n.pos);
-      INCL(inst.attrib, GSAData.raLive); (* IMPORTs cannot be removed. *)
+      AddImportSink(r, inst);
       GSAData.OperandAppend(inst, mod);
       GSAData.InstructionAppend(r, inst);
     END Import;
@@ -2453,24 +2468,6 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
         END;
       END ResetAddressables;
 
-      PROCEDURE MarkAllLive(rgn : GSAData.Region);
-        VAR
-          i : GSAData.Instruction;
-          r : GSAData.Region;
-      BEGIN
-        INCL(rgn.attrib, GSAData.raLive);
-        i := rgn.instructions.finst;
-        WHILE i # rgn.instructions DO
-          INCL(i.attrib, GSAData.raLive);
-          i := i.finst;
-        END;
-        r := rgn.regions.freg;
-        WHILE r # rgn.regions DO
-          MarkAllLive(r);
-          r := r.freg;
-        END;
-      END MarkAllLive;
-
     BEGIN
       GSAData.ResetTempAttributes(tempattr);
       InitAttributes(attr); (* initialize all attributes which
@@ -2592,11 +2589,6 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       GSAData.GlobalRegionClose(region);
       InitAttributes(attr);
       StmtList(region, n.nestedproc, attr);
-
-      (* initialization code; all instructions must be live *)
-      IF AST.main IN n.flags THEN
-        MarkAllLive(region);
-      END;
     END Enter;
 
     PROCEDURE Assign(r : GSAData.Region;
@@ -3100,13 +3092,13 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
       | Config.HaltWith:
         halt := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Twith,
                                       Symtab.notyp, n.pos);
-        INCL(halt.attrib, GSAData.raLive); (* No uses; becomes dead code. *)
+        AddTrapSink(r, halt);
         GSAData.InstructionAppend(r, halt);
 
       | Config.HaltCase:
         halt := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Tcase,
                                       Symtab.notyp, n.pos);
-        INCL(halt.attrib, GSAData.raLive); (* No uses; becomes dead code. *)
+        AddTrapSink(r, halt);
         GSAData.InstructionAppend(r, halt);
 
       | Config.HaltAssert: Trap(r, GSAOpcode.Tassert, n.pos, cond);
@@ -3115,7 +3107,7 @@ MODULE O3MGSA; (* Perform rewriting (AST -> GSA), improvements and codegen *)
         halt := GSAData.NewInstruction(GSAOpcode.Ttrap, GSAOpcode.Thalt,
                                       Symtab.notyp, n.pos);
         GSAData.OperandAppend(halt, value.node);
-        INCL(halt.attrib, GSAData.raLive); (* No uses; becomes dead code. *)
+        AddTrapSink(r, halt);
         GSAData.InstructionAppend(r, halt);
       END;
     END Halt;

@@ -1,30 +1,27 @@
 Live Range Analysis
 
- 0 ( 0)  greg: P0 range=[-32768, -32743)
- 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32744) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32745, -32745) uses={(20) (10)}
- 5 ( 3)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32746) uses={(10) (4)}
- 6 ( 4)    neq.u1 flags{} result[(3)] , const{0}  range=[-32768, -32747) uses={(6) (5)}
- 8 ( 5)    guard-true flags{raLive} result[(4)]  range=[-32768, -32748) uses={(8)}
- 7 ( 6)    guard-false flags{raLive} result[(4)]  range=[-32768, -32749) uses={(8)}
-10 ( 7)     trap-nil flags{raLive}  range=[-32750, -32750) uses={}
- 9 ( 8)    merge-if flags{raLive} result[(5)] , result[(6)]  range=[-32768, -32751) uses={}
-11 ( 9)    adr flags{} p  range=[-32768, -32752) uses={(10)}
- 4 (10)    access-deref flags{} result[(3)] , result[(9)] , result[(2)]  range=[-32768, -32753) uses={(13) (11)}
-13 (11)    adr flags{} result[(10)]  range=[-32768, -32754) uses={(12)}
-14 (12)    add.u4 flags{} result[(11)] , const{4}  range=[-32768, -32755) uses={(13)}
-12 (13)    access-field flags{} result[(10)] , result[(12)] , const{4}  range=[-32768, -32756) uses={(20) (19) (14)}
-16 (14)    neq.u1 flags{} result[(13)] , const{0}  range=[-32768, -32757) uses={(16) (15)}
-18 (15)    guard-true flags{raLive} result[(14)]  range=[-32768, -32758) uses={(18)}
-17 (16)    guard-false flags{raLive} result[(14)]  range=[-32768, -32759) uses={(18)}
-20 (17)     trap-nil flags{raLive}  range=[-32760, -32760) uses={}
-19 (18)    merge-if flags{raLive} result[(15)] , result[(16)]  range=[-32768, -32761) uses={}
-15 (19)    adr flags{} result[(13)]  range=[-32768, -32762) uses={(20)}
- 3 (20)    access-deref flags{} result[(13)] , result[(19)] , result[(2)]  range=[-32768, -32763) uses={(23) (21)}
-22 (21)    adr flags{} result[(20)]  range=[-32768, -32764) uses={(22)}
-23 (22)    add.u4 flags{} result[(21)] , const{0}  range=[-32768, -32765) uses={(23)}
-21 (23)    %nlm := update-field flags{} result[(20)] , result[(22)] , const{0} , const{151}  range=[-32768, -32766) uses={(25)}
-25 (24)    exit flags{} result[(25)]  range=[-32768, -32767) uses={}
-24 (25)     dtor flags{raLive} result[(23)]  range=[-32768, -32768) uses={(24)}
+ 0 ( 0)  greg: P0 range=[-32768, -32746)
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32747) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32748, -32748) uses={(16) (8)}
+ 5 ( 3)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32749) uses={(8) (4)}
+ 6 ( 4)    neq.u1 flags{} result[(3)] , const{0}  range=[-32768, -32750) uses={(5)}
+ 7 ( 5)    guard-false flags{} result[(4)]  range=[-32768, -32751) uses={}
+ 8 ( 6)     trap-nil flags{}  range=[-32752, -32752) uses={(21)}
+10 ( 7)    adr flags{} p  range=[-32768, -32753) uses={(8)}
+ 4 ( 8)    access-deref flags{} result[(3)] , result[(7)] , result[(2)]  range=[-32768, -32754) uses={(11) (9)}
+12 ( 9)    adr flags{} result[(8)]  range=[-32768, -32755) uses={(10)}
+13 (10)    add.u4 flags{} result[(9)] , const{4}  range=[-32768, -32756) uses={(11)}
+11 (11)    access-field flags{} result[(8)] , result[(10)] , const{4}  range=[-32768, -32757) uses={(16) (15) (12)}
+15 (12)    neq.u1 flags{} result[(11)] , const{0}  range=[-32768, -32758) uses={(13)}
+16 (13)    guard-false flags{} result[(12)]  range=[-32768, -32759) uses={}
+17 (14)     trap-nil flags{}  range=[-32760, -32760) uses={(21)}
+14 (15)    adr flags{} result[(11)]  range=[-32768, -32761) uses={(16)}
+ 3 (16)    access-deref flags{} result[(11)] , result[(15)] , result[(2)]  range=[-32768, -32762) uses={(19) (17)}
+19 (17)    adr flags{} result[(16)]  range=[-32768, -32763) uses={(18)}
+20 (18)    add.u4 flags{} result[(17)] , const{0}  range=[-32768, -32764) uses={(19)}
+18 (19)    %nlm := update-field flags{} result[(16)] , result[(18)] , const{0} , const{151}  range=[-32768, -32765) uses={(22)}
+22 (20)    exit flags{} result[(21)] , result[(22)]  range=[-32768, -32766) uses={}
+ 9 (21)     trapsink flags{} result[(6)] , result[(14)]  range=[-32768, -32767) uses={(20)}
+21 (22)     dtor flags{} result[(19)]  range=[-32768, -32768) uses={(20)}
 
 

@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: P0 range=[-32768, -32758)
  1 ( 1)    enter flags{} %nlm  range=[-32768, -32759) uses={}
@@ -10,6 +10,6 @@ Dead Code Elimination
  9 ( 7)    adr flags{} s  range=[-32768, -32765) uses={}
  8 ( 8)    adr flags{} const{"string"}  range=[-32768, -32766) uses={(6)}
 10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
- 3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
+ 3 (10)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(9)}
 
 

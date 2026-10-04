@@ -1,14 +1,15 @@
 Copy Propagation
 
- 0 ( 0)  greg: Char range=[-32768, -32759)
- 1 ( 1)    [2:[location=.%0], 1:[location=ch]] enter flags{} %nlm  range=[-32768, -32760) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32762, -32761) uses={(9)}
- 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32762, -32762) uses={}
- 5 ( 4)    case flags{} result{1 of (1)}  range=[-32768, -32763) uses={}
- 6 ( 5)     guard-celse flags{} result{1 of (1)}  range=[-32766, -32764) uses={(7)}
- 8 ( 6)      trap-case flags{raLive}  range=[-32765, -32765) uses={}
- 7 ( 7)     merge-case flags{} result[(5)]  range=[-32766, -32766) uses={}
- 9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
- 3 ( 9)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(8)}
+ 0 ( 0)  greg: Char range=[-32768, -32758)
+ 1 ( 1)    [2:[location=.%0], 1:[location=ch]] enter flags{} %nlm  range=[-32768, -32759) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32761, -32760) uses={(10)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32761, -32761) uses={}
+ 5 ( 4)    case flags{} result{1 of (1)}  range=[-32768, -32762) uses={}
+ 6 ( 5)     guard-celse flags{} result{1 of (1)}  range=[-32765, -32763) uses={(7)}
+ 8 ( 6)      trap-case flags{}  range=[-32764, -32764) uses={(9)}
+ 7 ( 7)     merge-case flags{} result[(5)]  range=[-32765, -32765) uses={}
+10 ( 8)    exit flags{} result[(9)] , result[(10)]  range=[-32768, -32766) uses={}
+ 9 ( 9)     trapsink flags{} result[(6)]  range=[-32768, -32767) uses={(8)}
+ 3 (10)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(8)}
 
 

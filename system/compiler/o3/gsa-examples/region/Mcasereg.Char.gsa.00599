@@ -10,6 +10,6 @@ Const Prop & Unreachable Code
  6 ( 7)     merge-case flags{} result[(4)] , result[(5)] , result[(6)]  range=[-32766, -32765) uses={(8)}
  9 ( 8)      %result-3 := gate flags{} result[(7)] , const{65} , const{95} , const{0}  range=[-32766, -32766) uses={(9)}
 10 ( 9)    exit flags{} result[(8)] [location=%result-3], result[(10)]  range=[-32768, -32767) uses={}
- 3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
+ 3 (10)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(9)}
 
 

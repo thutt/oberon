@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: PtrVarVar range=[-32768, -32752)
  1 ( 1)    [5:[location=.%0], 4:[location=b1/adr], 3:[location=b1], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32753) uses={}
@@ -16,6 +16,6 @@ Dead Code Elimination
 14 (13)    merge-if flags{} result[(10)] , result[(12)]  range=[-32768, -32765) uses={(14)}
  7 (14)     %nlm := gate flags{} result[(13)] , result[(11)] , result[(4)]  range=[-32766, -32766) uses={(16)}
 16 (15)    exit flags{} result[(16)]  range=[-32768, -32767) uses={}
-15 (16)     dtor flags{raLive} result[(14)]  range=[-32768, -32768) uses={(15)}
+15 (16)     dtor flags{} result[(14)]  range=[-32768, -32768) uses={(15)}
 
 

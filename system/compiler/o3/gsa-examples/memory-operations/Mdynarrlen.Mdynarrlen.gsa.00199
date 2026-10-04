@@ -1,17 +1,19 @@
 Alias Analysis
 
- 0 ( 0)  greg: Mdynarrlen range=[-32768, -32756)
- 1 ( 1)    enter flags{raLive} %nlm  range=[-32768, -32757) uses={}
- 2 ( 2)     %nlm := ctor flags{raLive}  range=[-32759, -32758) uses={(12) (11)}
- 5 ( 3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32759, -32759) uses={(11)}
- 6 ( 4)    .Mdynarrlen-Base := init-rectd flags{raLive} Base  range=[-32768, -32760) uses={(11)}
- 7 ( 5)    .td_0 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32761) uses={(11)}
- 8 ( 6)    .td_1 := init-arrtd flags{raLive} anonymous type  range=[-32768, -32762) uses={(11)}
- 9 ( 7)    .td_2 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32763) uses={(11)}
-10 ( 8)    len := copy flags{raLive} const{0}  range=[-32768, -32764) uses={(11)}
-11 ( 9)    adr flags{raLive} global  range=[-32768, -32765) uses={(10)}
-12 (10)    global := initialize flags{raLive} global , result[(9)] , const{200}  range=[-32768, -32766) uses={(11)}
- 4 (11)    exit flags{raLive} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=.Mdynarrlen-Base], result[(5)] [location=.td_0], result[(6)] [location=.td_1], result[(7)] [location=.td_2], result[(8)] [location=len], result[(10)] [location=global], result[(12)]  range=[-32768, -32767) uses={}
- 3 (12)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(11)}
+ 0 ( 0)  greg: Mdynarrlen range=[-32768, -32754)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32755) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32757, -32756) uses={(14) (11)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32757, -32757) uses={(11)}
+ 6 ( 4)    .Mdynarrlen-Base := init-rectd flags{} Base  range=[-32768, -32758) uses={(11) (12)}
+ 8 ( 5)    .td_0 := init-darrtd flags{} anonymous type  range=[-32768, -32759) uses={(11) (12)}
+ 9 ( 6)    .td_1 := init-arrtd flags{} anonymous type  range=[-32768, -32760) uses={(11) (12)}
+10 ( 7)    .td_2 := init-darrtd flags{} anonymous type  range=[-32768, -32761) uses={(11) (12)}
+11 ( 8)    len := copy flags{} const{0}  range=[-32768, -32762) uses={(11)}
+12 ( 9)    adr flags{} global  range=[-32768, -32763) uses={(10)}
+13 (10)    global := initialize flags{} global , result[(9)] , const{200}  range=[-32768, -32764) uses={(11) (13)}
+ 4 (11)    exit flags{} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(12)] , result[(4)] [location=.Mdynarrlen-Base], result[(5)] [location=.td_0], result[(6)] [location=.td_1], result[(7)] [location=.td_2], result[(8)] [location=len], result[(13)] , result[(10)] [location=global], result[(14)]  range=[-32768, -32765) uses={}
+ 7 (12)     tdinitsink flags{} result[(4)] , result[(5)] , result[(6)] , result[(7)]  range=[-32768, -32766) uses={(11)}
+14 (13)     declsink flags{} result[(10)]  range=[-32768, -32767) uses={(11)}
+ 3 (14)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(11)}
 
 

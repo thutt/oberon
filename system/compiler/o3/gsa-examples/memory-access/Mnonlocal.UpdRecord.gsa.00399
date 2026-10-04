@@ -13,6 +13,6 @@ Value Numbering
 12 (10)    adr flags{} result[(8)]  range=[-32768, -32765) uses={(9)}
  7 (11)    adr flags{} %t2  range=[-32768, -32766) uses={(5) (9)}
 13 (12)    exit flags{} result[(13)]  range=[-32768, -32767) uses={}
-11 (13)     dtor flags{raLive} result[(8)]  range=[-32768, -32768) uses={(12)}
+11 (13)     dtor flags{} result[(8)]  range=[-32768, -32768) uses={(12)}
 
 

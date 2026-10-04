@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: RecordFldNonLocal range=[-32768, -32749)
  1 ( 1)    [4:[location=bd1/adr], 3:[location=bd1], 2:[location=bd0/adr], 1:[location=bd0]] enter flags{} %nlm  range=[-32768, -32750) uses={}
@@ -19,6 +19,6 @@ Dead Code Elimination
  9 (16)    mayalias flags{} result[(14)] , result[(7)]  range=[-32768, -32765) uses={(15)}
 17 (17)    convert.s2 flags{} const{20}  range=[-32768, -32766) uses={(15)}
 19 (18)    exit flags{} result[(19)]  range=[-32768, -32767) uses={}
-18 (19)     dtor flags{raLive} result[(15)]  range=[-32768, -32768) uses={(18)}
+18 (19)     dtor flags{} result[(15)]  range=[-32768, -32768) uses={(18)}
 
 

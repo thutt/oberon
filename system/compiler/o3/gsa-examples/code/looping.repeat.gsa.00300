@@ -14,6 +14,6 @@ Value Numbering
 10 (11)     not.u1 flags{} result[(10)]  range=[-32765, -32765) uses={(7)}
 14 (12)    %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
 12 (13)    exit flags{} result[(9)] [location=%result-3], result[(14)]  range=[-32768, -32767) uses={}
- 3 (14)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(13)}
+ 3 (14)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(13)}
 
 

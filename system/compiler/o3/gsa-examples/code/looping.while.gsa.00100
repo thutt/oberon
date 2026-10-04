@@ -22,6 +22,6 @@ Alias Analysis
  8 (19)     %result-3 := gate flags{} result[(18)] , result[(13)] , result[(6)]  range=[-32765, -32765) uses={(21)}
 22 (20)    %return-2 := copy flags{} const{TRUE}  range=[-32768, -32766) uses={}
 21 (21)    exit flags{} result[(19)] [location=%result-3], result[(22)]  range=[-32768, -32767) uses={}
- 3 (22)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(21)}
+ 3 (22)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(21)}
 
 

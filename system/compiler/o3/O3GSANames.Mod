@@ -190,12 +190,13 @@ BEGIN
   misc[GSAOpcode.Gcopy] := 'copy';
   misc[GSAOpcode.Gcap] := 'cap';
 
-  NEW(pseudomisc, 5);
+  NEW(pseudomisc, 6);
   pseudomisc[GSAOpcode.Pgate] := 'gate';
   pseudomisc[GSAOpcode.Pimport] := 'import';
   pseudomisc[GSAOpcode.Ptrapsink] := 'trapsink';
   pseudomisc[GSAOpcode.Pimportsink] := 'importsink';
-  pseudomisc[GSAOpcode.Pinitsink] := 'modinitsink';
+  pseudomisc[GSAOpcode.Pdeclsink] := 'declsink';
+  pseudomisc[GSAOpcode.Ptdinitsink] := 'tdinitsink';
 
   NEW(alias, 4);
   alias[GSAOpcode.Pnoalias] := 'noalias';
@@ -272,11 +273,7 @@ BEGIN
   trap[GSAOpcode.Twith] := 'with';
   trap[GSAOpcode.Tnil] := 'nil';
 
-  NEW(attributes, 2);
-  attributes[GSAData.raLive] := "raLive";                (* Forced always-live.
-                                                          * A live instruction's operands
-                                                          * must also always be marked live.
-                                                          *)
+  NEW(attributes, 1);
   attributes[GSAData.raUniqueResult] := "unique result"; (* Every return value is unique
                                                           * Example: NEW.
                                                           *)
