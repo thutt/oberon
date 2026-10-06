@@ -145,7 +145,7 @@ MODULE O3GSAOpcode;
     Twith* = 8;
     Tnil* = 9;
 
-  CONST (* Gmisc *) (* XXX Why is there Pmisc and Gmisc? *)
+  CONST (* Gmisc.  General miscellaneous.  Not pseudo-instructions. *)
     Gcall* = 0;
     Gcopy* = 1;
     Gcap* = 2;
@@ -188,7 +188,7 @@ MODULE O3GSAOpcode;
     Pmovetoreg*    = 0;           (* Move to hardware register. *)
     Pmovefromreg*  = 1;           (* Move from hardware register. *)
 
-  CONST (* Pmisc *)
+  CONST (* Pmisc.  Pseudo-miscellaneous.  Not real instruction functionality. *)
     Pgate*       = 0;
     Pimport*     = 1;
     Pimportsink* = 2;  (* $import instruction sink. *)
