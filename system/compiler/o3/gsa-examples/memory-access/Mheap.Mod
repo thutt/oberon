@@ -1,4 +1,4 @@
-(* Copyright (c) 1997-2023, 2026 Logic Magicians Software *)
+(* Copyright (c) 1997-2023 Logic Magicians Software *)
 MODULE Mheap;
 TYPE
   Rec = POINTER TO RecDesc;
@@ -8,7 +8,6 @@ TYPE
 
 VAR Gv : Rec;
 
-(*
 PROCEDURE AccessLocal;
   VAR
     y : INTEGER;
@@ -67,8 +66,6 @@ PROCEDURE UpdateNonlocal;
     nl.x := y;
   END nlu;
 END UpdateNonlocal;
-
-*)
 
 PROCEDURE UpdateHeap;
   VAR
