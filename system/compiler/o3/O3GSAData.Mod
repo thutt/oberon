@@ -1851,7 +1851,10 @@ END RegionFindGlobal;
  * If 'instr IS Region', then it's also removed from the list
  * of nested regions after its local instructions have been
  * deleted.  All operands are removed.
-*)
+ *
+ * It does not remove the uses of the Instruction.
+ *
+ *)
 PROCEDURE InstructionDelete*(inst : Instruction);
   VAR
     next : Instruction;
