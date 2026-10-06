@@ -646,7 +646,7 @@ MODULE O3Symtab; (* Symbol Table Hash Table *)
   BEGIN
     IF (described = NIL) OR (described.name = NIL) THEN
       NextNumber(number, len);
-      NEW(name, len + 1); (* include room for '.' *)
+      NEW(name, len + 3); (* include room for '.' *)
       name[0] := '.';
       i := -1;
       REPEAT
@@ -654,6 +654,8 @@ MODULE O3Symtab; (* Symbol Table Hash Table *)
         ch := prefix[i];
         name[1 + i] := ch;
       UNTIL ch = 0X;
+      name[i + 1] := '_'; 
+      INC(i); 
 
       j := 0;
       REPEAT

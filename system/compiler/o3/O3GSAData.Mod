@@ -298,6 +298,7 @@ TYPE
     kind- : SHORTINT; (* tf<identifier> *)
     num- : INTEGER; (* generated temporary number.  inv: num >= 0 *)
     dim- : INTEGER; (* inv: kind = tfArrayLength -> dimension for array *)
+    name- : Symtab.SymbolName; 
   END;
 
   TypeDesc* = RECORD (AddressableDesc)
@@ -795,6 +796,7 @@ PROCEDURE InitTemporary(x     : Temporary;
                         type  : Symtab.Type;
                         sym   : Symtab.Symbol;
                         owner : Symtab.Symbol;
+                        name : Symtab.SymbolName; 
                         pos   : LONGINT);
 BEGIN
   InitSymbol(x, sym, owner, pos);
@@ -803,6 +805,7 @@ BEGIN
   x.num := nofTemps;
   x.dim := MIN(INTEGER);
   x.type := type;
+  x.name := name;
 END InitTemporary;
 
 PROCEDURE InitType(x : Type;
@@ -2629,6 +2632,7 @@ PROCEDURE NewTemp(r : Region;
                   kind : SHORTINT;
                   type : Symtab.Type;
                   owner : Symtab.Symbol;
+                  prefix : ARRAY OF CHAR; 
                   pos : LONGINT) : Temporary;
   VAR
     x : Temporary;
@@ -2636,15 +2640,29 @@ PROCEDURE NewTemp(r : Region;
     duplicate : BOOLEAN;
     name : Symtab.SymbolName;
     greg : GlobalRegion;
+    p : POINTER TO ARRAY OF CHAR; 
+    ch : CHAR; 
+    i : LONGINT; 
 BEGIN
   NEW(x);
   greg := RegionFindGlobal(r);
-  name := Symtab.MakeGeneratedName(NIL, NIL, '%', nofTemps);
+
+  NEW(p, 1 + LEN(prefix)); 
+  p[0] := '%';
+  i := 0;
+  REPEAT
+    ch := prefix[i];
+    p[1 + i] := ch; 
+    INC(i); 
+  UNTIL ch = 0X; 
+
+  name := Symtab.MakeGeneratedName(NIL, NIL, p^, nofTemps);
   sym := Symtab.NewBasicSym(Symtab.var);
   sym.type := type;
   Symtab.InsertScope(greg.proc.scope, name^, sym, duplicate);
   ASSERT(~duplicate, 1100);
-  InitTemporary(x, kind, type, sym, owner, pos);
+  InitTemporary(x, kind, type, sym, owner, name, pos);
+  name := NIL; 
   RETURN x;
 END NewTemp;
 
@@ -2655,7 +2673,7 @@ PROCEDURE NewTemporary*(r : Region;
   VAR
     x : Temporary;
 BEGIN
-  x := NewTemp(r, tfRegular, type, owner, pos);
+  x := NewTemp(r, tfRegular, type, owner, "regu", pos);
   RETURN x;
 END NewTemporary;
 
@@ -2665,7 +2683,7 @@ PROCEDURE NewTemporaryReturn*(r : Region;
   VAR
     rtn : Temporary;
 BEGIN
-  rtn := NewTemp(r, tfReturnFlag, Symtab.booltyp, owner, pos);
+  rtn := NewTemp(r, tfReturnFlag, Symtab.booltyp, owner, "retf", pos);
   RETURN rtn;
 END NewTemporaryReturn;
 
@@ -2676,7 +2694,7 @@ PROCEDURE NewTemporaryResult*(r : Region;
   VAR
     res : Temporary;
 BEGIN
-  res := NewTemp(r, tfReturnValue, type, owner, pos);
+  res := NewTemp(r, tfReturnValue, type, owner, "retv", pos);
   RETURN res;
 END NewTemporaryResult;
 
@@ -2686,7 +2704,7 @@ PROCEDURE NewTemporaryExit*(r : Region;
   VAR
     t0 : Temporary;
 BEGIN
-  t0 := NewTemp(r, tfExit, Symtab.booltyp, owner, pos);
+  t0 := NewTemp(r, tfExit, Symtab.booltyp, owner, "exit", pos);
   RETURN t0;
 END NewTemporaryExit;
 
@@ -2697,7 +2715,7 @@ PROCEDURE NewTemporaryArrayLen*(r : Region;
   VAR
     t0 : Temporary;
 BEGIN
-  t0 := NewTemp(r, tfArrayLength, Symtab.linttyp, owner, pos);
+  t0 := NewTemp(r, tfArrayLength, Symtab.linttyp, owner, "arrl", pos);
   t0.dim := dim;
   RETURN t0;
 END NewTemporaryArrayLen;
@@ -2708,7 +2726,7 @@ PROCEDURE NewTemporaryRecordTag*(r : Region;
   VAR
     t0 : Temporary;
 BEGIN
-  t0 := NewTemp(r, tfRecordTag, Symtab.linttyp, owner, pos);
+  t0 := NewTemp(r, tfRecordTag, Symtab.linttyp, owner, "rect", pos);
   RETURN t0;
 END NewTemporaryRecordTag;
 
@@ -2718,7 +2736,7 @@ PROCEDURE NewTemporaryDynFrame*(r : Region;
   VAR
     t0 : Temporary;
 BEGIN
-  t0 := NewTemp(r, tfDynFrame, Symtab.linttyp, owner, pos);
+  t0 := NewTemp(r, tfDynFrame, Symtab.linttyp, owner, "dynf", pos);
   RETURN t0;
 END NewTemporaryDynFrame;
 
@@ -2728,7 +2746,7 @@ PROCEDURE NewTemporaryMemory*(r : Region;
   VAR
     t0 : Temporary;
 BEGIN
-  t0 := NewTemp(r, tfMemory, Symtab.linttyp, owner, pos);
+  t0 := NewTemp(r, tfMemory, Symtab.linttyp, owner, "mem", pos);
   RETURN t0;
 END NewTemporaryMemory;
 
@@ -2741,7 +2759,7 @@ PROCEDURE NewTemporaryNonLocalMem*(r : Region;
   VAR
     t0 : Temporary;
 BEGIN
-  t0 := NewTemp(r, tfNonLocalMem, Symtab.linttyp, owner, pos);
+  t0 := NewTemp(r, tfNonLocalMem, Symtab.linttyp, owner, "nlm", pos);
   RETURN t0;
 END NewTemporaryNonLocalMem;
 
