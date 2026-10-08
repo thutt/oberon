@@ -1,0 +1,34 @@
+Const Prop & Unreachable Code
+
+ 0 ( 0)  greg: NotCongruent range=[-32768, -32739)
+ 1 ( 1)    [4:[location=.Ext1Desc-Ext1Desc/adr], 3:[location=.Ext1Desc-Ext1Desc], 2:[location=.Ext0Desc-Ext0Desc/adr], 1:[location=.Ext0Desc-Ext0Desc]] enter flags{} %nlm  range=[-32768, -32740) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32741, -32741) uses={(29) (5)}
+ 5 ( 3)    trap-nil flags{}  range=[-32768, -32742) uses={(28)}
+ 7 ( 4)    adr flags{} b  range=[-32768, -32743) uses={(5)}
+ 4 ( 5)    access-deref flags{} const{0} , result[(4)] , result[(2)]  range=[-32768, -32744) uses={(6)}
+ 8 ( 6)    heaptag flags{} b , result[(5)]  range=[-32768, -32745) uses={(22) (18) (11) (7)}
+12 ( 7)    eql.u4 flags{} result[(6)] , result{1 of (1)}  range=[-32768, -32746) uses={(13) (8)}
+14 ( 8)    guard-false flags{} result[(7)]  range=[-32768, -32747) uses={}
+15 ( 9)     trap-eguard flags{}  range=[-32748, -32748) uses={(28)}
+16 (10)    trap-nil flags{}  range=[-32768, -32749) uses={(28)}
+11 (11)    tbpadr flags{} result[(6)] , Ext0 , Method , const{2} , const{-12}  range=[-32768, -32750) uses={(16)}
+18 (12)    trap-nil flags{}  range=[-32768, -32751) uses={(28)}
+13 (13)    guard-false flags{} result[(7)]  range=[-32768, -32752) uses={}
+19 (14)     trap-eguard flags{}  range=[-32753, -32753) uses={(28)}
+20 (15)    convert.s2 flags{} const{0}  range=[-32768, -32754) uses={(26) (16)}
+17 (16)    call flags{} result[(11)] , const{0} , result[(15)]  range=[-32768, -32755) uses={(27)}
+23 (17)    trap-nil flags{}  range=[-32768, -32756) uses={(28)}
+10 (18)    eql.u4 flags{} result[(6)] , result{3 of (1)}  range=[-32768, -32757) uses={(24) (19)}
+25 (19)    guard-false flags{} result[(18)]  range=[-32768, -32758) uses={}
+26 (20)     trap-eguard flags{}  range=[-32759, -32759) uses={(28)}
+27 (21)    trap-nil flags{}  range=[-32768, -32760) uses={(28)}
+ 9 (22)    tbpadr flags{} result[(6)] , Ext1 , Method , const{2} , const{-12}  range=[-32768, -32761) uses={(26)}
+28 (23)    trap-nil flags{}  range=[-32768, -32762) uses={(28)}
+24 (24)    guard-false flags{} result[(18)]  range=[-32768, -32763) uses={}
+29 (25)     trap-eguard flags{}  range=[-32764, -32764) uses={(28)}
+21 (26)    call flags{} result[(22)] , const{0} , result[(15)]  range=[-32768, -32765) uses={(27)}
+22 (27)    exit flags{} result[(28)] , result[(16)] , result[(26)] , result[(29)]  range=[-32768, -32766) uses={}
+ 6 (28)     trapsink flags{} result[(3)] , result[(9)] , result[(10)] , result[(12)] , result[(14)] , result[(17)] , result[(20)] , result[(21)] , result[(23)] , result[(25)]  range=[-32768, -32767) uses={(27)}
+ 3 (29)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(27)}
+
+

@@ -1,26 +1,27 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
- 0 ( 0)  greg: P0 range=[-32768, -32747)
- 1 ( 1)    [5:[location=.Twith-ExtDesc/adr], 4:[location=.Twith-ExtDesc], 3:[location=.%0], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32748) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32751, -32749) uses={(21) (13) (6)}
- 6 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32751, -32750) uses={}
- 7 ( 4)     %result-3 := copy flags{} const{FALSE}  range=[-32751, -32751) uses={}
- 8 ( 5)    adr flags{} b  range=[-32768, -32752) uses={(6)}
- 5 ( 6)    access-varparm flags{} b , result[(5)] , result[(2)]  range=[-32768, -32753) uses={(14) (13) (12) (7)}
-11 ( 7)    neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32754) uses={(9) (8)}
-13 ( 8)    guard-true flags{raLive} result[(7)]  range=[-32768, -32755) uses={(11)}
-12 ( 9)    guard-false flags{raLive} result[(7)]  range=[-32768, -32756) uses={(11)}
-15 (10)     trap-nil flags{raLive}  range=[-32757, -32757) uses={}
-14 (11)    merge-if flags{raLive} result[(8)] , result[(9)]  range=[-32768, -32758) uses={}
-10 (12)    adr flags{} result[(6)]  range=[-32768, -32759) uses={(13)}
- 4 (13)    access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32760) uses={(14)}
- 9 (14)    heaptag flags{} result[(6)] , result[(13)]  range=[-32768, -32761) uses={(15)}
-16 (15)    eql.u4 flags{} result[(14)] , result{4 of (1)}  range=[-32768, -32762) uses={(17) (16)}
-18 (16)    guard-true flags{} result[(15)]  range=[-32768, -32763) uses={(19)}
-17 (17)    guard-false flags{} result[(15)]  range=[-32768, -32764) uses={(19)}
-20 (18)     trap-with flags{raLive}  range=[-32765, -32765) uses={}
-19 (19)    merge-if flags{} result[(16)] , result[(17)]  range=[-32768, -32766) uses={}
-21 (20)    exit flags{} const{FALSE} [location=%result-3], result[(21)]  range=[-32768, -32767) uses={}
- 3 (21)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(20)}
+ 0 ( 0)  greg: P0 range=[-32768, -32746)
+ 1 ( 1)    [5:[location=.Twith-ExtDesc/adr], 4:[location=.Twith-ExtDesc], 3:[location=.%0], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32747) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32750, -32748) uses={(22) (13) (6)}
+ 6 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32750, -32749) uses={}
+ 7 ( 4)     %result-3 := copy flags{} const{FALSE}  range=[-32750, -32750) uses={}
+ 8 ( 5)    adr flags{} b  range=[-32768, -32751) uses={(6)}
+ 5 ( 6)    access-varparm flags{} b , result[(5)] , result[(2)]  range=[-32768, -32752) uses={(14) (13) (12) (7)}
+11 ( 7)    neq.u1 flags{} result[(6)] , const{0}  range=[-32768, -32753) uses={(9) (8)}
+13 ( 8)    guard-true flags{} result[(7)]  range=[-32768, -32754) uses={(11)}
+12 ( 9)    guard-false flags{} result[(7)]  range=[-32768, -32755) uses={(11)}
+15 (10)     trap-nil flags{}  range=[-32756, -32756) uses={(21)}
+14 (11)    merge-if flags{} result[(8)] , result[(9)]  range=[-32768, -32757) uses={}
+10 (12)    adr flags{} result[(6)]  range=[-32768, -32758) uses={(13)}
+ 4 (13)    access-deref flags{} result[(6)] , result[(12)] , result[(2)]  range=[-32768, -32759) uses={(14)}
+ 9 (14)    heaptag flags{} result[(6)] , result[(13)]  range=[-32768, -32760) uses={(15)}
+17 (15)    eql.u4 flags{} result[(14)] , result{4 of (1)}  range=[-32768, -32761) uses={(17) (16)}
+19 (16)    guard-true flags{} result[(15)]  range=[-32768, -32762) uses={(19)}
+18 (17)    guard-false flags{} result[(15)]  range=[-32768, -32763) uses={(19)}
+21 (18)     trap-with flags{}  range=[-32764, -32764) uses={(21)}
+20 (19)    merge-if flags{} result[(16)] , result[(17)]  range=[-32768, -32765) uses={}
+22 (20)    exit flags{} const{FALSE} [location=%result-3], result[(21)] , result[(22)]  range=[-32768, -32766) uses={}
+16 (21)     trapsink flags{} result[(10)] , result[(18)]  range=[-32768, -32767) uses={(20)}
+ 3 (22)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(20)}
 
 

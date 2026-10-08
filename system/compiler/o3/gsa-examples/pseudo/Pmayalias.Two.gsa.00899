@@ -1,44 +1,41 @@
 Live Range Analysis
 
- 0 ( 0)  greg: Two range=[-32768, -32729)
- 1 ( 1)    [10:[location=X/adr], 9:[location=X], 8:[location=LX/adr], 7:[location=LX], 6:[location=.%0], 5:[location=z], 4:[location=x/adr], 3:[location=x], 2:[location=y], 1:[location=cc]] enter flags{} %nlm:%vr32  range=[-32768, -32730) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32731, -32731) uses={(7) (5)}
- 5 ( 3)    y := add.s2 flags{} result{2 of (1)} , const{1}:%vr44  range=[-32768, -32732) uses={(33) (23)}
- 8 ( 4)    adr flags{} LX  range=[-32768, -32733) uses={(5)}
- 4 ( 5)    %nlm:%vr32 := update-nonlocal flags{} LX , result[(4)] , result[(2)] , result[(9)]  range=[-32768, -32734) uses={(14) (13) (11)}
-13 ( 6)    adr flags{} x  range=[-32768, -32735) uses={(12) (8)}
- 3 ( 7)    access-varparm flags{} x , result[(8)] , result[(2)]  range=[-32768, -32736) uses={(9)}
-15 ( 8)    mayalias flags{} result[(6)] , result[(10)]  range=[-32768, -32737) uses={(33) (36) (16) (14) (13) (7)}
- 9 ( 9)    convert.s4 flags{} result[(7)]  range=[-32768, -32738) uses={(5)}
-16 (10)    adr flags{} X  range=[-32768, -32739) uses={(8) (12)}
-12 (11)    z := access-nonlocal flags{} X , result[(12)] , result[(5)]  range=[-32768, -32740) uses={(31)}
-14 (12)    mayalias flags{} result[(10)] , result[(6)]  range=[-32768, -32741) uses={(31) (37) (28) (17) (11)}
-11 (13)    %nlm:%vr32 := update-varparm flags{} x , result[(8)] , result[(5)] , result[(15)]  range=[-32768, -32742) uses={(28) (17) (16)}
-10 (14)    access-varparm flags{} x , result[(8)] , result[(5)]  range=[-32768, -32743) uses={(15)}
-23 (15)    add.s2 flags{} result[(14)] , const{1}:%vr44  range=[-32768, -32744) uses={(13)}
-18 (16)    access-varparm flags{} x , result[(8)] , result[(13)]  range=[-32768, -32745) uses={(18)}
-22 (17)    access-nonlocal flags{} X , result[(12)] , result[(13)]  range=[-32768, -32746) uses={(29) (23) (18)}
-24 (18)    eql.s2 flags{} result[(16)] , result[(17)]  range=[-32768, -32747) uses={(20) (19)}
-27 (19)    guard-true flags{raLive} result[(18)]  range=[-32768, -32748) uses={(22)}
-26 (20)    guard-false flags{raLive} result[(18)]  range=[-32768, -32749) uses={(22)}
-29 (21)     trap-assert flags{raLive}  range=[-32750, -32750) uses={}
-28 (22)    merge-if flags{raLive} result[(19)] , result[(20)]  range=[-32768, -32751) uses={}
- 7 (23)    eql.s2 flags{} result[(3)] , result[(17)]  range=[-32768, -32752) uses={(25) (24)}
-31 (24)    guard-true flags{raLive} result[(23)]  range=[-32768, -32753) uses={(27)}
-30 (25)    guard-false flags{raLive} result[(23)]  range=[-32768, -32754) uses={(27)}
-33 (26)     trap-assert flags{raLive}  range=[-32755, -32755) uses={}
-32 (27)    merge-if flags{raLive} result[(24)] , result[(25)]  range=[-32768, -32756) uses={}
-21 (28)    %nlm:%vr32 := update-nonlocal flags{} X , result[(12)] , result[(13)] , result[(29)]  range=[-32768, -32757) uses={(33) (31)}
-25 (29)    sub.s2 flags{} result[(17)] , const{1}:%vr44  range=[-32768, -32758) uses={(28)}
-34 (30)    guard-true flags{} result{1 of (1)}  range=[-32768, -32759) uses={(34)}
-19 (31)     %nlm:%vr32 := update-nonlocal flags{} X , result[(12)] , result[(28)] , result[(11)]  range=[-32760, -32760) uses={(35)}
-37 (32)    guard-false flags{} result{1 of (1)}  range=[-32768, -32761) uses={(34)}
- 6 (33)     %nlm:%vr32 := update-varparm flags{} x , result[(8)] , result[(28)] , result[(3)]  range=[-32762, -32762) uses={(35)}
-35 (34)    merge-if flags{} result[(30)] , result[(32)]  range=[-32768, -32763) uses={(35)}
-36 (35)     %nlm:%vr32 := gate flags{} result[(34)] , result[(31)] , result[(33)]  range=[-32764, -32764) uses={(37) (36)}
-17 (36)    %nlm:%vr32 := update-varparm flags{} x , result[(8)] , result[(35)] , result[(37)]  range=[-32768, -32765) uses={(39)}
-20 (37)    access-nonlocal flags{} X , result[(12)] , result[(35)]  range=[-32768, -32766) uses={(36)}
-39 (38)    exit flags{} result[(39)]  range=[-32768, -32767) uses={}
-38 (39)     dtor flags{raLive} result[(36)]  range=[-32768, -32768) uses={(38)}
+ 0 ( 0)  greg: Two range=[-32768, -32732)
+ 1 ( 1)    [10:[location=X/adr], 9:[location=X], 8:[location=LX/adr], 7:[location=LX], 6:[location=.%0], 5:[location=z], 4:[location=x/adr], 3:[location=x], 2:[location=y], 1:[location=cc]] enter flags{} %nlm:%vr32  range=[-32768, -32733) uses={}
+ 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32734, -32734) uses={(7) (5)}
+ 5 ( 3)    y := add.s2 flags{} result{2 of (1)} , const{1}:%vr44  range=[-32768, -32735) uses={(29) (21)}
+ 8 ( 4)    adr flags{} LX  range=[-32768, -32736) uses={(5)}
+ 4 ( 5)    %nlm:%vr32 := update-nonlocal flags{} LX , result[(4)] , result[(2)] , result[(9)]  range=[-32768, -32737) uses={(14) (13) (11)}
+13 ( 6)    adr flags{} x  range=[-32768, -32738) uses={(12) (8)}
+ 3 ( 7)    access-varparm flags{} x , result[(8)] , result[(2)]  range=[-32768, -32739) uses={(9)}
+15 ( 8)    mayalias flags{} result[(6)] , result[(10)]  range=[-32768, -32740) uses={(29) (32) (16) (14) (13) (7)}
+ 9 ( 9)    convert.s4 flags{} result[(7)]  range=[-32768, -32741) uses={(5)}
+16 (10)    adr flags{} X  range=[-32768, -32742) uses={(8) (12)}
+12 (11)    z := access-nonlocal flags{} X , result[(12)] , result[(5)]  range=[-32768, -32743) uses={(27)}
+14 (12)    mayalias flags{} result[(10)] , result[(6)]  range=[-32768, -32744) uses={(27) (33) (24) (17) (11)}
+11 (13)    %nlm:%vr32 := update-varparm flags{} x , result[(8)] , result[(5)] , result[(15)]  range=[-32768, -32745) uses={(24) (17) (16)}
+10 (14)    access-varparm flags{} x , result[(8)] , result[(5)]  range=[-32768, -32746) uses={(15)}
+23 (15)    add.s2 flags{} result[(14)] , const{1}:%vr44  range=[-32768, -32747) uses={(13)}
+18 (16)    access-varparm flags{} x , result[(8)] , result[(13)]  range=[-32768, -32748) uses={(18)}
+22 (17)    access-nonlocal flags{} X , result[(12)] , result[(13)]  range=[-32768, -32749) uses={(25) (21) (18)}
+24 (18)    eql.s2 flags{} result[(16)] , result[(17)]  range=[-32768, -32750) uses={(19)}
+26 (19)    guard-false flags{} result[(18)]  range=[-32768, -32751) uses={}
+27 (20)     trap-assert flags{}  range=[-32752, -32752) uses={(35)}
+ 7 (21)    eql.s2 flags{} result[(3)] , result[(17)]  range=[-32768, -32753) uses={(22)}
+29 (22)    guard-false flags{} result[(21)]  range=[-32768, -32754) uses={}
+30 (23)     trap-assert flags{}  range=[-32755, -32755) uses={(35)}
+21 (24)    %nlm:%vr32 := update-nonlocal flags{} X , result[(12)] , result[(13)] , result[(25)]  range=[-32768, -32756) uses={(29) (27)}
+25 (25)    sub.s2 flags{} result[(17)] , const{1}:%vr44  range=[-32768, -32757) uses={(24)}
+31 (26)    guard-true flags{} result{1 of (1)}  range=[-32768, -32758) uses={(30)}
+19 (27)     %nlm:%vr32 := update-nonlocal flags{} X , result[(12)] , result[(24)] , result[(11)]  range=[-32759, -32759) uses={(31)}
+34 (28)    guard-false flags{} result{1 of (1)}  range=[-32768, -32760) uses={(30)}
+ 6 (29)     %nlm:%vr32 := update-varparm flags{} x , result[(8)] , result[(24)] , result[(3)]  range=[-32761, -32761) uses={(31)}
+32 (30)    merge-if flags{} result[(26)] , result[(28)]  range=[-32768, -32762) uses={(31)}
+33 (31)     %nlm:%vr32 := gate flags{} result[(30)] , result[(27)] , result[(29)]  range=[-32763, -32763) uses={(33) (32)}
+17 (32)    %nlm:%vr32 := update-varparm flags{} x , result[(8)] , result[(31)] , result[(33)]  range=[-32768, -32764) uses={(36)}
+20 (33)    access-nonlocal flags{} X , result[(12)] , result[(31)]  range=[-32768, -32765) uses={(32)}
+36 (34)    exit flags{} result[(35)] , result[(36)]  range=[-32768, -32766) uses={}
+28 (35)     trapsink flags{} result[(20)] , result[(23)]  range=[-32768, -32767) uses={(34)}
+35 (36)     dtor flags{} result[(32)]  range=[-32768, -32768) uses={(34)}
 
 

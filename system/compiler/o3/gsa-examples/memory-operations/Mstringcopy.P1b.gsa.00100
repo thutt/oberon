@@ -13,6 +13,6 @@ Alias Analysis
 11 (10)    adr flags{} result[(8)]  range=[-32768, -32765) uses={(9)}
 12 (11)    adr flags{} const{"hello"}  range=[-32768, -32766) uses={(9)}
 13 (12)    exit flags{} result[(13)]  range=[-32768, -32767) uses={}
-10 (13)     dtor flags{raLive} result[(8)]  range=[-32768, -32768) uses={(12)}
+10 (13)     dtor flags{} result[(8)]  range=[-32768, -32768) uses={(12)}
 
 

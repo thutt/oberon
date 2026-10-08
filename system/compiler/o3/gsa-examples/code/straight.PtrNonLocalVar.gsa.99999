@@ -16,6 +16,6 @@ Final GSA
 14 (13)    merge-if flags{} result[(10)] , result[(12)]  range=[-32768, -32765) uses={(14)}
  7 (14)     %nlm:%vr32 := gate flags{} result[(13)] , result[(11)] , result[(4)]  range=[-32766, -32766) uses={(16)}
 16 (15)    exit flags{} result[(16)]  range=[-32768, -32767) uses={}
-15 (16)     dtor flags{raLive} result[(14)]  range=[-32768, -32768) uses={(15)}
+15 (16)     dtor flags{} result[(14)]  range=[-32768, -32768) uses={(15)}
 
 

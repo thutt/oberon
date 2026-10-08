@@ -14,6 +14,6 @@ Copy Propagation
  7 (11)     merge-case flags{} result[(5)] , result[(7)] , result[(9)]  range=[-32766, -32765) uses={(12)}
  9 (12)      ch := gate flags{} result[(11)] , result[(6)] , result[(8)] , result[(10)]  range=[-32766, -32766) uses={}
 14 (13)    exit flags{} result[(14)]  range=[-32768, -32767) uses={}
- 3 (14)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(13)}
+ 3 (14)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(13)}
 
 

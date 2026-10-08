@@ -1,0 +1,18 @@
+Const Prop & Unreachable Code
+
+ 0 ( 0)  greg: UpdateLocal range=[-32768, -32755)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32756) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32757, -32757) uses={(7)}
+ 4 ( 3)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32758) uses={(4)}
+ 5 ( 4)    guard-false flags{} result[(3)]  range=[-32768, -32759) uses={}
+ 6 ( 5)     trap-nil flags{}  range=[-32760, -32760) uses={(12)}
+ 8 ( 6)    adr flags{} v  range=[-32768, -32761) uses={(7)}
+ 3 ( 7)    access-deref flags{} const{0} , result[(6)] , result[(2)]  range=[-32768, -32762) uses={(10) (8)}
+10 ( 8)    adr flags{} result[(7)]  range=[-32768, -32763) uses={(9)}
+11 ( 9)    add.u4 flags{} result[(8)] , const{0}  range=[-32768, -32764) uses={(10)}
+ 9 (10)    %nlm := update-field flags{} result[(7)] , result[(9)] , const{0} , const{0}  range=[-32768, -32765) uses={(13)}
+13 (11)    exit flags{} result[(12)] , result[(13)]  range=[-32768, -32766) uses={}
+ 7 (12)     trapsink flags{} result[(5)]  range=[-32768, -32767) uses={(11)}
+12 (13)     dtor flags{} result[(10)]  range=[-32768, -32768) uses={(11)}
+
+

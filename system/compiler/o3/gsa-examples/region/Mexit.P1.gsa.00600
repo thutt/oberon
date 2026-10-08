@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
  0 ( 0)  greg: P1 range=[-32768, -32758)
  1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32759) uses={}
@@ -10,6 +10,6 @@ Dead Code Elimination
  3 ( 7)    access-nonlocal flags{} y , result[(8)] , result[(2)]  range=[-32768, -32765) uses={(4)}
  7 ( 8)    mayalias flags{} result[(6)] , result[(3)]  range=[-32768, -32766) uses={(7)}
 10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
- 8 (10)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(9)}
+ 8 (10)     dtor flags{} result[(4)]  range=[-32768, -32768) uses={(9)}
 
 

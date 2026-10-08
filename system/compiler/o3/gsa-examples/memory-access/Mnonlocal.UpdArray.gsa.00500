@@ -9,6 +9,6 @@ Const Prop & Unreachable Code
  7 ( 6)    adr flags{} result[(4)]  range=[-32768, -32765) uses={(5)}
  8 ( 7)    adr flags{} %t2  range=[-32768, -32766) uses={(5)}
  9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
- 6 ( 9)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(8)}
+ 6 ( 9)     dtor flags{} result[(4)]  range=[-32768, -32768) uses={(8)}
 
 

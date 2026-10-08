@@ -1,12 +1,11 @@
 Live Range Analysis
 
-0 (0)  greg: Mheap range=[-32768, -32761)
-1 (1)    enter flags{raLive} %nlm:%vr33  range=[-32768, -32762) uses={}
-2 (2)     %nlm:%vr33 := ctor flags{raLive}  range=[-32764, -32763) uses={(7) (6)}
-5 (3)     %return-2 := copy flags{raLive} const{FALSE}:%vr32  range=[-32764, -32764) uses={}
-6 (4)    .Mheap-RecDesc := init-rectd flags{raLive} RecDesc  range=[-32768, -32765) uses={(6)}
-7 (5)    Gv := copy flags{raLive} const{0}:%vr36  range=[-32768, -32766) uses={}
-4 (6)    exit flags{raLive} result[(2)] [location=%nlm:%vr33], const{FALSE}:%vr32 [location=%return-2], result[(4)] [location=.Mheap-RecDesc], const{0}:%vr36 [location=Gv], result[(7)]  range=[-32768, -32767) uses={}
-3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
+0 (0)  greg: Mheap range=[-32768, -32762)
+1 (1)    enter flags{} %nlm:%vr32  range=[-32768, -32763) uses={}
+2 (2)     %nlm:%vr32 := ctor flags{}  range=[-32764, -32764) uses={(6) (4)}
+5 (3)    .Mheap-RecDesc := init-rectd flags{} RecDesc  range=[-32768, -32765) uses={(4) (5)}
+4 (4)    exit flags{} result[(2)] [location=%nlm:%vr32], const{FALSE}:%vr36 [location=%return-2], result[(5)] , result[(3)] [location=.Mheap-RecDesc], const{0}:%vr38 [location=Gv], result[(6)]  range=[-32768, -32766) uses={}
+6 (5)     tdinitsink flags{} result[(3)]  range=[-32768, -32767) uses={(4)}
+3 (6)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(4)}
 
 

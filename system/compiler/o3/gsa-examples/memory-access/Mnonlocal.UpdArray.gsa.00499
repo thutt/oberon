@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: UpdArray range=[-32768, -32759)
  1 ( 1)    [5:[location=array/adr], 4:[location=array], 3:[location=.%1], 2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32760) uses={}
@@ -9,6 +9,6 @@ Dead Code Elimination
  7 ( 6)    adr flags{} result[(4)]  range=[-32768, -32765) uses={(5)}
  8 ( 7)    adr flags{} %t2  range=[-32768, -32766) uses={(5)}
  9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
- 6 ( 9)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(8)}
+ 6 ( 9)     dtor flags{} result[(4)]  range=[-32768, -32768) uses={(8)}
 
 

@@ -10,6 +10,6 @@ Const Prop & Unreachable Code
  3 ( 7)    access-nonlocal flags{} y , result[(8)] , result[(2)]  range=[-32768, -32765) uses={(4)}
  7 ( 8)    mayalias flags{} result[(6)] , result[(3)]  range=[-32768, -32766) uses={(7)}
 10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
- 8 (10)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(9)}
+ 8 (10)     dtor flags{} result[(4)]  range=[-32768, -32768) uses={(9)}
 
 

@@ -7,6 +7,6 @@ Alias Analysis
 6 (4)    adr flags{} b  range=[-32768, -32765) uses={(5)}
 4 (5)    v := access-nonlocal flags{} b , result[(4)] , result[(2)]  range=[-32768, -32766) uses={}
 7 (6)    exit flags{} result[(7)]  range=[-32768, -32767) uses={}
-3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
+3 (7)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(6)}
 
 

@@ -3,7 +3,7 @@ MODULE O3GSANames;
   IMPORT
     Types,
     Config := O3Config,
-    GSAOpcode := O3GSAOpcode, 
+    GSAOpcode := O3GSAOpcode,
     GSAData := O3GSAData;
 
 CONST
@@ -33,7 +33,7 @@ VAR
 
 PROCEDURE DecodeClass*(n : GSAData.Info; VAR p : Class);
   VAR name : Types.Name;
-BEGIN 
+BEGIN
   WITH n:GSAData.Instruction DO COPY(class[n.class], p);
   | n:GSAData.Result DO COPY("result", p);
   | n:GSAData.Type DO COPY("type", p);
@@ -72,7 +72,7 @@ END ArithSubclass;
 PROCEDURE DecodeSubclass*(n : GSAData.Info; VAR p : Subclass);
   VAR name : Types.Name;
 BEGIN
-  WITH n:GSAData.Instruction DO 
+  WITH n:GSAData.Instruction DO
     CASE n.class OF
     | GSAOpcode.Maccess, GSAOpcode.Mupdate: COPY(access[n.subcl], p);
     | GSAOpcode.Mmemory: COPY(memory[n.subcl], p);
@@ -107,7 +107,7 @@ PROCEDURE WDecode*(n : GSAData.Info);
     c : Class;
     s : Subclass;
 BEGIN
-  Decode(n, c, s); 
+  Decode(n, c, s);
   Config.LogWStr('Node={'); Config.LogWStr(c);
   Config.LogWStr(', '); Config.LogWStr(s); Config.LogW('}');
 END WDecode;
@@ -155,7 +155,7 @@ BEGIN
   class[GSAOpcode.Cleq] := 'leq';
   class[GSAOpcode.Cgtr] := 'gtr';
   class[GSAOpcode.Cgeq] := 'geq';
-    
+
   class[GSAOpcode.Sdiff] := 'set-diff';
   class[GSAOpcode.Sunion] := 'set-union';
   class[GSAOpcode.Ssub] := 'set-sub';
@@ -166,10 +166,10 @@ BEGIN
   class[GSAOpcode.Srange] := 'set-range';
   class[GSAOpcode.Selement] := 'set-element';
   class[GSAOpcode.Sconvert] := 'set-convert';
-  
+
   class[GSAOpcode.Ttrap] := 'trap';
 
-  class[GSAOpcode.Gmisc] := 'misc';
+  class[GSAOpcode.Gmisc] := 'gmisc';
   class[GSAOpcode.Gsystem] := 'system';
   class[GSAOpcode.Gguard] := 'guard';
   class[GSAOpcode.Gmerge] := 'merge';
@@ -177,6 +177,7 @@ BEGIN
   class[GSAOpcode.Palias] := 'alias';
   class[GSAOpcode.Phwdreg] := 'hwdreg';
   class[GSAOpcode.Pnlm] := 'nlm';
+  class[GSAOpcode.Pmisc] := 'pmisc';
 
   NEW(access, 6);
   access[GSAOpcode.Mfield] := 'field';
@@ -190,9 +191,14 @@ BEGIN
   misc[GSAOpcode.Gcopy] := 'copy';
   misc[GSAOpcode.Gcap] := 'cap';
 
-  NEW(pseudomisc, 2);
+  NEW(pseudomisc, 6);
+
   pseudomisc[GSAOpcode.Pgate] := 'gate';
   pseudomisc[GSAOpcode.Pimport] := 'import';
+  pseudomisc[GSAOpcode.Ptrapsink] := 'trapsink';
+  pseudomisc[GSAOpcode.Pimportsink] := 'importsink';
+  pseudomisc[GSAOpcode.Pdeclsink] := 'declsink';
+  pseudomisc[GSAOpcode.Ptdinitsink] := 'tdinitsink';
 
   NEW(alias, 4);
   alias[GSAOpcode.Pnoalias] := 'noalias';
@@ -244,7 +250,7 @@ BEGIN
   memory[GSAOpcode.Mnewrecord] := 'newrecord';
   memory[GSAOpcode.Mnewarray] := 'newarray';
   memory[GSAOpcode.Mnewdynarray] := 'newdynarray';
-  
+
   NEW(nlm, 2);
   nlm[GSAOpcode.Pdtor] := 'dtor';
   nlm[GSAOpcode.Pctor] := 'ctor';
@@ -256,7 +262,7 @@ BEGIN
   region[GSAOpcode.Menter] := 'enter';
   region[GSAOpcode.Mexit] := 'exit';
   region[GSAOpcode.Mbody] := 'body';
-  
+
   NEW(trap, 10);
   trap[GSAOpcode.Tindex] := 'index';
   trap[GSAOpcode.Trange] := 'range';
@@ -269,11 +275,7 @@ BEGIN
   trap[GSAOpcode.Twith] := 'with';
   trap[GSAOpcode.Tnil] := 'nil';
 
-  NEW(attributes, 2);
-  attributes[GSAData.raLive] := "raLive";                (* Forced always-live.
-                                                          * A live instruction's operands
-                                                          * must also always be marked live.
-                                                          *)
+  NEW(attributes, 1);
   attributes[GSAData.raUniqueResult] := "unique result"; (* Every return value is unique
                                                           * Example: NEW.
                                                           *)

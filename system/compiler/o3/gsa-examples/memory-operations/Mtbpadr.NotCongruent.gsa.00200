@@ -1,0 +1,86 @@
+Copy Propagation
+
+ 0 ( 0)  greg: NotCongruent range=[-32768, -32687)
+ 1 ( 1)    [4:[location=.Ext1Desc-Ext1Desc/adr], 3:[location=.Ext1Desc-Ext1Desc], 2:[location=.Ext0Desc-Ext0Desc/adr], 1:[location=.Ext0Desc-Ext0Desc]] enter flags{} %nlm  range=[-32768, -32688) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32690, -32689) uses={(81) (70) (61) (48) (33) (24) (11)}
+10 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32690, -32690) uses={}
+11 ( 4)    b := copy flags{} const{0}  range=[-32768, -32691) uses={(78) (70) (64) (61) (55) (48) (42) (41) (33) (27) (24) (18) (11) (5)}
+19 ( 5)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32692) uses={(7) (6)}
+21 ( 6)    guard-true flags{} result[(5)]  range=[-32768, -32693) uses={(9)}
+20 ( 7)    guard-false flags{} result[(5)]  range=[-32768, -32694) uses={(9)}
+23 ( 8)     trap-nil flags{}  range=[-32695, -32695) uses={(80)}
+22 ( 9)    merge-if flags{} result[(6)] , result[(7)]  range=[-32768, -32696) uses={}
+25 (10)    adr flags{} b  range=[-32768, -32697) uses={(11)}
+ 9 (11)    access-deref flags{} result[(4)] , result[(10)] , result[(2)]  range=[-32768, -32698) uses={(12)}
+26 (12)    heaptag flags{} b , result[(11)]  range=[-32768, -32699) uses={(13)}
+27 (13)    eql.u4 flags{} result[(12)] , result{1 of (1)}  range=[-32768, -32700) uses={(15) (14)}
+29 (14)    guard-true flags{} result[(13)]  range=[-32768, -32701) uses={(17)}
+28 (15)    guard-false flags{} result[(13)]  range=[-32768, -32702) uses={(17)}
+31 (16)     trap-eguard flags{}  range=[-32703, -32703) uses={(80)}
+30 (17)    merge-if flags{} result[(14)] , result[(15)]  range=[-32768, -32704) uses={}
+18 (18)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32705) uses={(20) (19)}
+33 (19)    guard-true flags{} result[(18)]  range=[-32768, -32706) uses={(22)}
+32 (20)    guard-false flags{} result[(18)]  range=[-32768, -32707) uses={(22)}
+35 (21)     trap-nil flags{}  range=[-32708, -32708) uses={(80)}
+34 (22)    merge-if flags{} result[(19)] , result[(20)]  range=[-32768, -32709) uses={}
+36 (23)    adr flags{} b  range=[-32768, -32710) uses={(24)}
+ 8 (24)    access-deref flags{} result[(4)] , result[(23)] , result[(2)]  range=[-32768, -32711) uses={(25)}
+37 (25)    heaptag flags{} b , result[(24)]  range=[-32768, -32712) uses={(26)}
+38 (26)    tbpadr flags{} result[(25)] , Ext0 , Method , const{2} , const{-12}  range=[-32768, -32713) uses={(41)}
+17 (27)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32714) uses={(29) (28)}
+40 (28)    guard-true flags{} result[(27)]  range=[-32768, -32715) uses={(31)}
+39 (29)    guard-false flags{} result[(27)]  range=[-32768, -32716) uses={(31)}
+42 (30)     trap-nil flags{}  range=[-32717, -32717) uses={(80)}
+41 (31)    merge-if flags{} result[(28)] , result[(29)]  range=[-32768, -32718) uses={}
+43 (32)    adr flags{} b  range=[-32768, -32719) uses={(33)}
+ 7 (33)    access-deref flags{} result[(4)] , result[(32)] , result[(2)]  range=[-32768, -32720) uses={(34)}
+44 (34)    heaptag flags{} b , result[(33)]  range=[-32768, -32721) uses={(35)}
+45 (35)    eql.u4 flags{} result[(34)] , result{1 of (1)}  range=[-32768, -32722) uses={(37) (36)}
+47 (36)    guard-true flags{} result[(35)]  range=[-32768, -32723) uses={(39)}
+46 (37)    guard-false flags{} result[(35)]  range=[-32768, -32724) uses={(39)}
+49 (38)     trap-eguard flags{}  range=[-32725, -32725) uses={(80)}
+48 (39)    merge-if flags{} result[(36)] , result[(37)]  range=[-32768, -32726) uses={}
+50 (40)    convert.s2 flags{} const{0}  range=[-32768, -32727) uses={(41)}
+16 (41)    call flags{} result[(26)] , result[(4)] , result[(40)]  range=[-32768, -32728) uses={(79)}
+15 (42)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32729) uses={(44) (43)}
+53 (43)    guard-true flags{} result[(42)]  range=[-32768, -32730) uses={(46)}
+52 (44)    guard-false flags{} result[(42)]  range=[-32768, -32731) uses={(46)}
+55 (45)     trap-nil flags{}  range=[-32732, -32732) uses={(80)}
+54 (46)    merge-if flags{} result[(43)] , result[(44)]  range=[-32768, -32733) uses={}
+56 (47)    adr flags{} b  range=[-32768, -32734) uses={(48)}
+ 6 (48)    access-deref flags{} result[(4)] , result[(47)] , result[(2)]  range=[-32768, -32735) uses={(49)}
+57 (49)    heaptag flags{} b , result[(48)]  range=[-32768, -32736) uses={(50)}
+58 (50)    eql.u4 flags{} result[(49)] , result{3 of (1)}  range=[-32768, -32737) uses={(52) (51)}
+60 (51)    guard-true flags{} result[(50)]  range=[-32768, -32738) uses={(54)}
+59 (52)    guard-false flags{} result[(50)]  range=[-32768, -32739) uses={(54)}
+62 (53)     trap-eguard flags{}  range=[-32740, -32740) uses={(80)}
+61 (54)    merge-if flags{} result[(51)] , result[(52)]  range=[-32768, -32741) uses={}
+14 (55)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32742) uses={(57) (56)}
+64 (56)    guard-true flags{} result[(55)]  range=[-32768, -32743) uses={(59)}
+63 (57)    guard-false flags{} result[(55)]  range=[-32768, -32744) uses={(59)}
+66 (58)     trap-nil flags{}  range=[-32745, -32745) uses={(80)}
+65 (59)    merge-if flags{} result[(56)] , result[(57)]  range=[-32768, -32746) uses={}
+67 (60)    adr flags{} b  range=[-32768, -32747) uses={(61)}
+ 5 (61)    access-deref flags{} result[(4)] , result[(60)] , result[(2)]  range=[-32768, -32748) uses={(62)}
+68 (62)    heaptag flags{} b , result[(61)]  range=[-32768, -32749) uses={(63)}
+69 (63)    tbpadr flags{} result[(62)] , Ext1 , Method , const{2} , const{-12}  range=[-32768, -32750) uses={(78)}
+13 (64)    neq.u1 flags{} result[(4)] , const{0}  range=[-32768, -32751) uses={(66) (65)}
+71 (65)    guard-true flags{} result[(64)]  range=[-32768, -32752) uses={(68)}
+70 (66)    guard-false flags{} result[(64)]  range=[-32768, -32753) uses={(68)}
+73 (67)     trap-nil flags{}  range=[-32754, -32754) uses={(80)}
+72 (68)    merge-if flags{} result[(65)] , result[(66)]  range=[-32768, -32755) uses={}
+74 (69)    adr flags{} b  range=[-32768, -32756) uses={(70)}
+ 4 (70)    access-deref flags{} result[(4)] , result[(69)] , result[(2)]  range=[-32768, -32757) uses={(71)}
+75 (71)    heaptag flags{} b , result[(70)]  range=[-32768, -32758) uses={(72)}
+76 (72)    eql.u4 flags{} result[(71)] , result{3 of (1)}  range=[-32768, -32759) uses={(74) (73)}
+78 (73)    guard-true flags{} result[(72)]  range=[-32768, -32760) uses={(76)}
+77 (74)    guard-false flags{} result[(72)]  range=[-32768, -32761) uses={(76)}
+80 (75)     trap-eguard flags{}  range=[-32762, -32762) uses={(80)}
+79 (76)    merge-if flags{} result[(73)] , result[(74)]  range=[-32768, -32763) uses={}
+81 (77)    convert.s2 flags{} const{0}  range=[-32768, -32764) uses={(78)}
+12 (78)    call flags{} result[(63)] , result[(4)] , result[(77)]  range=[-32768, -32765) uses={(79)}
+51 (79)    exit flags{} result[(80)] , result[(41)] , result[(78)] , result[(81)]  range=[-32768, -32766) uses={}
+24 (80)     trapsink flags{} result[(8)] , result[(16)] , result[(21)] , result[(30)] , result[(38)] , result[(45)] , result[(53)] , result[(58)] , result[(67)] , result[(75)]  range=[-32768, -32767) uses={(79)}
+ 3 (81)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(79)}
+
+

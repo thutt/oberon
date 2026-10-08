@@ -13,6 +13,6 @@ Alias Analysis
  6 (10)    mayalias flags{} result[(8)] , result[(4)]  range=[-32768, -32765) uses={(9)}
 11 (11)    convert.s2 flags{} const{10}  range=[-32768, -32766) uses={(9)}
 13 (12)    exit flags{} result[(13)]  range=[-32768, -32767) uses={}
-12 (13)     dtor flags{raLive} result[(9)]  range=[-32768, -32768) uses={(12)}
+12 (13)     dtor flags{} result[(9)]  range=[-32768, -32768) uses={(12)}
 
 

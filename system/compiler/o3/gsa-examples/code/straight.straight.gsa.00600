@@ -1,22 +1,16 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
- 0 ( 0)  greg: straight range=[-32768, -32751)
- 1 ( 1)    enter flags{raLive} %nlm  range=[-32768, -32752) uses={}
- 2 ( 2)     %nlm := ctor flags{raLive}  range=[-32754, -32753) uses={(17) (16)}
- 5 ( 3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32754, -32754) uses={}
- 6 ( 4)    .straight-BaseDesc := init-rectd flags{raLive} BaseDesc  range=[-32768, -32755) uses={(16) (16)}
- 7 ( 5)    .straight-ExtDesc := init-rectd flags{raLive} ExtDesc  range=[-32768, -32756) uses={}
- 8 ( 6)    x := copy flags{raLive} const{0}  range=[-32768, -32757) uses={}
- 9 ( 7)    y := copy flags{raLive} const{0}  range=[-32768, -32758) uses={}
-10 ( 8)    b0 := copy flags{raLive} const{0}  range=[-32768, -32759) uses={}
-11 ( 9)    b1 := copy flags{raLive} const{0}  range=[-32768, -32760) uses={}
-12 (10)    adr flags{raLive} bd0  range=[-32768, -32761) uses={(11)}
-13 (11)    bd0 := initialize flags{raLive} bd0 , result[(10)] , const{6}  range=[-32768, -32762) uses={(16)}
-14 (12)    adr flags{raLive} bd1  range=[-32768, -32763) uses={(13)}
-15 (13)    bd1 := initialize flags{raLive} bd1 , result[(12)] , const{6}  range=[-32768, -32764) uses={(16)}
-16 (14)    e0 := copy flags{raLive} const{0}  range=[-32768, -32765) uses={}
-17 (15)    e1 := copy flags{raLive} const{0}  range=[-32768, -32766) uses={}
- 4 (16)    exit flags{raLive} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(4)] [location=.straight-BaseDesc], result[(4)] [location=.straight-ExtDesc], const{0} [location=x], const{0} [location=y], const{0} [location=b0], const{0} [location=b1], result[(11)] [location=bd0], result[(13)] [location=bd1], const{0} [location=e0], const{0} [location=e1], result[(17)]  range=[-32768, -32767) uses={}
- 3 (17)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(16)}
+ 0 ( 0)  greg: straight range=[-32768, -32757)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32758) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32759, -32759) uses={(11) (8)}
+ 5 ( 3)    .straight-BaseDesc := init-rectd flags{} BaseDesc  range=[-32768, -32760) uses={(9) (8) (8) (9)}
+ 7 ( 4)    adr flags{} bd0  range=[-32768, -32761) uses={(5)}
+ 8 ( 5)    bd0 := initialize flags{} bd0 , result[(4)] , const{6}  range=[-32768, -32762) uses={(8) (10)}
+10 ( 6)    adr flags{} bd1  range=[-32768, -32763) uses={(7)}
+11 ( 7)    bd1 := initialize flags{} bd1 , result[(6)] , const{6}  range=[-32768, -32764) uses={(8) (10)}
+ 4 ( 8)    exit flags{} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(9)] , result[(3)] [location=.straight-BaseDesc], result[(3)] [location=.straight-ExtDesc], const{0} [location=x], const{0} [location=y], const{0} [location=b0], const{0} [location=b1], result[(10)] , result[(5)] [location=bd0], result[(7)] [location=bd1], const{0} [location=e0], const{0} [location=e1], result[(11)]  range=[-32768, -32765) uses={}
+ 6 ( 9)     tdinitsink flags{} result[(3)] , result[(3)]  range=[-32768, -32766) uses={(8)}
+ 9 (10)     declsink flags{} result[(5)] , result[(7)]  range=[-32768, -32767) uses={(8)}
+ 3 (11)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(8)}
 
 

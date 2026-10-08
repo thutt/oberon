@@ -11,6 +11,6 @@ Value Numbering
  3 ( 8)    access-nonlocal flags{} y , result[(9)] , result[(2)]  range=[-32768, -32765) uses={(5)}
  8 ( 9)    mayalias flags{} result[(7)] , result[(4)]  range=[-32768, -32766) uses={(8)}
 11 (10)    exit flags{} result[(11)]  range=[-32768, -32767) uses={}
- 9 (11)     dtor flags{raLive} result[(5)]  range=[-32768, -32768) uses={(10)}
+ 9 (11)     dtor flags{} result[(5)]  range=[-32768, -32768) uses={(10)}
 
 

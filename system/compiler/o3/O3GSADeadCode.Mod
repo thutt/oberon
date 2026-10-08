@@ -11,6 +11,9 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
     GSAData := O3GSAData;
 
   CONST
+    CullTrapInstructions = FALSE;
+
+  CONST
     dfProgress = 0;
     dfDumpRegion = 1;
     diagnostics = { };
@@ -34,8 +37,6 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
       raLive : BOOLEAN;
       alive : BOOLEAN;
   BEGIN
-    raLive := GSAData.raLive IN instr.attrib;
-    alive := {live, GSAData.raLive} * instr.attrib # { };
     alive := live IN instr.attrib;
     Config.LogWNum(instr.dfo, 3);
     Config.LogW(' ');
@@ -173,31 +174,6 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
   END MarkLive;
 
 
-  (* Set all 'raLive' instructions as live. *)
-  PROCEDURE MarkForceAlive(r : GSAData.Region);
-  VAR
-    instr, enter : GSAData.Instruction;
-    op : GSAData.Operand;
-    rgn : GSAData.Region;
-  BEGIN
-    instr := r.instructions.finst;
-    enter := GSAData.InstructionEnter(r);
-    WHILE instr # r.instructions DO
-      ASSERT(instr.region # NIL, 1025);
-      IF GSAData.raLive IN instr.attrib THEN
-        MarkLive(enter, instr);
-      END;
-      instr := instr.finst;
-    END;
-
-    rgn := r.regions.freg;
-    WHILE rgn # r.regions DO
-      MarkForceAlive(rgn);
-      rgn := rgn.freg;
-    END;
-  END MarkForceAlive;
-
-
   PROCEDURE DeleteDeadCode(i : GSAData.Instruction);
     VAR
       ni, j : GSAData.Instruction;
@@ -228,63 +204,16 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
     VAR
       op : GSAData.Operand;
   BEGIN
-    (* Mark all operands which are GSAData.Result as dead
-     * (although, they should also be instructions in the
-     * region and marked through that facility.
-     *)
+    (* Mark all operands which are GSAData.Result as dead. *)
     op := instr.operands.fop;
     WHILE (op # instr.operands) DO
       (* Mark all GSAData.Result operands that are not required as dead. *)
-      IF (op.def IS GSAData.Result) &
-         ~(GSAData.raLive IN op.def(GSAData.Result).attrib) THEN
+      IF (op.def IS GSAData.Result) THEN
         EXCL(op.def(GSAData.Result).attrib, live);
       END;
       op := op.fop;
     END;
   END MarkOperandsDead;
-
-
-  (* MarkDeadAfterTrap
-   *
-   *  Mark all instructions after a trap in a Region as unreachable.
-   *
-   *  Because a trap, when executed, will terminate the program,
-   *  all instructions following a trap in a region will be unreachable
-   *  and can be removed.
-   *)
-  PROCEDURE MarkDeadAfterTrap(region : GSAData.Region);
-    VAR
-      instr : GSAData.Instruction;
-      rgn : GSAData.Region;
-  BEGIN
-    instr := region.instructions.finst;
-    WHILE (instr # region.instructions) & (instr.class # GSAOpcode.Ttrap) DO
-      instr := instr.finst;
-    END;
-
-    (* instr is a Trap, or the dummy head. *)
-    IF instr # region.instructions THEN
-      instr := instr.finst; (* Instruction after Ttrap. *)
-      WHILE instr # region.instructions DO
-        (* GSAData.raLive doesn't apply to this Region;
-         * it's after a trap and cannot execute.
-         *)
-        IF ~(instr IS GSAData.Region) THEN
-          EXCL(instr.attrib, live);
-        END;
-        MarkOperandsDead(instr);
-        instr := instr.finst;
-      END;
-    END;
-
-    rgn := region.regions.freg;
-    WHILE rgn # region.regions DO
-      MarkDeadAfterTrap(rgn);   (* XXX This is wrong.  It will look for another $trap!
-                                 * Need to delete the Region rgn.
-                                 *)
-      rgn := rgn.freg;
-    END;
-  END MarkDeadAfterTrap;
 
 
   (* Mark all intructions as dead prior to the mark phase. *)
@@ -313,12 +242,145 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
     END;
   END MarkDead;
 
+  (* TrapCull
+   *
+   *  A $trap instruction that is executed effectively marks all instructions
+   *  following it in the same region as dead code.
+   *
+   *  This procedure uses the $trapsink instruction to process each $trap
+   *  instruction in the region.  Every instruction that a trap dominates is
+   *  implicitly unexecutable, and can be marked as dead.
+   *
+   *  If an operand's definition is not marked live, it has already been
+   *  marked dead, and will be removed on the next removal phase.
+   *  The operand is deleted.
+   *
+   *
+   *)
+
+  PROCEDURE TrapCull(exit : GSAData.Region);
+    VAR
+      trapsink  : GSAData.Instruction;
+      instr     : GSAData.Instruction;
+      trap      : GSAData.Instruction;
+      oper      : GSAData.Operand;
+      dominates : BOOLEAN;
+      exitUses  : BOOLEAN;
+
+    (* Returns TRUE iff any uses of 'instr' are in the $exit region. *)
+    PROCEDURE ExitUses(exit     : GSAData.Region;
+                       trapsink : GSAData.Instruction;
+                       instr    : GSAData.Instruction) : BOOLEAN;
+      VAR
+        use : GSAData.Operand;
+    BEGIN
+      use := instr.uses.fuses;
+      WHILE use # instr.uses DO
+        IF (use.owner.region = exit) & (use.owner # trapsink) THEN
+          RETURN TRUE;
+        END;
+        use := use.fuses;
+      END;
+      RETURN FALSE;
+    END ExitUses;
+
+  BEGIN
+    GSAData.RegionNumber(exit.region); (* GSAData.Dominates() prerequisite. *)
+    instr := exit.instructions.finst;
+    WHILE (trapsink = NIL) & (instr # exit.instructions) DO
+      IF (instr.class = GSAOpcode.Pmisc) &
+         (instr.subcl = GSAOpcode.Ptrapsink) THEN
+        trapsink := instr;
+      END;
+      instr := instr.finst;
+    END;
+    (* inv: trapsink = NIL OR (trapsink is a { Pmisc, Ptrapsink }). *)
+    IF trapsink # NIL THEN
+      (* Initially, all operand's definitions will be marked 'live'.
+       * After the first trap is processed, any subsequent operand's
+       * definition can have 'live' removed.  If the definition is
+       * not live, delete the operand and continue.
+       *)
+      oper := trapsink.operands.fop;
+      WHILE oper # trapsink.operands DO
+        trap := oper.def(GSAData.Instruction);
+        ASSERT((trap.class = GSAOpcode.Ttrap) &
+               (trap.subcl IN { GSAOpcode.Tindex, GSAOpcode.Trange,
+                                GSAOpcode.Teguard, GSAOpcode.Tiguard,
+                                GSAOpcode.Treturn, GSAOpcode.Tcase,
+                                GSAOpcode.Tassert, GSAOpcode.Thalt,
+                                GSAOpcode.Twith, GSAOpcode.Tnil}), 1024);
+        IF ~(live IN trap.attrib) THEN
+          (* Skip this operand.
+           *
+           * Delete the operand because the instruction that defines the
+           * operand is already marked dead.
+           *)
+          oper := oper.fop;
+          GSAData.OperandDelete(oper.bop);
+        ELSE
+          (* Mark all instructions, to the end of the Region,
+           * dominated by this $trap as dead.
+           *
+           * If the $trap is in the global region, $exit can be encountered;
+           * never process $exit.
+           *
+           * If the Instruction to be marked dead is in the $exit region,
+           * do not mark it dead, because $exit is special.
+           *)
+          instr := trap.finst;
+          WHILE (instr # exit) & (instr # trap.region.instructions) DO
+            dominates := GSAData.Dominates(trap, instr);
+            exitUses  := ExitUses(exit, trapsink, instr);
+            IF dominates & ~exitUses THEN
+              EXCL(instr.attrib, live);
+              IF instr IS GSAData.Region THEN
+                MarkDead(instr(GSAData.Region));
+              END;
+            END;
+            instr := instr.finst;
+          END;
+          oper := oper.fop;
+        END;
+      END;
+
+      (* If $trapsink has no operands, all the $trap instructions have been
+       * removed. That should not be possible, because the $trap instructions
+       * are specifically marked live as part of $exit processing.
+       *
+       * At least one $trap is assumed to be reachable.
+       *)
+      ASSERT(trapsink.operands.fop # trapsink.operands, 1025);
+    END;
+  END TrapCull;
+
+
+  PROCEDURE ProcessExit(enter : GSAData.Region;
+                        exit  : GSAData.Region);
+  BEGIN
+    MarkLive(enter, exit);
+    IF CullTrapInstructions THEN
+      (* Culling all instructions dominated by a $trap instruction
+       * seems like a pretty simple thing.  However many special cases abound.
+       * For example, instructions that are used by $dtor-nlm can also be
+       * removed, but their uses will not be automatically removed.
+       * This leaves operands refering to instructions that have been removed.
+       *
+       * Could GSAData.InstructionDelete automatically remove all uses?
+       * Would that even be a correct thing to do?
+       *
+       * So, for now, this complicated subject is disabled.
+       *)
+      TrapCull(exit);
+    END;
+  END ProcessExit;
+
 
   (* Perform: Dead Code Elimination *)
   (* pre : r # NIL *)
   PROCEDURE Perform*(r : GSAData.GlobalRegion);
     VAR
-      enter : GSAData.Instruction;
+      enter : GSAData.Region;
       iter  : INTEGER;
   BEGIN
     iter := 0;
@@ -331,31 +393,17 @@ MODULE O3GSADeadCode; (* GSA Dead Code Elimination *)
       END;
       deleted := 0;
 
-      (* 1.  Mark everything not 'live' (aka 'dead').
-       * 2.  Mark all things marked with 'raLive' as 'live'.
-       * 3.  Using the 'live' instructions, mark others that must be live.
-       * 4.  Mark everything 'dead' after traps.
-       * 5.  Remove code that is not marked 'live' (aka: 'dead') code.
-       *)
       progress("MarkDead");
       MarkDead(r);
       dumpregion(r, "MarkDead");
-
-      progress("ForceAlive");
-      MarkForceAlive(r);
-      dumpregion(r, "ForceAlive");
 
       progress("MarkLive $enter");
       MarkLive(enter, enter);
       dumpregion(r, "MarkLive $enter");
 
-      progress("MarkLive $exit");
-      MarkLive(enter, GSAData.InstructionExit(r));
-      dumpregion(r, "MarkLive $exit");
-
-      progress("MarkDeadAfterTrap");
-      MarkDeadAfterTrap(r);
-      dumpregion(r, "MarkDeadAfterTrap");
+      progress("Process $exit");
+      ProcessExit(enter, GSAData.InstructionExit(r));
+      dumpregion(r, "Process $exit");
 
       progress("Delete Dead Code");
       DeleteDeadCode(r);

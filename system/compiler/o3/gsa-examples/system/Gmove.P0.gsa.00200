@@ -8,6 +8,6 @@ Copy Propagation
 6 (5)    convert.s4 flags{} const{1024}  range=[-32768, -32765) uses={(6)}
 7 (6)    move flags{} const{100} , const{200} , result[(5)]  range=[-32768, -32766) uses={}
 8 (7)    exit flags{} result[(8)]  range=[-32768, -32767) uses={}
-3 (8)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(7)}
+3 (8)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(7)}
 
 

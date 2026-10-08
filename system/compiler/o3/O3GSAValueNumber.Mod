@@ -767,7 +767,7 @@ MODULE O3GSAValueNumber;
     NEW(opclass[GSAOpcode.Palias], 1 + GSAOpcode.Paliasasgn - GSAOpcode.Pnoalias);
     NEW(opclass[GSAOpcode.Phwdreg], 1 + GSAOpcode.Pmovefromreg - GSAOpcode.Pmovetoreg);
     NEW(opclass[GSAOpcode.Pnlm], 1 + GSAOpcode.Pctor - GSAOpcode.Pdtor);
-    NEW(opclass[GSAOpcode.Pmisc], 1 + GSAOpcode.Pimport - GSAOpcode.Pgate);
+    NEW(opclass[GSAOpcode.Pmisc], 1 + GSAOpcode.Ptrapsink - GSAOpcode.Pgate);
 
     NEW(worklist);
     worklist.nlink := worklist;

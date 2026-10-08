@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
 0 (0)  greg: CompilerGenerated range=[-32768, -32760)
 1 (1)    [2:[location=global/adr], 1:[location=global]] enter flags{} %nlm  range=[-32768, -32761) uses={}
@@ -8,6 +8,6 @@ Dead Code Elimination
 3 (5)    %nlm := update-nonlocal flags{} global , result[(4)] , result[(2)] , result[(6)]  range=[-32768, -32765) uses={(8)}
 6 (6)    convert.s2 flags{} const{0}  range=[-32768, -32766) uses={(5)}
 8 (7)    exit flags{} result[(8)]  range=[-32768, -32767) uses={}
-7 (8)     dtor flags{raLive} result[(5)]  range=[-32768, -32768) uses={(7)}
+7 (8)     dtor flags{} result[(5)]  range=[-32768, -32768) uses={(7)}
 
 

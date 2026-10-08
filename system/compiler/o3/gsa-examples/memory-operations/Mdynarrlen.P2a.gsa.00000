@@ -9,6 +9,6 @@ Initial GSA
  3 ( 6)    %nlm := update-nonlocal flags{} len , result[(5)] , result[(2)] , result[(7)]  range=[-32768, -32765) uses={(9)}
  7 ( 7)    convert.s4 flags{} const{251}  range=[-32768, -32766) uses={(6)}
  9 ( 8)    exit flags{} result[(9)]  range=[-32768, -32767) uses={}
- 8 ( 9)     dtor flags{raLive} result[(6)]  range=[-32768, -32768) uses={(8)}
+ 8 ( 9)     dtor flags{} result[(6)]  range=[-32768, -32768) uses={(8)}
 
 

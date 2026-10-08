@@ -1,0 +1,18 @@
+Value Numbering
+
+ 0 ( 0)  greg: P1 range=[-32768, -32755)
+ 1 ( 1)    [3:[location=.%0], 2:[location=y], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32756) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32758, -32757) uses={(13)}
+ 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32758, -32758) uses={}
+ 5 ( 4)    guard-true flags{} result{1 of (1)}  range=[-32768, -32759) uses={(9)}
+ 7 ( 5)    guard-false flags{} result{1 of (1)}  range=[-32768, -32760) uses={}
+ 8 ( 6)     guard-true flags{} result{2 of (1)}  range=[-32763, -32761) uses={(9)}
+ 9 ( 7)     guard-false flags{} result{2 of (1)}  range=[-32763, -32762) uses={(10)}
+11 ( 8)      trap-assert flags{}  range=[-32763, -32763) uses={(12)}
+ 6 ( 9)    merge-cond flags{} result[(4)] , result[(6)]  range=[-32768, -32764) uses={(10)}
+10 (10)    merge-if flags{} result[(9)] , result[(7)]  range=[-32768, -32765) uses={}
+13 (11)    exit flags{} result[(12)] , result[(13)]  range=[-32768, -32766) uses={}
+12 (12)     trapsink flags{} result[(8)]  range=[-32768, -32767) uses={(11)}
+ 3 (13)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(11)}
+
+

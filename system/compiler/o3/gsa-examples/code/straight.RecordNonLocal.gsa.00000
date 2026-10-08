@@ -19,6 +19,6 @@ Initial GSA
 16 (16)    adr flags{} result[(12)]  range=[-32768, -32765) uses={(15)}
 18 (17)    adr flags{} result[(14)]  range=[-32768, -32766) uses={(15)}
 19 (18)    exit flags{} result[(19)]  range=[-32768, -32767) uses={}
-15 (19)     dtor flags{raLive} result[(12)]  range=[-32768, -32768) uses={(18)}
+15 (19)     dtor flags{} result[(12)]  range=[-32768, -32768) uses={(18)}
 
 

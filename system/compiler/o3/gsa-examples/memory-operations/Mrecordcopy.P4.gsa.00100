@@ -8,6 +8,6 @@ Alias Analysis
 5 (5)     recordcopy flags{} %t2 , result[(3)] , const{8} , b0 , result[(4)]  range=[-32766, -32765) uses={}
 7 (6)     %return-3 := copy flags{} const{FALSE}  range=[-32766, -32766) uses={}
 8 (7)    exit flags{} result[(8)]  range=[-32768, -32767) uses={}
-3 (8)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(7)}
+3 (8)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(7)}
 
 

@@ -1,33 +1,28 @@
 Final GSA
 
- 0 ( 0)  greg: P0 range=[-32768, -32740)
- 1 ( 1)    [5:[location=.Teguard-ExtDesc/adr], 4:[location=.Teguard-ExtDesc], 3:[location=.%0], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm:%vr32  range=[-32768, -32741) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32742, -32742) uses={(28) (11) (4)}
- 6 ( 3)    adr flags{} b  range=[-32768, -32743) uses={(4)}
- 5 ( 4)    access-varparm flags{} b , result[(3)] , result[(2)]  range=[-32768, -32744) uses={(12) (11) (10) (5)}
- 9 ( 5)    neq.u1 flags{} result[(4)] , const{0}:%vr43  range=[-32768, -32745) uses={(18) (19) (7) (6)}
-13 ( 6)    guard-true flags{raLive} result[(5)]  range=[-32768, -32746) uses={(9)}
-12 ( 7)    guard-false flags{raLive} result[(5)]  range=[-32768, -32747) uses={(9)}
-15 ( 8)     trap-nil flags{raLive}  range=[-32748, -32748) uses={}
-14 ( 9)    merge-if flags{raLive} result[(6)] , result[(7)]  range=[-32768, -32749) uses={}
- 8 (10)    adr flags{} result[(4)]  range=[-32768, -32750) uses={(11)}
- 4 (11)    access-deref flags{} result[(4)] , result[(10)] , result[(2)]  range=[-32768, -32751) uses={(22) (24) (12)}
- 7 (12)    heaptag flags{} result[(4)] , result[(11)]  range=[-32768, -32752) uses={(13)}
-18 (13)    eql.u4 flags{} result[(12)] , result{4 of (1)}  range=[-32768, -32753) uses={(15) (14)}
-20 (14)    guard-true flags{raLive} result[(13)]  range=[-32768, -32754) uses={(17)}
-19 (15)    guard-false flags{raLive} result[(13)]  range=[-32768, -32755) uses={(17)}
-22 (16)     trap-eguard flags{raLive}  range=[-32756, -32756) uses={}
-21 (17)    merge-if flags{raLive} result[(14)] , result[(15)]  range=[-32768, -32757) uses={}
-10 (18)    guard-true flags{raLive} result[(5)]  range=[-32768, -32758) uses={(21)}
-11 (19)    guard-false flags{raLive} result[(5)]  range=[-32768, -32759) uses={(21)}
-24 (20)     trap-nil flags{raLive}  range=[-32760, -32760) uses={}
-23 (21)    merge-if flags{raLive} result[(18)] , result[(19)]  range=[-32768, -32761) uses={}
-16 (22)    adr flags{} result[(11)]  range=[-32768, -32762) uses={(23)}
-25 (23)    add.u4 flags{} result[(22)] , const{2}:%vr56  range=[-32768, -32763) uses={(24)}
-17 (24)    access-field flags{} result[(11)] , result[(23)] , const{2}:%vr56  range=[-32768, -32764) uses={(26)}
-27 (25)    convert.s2 flags{} const{0}:%vr59  range=[-32768, -32765) uses={(26)}
-26 (26)    %result-3 := eql.s2 flags{} result[(24)] , result[(25)]  range=[-32768, -32766) uses={(27)}
-28 (27)    exit flags{} result[(26)] [location=%result-3], result[(28)]  range=[-32768, -32767) uses={}
- 3 (28)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(27)}
+ 0 ( 0)  greg: P0 range=[-32768, -32745)
+ 1 ( 1)    [5:[location=.Teguard-ExtDesc/adr], 4:[location=.Teguard-ExtDesc], 3:[location=.%0], 2:[location=b/adr], 1:[location=b]] enter flags{} %nlm:%vr32  range=[-32768, -32746) uses={}
+ 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32747, -32747) uses={(23) (9) (4)}
+ 6 ( 3)    adr flags{} b  range=[-32768, -32748) uses={(4)}
+ 5 ( 4)    access-varparm flags{} b , result[(3)] , result[(2)]  range=[-32768, -32749) uses={(10) (9) (8) (5)}
+ 9 ( 5)    neq.u1 flags{} result[(4)] , const{0}:%vr43  range=[-32768, -32750) uses={(14) (6)}
+11 ( 6)    guard-false flags{} result[(5)]  range=[-32768, -32751) uses={}
+12 ( 7)     trap-nil flags{}  range=[-32752, -32752) uses={(22)}
+ 8 ( 8)    adr flags{} result[(4)]  range=[-32768, -32753) uses={(9)}
+ 4 ( 9)    access-deref flags{} result[(4)] , result[(8)] , result[(2)]  range=[-32768, -32754) uses={(16) (18) (10)}
+ 7 (10)    heaptag flags{} result[(4)] , result[(9)]  range=[-32768, -32755) uses={(11)}
+16 (11)    eql.u4 flags{} result[(10)] , result{4 of (1)}  range=[-32768, -32756) uses={(12)}
+17 (12)    guard-false flags{} result[(11)]  range=[-32768, -32757) uses={}
+18 (13)     trap-eguard flags{}  range=[-32758, -32758) uses={(22)}
+10 (14)    guard-false flags{} result[(5)]  range=[-32768, -32759) uses={}
+19 (15)     trap-nil flags{}  range=[-32760, -32760) uses={(22)}
+14 (16)    adr flags{} result[(9)]  range=[-32768, -32761) uses={(17)}
+20 (17)    add.u4 flags{} result[(16)] , const{2}:%vr50  range=[-32768, -32762) uses={(18)}
+15 (18)    access-field flags{} result[(9)] , result[(17)] , const{2}:%vr50  range=[-32768, -32763) uses={(20)}
+22 (19)    convert.s2 flags{} const{0}:%vr53  range=[-32768, -32764) uses={(20)}
+21 (20)    %result-3 := eql.s2 flags{} result[(18)] , result[(19)]  range=[-32768, -32765) uses={(21)}
+23 (21)    exit flags{} result[(20)] [location=%result-3], result[(22)] , result[(23)]  range=[-32768, -32766) uses={}
+13 (22)     trapsink flags{} result[(7)] , result[(13)] , result[(15)]  range=[-32768, -32767) uses={(21)}
+ 3 (23)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(21)}
 
 

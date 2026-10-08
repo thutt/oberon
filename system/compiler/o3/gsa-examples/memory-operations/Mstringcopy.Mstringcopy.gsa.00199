@@ -1,15 +1,17 @@
 Alias Analysis
 
- 0 ( 0)  greg: Mstringcopy range=[-32768, -32758)
- 1 ( 1)    enter flags{raLive} %nlm  range=[-32768, -32759) uses={}
- 2 ( 2)     %nlm := ctor flags{raLive}  range=[-32761, -32760) uses={(10) (9)}
- 5 ( 3)     %return-2 := copy flags{raLive} const{FALSE}  range=[-32761, -32761) uses={(9)}
- 6 ( 4)    .Mstringcopy-Base := init-rectd flags{raLive} Base  range=[-32768, -32762) uses={(9)}
- 7 ( 5)    .td_0 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32763) uses={(9)}
- 8 ( 6)    .td_1 := init-darrtd flags{raLive} anonymous type  range=[-32768, -32764) uses={(9)}
- 9 ( 7)    adr flags{raLive} gd  range=[-32768, -32765) uses={(8)}
-10 ( 8)    gd := initialize flags{raLive} gd , result[(7)] , const{151}  range=[-32768, -32766) uses={(9)}
- 4 ( 9)    exit flags{raLive} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(4)] [location=.Mstringcopy-Base], result[(5)] [location=.td_0], result[(6)] [location=.td_1], result[(8)] [location=gd], result[(10)]  range=[-32768, -32767) uses={}
- 3 (10)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(9)}
+ 0 ( 0)  greg: Mstringcopy range=[-32768, -32756)
+ 1 ( 1)    enter flags{} %nlm  range=[-32768, -32757) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32759, -32758) uses={(12) (9)}
+ 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32759, -32759) uses={(9)}
+ 6 ( 4)    .Mstringcopy-Base := init-rectd flags{} Base  range=[-32768, -32760) uses={(9) (10)}
+ 8 ( 5)    .td_0 := init-darrtd flags{} anonymous type  range=[-32768, -32761) uses={(9) (10)}
+ 9 ( 6)    .td_1 := init-darrtd flags{} anonymous type  range=[-32768, -32762) uses={(9) (10)}
+10 ( 7)    adr flags{} gd  range=[-32768, -32763) uses={(8)}
+11 ( 8)    gd := initialize flags{} gd , result[(7)] , const{151}  range=[-32768, -32764) uses={(9) (11)}
+ 4 ( 9)    exit flags{} result[(2)] [location=%nlm], result[(3)] [location=%return-2], result[(10)] , result[(4)] [location=.Mstringcopy-Base], result[(5)] [location=.td_0], result[(6)] [location=.td_1], result[(11)] , result[(8)] [location=gd], result[(12)]  range=[-32768, -32765) uses={}
+ 7 (10)     tdinitsink flags{} result[(4)] , result[(5)] , result[(6)]  range=[-32768, -32766) uses={(9)}
+12 (11)     declsink flags{} result[(8)]  range=[-32768, -32767) uses={(9)}
+ 3 (12)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(9)}
 
 

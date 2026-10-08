@@ -8,6 +8,6 @@ Alias Analysis
 7 (5)    adr flags{} v  range=[-32768, -32765) uses={(6)}
 4 (6)    si := access-varparm flags{} v , result[(5)] , result[(2)]  range=[-32768, -32766) uses={}
 8 (7)    exit flags{} result[(8)]  range=[-32768, -32767) uses={}
-3 (8)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(7)}
+3 (8)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(7)}
 
 

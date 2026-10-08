@@ -1,26 +1,26 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
  0 ( 0)  greg: UpdRecord range=[-32768, -32747)
  1 ( 1)    [9:[location=.Mvarparm-Record/adr], 8:[location=.Mvarparm-Record], 7:[location=.%1], 6:[location=.%0], 5:[location=record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32748) uses={}
  2 ( 2)     %nlm := ctor flags{}  range=[-32749, -32749) uses={(8)}
  4 ( 3)    adr flags{} record  range=[-32768, -32750) uses={(4)}
- 5 ( 4)    record := initialize flags{} record , result[(3)] , const{2}  range=[-32768, -32751) uses={(14) (12)}
- 8 ( 5)    adr flags{} v  range=[-32768, -32752) uses={(8) (15)}
+ 5 ( 4)    record := initialize flags{} record , result[(3)] , const{2}  range=[-32768, -32751) uses={(13) (11)}
+ 8 ( 5)    adr flags{} v  range=[-32768, -32752) uses={(8) (14)}
 10 ( 6)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32753) uses={(9) (7)}
-12 ( 7)    guard-true flags{raLive} result[(6)]  range=[-32768, -32754) uses={(11)}
- 3 ( 8)     %nlm := update-varparm flags{} v , result[(5)] , result[(2)] , result[(12)]  range=[-32755, -32755) uses={(15) (13) (12)}
-11 ( 9)    guard-false flags{raLive} result[(6)]  range=[-32768, -32756) uses={(11)}
-15 (10)     trap-iguard flags{raLive}  range=[-32757, -32757) uses={}
-13 (11)    merge-if flags{raLive} result[(7)] , result[(9)]  range=[-32768, -32758) uses={}
- 7 (12)    recordcopy flags{} result[(8)] , result[(13)] , const{2} , result[(4)] , result[(14)]  range=[-32768, -32759) uses={(8)}
-14 (13)    adr flags{} result[(8)]  range=[-32768, -32760) uses={(12)}
- 6 (14)    adr flags{} result[(4)]  range=[-32768, -32761) uses={(12)}
- 9 (15)    access-varparm flags{} v , result[(5)] , result[(8)]  range=[-32768, -32762) uses={(18) (16)}
-17 (16)    adr flags{} result[(15)]  range=[-32768, -32763) uses={(17)}
-18 (17)    add.u4 flags{} result[(16)] , const{0}  range=[-32768, -32764) uses={(18)}
-16 (18)    %nlm := update-field flags{} result[(15)] , result[(17)] , const{0} , result[(19)]  range=[-32768, -32765) uses={(21)}
-19 (19)    convert.s2 flags{} const{0}  range=[-32768, -32766) uses={(18)}
-21 (20)    exit flags{} result[(21)]  range=[-32768, -32767) uses={}
-20 (21)     dtor flags{raLive} result[(18)]  range=[-32768, -32768) uses={(20)}
+12 ( 7)    guard-true flags{} result[(6)]  range=[-32768, -32754) uses={}
+ 3 ( 8)     %nlm := update-varparm flags{} v , result[(5)] , result[(2)] , result[(11)]  range=[-32755, -32755) uses={(14) (12) (11)}
+11 ( 9)    guard-false flags{} result[(6)]  range=[-32768, -32756) uses={}
+14 (10)     trap-iguard flags{}  range=[-32757, -32757) uses={(20)}
+ 7 (11)    recordcopy flags{} result[(8)] , result[(12)] , const{2} , result[(4)] , result[(13)]  range=[-32768, -32758) uses={(8)}
+13 (12)    adr flags{} result[(8)]  range=[-32768, -32759) uses={(11)}
+ 6 (13)    adr flags{} result[(4)]  range=[-32768, -32760) uses={(11)}
+ 9 (14)    access-varparm flags{} v , result[(5)] , result[(8)]  range=[-32768, -32761) uses={(17) (15)}
+17 (15)    adr flags{} result[(14)]  range=[-32768, -32762) uses={(16)}
+18 (16)    add.u4 flags{} result[(15)] , const{0}  range=[-32768, -32763) uses={(17)}
+16 (17)    %nlm := update-field flags{} result[(14)] , result[(16)] , const{0} , result[(18)]  range=[-32768, -32764) uses={(21)}
+19 (18)    convert.s2 flags{} const{0}  range=[-32768, -32765) uses={(17)}
+21 (19)    exit flags{} result[(20)] , result[(21)]  range=[-32768, -32766) uses={}
+15 (20)     trapsink flags{} result[(10)]  range=[-32768, -32767) uses={(19)}
+20 (21)     dtor flags{} result[(17)]  range=[-32768, -32768) uses={(19)}
 
 

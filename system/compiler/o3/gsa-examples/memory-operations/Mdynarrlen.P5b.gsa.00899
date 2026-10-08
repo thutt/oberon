@@ -1,25 +1,21 @@
 Live Range Analysis
 
- 0 ( 0)  greg: P5b range=[-32768, -32748)
- 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm:%vr33  range=[-32768, -32749) uses={}
- 2 ( 2)     %nlm:%vr33 := ctor flags{}  range=[-32751, -32750) uses={(17) (7)}
- 5 ( 3)     %return-2 := copy flags{} const{FALSE}:%vr32  range=[-32751, -32751) uses={}
- 6 ( 4)    adr flags{} base  range=[-32768, -32752) uses={(5)}
- 7 ( 5)    base := initialize flags{} base , result[(4)] , const{105380}:%vr38  range=[-32768, -32753) uses={}
- 8 ( 6)    adr flags{} len  range=[-32768, -32754) uses={(7)}
- 4 ( 7)    %nlm:%vr33 := update-nonlocal flags{} len , result[(6)] , result[(2)] , result[(18)]  range=[-32768, -32755) uses={(20)}
-11 ( 8)    adr flags{} base  range=[-32768, -32756) uses={(9)}
-12 ( 9)    add.u4 flags{} result[(8)] , const{92}:%vr46  range=[-32768, -32757) uses={(10)}
-13 (10)    access-field flags{} base , result[(9)] , const{92}:%vr46  range=[-32768, -32758) uses={(17) (16) (11)}
-15 (11)    neq.u1 flags{} result[(10)] , const{0}:%vr49  range=[-32768, -32759) uses={(13) (12)}
-17 (12)    guard-true flags{raLive} result[(11)]  range=[-32768, -32760) uses={(15)}
-16 (13)    guard-false flags{raLive} result[(11)]  range=[-32768, -32761) uses={(15)}
-19 (14)     trap-nil flags{raLive}  range=[-32762, -32762) uses={}
-18 (15)    merge-if flags{raLive} result[(12)] , result[(13)]  range=[-32768, -32763) uses={}
-14 (16)    adr flags{} result[(10)]  range=[-32768, -32764) uses={(17)}
- 3 (17)    access-deref flags{} result[(10)] , result[(16)] , result[(2)]  range=[-32768, -32765) uses={(18)}
- 9 (18)    dynarrlen flags{} result[(17)] , const{0}:%vr54 , const{8}:%vr55  range=[-32768, -32766) uses={(7)}
-20 (19)    exit flags{} result[(20)]  range=[-32768, -32767) uses={}
-10 (20)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(19)}
+ 0 ( 0)  greg: P5b range=[-32768, -32752)
+ 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm:%vr32  range=[-32768, -32753) uses={}
+ 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32754, -32754) uses={(12) (5)}
+ 5 ( 3)    adr flags{} base  range=[-32768, -32755) uses={(6)}
+ 7 ( 4)    adr flags{} len  range=[-32768, -32756) uses={(5)}
+ 4 ( 5)    %nlm:%vr32 := update-nonlocal flags{} len , result[(4)] , result[(2)] , result[(13)]  range=[-32768, -32757) uses={(16)}
+ 6 ( 6)    add.u4 flags{} result[(3)] , const{92}:%vr43  range=[-32768, -32758) uses={(7)}
+10 ( 7)    access-field flags{} base , result[(6)] , const{92}:%vr43  range=[-32768, -32759) uses={(12) (11) (8)}
+12 ( 8)    neq.u1 flags{} result[(7)] , const{0}:%vr46  range=[-32768, -32760) uses={(9)}
+13 ( 9)    guard-false flags{} result[(8)]  range=[-32768, -32761) uses={}
+14 (10)     trap-nil flags{}  range=[-32762, -32762) uses={(15)}
+11 (11)    adr flags{} result[(7)]  range=[-32768, -32763) uses={(12)}
+ 3 (12)    access-deref flags{} result[(7)] , result[(11)] , result[(2)]  range=[-32768, -32764) uses={(13)}
+ 8 (13)    dynarrlen flags{} result[(12)] , const{0}:%vr49 , const{8}:%vr50  range=[-32768, -32765) uses={(5)}
+16 (14)    exit flags{} result[(15)] , result[(16)]  range=[-32768, -32766) uses={}
+15 (15)     trapsink flags{} result[(10)]  range=[-32768, -32767) uses={(14)}
+ 9 (16)     dtor flags{} result[(5)]  range=[-32768, -32768) uses={(14)}
 
 

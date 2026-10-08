@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
 0 (0)  greg: AccLONGREAL range=[-32768, -32761)
 1 (1)    [4:[location=lr/adr], 3:[location=lr], 2:[location=.%0], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32762) uses={}
@@ -7,6 +7,6 @@ Dead Code Elimination
 6 (4)    adr flags{} lr  range=[-32768, -32765) uses={(5)}
 4 (5)    v := access-nonlocal flags{} lr , result[(4)] , result[(2)]  range=[-32768, -32766) uses={}
 7 (6)    exit flags{} result[(7)]  range=[-32768, -32767) uses={}
-3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
+3 (7)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(6)}
 
 

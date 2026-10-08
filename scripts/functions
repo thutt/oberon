@@ -197,8 +197,26 @@ _skl_exportf skl-oberon
 
 function skl-skl-oc ()
 {
-    # SKL-based compiler, targeting SKL.
-    skl-oberon -- "SKL.Compile ${@}";
+    #
+    # Only the compiler's own stdout is piped through the decoder;
+    # the virtual machine writes diagnostics to stderr, which is left
+    # alone and goes straight to the terminal.  The compiler's actual
+    # output (what the Oberon System's own tooling, e.g. Edit.Locate,
+    # reads) is unmodified by this -- the decoder only appends
+    # human-readable annotations after each error line printed on
+    # stdout.
+    local rc;
+
+    # Process substitution, not a pipe: '$?' below is then plain
+    # 'skl-oberon's own exit code, with no pipeline involved at all.
+    # (A pipe would need bash's $PIPESTATUS or zsh's $pipestatus to
+    # recover that same value -- two different names, two different
+    # array bases, and easy to clobber by running any other command
+    # first; process substitution sidesteps the whole problem, and is
+    # supported identically by both shells.)
+    skl-oberon -- "SKL.Compile ${@}" > >("${SKL_DIR}/scripts/skl-decode-errors.py");
+    rc=$?;
+    return ${rc};
 }
 _skl_exportf skl-skl-oc;
 

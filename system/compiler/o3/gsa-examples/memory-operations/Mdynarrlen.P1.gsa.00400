@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: P1 range=[-32768, -32758)
  1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32759) uses={}
@@ -10,6 +10,6 @@ Dead Code Elimination
  3 ( 7)    %nlm := update-nonlocal flags{} len , result[(6)] , result[(2)] , result[(8)]  range=[-32768, -32765) uses={(10)}
  8 ( 8)    convert.s4 flags{} const{10}  range=[-32768, -32766) uses={(7)}
 10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
- 9 (10)     dtor flags{raLive} result[(7)]  range=[-32768, -32768) uses={(9)}
+ 9 (10)     dtor flags{} result[(7)]  range=[-32768, -32768) uses={(9)}
 
 

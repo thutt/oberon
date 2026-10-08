@@ -2610,6 +2610,91 @@ END;
 \end{instruction}
 
 
+%-----------------------------------------------------------------------------
+\begin{instruction}{importsink}
+  \info{Instruction}{Pmisc}{Pimportsink}{Models dataflow of all
+    instructions in module initialization block.}{Pimportsink.Mod}{importsink}{Pmisc}
+
+  \begin{notes}
+    Instructions in the module initialization code must not be deleted
+    by the compiler.  Since the instructions may not have uses, they
+    can be deleted by \ac{dce}.
+
+    To prevent elimination, each instruction in the module
+    initialization will be added as an operand of this instruction,
+    giving all instructions uses.
+
+    This instruction must be contained in the \gsainst{exit} region,
+    which is treated specially by the compiler. This instruction will
+    be an operand of \gsainst{exit} if there are \gsainst{import}
+    instructions present.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Instruction}{Each instruction in the module
+    initialization section.}
+  \end{operands}
+\end{instruction}
+
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{initsink}
+  \info{Instruction}{Pmisc}{Pinitsink}{Models dataflow of all
+    \gsainst{import} instructions in module initialization
+    block.}{Pimport.Mod}{initsink}{Pmisc}
+
+  \begin{notes}
+    The \gsainst{import} instructions in the module initialization
+    code must not be deleted by the compiler.  Since the instructions
+    not not have uses, they will be deleted by \ac{dce}.
+
+    To prevent elimination, each \gsainst{import} will be added as an
+    operand of this instruction, giving all \gsainst{import}
+    instructions uses.
+
+    This instruction must be contained in the \gsainst{exit} region,
+    which is treated specially by the compiler.  This instruction will
+    be an operand of \gsainst{exit}.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Symbol}{The module which should be initialized.}
+  \end{operands}
+\end{instruction}
+
+
+%-----------------------------------------------------------------------------
+\begin{instruction}{trapsink}
+  \info{Instruction}{Pmisc}{Pimport}{Models the dataflow of all
+    \emph{trap} instructions.}{Ptrapsink.Mod}{trapsink}{Pmisc}
+
+  \begin{notes}
+    The \gsainst{trap} family of instructions produce no value, and
+    halt program execution.  As such, each \gsainst{trap} has no uses,
+    and will therefore be deleted by \ac{dce}.
+
+    To prevent elimination, each \gsainst{trap} will be added as an
+    operand of this instruction, giving all \gsainst{trap}
+    instructions uses.
+
+    This instruction must be contained in the \gsainst{exit} region,
+    which is treated specially by the compiler.  This instruction will
+    be an operand of \gsainst{exit} when \gsainst{trap} instructions
+    are present in the region.
+  \end{notes}
+
+  \nresults
+
+  \begin{operands}
+  \item \operand{Symbol}{The module which should be initialized.}
+  \end{operands}
+\end{instruction}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pseudo}\label{class:pseudo}
 

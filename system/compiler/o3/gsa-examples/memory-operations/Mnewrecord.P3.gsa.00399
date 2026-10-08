@@ -11,6 +11,6 @@ Value Numbering
  6 ( 8)    %nlm := update-varparm flags{} p , result[(4)] , result[(5)] , result[(9)]  range=[-32768, -32765) uses={(11)}
  9 ( 9)    newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32766) uses={(8)}
 11 (10)    exit flags{} result[(11)]  range=[-32768, -32767) uses={}
-10 (11)     dtor flags{raLive} result[(8)]  range=[-32768, -32768) uses={(10)}
+10 (11)     dtor flags{} result[(8)]  range=[-32768, -32768) uses={(10)}
 
 

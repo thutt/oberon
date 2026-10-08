@@ -17,6 +17,6 @@ Initial GSA
 12 (14)    %nlm := update-field flags{} result[(11)] , result[(13)] , const{2} , result[(15)]  range=[-32768, -32765) uses={(17)}
 15 (15)    convert.s2 flags{} const{20}  range=[-32768, -32766) uses={(14)}
 17 (16)    exit flags{} result[(17)]  range=[-32768, -32767) uses={}
-16 (17)     dtor flags{raLive} result[(14)]  range=[-32768, -32768) uses={(16)}
+16 (17)     dtor flags{} result[(14)]  range=[-32768, -32768) uses={(16)}
 
 

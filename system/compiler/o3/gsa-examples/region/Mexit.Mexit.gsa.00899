@@ -1,12 +1,9 @@
 Live Range Analysis
 
-0 (0)  greg: Mexit range=[-32768, -32761)
-1 (1)    enter flags{raLive} %nlm:%vr33  range=[-32768, -32762) uses={}
-2 (2)     %nlm:%vr33 := ctor flags{raLive}  range=[-32764, -32763) uses={(7) (6)}
-5 (3)     %return-2 := copy flags{raLive} const{FALSE}:%vr32  range=[-32764, -32764) uses={}
-6 (4)    x := copy flags{raLive} const{0}:%vr34  range=[-32768, -32765) uses={}
-7 (5)    y := copy flags{raLive} const{0}:%vr34  range=[-32768, -32766) uses={}
-4 (6)    exit flags{raLive} result[(2)] [location=%nlm:%vr33], const{FALSE}:%vr32 [location=%return-2], const{0}:%vr34 [location=x], const{0}:%vr34 [location=y], result[(7)]  range=[-32768, -32767) uses={}
-3 (7)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(6)}
+0 (0)  greg: Mexit range=[-32768, -32764)
+1 (1)    enter flags{} %nlm:%vr32  range=[-32768, -32765) uses={}
+2 (2)     %nlm:%vr32 := ctor flags{}  range=[-32766, -32766) uses={(4) (3)}
+4 (3)    exit flags{} result[(2)] [location=%nlm:%vr32], const{FALSE}:%vr34 [location=%return-2], const{0}:%vr35 [location=x], const{0}:%vr35 [location=y], result[(4)]  range=[-32768, -32767) uses={}
+3 (4)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(3)}
 
 

@@ -16,6 +16,6 @@ Alias Analysis
 13 (13)    merge-if flags{} result[(8)] , result[(11)]  range=[-32768, -32765) uses={(14)}
 15 (14)     %result-3 := gate flags{} result[(13)] , result[(10)] , result[(12)]  range=[-32766, -32766) uses={(15)}
 16 (15)    exit flags{} result[(14)] [location=%result-3], result[(16)]  range=[-32768, -32767) uses={}
- 3 (16)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(15)}
+ 3 (16)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(15)}
 
 

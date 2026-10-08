@@ -29,6 +29,6 @@ Const Prop & Unreachable Code
 21 (26)    merge-if flags{} result[(14)] , result[(25)]  range=[-32768, -32765) uses={(27)}
 11 (27)     %nlm := gate flags{} result[(26)] , result[(23)] , result[(7)]  range=[-32766, -32766) uses={(29)}
 29 (28)    exit flags{} result[(29)]  range=[-32768, -32767) uses={}
-28 (29)     dtor flags{raLive} result[(27)]  range=[-32768, -32768) uses={(28)}
+28 (29)     dtor flags{} result[(27)]  range=[-32768, -32768) uses={(28)}
 
 

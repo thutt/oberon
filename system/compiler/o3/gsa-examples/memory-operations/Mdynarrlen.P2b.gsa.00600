@@ -1,15 +1,16 @@
-Dead Code Elimination
+Dead Code Elimination 1
 
- 0 ( 0)  greg: P2b range=[-32768, -32758)
- 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32759) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32760, -32760) uses={(7) (4)}
- 5 ( 3)    adr flags{} len  range=[-32768, -32761) uses={(4)}
- 4 ( 4)    %nlm := update-nonlocal flags{} len , result[(3)] , result[(2)] , result[(8)]  range=[-32768, -32762) uses={(10)}
- 8 ( 5)    trap-nil flags{raLive}  range=[-32768, -32763) uses={}
- 9 ( 6)    adr flags{} a0  range=[-32768, -32764) uses={(7)}
- 3 ( 7)    access-deref flags{} const{0} , result[(6)] , result[(2)]  range=[-32768, -32765) uses={(8)}
- 6 ( 8)    dynarrlen flags{} result[(7)] , const{1} , const{12}  range=[-32768, -32766) uses={(4)}
-10 ( 9)    exit flags{} result[(10)]  range=[-32768, -32767) uses={}
- 7 (10)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(9)}
+ 0 ( 0)  greg: P2b range=[-32768, -32757)
+ 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32758) uses={}
+ 2 ( 2)     %nlm := ctor flags{}  range=[-32759, -32759) uses={(7) (4)}
+ 5 ( 3)    adr flags{} len  range=[-32768, -32760) uses={(4)}
+ 4 ( 4)    %nlm := update-nonlocal flags{} len , result[(3)] , result[(2)] , result[(8)]  range=[-32768, -32761) uses={(11)}
+ 8 ( 5)    trap-nil flags{}  range=[-32768, -32762) uses={(10)}
+10 ( 6)    adr flags{} a0  range=[-32768, -32763) uses={(7)}
+ 3 ( 7)    access-deref flags{} const{0} , result[(6)] , result[(2)]  range=[-32768, -32764) uses={(8)}
+ 6 ( 8)    dynarrlen flags{} result[(7)] , const{1} , const{12}  range=[-32768, -32765) uses={(4)}
+11 ( 9)    exit flags{} result[(10)] , result[(11)]  range=[-32768, -32766) uses={}
+ 9 (10)     trapsink flags{} result[(5)]  range=[-32768, -32767) uses={(9)}
+ 7 (11)     dtor flags{} result[(4)]  range=[-32768, -32768) uses={(9)}
 
 

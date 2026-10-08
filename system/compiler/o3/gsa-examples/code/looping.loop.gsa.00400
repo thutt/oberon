@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: loop range=[-32768, -32741)
  1 ( 1)    [3:[location=.%0], 2:[location=i], 1:[location=j]] enter flags{} %nlm  range=[-32768, -32742) uses={}
@@ -27,6 +27,6 @@ Dead Code Elimination
 26 (24)    %return-2 := copy flags{} const{TRUE}  range=[-32768, -32765) uses={}
 10 (25)    %result-3 := add.s2 flags{} result[(7)] , result[(22)]  range=[-32768, -32766) uses={(26)}
 27 (26)    exit flags{} result[(25)] [location=%result-3], result[(27)]  range=[-32768, -32767) uses={}
- 3 (27)     dtor flags{raLive} result[(2)]  range=[-32768, -32768) uses={(26)}
+ 3 (27)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(26)}
 
 

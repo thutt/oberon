@@ -1,4 +1,4 @@
-Dead Code Elimination
+Dead Code Elimination 0
 
  0 ( 0)  greg: IntegralNone range=[-32768, -32755)
  1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm  range=[-32768, -32756) uses={}
@@ -13,6 +13,6 @@ Dead Code Elimination
  6 (10)    mayalias flags{} result[(8)] , result[(4)]  range=[-32768, -32765) uses={(9)}
 12 (11)    convert.s2 flags{} const{10}  range=[-32768, -32766) uses={}
 13 (12)    exit flags{} result[(13)]  range=[-32768, -32767) uses={}
-11 (13)     dtor flags{raLive} result[(9)]  range=[-32768, -32768) uses={(12)}
+11 (13)     dtor flags{} result[(9)]  range=[-32768, -32768) uses={(12)}
 
 

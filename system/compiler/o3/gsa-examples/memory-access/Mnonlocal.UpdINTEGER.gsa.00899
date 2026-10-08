@@ -6,6 +6,6 @@ Live Range Analysis
 4 (3)    adr flags{} i  range=[-32768, -32765) uses={(4)}
 3 (4)    %nlm:%vr32 := update-nonlocal flags{} i , result[(3)] , result[(2)] , result{1 of (1)}  range=[-32768, -32766) uses={(6)}
 6 (5)    exit flags{} result[(6)]  range=[-32768, -32767) uses={}
-5 (6)     dtor flags{raLive} result[(4)]  range=[-32768, -32768) uses={(5)}
+5 (6)     dtor flags{} result[(4)]  range=[-32768, -32768) uses={(5)}
 
 

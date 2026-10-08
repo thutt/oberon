@@ -22,6 +22,6 @@ Value Numbering
 18 (19)    merge-if flags{} result[(13)] , result[(18)]  range=[-32768, -32765) uses={(20)}
 10 (20)     %nlm := gate flags{} result[(19)] , result[(15)] , result[(5)]  range=[-32766, -32766) uses={(22)}
 22 (21)    exit flags{} result[(22)]  range=[-32768, -32767) uses={}
-21 (22)     dtor flags{raLive} result[(20)]  range=[-32768, -32768) uses={(21)}
+21 (22)     dtor flags{} result[(20)]  range=[-32768, -32768) uses={(21)}
 
 

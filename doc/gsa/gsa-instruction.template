@@ -1,4 +1,4 @@
-# Copyright (c) 2001-2023 Logic Magicians Software
+# Copyright (c) 2001-2023, 2026 Logic Magicians Software
 # output-filename|instruction-name|operands|results
 #
 # number-of-results := results excluding dummy & instruction
@@ -44,10 +44,12 @@ gtr|gtr|{op}_{0},{op}_{1}|
 heaptag|heaptag|var,deref|
 merge-if|merge-if|true,false|
 import|import|module|
+importsink|importsink|instruction|
 initarr|initarr|type|
 initdarr|initdarr|type|
-initrec|initrec|type|
 initialize|initialize|var,addr,bytes|
+initsink|initsink|instruction|
+initrec|initrec|type|
 merge-loop|merge-loop|top-edge,back-edge|
 lsl|lsl|value,shift|
 lsr|lsr|value,shift|
@@ -97,6 +99,7 @@ trap-iguard|trap-iguard||
 trap-index|trap-index||
 trap-range|trap-range||
 trap-return|trap-return||
+trapsink|trapsink|instruction|
 true|true|conditional|
 trap-with|trap-with||
 update-deref|update-deref|var,addr,\%nlm,value|
