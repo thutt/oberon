@@ -283,17 +283,7 @@ MODULE O3GSADump;
 
   PROCEDURE WTempVar(x : GSAData.Temporary);
   BEGIN
-    CASE x.kind OF
-    | GSAData.tfExit: WS('%exit-'); WN(x.num);
-    | GSAData.tfReturnFlag: WS('%return-'); WN(x.num);
-    | GSAData.tfReturnValue: WS('%result-'); WN(x.num);
-    | GSAData.tfArrayLength: WS(x.definedIn.name^); WS('-len-'); WN(x.dim);
-    | GSAData.tfRecordTag: WS(x.definedIn.name^); WS('-tag');
-    | GSAData.tfDynFrame: WS('dynamic-frame');
-    | GSAData.tfMemory: WS('%memory');
-    | GSAData.tfNonLocalMem: WS('%nlm');
-    ELSE WS('%t'); WN(x.num);
-    END;
+    WS(x.name^); 
     WVReg(x);
   END WTempVar;
 
