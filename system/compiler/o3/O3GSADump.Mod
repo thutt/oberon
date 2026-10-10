@@ -283,7 +283,7 @@ MODULE O3GSADump;
 
   PROCEDURE WTempVar(x : GSAData.Temporary);
   BEGIN
-    CASE x.kind OF
+    (* CASE x.kind OF
     | GSAData.tfExit: WS('%exit-'); WN(x.num);
     | GSAData.tfReturnFlag: WS('%return-'); WN(x.num);
     | GSAData.tfReturnValue: WS('%result-'); WN(x.num);
@@ -293,7 +293,8 @@ MODULE O3GSADump;
     | GSAData.tfMemory: WS('%memory');
     | GSAData.tfNonLocalMem: WS('%nlm');
     ELSE WS('%t'); WN(x.num);
-    END;
+    END; *)
+    WS(x.name^);
     WVReg(x);
   END WTempVar;
 
