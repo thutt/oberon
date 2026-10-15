@@ -1,8 +1,8 @@
 Live Range Analysis
 
  0 ( 0)  greg: VarRefCaller range=[-32768, -32758)
- 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm:%vr32  range=[-32768, -32759) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32760, -32760) uses={(10)}
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32759) uses={}
+ 2 ( 2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32760, -32760) uses={(10)}
  4 ( 3)    adr flags{} b  range=[-32768, -32761) uses={(4)}
  5 ( 4)    b := initialize flags{} b , result[(3)] , const{2}:%vr37  range=[-32768, -32762) uses={(8) (6)}
  8 ( 5)    tbpadr flags{} result{1 of (1)} , BaseDesc , RefMethod , const{0}:%vr41 , const{-4}:%vr42  range=[-32768, -32763) uses={(8)}

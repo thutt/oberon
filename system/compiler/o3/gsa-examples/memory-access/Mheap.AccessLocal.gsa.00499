@@ -1,8 +1,8 @@
 Dead Code Elimination 0
 
 0 (0)  greg: AccessLocal range=[-32768, -32760)
-1 (1)    enter flags{} %nlm  range=[-32768, -32761) uses={}
-2 (2)     %nlm := ctor flags{}  range=[-32762, -32762) uses={(8)}
+1 (1)    enter flags{} .%nlm_0  range=[-32768, -32761) uses={}
+2 (2)     .%nlm_0 := ctor flags{}  range=[-32762, -32762) uses={(8)}
 4 (3)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32763) uses={(4)}
 5 (4)    guard-false flags{} result[(3)]  range=[-32768, -32764) uses={}
 6 (5)     trap-nil flags{}  range=[-32765, -32765) uses={(7)}

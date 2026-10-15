@@ -1,10 +1,10 @@
 Dead Code Elimination 1
 
 0 (0)  greg: Mnewdynarray range=[-32768, -32762)
-1 (1)    enter flags{} %nlm  range=[-32768, -32763) uses={}
-2 (2)     %nlm := ctor flags{}  range=[-32764, -32764) uses={(6) (4)}
-5 (3)    .td_0 := init-darrtd flags{} anonymous type  range=[-32768, -32765) uses={(4) (5)}
-4 (4)    exit flags{} result[(2)] [location=%nlm], const{FALSE} [location=%return-2], result[(5)] , result[(3)] [location=.td_0], result[(6)]  range=[-32768, -32766) uses={}
+1 (1)    enter flags{} .%nlm_0  range=[-32768, -32763) uses={}
+2 (2)     .%nlm_0 := ctor flags{}  range=[-32764, -32764) uses={(6) (4)}
+5 (3)    .td__0 := init-darrtd flags{} anonymous type  range=[-32768, -32765) uses={(4) (5)}
+4 (4)    exit flags{} result[(2)] [location=.%nlm_0], const{FALSE} [location=.%retf_1], result[(5)] , result[(3)] [location=.td__0], result[(6)]  range=[-32768, -32766) uses={}
 6 (5)     tdinitsink flags{} result[(3)]  range=[-32768, -32767) uses={(4)}
 3 (6)     dtor flags{} result[(2)]  range=[-32768, -32768) uses={(4)}
 

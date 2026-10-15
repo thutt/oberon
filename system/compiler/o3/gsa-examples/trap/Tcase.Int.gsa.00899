@@ -1,8 +1,8 @@
 Live Range Analysis
 
 0 (0)  greg: Int range=[-32768, -32760)
-1 (1)    [2:[location=.%0], 1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32761) uses={}
-2 (2)     %nlm:%vr32 := ctor flags{}  range=[-32762, -32762) uses={(8)}
+1 (1)    [2:[location=.%nlm_0], 1:[location=x]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32761) uses={}
+2 (2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32762, -32762) uses={(8)}
 4 (3)    case flags{} result{1 of (1)}  range=[-32768, -32763) uses={}
 5 (4)     guard-celse flags{} result{1 of (1)}  range=[-32765, -32764) uses={}
 6 (5)      trap-case flags{}  range=[-32765, -32765) uses={(7)}

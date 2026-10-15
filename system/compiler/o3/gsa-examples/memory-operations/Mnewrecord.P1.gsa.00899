@@ -1,8 +1,8 @@
 Live Range Analysis
 
  0 ( 0)  greg: P1 range=[-32768, -32735)
- 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm:%vr32  range=[-32768, -32736) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32737, -32737) uses={(18) (9)}
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32736) uses={}
+ 2 ( 2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32737, -32737) uses={(18) (9)}
  5 ( 3)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32738) uses={(9) (5)}
  7 ( 4)    q := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32739) uses={(26) (22)}
  6 ( 5)    neq.u1 flags{} result[(3)] , const{0}:%vr37  range=[-32768, -32740) uses={(6)}
@@ -21,7 +21,7 @@ Live Range Analysis
  3 (18)    access-deref flags{} result[(12)] , result[(17)] , result[(2)]  range=[-32768, -32753) uses={(21) (19)}
 25 (19)    adr flags{} result[(18)]  range=[-32768, -32754) uses={(20)}
 26 (20)    add.u4 flags{} result[(19)] , const{0}:%vr53  range=[-32768, -32755) uses={(21)}
-24 (21)    %nlm:%vr32 := update-field flags{} result[(18)] , result[(20)] , const{0}:%vr53 , const{151}:%vr55  range=[-32768, -32756) uses={(26)}
+24 (21)    .%nlm_0:%vr32 := update-field flags{} result[(18)] , result[(20)] , const{0}:%vr53 , const{151}:%vr55  range=[-32768, -32756) uses={(26)}
  9 (22)    neq.u1 flags{} result[(4)] , const{0}:%vr37  range=[-32768, -32757) uses={(23)}
 27 (23)    guard-false flags{} result[(22)]  range=[-32768, -32758) uses={}
 28 (24)     trap-nil flags{}  range=[-32759, -32759) uses={(32)}
@@ -29,7 +29,7 @@ Live Range Analysis
  8 (26)    access-deref flags{} result[(4)] , result[(25)] , result[(21)]  range=[-32768, -32761) uses={(29) (27)}
 31 (27)    adr flags{} result[(26)]  range=[-32768, -32762) uses={(28)}
 21 (28)    add.u4 flags{} result[(27)] , const{4}:%vr44  range=[-32768, -32763) uses={(30) (13)}
-30 (29)    %nlm:%vr32 := update-field flags{} result[(26)] , result[(30)] , const{4}:%vr44 , const{0}:%vr37  range=[-32768, -32764) uses={(33)}
+30 (29)    .%nlm_0:%vr32 := update-field flags{} result[(26)] , result[(30)] , const{4}:%vr44 , const{0}:%vr37  range=[-32768, -32764) uses={(33)}
 17 (30)    mayalias flags{} result[(28)] , result[(11)]  range=[-32768, -32765) uses={(29)}
 33 (31)    exit flags{} result[(32)] , result[(33)]  range=[-32768, -32766) uses={}
 12 (32)     trapsink flags{} result[(7)] , result[(16)] , result[(24)]  range=[-32768, -32767) uses={(31)}

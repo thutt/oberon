@@ -1,8 +1,8 @@
 Dead Code Elimination 0
 
  0 ( 0)  greg: update range=[-32768, -32755)
- 1 ( 1)    enter flags{} %nlm  range=[-32768, -32756) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32757, -32757) uses={(13)}
+ 1 ( 1)    enter flags{} .%nlm_0  range=[-32768, -32756) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32757, -32757) uses={(13)}
  4 ( 3)    convert.s4 flags{} const{5}  range=[-32768, -32758) uses={(6) (4)}
  6 ( 4)    geq.s4 flags{} result[(3)] , const{0}  range=[-32768, -32759) uses={(8) (5)}
  8 ( 5)    guard-true flags{} result[(4)]  range=[-32768, -32760) uses={}

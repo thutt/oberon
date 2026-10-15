@@ -1,10 +1,10 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: P2b range=[-32768, -32755)
- 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32756) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32757, -32757) uses={(9) (4)}
+ 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} .%nlm_0  range=[-32768, -32756) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32757, -32757) uses={(9) (4)}
  5 ( 3)    adr flags{} len  range=[-32768, -32758) uses={(4)}
- 4 ( 4)    %nlm := update-nonlocal flags{} len , result[(3)] , result[(2)] , result[(10)]  range=[-32768, -32759) uses={(13)}
+ 4 ( 4)    .%nlm_0 := update-nonlocal flags{} len , result[(3)] , result[(2)] , result[(10)]  range=[-32768, -32759) uses={(13)}
  8 ( 5)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32760) uses={(6)}
  9 ( 6)    guard-false flags{} result[(5)]  range=[-32768, -32761) uses={}
 10 ( 7)     trap-nil flags{}  range=[-32762, -32762) uses={(12)}

@@ -1,14 +1,14 @@
 Final GSA
 
  0 ( 0)  greg: IntegralNone range=[-32768, -32757)
- 1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} %nlm:%vr32  range=[-32768, -32758) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32759, -32759) uses={(4)}
+ 1 ( 1)    [4:[location=y/adr], 3:[location=y], 2:[location=x/adr], 1:[location=x]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32758) uses={}
+ 2 ( 2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32759, -32759) uses={(4)}
  4 ( 3)    adr flags{} x  range=[-32768, -32760) uses={(9) (5)}
- 3 ( 4)    %nlm:%vr32 := update-nonlocal flags{} x , result[(5)] , result[(2)] , result[(6)]  range=[-32768, -32761) uses={(8)}
+ 3 ( 4)    .%nlm_0:%vr32 := update-nonlocal flags{} x , result[(5)] , result[(2)] , result[(6)]  range=[-32768, -32761) uses={(8)}
  6 ( 5)    mayalias flags{} result[(3)] , result[(7)]  range=[-32768, -32762) uses={(4)}
  7 ( 6)    convert.s2 flags{} const{10}:%vr45  range=[-32768, -32763) uses={(8) (4)}
  9 ( 7)    adr flags{} y  range=[-32768, -32764) uses={(9) (5)}
- 8 ( 8)    %nlm:%vr32 := update-nonlocal flags{} y , result[(9)] , result[(4)] , result[(6)]  range=[-32768, -32765) uses={(11)}
+ 8 ( 8)    .%nlm_0:%vr32 := update-nonlocal flags{} y , result[(9)] , result[(4)] , result[(6)]  range=[-32768, -32765) uses={(11)}
  5 ( 9)    mayalias flags{} result[(7)] , result[(3)]  range=[-32768, -32766) uses={(8)}
 11 (10)    exit flags{} result[(11)]  range=[-32768, -32767) uses={}
 10 (11)     dtor flags{} result[(8)]  range=[-32768, -32768) uses={(10)}

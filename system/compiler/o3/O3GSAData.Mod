@@ -294,6 +294,7 @@ TYPE
     kind- : SHORTINT; (* tf<identifier> *)
     num- : INTEGER; (* generated temporary number.  inv: num >= 0 *)
     dim- : INTEGER; (* inv: kind = tfArrayLength -> dimension for array *)
+    name- : Symtab.SymbolName;
   END;
 
   TypeDesc* = RECORD (AddressableDesc)
@@ -791,6 +792,7 @@ PROCEDURE InitTemporary(x     : Temporary;
                         type  : Symtab.Type;
                         sym   : Symtab.Symbol;
                         owner : Symtab.Symbol;
+                        name : Symtab.SymbolName;
                         pos   : LONGINT);
 BEGIN
   InitSymbol(x, sym, owner, pos);
@@ -799,6 +801,7 @@ BEGIN
   x.num := nofTemps;
   x.dim := MIN(INTEGER);
   x.type := type;
+  x.name := name;
 END InitTemporary;
 
 PROCEDURE InitType(x : Type;
@@ -2628,6 +2631,7 @@ PROCEDURE NewTemp(r : Region;
                   kind : SHORTINT;
                   type : Symtab.Type;
                   owner : Symtab.Symbol;
+                  prefix : ARRAY OF CHAR;
                   pos : LONGINT) : Temporary;
   VAR
     x : Temporary;
@@ -2635,15 +2639,28 @@ PROCEDURE NewTemp(r : Region;
     duplicate : BOOLEAN;
     name : Symtab.SymbolName;
     greg : GlobalRegion;
+    p : POINTER TO ARRAY OF CHAR;
+    ch : CHAR;
+    i : LONGINT;
 BEGIN
   NEW(x);
   greg := RegionFindGlobal(r);
-  name := Symtab.MakeGeneratedName(NIL, NIL, '%', nofTemps);
+
+  NEW(p, 1 + LEN(prefix));
+  p[0] := '%';
+  i := 0;
+  REPEAT
+    p[1 + i] := prefix[i];
+    INC(i);
+  UNTIL prefix[i] = 0X;
+
+  name := Symtab.MakeGeneratedName(NIL, NIL, p^, nofTemps);
   sym := Symtab.NewBasicSym(Symtab.var);
   sym.type := type;
   Symtab.InsertScope(greg.proc.scope, name^, sym, duplicate);
   ASSERT(~duplicate, 1100);
-  InitTemporary(x, kind, type, sym, owner, pos);
+  InitTemporary(x, kind, type, sym, owner, name, pos);
+  name := NIL;
   RETURN x;
 END NewTemp;
 

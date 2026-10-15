@@ -1,8 +1,8 @@
 Final GSA
 
 0 (0)  greg: P3 range=[-32768, -32760)
-1 (1)    [9:[location=.Mrecordcopy-ExtDesc/adr], 8:[location=.Mrecordcopy-ExtDesc], 7:[location=.%1], 6:[location=.%0], 5:[location=b1], 4:[location=b0-tag/adr], 3:[location=b0-tag], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm:%vr32  range=[-32768, -32761) uses={}
-2 (2)     %nlm:%vr32 := ctor flags{}  range=[-32762, -32762) uses={(8)}
+1 (1)    [9:[location=.Mrecordcopy-ExtDesc/adr], 8:[location=.Mrecordcopy-ExtDesc], 7:[location=.%rect_1], 6:[location=.%nlm_0], 5:[location=b1], 4:[location=.%rect_1/adr], 3:[location=.%rect_1], 2:[location=b0/adr], 1:[location=b0]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32761) uses={}
+2 (2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32762, -32762) uses={(8)}
 4 (3)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32763) uses={(4)}
 5 (4)    guard-false flags{} result[(3)]  range=[-32768, -32764) uses={}
 6 (5)     trap-eguard flags{}  range=[-32765, -32765) uses={(7)}

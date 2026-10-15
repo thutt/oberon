@@ -1,8 +1,8 @@
 Dead Code Elimination 1
 
  0 ( 0)  greg: ParmCaller range=[-32768, -32754)
- 1 ( 1)    [2:[location=.%0], 1:[location=b]] enter flags{} %nlm  range=[-32768, -32755) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32756, -32756) uses={(14) (7)}
+ 1 ( 1)    [2:[location=.%nlm_0], 1:[location=b]] enter flags{} .%nlm_0  range=[-32768, -32755) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32756, -32756) uses={(14) (7)}
  5 ( 3)    neq.u1 flags{} result{1 of (1)} , const{0}  range=[-32768, -32757) uses={(4)}
  6 ( 4)    guard-false flags{} result[(3)]  range=[-32768, -32758) uses={}
  7 ( 5)     trap-nil flags{}  range=[-32759, -32759) uses={(13)}

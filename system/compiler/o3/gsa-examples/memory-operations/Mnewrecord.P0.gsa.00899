@@ -1,8 +1,8 @@
 Live Range Analysis
 
  0 ( 0)  greg: P0 range=[-32768, -32746)
- 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm:%vr32  range=[-32768, -32747) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32748, -32748) uses={(16) (8)}
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32747) uses={}
+ 2 ( 2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32748, -32748) uses={(16) (8)}
  5 ( 3)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32749) uses={(8) (4)}
  6 ( 4)    neq.u1 flags{} result[(3)] , const{0}:%vr37  range=[-32768, -32750) uses={(5)}
  7 ( 5)    guard-false flags{} result[(4)]  range=[-32768, -32751) uses={}
@@ -19,7 +19,7 @@ Live Range Analysis
  3 (16)    access-deref flags{} result[(11)] , result[(15)] , result[(2)]  range=[-32768, -32762) uses={(19) (17)}
 19 (17)    adr flags{} result[(16)]  range=[-32768, -32763) uses={(18)}
 20 (18)    add.u4 flags{} result[(17)] , const{0}:%vr51  range=[-32768, -32764) uses={(19)}
-18 (19)    %nlm:%vr32 := update-field flags{} result[(16)] , result[(18)] , const{0}:%vr51 , const{151}:%vr53  range=[-32768, -32765) uses={(22)}
+18 (19)    .%nlm_0:%vr32 := update-field flags{} result[(16)] , result[(18)] , const{0}:%vr51 , const{151}:%vr53  range=[-32768, -32765) uses={(22)}
 22 (20)    exit flags{} result[(21)] , result[(22)]  range=[-32768, -32766) uses={}
  9 (21)     trapsink flags{} result[(6)] , result[(14)]  range=[-32768, -32767) uses={(20)}
 21 (22)     dtor flags{} result[(19)]  range=[-32768, -32768) uses={(20)}
