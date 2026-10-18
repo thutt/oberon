@@ -1,8 +1,8 @@
 Live Range Analysis
 
  0 ( 0)  greg: PointerCaller range=[-32768, -32756)
- 1 ( 1)    enter flags{} %nlm  range=[-32768, -32757) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32758, -32758) uses={(12) (5)}
+ 1 ( 1)    enter flags{} .%nlm_0  range=[-32768, -32757) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32758, -32758) uses={(12) (5)}
  5 ( 3)    trap-nil flags{}  range=[-32768, -32759) uses={(11)}
  7 ( 4)    adr flags{} b  range=[-32768, -32760) uses={(5)}
  4 ( 5)    access-deref flags{} const{0} , result[(4)] , result[(2)]  range=[-32768, -32761) uses={(6)}

@@ -1,8 +1,8 @@
 Const Prop & Unreachable Code
 
  0 ( 0)  greg: NotCongruent range=[-32768, -32732)
- 1 ( 1)    [4:[location=.Ext1Desc-Ext1Desc/adr], 3:[location=.Ext1Desc-Ext1Desc], 2:[location=.Ext0Desc-Ext0Desc/adr], 1:[location=.Ext0Desc-Ext0Desc]] enter flags{} %nlm  range=[-32768, -32733) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32734, -32734) uses={(36) (7)}
+ 1 ( 1)    [4:[location=.Ext1Desc-Ext1Desc/adr], 3:[location=.Ext1Desc-Ext1Desc], 2:[location=.Ext0Desc-Ext0Desc/adr], 1:[location=.Ext0Desc-Ext0Desc]] enter flags{} .%nlm_0  range=[-32768, -32733) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32734, -32734) uses={(36) (7)}
  5 ( 3)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32735) uses={(29) (26) (21) (15) (12) (4)}
 11 ( 4)    guard-false flags{} result[(3)]  range=[-32768, -32736) uses={}
 12 ( 5)     trap-nil flags{}  range=[-32737, -32737) uses={(35)}

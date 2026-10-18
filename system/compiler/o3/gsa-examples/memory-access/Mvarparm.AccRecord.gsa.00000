@@ -1,9 +1,9 @@
 Initial GSA
 
  0 ( 0)  greg: AccRecord range=[-32768, -32748)
- 1 ( 1)    [7:[location=.%1], 6:[location=.%0], 5:[location=record], 4:[location=v-tag/adr], 3:[location=v-tag], 2:[location=v/adr], 1:[location=v]] enter flags{} %nlm  range=[-32768, -32749) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32751, -32750) uses={(20) (15) (7)}
- 6 ( 3)     %return-3 := copy flags{} const{FALSE}  range=[-32751, -32751) uses={}
+ 1 ( 1)    [7:[location=.%rect_1], 6:[location=.%nlm_0], 5:[location=record], 4:[location=.%rect_1/adr], 3:[location=.%rect_1], 2:[location=v/adr], 1:[location=v]] enter flags{} .%nlm_0  range=[-32768, -32749) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32751, -32750) uses={(20) (15) (7)}
+ 6 ( 3)     .%retf_2 := copy flags{} const{FALSE}  range=[-32751, -32751) uses={}
  7 ( 4)    adr flags{} record  range=[-32768, -32752) uses={(5)}
  8 ( 5)    record := initialize flags{} record , result[(4)] , const{2}  range=[-32768, -32753) uses={}
  9 ( 6)    adr flags{} v  range=[-32768, -32754) uses={(7)}

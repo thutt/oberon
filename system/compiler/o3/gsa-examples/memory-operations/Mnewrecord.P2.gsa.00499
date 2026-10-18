@@ -1,8 +1,8 @@
 Dead Code Elimination 0
 
  0 ( 0)  greg: P2 range=[-32768, -32736)
- 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} %nlm  range=[-32768, -32737) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32738, -32738) uses={(17) (8)}
+ 1 ( 1)    [2:[location=.BaseDesc-BaseDesc/adr], 1:[location=.BaseDesc-BaseDesc]] enter flags{} .%nlm_0  range=[-32768, -32737) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32738, -32738) uses={(17) (8)}
  5 ( 3)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32739) uses={(8) (4)}
  6 ( 4)    neq.u1 flags{} result[(3)] , const{0}  range=[-32768, -32740) uses={(5)}
  7 ( 5)    guard-false flags{} result[(4)]  range=[-32768, -32741) uses={}
@@ -20,7 +20,7 @@ Dead Code Elimination 0
  3 (17)    access-deref flags{} result[(11)] , result[(16)] , result[(2)]  range=[-32768, -32753) uses={(20) (18)}
 23 (18)    adr flags{} result[(17)]  range=[-32768, -32754) uses={(19)}
 24 (19)    add.u4 flags{} result[(18)] , const{0}  range=[-32768, -32755) uses={(20)}
-22 (20)    %nlm := update-field flags{} result[(17)] , result[(19)] , const{0} , const{151}  range=[-32768, -32756) uses={(25)}
+22 (20)    .%nlm_0 := update-field flags{} result[(17)] , result[(19)] , const{0} , const{151}  range=[-32768, -32756) uses={(25)}
 25 (21)    p := newrecord flags{unique result} .BaseDesc-BaseDesc  range=[-32768, -32757) uses={(25) (22)}
 26 (22)    neq.u1 flags{} result[(21)] , const{0}  range=[-32768, -32758) uses={(23)}
 27 (23)    guard-false flags{} result[(22)]  range=[-32768, -32759) uses={}
@@ -28,7 +28,7 @@ Dead Code Elimination 0
 11 (25)    access-deref flags{} result[(21)] , result[(7)] , result[(20)]  range=[-32768, -32761) uses={(28) (26)}
 30 (26)    adr flags{} result[(25)]  range=[-32768, -32762) uses={(27)}
 19 (27)    add.u4 flags{} result[(26)] , const{4}  range=[-32768, -32763) uses={(29) (12)}
-29 (28)    %nlm := update-field flags{} result[(25)] , result[(29)] , const{4} , const{0}  range=[-32768, -32764) uses={(32)}
+29 (28)    .%nlm_0 := update-field flags{} result[(25)] , result[(29)] , const{4} , const{0}  range=[-32768, -32764) uses={(32)}
 15 (29)    mayalias flags{} result[(27)] , result[(10)]  range=[-32768, -32765) uses={(28)}
 32 (30)    exit flags{} result[(31)] , result[(32)]  range=[-32768, -32766) uses={}
  9 (31)     trapsink flags{} result[(6)] , result[(15)] , result[(24)]  range=[-32768, -32767) uses={(30)}

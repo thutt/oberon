@@ -1,14 +1,14 @@
 Final GSA
 
  0 ( 0)  greg: UpdateLocal range=[-32768, -32757)
- 1 ( 1)    enter flags{} %nlm:%vr32  range=[-32768, -32758) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32759, -32759) uses={(5)}
+ 1 ( 1)    enter flags{} .%nlm_0:%vr32  range=[-32768, -32758) uses={}
+ 2 ( 2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32759, -32759) uses={(5)}
  4 ( 3)    trap-nil flags{}  range=[-32768, -32760) uses={(10)}
  6 ( 4)    adr flags{} v  range=[-32768, -32761) uses={(5)}
  3 ( 5)    access-deref flags{} const{0}:%vr35 , result[(4)] , result[(2)]  range=[-32768, -32762) uses={(8) (6)}
  8 ( 6)    adr flags{} result[(5)]  range=[-32768, -32763) uses={(7)}
  9 ( 7)    add.u4 flags{} result[(6)] , const{0}:%vr40  range=[-32768, -32764) uses={(8)}
- 7 ( 8)    %nlm:%vr32 := update-field flags{} result[(5)] , result[(7)] , const{0}:%vr40 , const{0}:%vr42  range=[-32768, -32765) uses={(11)}
+ 7 ( 8)    .%nlm_0:%vr32 := update-field flags{} result[(5)] , result[(7)] , const{0}:%vr40 , const{0}:%vr42  range=[-32768, -32765) uses={(11)}
 11 ( 9)    exit flags{} result[(10)] , result[(11)]  range=[-32768, -32766) uses={}
  5 (10)     trapsink flags{} result[(3)]  range=[-32768, -32767) uses={(9)}
 10 (11)     dtor flags{} result[(8)]  range=[-32768, -32768) uses={(9)}

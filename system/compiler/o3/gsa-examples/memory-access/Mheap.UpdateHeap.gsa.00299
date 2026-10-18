@@ -1,9 +1,9 @@
 Copy Propagation
 
  0 ( 0)  greg: UpdateHeap range=[-32768, -32736)
- 1 ( 1)    [2:[location=.Mheap-RecDesc/adr], 1:[location=.Mheap-RecDesc]] enter flags{} %nlm  range=[-32768, -32737) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32739, -32738) uses={(26) (13)}
- 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32739, -32739) uses={}
+ 1 ( 1)    [2:[location=.Mheap-RecDesc/adr], 1:[location=.Mheap-RecDesc]] enter flags{} .%nlm_0  range=[-32768, -32737) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32739, -32738) uses={(26) (13)}
+ 5 ( 3)     .%retf_1 := copy flags{} const{FALSE}  range=[-32739, -32739) uses={}
  6 ( 4)    adr flags{} y  range=[-32768, -32740) uses={(5)}
  7 ( 5)    y := initialize flags{} y , result[(4)] , const{2}  range=[-32768, -32741) uses={(29) (27)}
 10 ( 6)    py := copy flags{} const{0}  range=[-32768, -32742) uses={}
@@ -26,7 +26,7 @@ Copy Propagation
 28 (23)     trap-nil flags{}  range=[-32759, -32759) uses={(31)}
 27 (24)    merge-if flags{} result[(21)] , result[(22)]  range=[-32768, -32760) uses={}
 29 (25)    adr flags{} py  range=[-32768, -32761) uses={(26)}
- 3 (26)    %nlm := update-deref flags{} const{0} , result[(25)] , result[(2)] , result[(27)]  range=[-32768, -32762) uses={(32) (28) (27)}
+ 3 (26)    .%nlm_0 := update-deref flags{} const{0} , result[(25)] , result[(2)] , result[(27)]  range=[-32768, -32762) uses={(32) (28) (27)}
  9 (27)    recordcopy flags{} result[(26)] , result[(28)] , const{2} , result[(5)] , result[(29)]  range=[-32768, -32763) uses={(26)}
 31 (28)    adr flags{} result[(26)]  range=[-32768, -32764) uses={(27)}
  8 (29)    adr flags{} result[(5)]  range=[-32768, -32765) uses={(27)}

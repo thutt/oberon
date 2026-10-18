@@ -1,13 +1,13 @@
 Initial GSA
 
  0 ( 0)  greg: P5b range=[-32768, -32747)
- 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} %nlm  range=[-32768, -32748) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32750, -32749) uses={(17) (7)}
- 5 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32750, -32750) uses={}
+ 1 ( 1)    [2:[location=len/adr], 1:[location=len]] enter flags{} .%nlm_0  range=[-32768, -32748) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32750, -32749) uses={(17) (7)}
+ 5 ( 3)     .%retf_1 := copy flags{} const{FALSE}  range=[-32750, -32750) uses={}
  6 ( 4)    adr flags{} base  range=[-32768, -32751) uses={(5)}
  7 ( 5)    base := initialize flags{} base , result[(4)] , const{105380}  range=[-32768, -32752) uses={}
  8 ( 6)    adr flags{} len  range=[-32768, -32753) uses={(7)}
- 4 ( 7)    %nlm := update-nonlocal flags{} len , result[(6)] , result[(2)] , result[(18)]  range=[-32768, -32754) uses={(21)}
+ 4 ( 7)    .%nlm_0 := update-nonlocal flags{} len , result[(6)] , result[(2)] , result[(18)]  range=[-32768, -32754) uses={(21)}
 11 ( 8)    adr flags{} base  range=[-32768, -32755) uses={(9)}
 12 ( 9)    add.u4 flags{} result[(8)] , const{92}  range=[-32768, -32756) uses={(10)}
 13 (10)    access-field flags{} base , result[(9)] , const{92}  range=[-32768, -32757) uses={(17) (16) (11)}

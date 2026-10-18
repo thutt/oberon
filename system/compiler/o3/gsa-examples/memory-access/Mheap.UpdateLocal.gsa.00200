@@ -1,9 +1,9 @@
 Copy Propagation
 
  0 ( 0)  greg: UpdateLocal range=[-32768, -32750)
- 1 ( 1)    enter flags{} %nlm  range=[-32768, -32751) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32753, -32752) uses={(12)}
- 4 ( 3)     %return-2 := copy flags{} const{FALSE}  range=[-32753, -32753) uses={}
+ 1 ( 1)    enter flags{} .%nlm_0  range=[-32768, -32751) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32753, -32752) uses={(12)}
+ 4 ( 3)     .%retf_1 := copy flags{} const{FALSE}  range=[-32753, -32753) uses={}
  5 ( 4)    y := copy flags{} const{0}  range=[-32768, -32754) uses={(15)}
  7 ( 5)    v := copy flags{} const{0}  range=[-32768, -32755) uses={(12) (6)}
  8 ( 6)    neq.u1 flags{} result[(5)] , const{0}  range=[-32768, -32756) uses={(8) (7)}
@@ -15,7 +15,7 @@ Copy Propagation
  3 (12)    access-deref flags{} result[(5)] , result[(11)] , result[(2)]  range=[-32768, -32762) uses={(15) (13)}
 15 (13)    adr flags{} result[(12)]  range=[-32768, -32763) uses={(14)}
 16 (14)    add.u4 flags{} result[(13)] , const{0}  range=[-32768, -32764) uses={(15)}
- 6 (15)    %nlm := update-field flags{} result[(12)] , result[(14)] , const{0} , result[(4)]  range=[-32768, -32765) uses={(18)}
+ 6 (15)    .%nlm_0 := update-field flags{} result[(12)] , result[(14)] , const{0} , result[(4)]  range=[-32768, -32765) uses={(18)}
 18 (16)    exit flags{} result[(17)] , result[(18)]  range=[-32768, -32766) uses={}
 13 (17)     trapsink flags{} result[(9)]  range=[-32768, -32767) uses={(16)}
 17 (18)     dtor flags{} result[(15)]  range=[-32768, -32768) uses={(16)}

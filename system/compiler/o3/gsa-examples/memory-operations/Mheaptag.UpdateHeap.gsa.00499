@@ -1,8 +1,8 @@
 Dead Code Elimination 0
 
  0 ( 0)  greg: UpdateHeap range=[-32768, -32746)
- 1 ( 1)    [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} %nlm  range=[-32768, -32747) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32748, -32748) uses={(16) (9)}
+ 1 ( 1)    [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} .%nlm_0  range=[-32768, -32747) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32748, -32748) uses={(16) (9)}
  5 ( 3)    adr flags{} y  range=[-32768, -32749) uses={(4)}
  6 ( 4)    y := initialize flags{} y , result[(3)] , const{0}  range=[-32768, -32750) uses={(19) (17)}
  9 ( 5)    neq.u1 flags{} const{0} , const{0}  range=[-32768, -32751) uses={(14) (6)}
@@ -16,7 +16,7 @@ Dead Code Elimination 0
 18 (13)     trap-iguard flags{}  range=[-32759, -32759) uses={(21)}
 10 (14)    guard-false flags{} result[(5)]  range=[-32768, -32760) uses={}
 19 (15)     trap-nil flags{}  range=[-32761, -32761) uses={(21)}
- 3 (16)    %nlm := update-deref flags{} const{0} , result[(8)] , result[(2)] , result[(17)]  range=[-32768, -32762) uses={(22) (18) (17)}
+ 3 (16)    .%nlm_0 := update-deref flags{} const{0} , result[(8)] , result[(2)] , result[(17)]  range=[-32768, -32762) uses={(22) (18) (17)}
  8 (17)    recordcopy flags{} result[(16)] , result[(18)] , const{0} , result[(4)] , result[(19)]  range=[-32768, -32763) uses={(16)}
 21 (18)    adr flags{} result[(16)]  range=[-32768, -32764) uses={(17)}
  7 (19)    adr flags{} result[(4)]  range=[-32768, -32765) uses={(17)}

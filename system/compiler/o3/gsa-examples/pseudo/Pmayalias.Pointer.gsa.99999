@@ -1,8 +1,8 @@
 Final GSA
 
  0 ( 0)  greg: Pointer range=[-32768, -32731)
- 1 ( 1)    [5:[location=X/adr], 4:[location=X], 3:[location=.%0], 2:[location=b], 1:[location=a]] enter flags{} %nlm:%vr32  range=[-32768, -32732) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32733, -32733) uses={(13) (7)}
+ 1 ( 1)    [5:[location=X/adr], 4:[location=X], 3:[location=.%nlm_0], 2:[location=b], 1:[location=a]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32732) uses={}
+ 2 ( 2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32733, -32733) uses={(13) (7)}
  5 ( 3)    neq.u1 flags{} result{1 of (1)} , const{0}:%vr39  range=[-32768, -32734) uses={(4)}
  6 ( 4)    guard-false flags{} result[(3)]  range=[-32768, -32735) uses={}
  7 ( 5)     trap-nil flags{}  range=[-32736, -32736) uses={(36)}
@@ -10,7 +10,7 @@ Final GSA
  4 ( 7)    access-deref flags{} result{1 of (1)} , result[(6)] , result[(2)]  range=[-32768, -32738) uses={(10) (8)}
 11 ( 8)    adr flags{} result[(7)]  range=[-32768, -32739) uses={(9)}
 12 ( 9)    add.u4 flags{} result[(8)] , const{0}:%vr46  range=[-32768, -32740) uses={(11)}
-10 (10)    %nlm:%vr32 := update-field flags{} result[(7)] , result[(11)] , const{0}:%vr46 , result[(13)]  range=[-32768, -32741) uses={(34) (24) (19)}
+10 (10)    .%nlm_0:%vr32 := update-field flags{} result[(7)] , result[(11)] , const{0}:%vr46 , result[(13)]  range=[-32768, -32741) uses={(34) (24) (19)}
 13 (11)    mayalias flags{} result[(9)] , result[(12)]  range=[-32768, -32742) uses={(10)}
 17 (12)    adr flags{} X  range=[-32768, -32743) uses={(31) (23) (11) (14)}
  3 (13)    access-nonlocal flags{} X , result[(14)] , result[(2)]  range=[-32768, -32744) uses={(10)}
@@ -30,11 +30,11 @@ Final GSA
 23 (27)     guard-false flags{} result[(15)]  range=[-32762, -32758) uses={}
 35 (28)      trap-nil flags{}  range=[-32759, -32759) uses={(36)}
 21 (29)     add.u4 flags{} result[(20)] , const{0}:%vr46  range=[-32762, -32760) uses={(14) (31)}
-27 (30)     %nlm:%vr32 := update-field flags{} result[(19)] , result[(31)] , const{0}:%vr46 , result[(24)]  range=[-32762, -32761) uses={(34)}
+27 (30)     .%nlm_0:%vr32 := update-field flags{} result[(19)] , result[(31)] , const{0}:%vr46 , result[(24)]  range=[-32762, -32761) uses={(34)}
 18 (31)     mayalias flags{} result[(29)] , result[(12)]  range=[-32762, -32762) uses={(30)}
 32 (32)    guard-false flags{} result[(25)]  range=[-32768, -32763) uses={(33)}
 34 (33)    merge-if flags{} result[(26)] , result[(32)]  range=[-32768, -32764) uses={(34)}
-14 (34)     %nlm:%vr32 := gate flags{} result[(33)] , result[(30)] , result[(10)]  range=[-32765, -32765) uses={(37)}
+14 (34)     .%nlm_0:%vr32 := gate flags{} result[(33)] , result[(30)] , result[(10)]  range=[-32765, -32765) uses={(37)}
 37 (35)    exit flags{} result[(36)] , result[(37)]  range=[-32768, -32766) uses={}
  8 (36)     trapsink flags{} result[(5)] , result[(17)] , result[(28)]  range=[-32768, -32767) uses={(35)}
 36 (37)     dtor flags{} result[(34)]  range=[-32768, -32768) uses={(35)}

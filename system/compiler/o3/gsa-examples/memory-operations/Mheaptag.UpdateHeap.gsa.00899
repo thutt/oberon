@@ -1,8 +1,8 @@
 Live Range Analysis
 
  0 ( 0)  greg: UpdateHeap range=[-32768, -32749)
- 1 ( 1)    [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} %nlm:%vr32  range=[-32768, -32750) uses={}
- 2 ( 2)     %nlm:%vr32 := ctor flags{}  range=[-32751, -32751) uses={(13) (7)}
+ 1 ( 1)    [2:[location=.Mheaptag-RecDesc/adr], 1:[location=.Mheaptag-RecDesc]] enter flags{} .%nlm_0:%vr32  range=[-32768, -32750) uses={}
+ 2 ( 2)     .%nlm_0:%vr32 := ctor flags{}  range=[-32751, -32751) uses={(13) (7)}
  5 ( 3)    adr flags{} y  range=[-32768, -32752) uses={(4)}
  6 ( 4)    y := initialize flags{} y , result[(3)] , const{0}:%vr37  range=[-32768, -32753) uses={(16) (14)}
  9 ( 5)    trap-nil flags{}  range=[-32768, -32754) uses={(18)}
@@ -13,7 +13,7 @@ Live Range Analysis
 14 (10)    guard-false flags{} result[(9)]  range=[-32768, -32759) uses={}
 15 (11)     trap-iguard flags{}  range=[-32760, -32760) uses={(18)}
 16 (12)    trap-nil flags{}  range=[-32768, -32761) uses={(18)}
- 3 (13)    %nlm:%vr32 := update-deref flags{} const{0}:%vr40 , result[(6)] , result[(2)] , result[(14)]  range=[-32768, -32762) uses={(19) (15) (14)}
+ 3 (13)    .%nlm_0:%vr32 := update-deref flags{} const{0}:%vr40 , result[(6)] , result[(2)] , result[(14)]  range=[-32768, -32762) uses={(19) (15) (14)}
  8 (14)    recordcopy flags{} result[(13)] , result[(15)] , const{0}:%vr37 , result[(4)] , result[(16)]  range=[-32768, -32763) uses={(13)}
 18 (15)    adr flags{} result[(13)]  range=[-32768, -32764) uses={(14)}
  7 (16)    adr flags{} result[(4)]  range=[-32768, -32765) uses={(14)}

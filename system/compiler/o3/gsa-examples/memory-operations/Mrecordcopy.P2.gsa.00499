@@ -1,14 +1,14 @@
 Dead Code Elimination 0
 
  0 ( 0)  greg: P2 range=[-32768, -32752)
- 1 ( 1)    [9:[location=.Mrecordcopy-BaseDesc/adr], 8:[location=.Mrecordcopy-BaseDesc], 7:[location=.%1], 6:[location=.%0], 5:[location=b1], 4:[location=b0-tag/adr], 3:[location=b0-tag], 2:[location=b0/adr], 1:[location=b0]] enter flags{} %nlm  range=[-32768, -32753) uses={}
- 2 ( 2)     %nlm := ctor flags{}  range=[-32754, -32754) uses={(8)}
+ 1 ( 1)    [9:[location=.Mrecordcopy-BaseDesc/adr], 8:[location=.Mrecordcopy-BaseDesc], 7:[location=.%rect_1], 6:[location=.%nlm_0], 5:[location=b1], 4:[location=.%rect_1/adr], 3:[location=.%rect_1], 2:[location=b0/adr], 1:[location=b0]] enter flags{} .%nlm_0  range=[-32768, -32753) uses={}
+ 2 ( 2)     .%nlm_0 := ctor flags{}  range=[-32754, -32754) uses={(8)}
  4 ( 3)    adr flags{} b1  range=[-32768, -32755) uses={(4)}
  5 ( 4)    b1 := initialize flags{} b1 , result[(3)] , const{12}  range=[-32768, -32756) uses={(13) (11)}
  8 ( 5)    adr flags{} b0  range=[-32768, -32757) uses={(8)}
  9 ( 6)    eql.u4 flags{} result{4 of (1)} , result{8 of (1)}  range=[-32768, -32758) uses={(9) (7)}
 11 ( 7)    guard-true flags{} result[(6)]  range=[-32768, -32759) uses={}
- 3 ( 8)     %nlm := update-varparm flags{} b0 , result[(5)] , result[(2)] , result[(11)]  range=[-32760, -32760) uses={(16) (12) (11)}
+ 3 ( 8)     .%nlm_0 := update-varparm flags{} b0 , result[(5)] , result[(2)] , result[(11)]  range=[-32760, -32760) uses={(16) (12) (11)}
 10 ( 9)    guard-false flags{} result[(6)]  range=[-32768, -32761) uses={}
 14 (10)     trap-iguard flags{}  range=[-32762, -32762) uses={(15)}
  7 (11)    recordcopy flags{} result[(8)] , result[(12)] , const{8} , result[(4)] , result[(13)]  range=[-32768, -32763) uses={(8)}
